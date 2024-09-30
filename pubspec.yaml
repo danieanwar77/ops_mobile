@@ -1,0 +1,140 @@
+name: ops_mobile
+description: OPS Mobile App.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_staggered_animations: ^1.1.1
+  flutter_map: ^7.0.2
+  flutter_easyloading: ^3.0.5
+  flutter_svg: ^2.0.10+1
+  flutter_html: any
+  flutter_launcher_icons: ^0.13.1
+  flutter_local_notifications: ^17.2.2
+  flutter_rating_bar: ^4.0.1
+  flutter_native_splash: ^2.4.1
+  flutter_inappwebview: ^6.0.0
+  flutter_screenutil: ^5.9.3
+  firebase_core: ^3.4.1
+  firebase_messaging: ^15.1.3
+  firebase_crashlytics: ^4.1.1
+  connectivity_plus: ^6.0.5
+  path_provider_android: ^2.2.10
+  path_provider_ios: ^2.0.11
+  carousel_slider: ^5.0.0
+  webview_flutter: ^4.9.0
+  geolocator: ^13.0.1
+  latlong2: ^0.9.1
+  maps_toolkit: ^3.0.0
+  intl: ^0.19.0
+  get_storage: ^2.1.1
+  url_launcher: ^6.3.0
+  fimber: ^0.7.0
+  google_fonts: ^6.2.1
+  dropdown_button2: ^2.3.9
+  mask_text_input_formatter: ^2.9.0
+#  camera: ^0.10.5+9
+  octo_image: ^2.1.0
+  upgrader:
+  path: any
+  infinite_scroll_pagination: ^4.0.0
+  permission_handler: any
+#  google_mlkit_face_detection: ^0.11.0
+  percent_indicator: ^4.2.3
+  timezone: any
+  shimmer: ^3.0.0
+  file_picker: ^8.0.3
+  image_picker: ^1.1.2
+  overlay_support: ^2.1.0
+  flutter_alice: ^1.1.1
+  dots_indicator: ^3.0.0
+  loading_animation_widget: ^1.2.1
+#  syncfusion_flutter_pdfviewer: ^25.1.35
+
+  #  --- Alpha/Beta/Release Candidate Libraries ---
+  get: ^4.6.6
+#  location: ^5.0.3
+
+#  --- Unused Libraries ---
+  package_info_plus: ^8.0.2
+#  flutter_pdfview: ^1.2.9
+#  file: ^7.0.0
+#  overlay_support: any
+#  safe_device: ^1.1.2
+#  basic_utils: ^5.5.4
+  cached_network_image: ^3.4.1
+  http: ^1.2.2
+  get_it: ^8.0.0
+  mime: ^1.0.6
+  open_filex: ^4.5.0
+
+dependency_overrides:
+  flutter_alice:
+    git:
+      url: https://github.com/kemalmaulana/flutter-alice.git
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/ic_application.png"
+  remove_alpha_ios: true
+
+flutter_native_splash:
+  web: false
+  color: "#FFFFFF"
+  image: "assets/icon/ic_application.png"
+  color_dark: "#FFFFFF"
+
+flutter:
+
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/images/
+    - assets/icons/
+#    - assets/vector/
+
+  fonts:
+    - family: AlteHaasGrotesk
+      fonts:
+        - asset: assets/fonts/AlteHaasGroteskBold.ttf
+        - asset: assets/fonts/AlteHaasGroteskRegular.ttf
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages

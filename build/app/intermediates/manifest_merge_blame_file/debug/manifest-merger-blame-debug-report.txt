@@ -1,0 +1,604 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.intishaka.ops_mobile"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="21"
+9        android:targetSdkVersion="34" />
+10    <!--
+11         The INTERNET permission is required for development. Specifically,
+12         the Flutter tool needs it to communicate with the running application
+13         to allow setting breakpoints, to provide hot reload, etc.
+14    -->
+15    <uses-permission android:name="android.permission.INTERNET" />
+15-->/Users/danieanwar/StudioProjects/ops_mobile/android/app/src/debug/AndroidManifest.xml:6:5-66
+15-->/Users/danieanwar/StudioProjects/ops_mobile/android/app/src/debug/AndroidManifest.xml:6:22-64
+16    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+16-->[:connectivity_plus] /Users/danieanwar/StudioProjects/ops_mobile/build/connectivity_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:7:5-79
+16-->[:connectivity_plus] /Users/danieanwar/StudioProjects/ops_mobile/build/connectivity_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:7:22-76
+17    <uses-permission
+17-->[:file_picker] /Users/danieanwar/StudioProjects/ops_mobile/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:7:5-9:38
+18        android:name="android.permission.READ_EXTERNAL_STORAGE"
+18-->[:file_picker] /Users/danieanwar/StudioProjects/ops_mobile/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:8:9-64
+19        android:maxSdkVersion="32" />
+19-->[:file_picker] /Users/danieanwar/StudioProjects/ops_mobile/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:9:9-35
+20
+21    <queries>
+21-->[:file_picker] /Users/danieanwar/StudioProjects/ops_mobile/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:11:5-17:15
+22        <intent>
+22-->[:file_picker] /Users/danieanwar/StudioProjects/ops_mobile/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:12:9-16:18
+23            <action android:name="android.intent.action.GET_CONTENT" />
+23-->[:file_picker] /Users/danieanwar/StudioProjects/ops_mobile/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:13:13-72
+23-->[:file_picker] /Users/danieanwar/StudioProjects/ops_mobile/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:13:21-69
+24
+25            <data android:mimeType="*/*" />
+25-->[:file_picker] /Users/danieanwar/StudioProjects/ops_mobile/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:15:13-44
+25-->[:file_picker] /Users/danieanwar/StudioProjects/ops_mobile/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:15:19-41
+26        </intent>
+27        <intent>
+27-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:8:9-10:18
+28            <action android:name="android.support.customtabs.action.CustomTabsService" />
+28-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:9:13-90
+28-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:9:21-87
+29        </intent>
+30    </queries>
+31
+32    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- Permissions options for the `notification` group -->
+32-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:8:5-68
+32-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:8:22-65
+33    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+33-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:11:5-77
+33-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:11:22-74
+34    <uses-permission android:name="android.permission.VIBRATE" />
+34-->[:flutter_local_notifications] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_local_notifications/intermediates/merged_manifest/debug/AndroidManifest.xml:7:5-66
+34-->[:flutter_local_notifications] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_local_notifications/intermediates/merged_manifest/debug/AndroidManifest.xml:7:22-63
+35    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+35-->[:open_filex] /Users/danieanwar/StudioProjects/ops_mobile/build/open_filex/intermediates/merged_manifest/debug/AndroidManifest.xml:11:5-76
+35-->[:open_filex] /Users/danieanwar/StudioProjects/ops_mobile/build/open_filex/intermediates/merged_manifest/debug/AndroidManifest.xml:11:22-73
+36    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+36-->[:open_filex] /Users/danieanwar/StudioProjects/ops_mobile/build/open_filex/intermediates/merged_manifest/debug/AndroidManifest.xml:12:5-75
+36-->[:open_filex] /Users/danieanwar/StudioProjects/ops_mobile/build/open_filex/intermediates/merged_manifest/debug/AndroidManifest.xml:12:22-72
+37    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" /> <!-- Required by older versions of Google Play services to create IID tokens -->
+37-->[:open_filex] /Users/danieanwar/StudioProjects/ops_mobile/build/open_filex/intermediates/merged_manifest/debug/AndroidManifest.xml:13:5-75
+37-->[:open_filex] /Users/danieanwar/StudioProjects/ops_mobile/build/open_filex/intermediates/merged_manifest/debug/AndroidManifest.xml:13:22-72
+38    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+38-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:26:5-82
+38-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:26:22-79
+39
+40    <permission
+40-->[androidx.core:core:1.13.1] /Users/danieanwar/.gradle/caches/transforms-3/a8c4ff9192369b28063491cb6351e858/transformed/core-1.13.1/AndroidManifest.xml:22:5-24:47
+41        android:name="com.intishaka.ops_mobile.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+41-->[androidx.core:core:1.13.1] /Users/danieanwar/.gradle/caches/transforms-3/a8c4ff9192369b28063491cb6351e858/transformed/core-1.13.1/AndroidManifest.xml:23:9-81
+42        android:protectionLevel="signature" />
+42-->[androidx.core:core:1.13.1] /Users/danieanwar/.gradle/caches/transforms-3/a8c4ff9192369b28063491cb6351e858/transformed/core-1.13.1/AndroidManifest.xml:24:9-44
+43
+44    <uses-permission android:name="com.intishaka.ops_mobile.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+44-->[androidx.core:core:1.13.1] /Users/danieanwar/.gradle/caches/transforms-3/a8c4ff9192369b28063491cb6351e858/transformed/core-1.13.1/AndroidManifest.xml:26:5-97
+44-->[androidx.core:core:1.13.1] /Users/danieanwar/.gradle/caches/transforms-3/a8c4ff9192369b28063491cb6351e858/transformed/core-1.13.1/AndroidManifest.xml:26:22-94
+45
+46    <application
+47        android:name="android.app.Application"
+48        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+48-->[androidx.core:core:1.13.1] /Users/danieanwar/.gradle/caches/transforms-3/a8c4ff9192369b28063491cb6351e858/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
+49        android:debuggable="true"
+50        android:icon="@mipmap/ic_launcher"
+51        android:label="ops_mobile" >
+52        <activity
+53            android:name="com.intishaka.ops_mobile.MainActivity"
+54            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+55            android:exported="true"
+56            android:hardwareAccelerated="true"
+57            android:launchMode="singleTop"
+58            android:theme="@style/LaunchTheme"
+59            android:windowSoftInputMode="adjustResize" >
+60
+61            <!--
+62                 Specifies an Android theme to apply to this Activity as soon as
+63                 the Android process has started. This theme is visible to the user
+64                 while the Flutter UI initializes. After that, this theme continues
+65                 to determine the Window background behind the Flutter UI.
+66            -->
+67            <meta-data
+68                android:name="io.flutter.embedding.android.NormalTheme"
+69                android:resource="@style/NormalTheme" />
+70
+71            <intent-filter>
+72                <action android:name="android.intent.action.MAIN" />
+73
+74                <category android:name="android.intent.category.LAUNCHER" />
+75            </intent-filter>
+76        </activity>
+77        <!--
+78             Don't delete the meta-data below.
+79             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java
+80        -->
+81        <meta-data
+82            android:name="flutterEmbedding"
+83            android:value="2" />
+84
+85        <service
+85-->[:firebase_crashlytics] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_crashlytics/intermediates/merged_manifest/debug/AndroidManifest.xml:8:9-12:19
+86            android:name="com.google.firebase.components.ComponentDiscoveryService"
+86-->[:firebase_crashlytics] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_crashlytics/intermediates/merged_manifest/debug/AndroidManifest.xml:8:18-89
+87            android:directBootAware="true"
+87-->[com.google.firebase:firebase-common:21.0.0] /Users/danieanwar/.gradle/caches/transforms-3/9a3d5821b22b8b888e32206147f20029/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:32:13-43
+88            android:exported="false" >
+88-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:56:13-37
+89            <meta-data
+89-->[:firebase_crashlytics] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_crashlytics/intermediates/merged_manifest/debug/AndroidManifest.xml:9:13-11:85
+90                android:name="com.google.firebase.components:io.flutter.plugins.firebase.crashlytics.FlutterFirebaseAppRegistrar"
+90-->[:firebase_crashlytics] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_crashlytics/intermediates/merged_manifest/debug/AndroidManifest.xml:10:17-130
+91                android:value="com.google.firebase.components.ComponentRegistrar" />
+91-->[:firebase_crashlytics] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_crashlytics/intermediates/merged_manifest/debug/AndroidManifest.xml:11:17-82
+92            <meta-data
+92-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:36:13-38:85
+93                android:name="com.google.firebase.components:io.flutter.plugins.firebase.messaging.FlutterFirebaseAppRegistrar"
+93-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:37:17-128
+94                android:value="com.google.firebase.components.ComponentRegistrar" />
+94-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:38:17-82
+95            <meta-data
+95-->[:firebase_core] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:9:13-11:85
+96                android:name="com.google.firebase.components:io.flutter.plugins.firebase.core.FlutterFirebaseCoreRegistrar"
+96-->[:firebase_core] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:10:17-124
+97                android:value="com.google.firebase.components.ComponentRegistrar" />
+97-->[:firebase_core] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:11:17-82
+98            <meta-data
+98-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:57:13-59:85
+99                android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingKtxRegistrar"
+99-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:58:17-122
+100                android:value="com.google.firebase.components.ComponentRegistrar" />
+100-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:59:17-82
+101            <meta-data
+101-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:60:13-62:85
+102                android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar"
+102-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:61:17-119
+103                android:value="com.google.firebase.components.ComponentRegistrar" />
+103-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:62:17-82
+104            <meta-data
+104-->[com.google.firebase:firebase-crashlytics:19.1.0] /Users/danieanwar/.gradle/caches/transforms-3/f11cef5c0af22744351a9bf54d2c8d8c/transformed/jetified-firebase-crashlytics-19.1.0/AndroidManifest.xml:15:13-17:85
+105                android:name="com.google.firebase.components:com.google.firebase.crashlytics.FirebaseCrashlyticsKtxRegistrar"
+105-->[com.google.firebase:firebase-crashlytics:19.1.0] /Users/danieanwar/.gradle/caches/transforms-3/f11cef5c0af22744351a9bf54d2c8d8c/transformed/jetified-firebase-crashlytics-19.1.0/AndroidManifest.xml:16:17-126
+106                android:value="com.google.firebase.components.ComponentRegistrar" />
+106-->[com.google.firebase:firebase-crashlytics:19.1.0] /Users/danieanwar/.gradle/caches/transforms-3/f11cef5c0af22744351a9bf54d2c8d8c/transformed/jetified-firebase-crashlytics-19.1.0/AndroidManifest.xml:17:17-82
+107            <meta-data
+107-->[com.google.firebase:firebase-crashlytics:19.1.0] /Users/danieanwar/.gradle/caches/transforms-3/f11cef5c0af22744351a9bf54d2c8d8c/transformed/jetified-firebase-crashlytics-19.1.0/AndroidManifest.xml:18:13-20:85
+108                android:name="com.google.firebase.components:com.google.firebase.crashlytics.CrashlyticsRegistrar"
+108-->[com.google.firebase:firebase-crashlytics:19.1.0] /Users/danieanwar/.gradle/caches/transforms-3/f11cef5c0af22744351a9bf54d2c8d8c/transformed/jetified-firebase-crashlytics-19.1.0/AndroidManifest.xml:19:17-115
+109                android:value="com.google.firebase.components.ComponentRegistrar" />
+109-->[com.google.firebase:firebase-crashlytics:19.1.0] /Users/danieanwar/.gradle/caches/transforms-3/f11cef5c0af22744351a9bf54d2c8d8c/transformed/jetified-firebase-crashlytics-19.1.0/AndroidManifest.xml:20:17-82
+110            <meta-data
+110-->[com.google.firebase:firebase-sessions:2.0.4] /Users/danieanwar/.gradle/caches/transforms-3/ba753d90142cd50cf196a98a83a9e3a0/transformed/jetified-firebase-sessions-2.0.4/AndroidManifest.xml:29:13-31:85
+111                android:name="com.google.firebase.components:com.google.firebase.sessions.FirebaseSessionsRegistrar"
+111-->[com.google.firebase:firebase-sessions:2.0.4] /Users/danieanwar/.gradle/caches/transforms-3/ba753d90142cd50cf196a98a83a9e3a0/transformed/jetified-firebase-sessions-2.0.4/AndroidManifest.xml:30:17-117
+112                android:value="com.google.firebase.components.ComponentRegistrar" />
+112-->[com.google.firebase:firebase-sessions:2.0.4] /Users/danieanwar/.gradle/caches/transforms-3/ba753d90142cd50cf196a98a83a9e3a0/transformed/jetified-firebase-sessions-2.0.4/AndroidManifest.xml:31:17-82
+113            <meta-data
+113-->[com.google.firebase:firebase-installations:18.0.0] /Users/danieanwar/.gradle/caches/transforms-3/215560b5f6e42b1ce0c1e18edd237f75/transformed/jetified-firebase-installations-18.0.0/AndroidManifest.xml:15:13-17:85
+114                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsKtxRegistrar"
+114-->[com.google.firebase:firebase-installations:18.0.0] /Users/danieanwar/.gradle/caches/transforms-3/215560b5f6e42b1ce0c1e18edd237f75/transformed/jetified-firebase-installations-18.0.0/AndroidManifest.xml:16:17-130
+115                android:value="com.google.firebase.components.ComponentRegistrar" />
+115-->[com.google.firebase:firebase-installations:18.0.0] /Users/danieanwar/.gradle/caches/transforms-3/215560b5f6e42b1ce0c1e18edd237f75/transformed/jetified-firebase-installations-18.0.0/AndroidManifest.xml:17:17-82
+116            <meta-data
+116-->[com.google.firebase:firebase-installations:18.0.0] /Users/danieanwar/.gradle/caches/transforms-3/215560b5f6e42b1ce0c1e18edd237f75/transformed/jetified-firebase-installations-18.0.0/AndroidManifest.xml:18:13-20:85
+117                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar"
+117-->[com.google.firebase:firebase-installations:18.0.0] /Users/danieanwar/.gradle/caches/transforms-3/215560b5f6e42b1ce0c1e18edd237f75/transformed/jetified-firebase-installations-18.0.0/AndroidManifest.xml:19:17-127
+118                android:value="com.google.firebase.components.ComponentRegistrar" />
+118-->[com.google.firebase:firebase-installations:18.0.0] /Users/danieanwar/.gradle/caches/transforms-3/215560b5f6e42b1ce0c1e18edd237f75/transformed/jetified-firebase-installations-18.0.0/AndroidManifest.xml:20:17-82
+119            <meta-data
+119-->[com.google.firebase:firebase-common-ktx:21.0.0] /Users/danieanwar/.gradle/caches/transforms-3/f8e157d7e5add86516f791f024ca36a2/transformed/jetified-firebase-common-ktx-21.0.0/AndroidManifest.xml:12:13-14:85
+120                android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar"
+120-->[com.google.firebase:firebase-common-ktx:21.0.0] /Users/danieanwar/.gradle/caches/transforms-3/f8e157d7e5add86516f791f024ca36a2/transformed/jetified-firebase-common-ktx-21.0.0/AndroidManifest.xml:13:17-116
+121                android:value="com.google.firebase.components.ComponentRegistrar" />
+121-->[com.google.firebase:firebase-common-ktx:21.0.0] /Users/danieanwar/.gradle/caches/transforms-3/f8e157d7e5add86516f791f024ca36a2/transformed/jetified-firebase-common-ktx-21.0.0/AndroidManifest.xml:14:17-82
+122            <meta-data
+122-->[com.google.firebase:firebase-common:21.0.0] /Users/danieanwar/.gradle/caches/transforms-3/9a3d5821b22b8b888e32206147f20029/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:35:13-37:85
+123                android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar"
+123-->[com.google.firebase:firebase-common:21.0.0] /Users/danieanwar/.gradle/caches/transforms-3/9a3d5821b22b8b888e32206147f20029/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:36:17-109
+124                android:value="com.google.firebase.components.ComponentRegistrar" />
+124-->[com.google.firebase:firebase-common:21.0.0] /Users/danieanwar/.gradle/caches/transforms-3/9a3d5821b22b8b888e32206147f20029/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:37:17-82
+125            <meta-data
+125-->[com.google.firebase:firebase-datatransport:19.0.0] /Users/danieanwar/.gradle/caches/transforms-3/94f4fce427902d08f2bb57e3279b9df6/transformed/jetified-firebase-datatransport-19.0.0/AndroidManifest.xml:25:13-27:85
+126                android:name="com.google.firebase.components:com.google.firebase.datatransport.TransportRegistrar"
+126-->[com.google.firebase:firebase-datatransport:19.0.0] /Users/danieanwar/.gradle/caches/transforms-3/94f4fce427902d08f2bb57e3279b9df6/transformed/jetified-firebase-datatransport-19.0.0/AndroidManifest.xml:26:17-115
+127                android:value="com.google.firebase.components.ComponentRegistrar" />
+127-->[com.google.firebase:firebase-datatransport:19.0.0] /Users/danieanwar/.gradle/caches/transforms-3/94f4fce427902d08f2bb57e3279b9df6/transformed/jetified-firebase-datatransport-19.0.0/AndroidManifest.xml:27:17-82
+128        </service>
+129        <service
+129-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:14:9-17:72
+130            android:name="io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingBackgroundService"
+130-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:15:13-107
+131            android:exported="false"
+131-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:16:13-37
+132            android:permission="android.permission.BIND_JOB_SERVICE" />
+132-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:17:13-69
+133        <service
+133-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:18:9-24:19
+134            android:name="io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingService"
+134-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:19:13-97
+135            android:exported="false" >
+135-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:20:13-37
+136            <intent-filter>
+136-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:21:13-23:29
+137                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+137-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:22:17-78
+137-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:22:25-75
+138            </intent-filter>
+139        </service>
+140
+141        <receiver
+141-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:26:9-33:20
+142            android:name="io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingReceiver"
+142-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:27:13-98
+143            android:exported="true"
+143-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:28:13-36
+144            android:permission="com.google.android.c2dm.permission.SEND" >
+144-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:29:13-73
+145            <intent-filter>
+145-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:30:13-32:29
+146                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+146-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:31:17-81
+146-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:31:25-78
+147            </intent-filter>
+148        </receiver>
+149
+150        <provider
+150-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:41:9-45:38
+151            android:name="io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingInitProvider"
+151-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:42:13-102
+152            android:authorities="com.intishaka.ops_mobile.flutterfirebasemessaginginitprovider"
+152-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:43:13-88
+153            android:exported="false"
+153-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:44:13-37
+154            android:initOrder="99" />
+154-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:45:13-35
+155
+156        <activity
+156-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:14:9-18:47
+157            android:name="com.pichillilorenzo.flutter_inappwebview_android.in_app_browser.InAppBrowserActivity"
+157-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:15:13-112
+158            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density"
+158-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:16:13-137
+159            android:exported="false"
+159-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:17:13-37
+160            android:theme="@style/AppTheme" />
+160-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:18:13-44
+161        <activity
+161-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:19:9-22:55
+162            android:name="com.pichillilorenzo.flutter_inappwebview_android.chrome_custom_tabs.ChromeCustomTabsActivity"
+162-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:20:13-120
+163            android:exported="false"
+163-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:21:13-37
+164            android:theme="@style/ThemeTransparent" />
+164-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:22:13-52
+165        <activity
+165-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:23:9-26:55
+166            android:name="com.pichillilorenzo.flutter_inappwebview_android.chrome_custom_tabs.TrustedWebActivity"
+166-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:24:13-114
+167            android:exported="false"
+167-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:25:13-37
+168            android:theme="@style/ThemeTransparent" />
+168-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:26:13-52
+169        <activity
+169-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:27:9-31:55
+170            android:name="com.pichillilorenzo.flutter_inappwebview_android.chrome_custom_tabs.ChromeCustomTabsActivitySingleInstance"
+170-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:28:13-134
+171            android:exported="false"
+171-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:29:13-37
+172            android:launchMode="singleInstance"
+172-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:30:13-48
+173            android:theme="@style/ThemeTransparent" />
+173-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:31:13-52
+174        <activity
+174-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:32:9-36:55
+175            android:name="com.pichillilorenzo.flutter_inappwebview_android.chrome_custom_tabs.TrustedWebActivitySingleInstance"
+175-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:33:13-128
+176            android:exported="false"
+176-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:34:13-37
+177            android:launchMode="singleInstance"
+177-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:35:13-48
+178            android:theme="@style/ThemeTransparent" />
+178-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:36:13-52
+179
+180        <receiver
+180-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:38:9-41:40
+181            android:name="com.pichillilorenzo.flutter_inappwebview_android.chrome_custom_tabs.ActionBroadcastReceiver"
+181-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:39:13-119
+182            android:enabled="true"
+182-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:40:13-35
+183            android:exported="false" />
+183-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:41:13-37
+184
+185        <meta-data
+185-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:43:9-45:36
+186            android:name="io.flutter.embedded_views_preview"
+186-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:44:13-61
+187            android:value="true" />
+187-->[:flutter_inappwebview_android] /Users/danieanwar/StudioProjects/ops_mobile/build/flutter_inappwebview_android/intermediates/merged_manifest/debug/AndroidManifest.xml:45:13-33
+188
+189        <provider
+189-->[:image_picker_android] /Users/danieanwar/StudioProjects/ops_mobile/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:8:9-16:20
+190            android:name="io.flutter.plugins.imagepicker.ImagePickerFileProvider"
+190-->[:image_picker_android] /Users/danieanwar/StudioProjects/ops_mobile/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:9:13-82
+191            android:authorities="com.intishaka.ops_mobile.flutter.image_provider"
+191-->[:image_picker_android] /Users/danieanwar/StudioProjects/ops_mobile/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:10:13-74
+192            android:exported="false"
+192-->[:image_picker_android] /Users/danieanwar/StudioProjects/ops_mobile/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-37
+193            android:grantUriPermissions="true" >
+193-->[:image_picker_android] /Users/danieanwar/StudioProjects/ops_mobile/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:12:13-47
+194            <meta-data
+194-->[:image_picker_android] /Users/danieanwar/StudioProjects/ops_mobile/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:13:13-15:75
+195                android:name="android.support.FILE_PROVIDER_PATHS"
+195-->[:image_picker_android] /Users/danieanwar/StudioProjects/ops_mobile/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:14:17-67
+196                android:resource="@xml/flutter_image_picker_file_paths" />
+196-->[:image_picker_android] /Users/danieanwar/StudioProjects/ops_mobile/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:15:17-72
+197        </provider>
+198
+199        <service
+199-->[:geolocator_android] /Users/danieanwar/StudioProjects/ops_mobile/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:8:9-12:56
+200            android:name="com.baseflow.geolocator.GeolocatorLocationService"
+200-->[:geolocator_android] /Users/danieanwar/StudioProjects/ops_mobile/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:9:13-77
+201            android:enabled="true"
+201-->[:geolocator_android] /Users/danieanwar/StudioProjects/ops_mobile/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:10:13-35
+202            android:exported="false"
+202-->[:geolocator_android] /Users/danieanwar/StudioProjects/ops_mobile/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-37
+203            android:foregroundServiceType="location" />
+203-->[:geolocator_android] /Users/danieanwar/StudioProjects/ops_mobile/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:12:13-53
+204
+205        <provider
+205-->[:open_filex] /Users/danieanwar/StudioProjects/ops_mobile/build/open_filex/intermediates/merged_manifest/debug/AndroidManifest.xml:16:9-25:20
+206            android:name="com.crazecoder.openfile.FileProvider"
+206-->[:open_filex] /Users/danieanwar/StudioProjects/ops_mobile/build/open_filex/intermediates/merged_manifest/debug/AndroidManifest.xml:17:13-64
+207            android:authorities="com.intishaka.ops_mobile.fileProvider.com.crazecoder.openfile"
+207-->[:open_filex] /Users/danieanwar/StudioProjects/ops_mobile/build/open_filex/intermediates/merged_manifest/debug/AndroidManifest.xml:18:13-88
+208            android:exported="false"
+208-->[:open_filex] /Users/danieanwar/StudioProjects/ops_mobile/build/open_filex/intermediates/merged_manifest/debug/AndroidManifest.xml:19:13-37
+209            android:grantUriPermissions="true" >
+209-->[:open_filex] /Users/danieanwar/StudioProjects/ops_mobile/build/open_filex/intermediates/merged_manifest/debug/AndroidManifest.xml:20:13-47
+210            <meta-data
+210-->[:image_picker_android] /Users/danieanwar/StudioProjects/ops_mobile/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:13:13-15:75
+211                android:name="android.support.FILE_PROVIDER_PATHS"
+211-->[:image_picker_android] /Users/danieanwar/StudioProjects/ops_mobile/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:14:17-67
+212                android:resource="@xml/filepaths" />
+212-->[:image_picker_android] /Users/danieanwar/StudioProjects/ops_mobile/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:15:17-72
+213        </provider>
+214        <!--
+215           Declares a provider which allows us to store files to share in
+216           '.../caches/share_plus' and grant the receiving action access
+217        -->
+218        <provider
+218-->[:share_plus] /Users/danieanwar/StudioProjects/ops_mobile/build/share_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:13:9-21:20
+219            android:name="dev.fluttercommunity.plus.share.ShareFileProvider"
+219-->[:share_plus] /Users/danieanwar/StudioProjects/ops_mobile/build/share_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:14:13-77
+220            android:authorities="com.intishaka.ops_mobile.flutter.share_provider"
+220-->[:share_plus] /Users/danieanwar/StudioProjects/ops_mobile/build/share_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:15:13-74
+221            android:exported="false"
+221-->[:share_plus] /Users/danieanwar/StudioProjects/ops_mobile/build/share_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:16:13-37
+222            android:grantUriPermissions="true" >
+222-->[:share_plus] /Users/danieanwar/StudioProjects/ops_mobile/build/share_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:17:13-47
+223            <meta-data
+223-->[:image_picker_android] /Users/danieanwar/StudioProjects/ops_mobile/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:13:13-15:75
+224                android:name="android.support.FILE_PROVIDER_PATHS"
+224-->[:image_picker_android] /Users/danieanwar/StudioProjects/ops_mobile/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:14:17-67
+225                android:resource="@xml/flutter_share_file_paths" />
+225-->[:image_picker_android] /Users/danieanwar/StudioProjects/ops_mobile/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:15:17-72
+226        </provider>
+227        <!--
+228           This manifest declared broadcast receiver allows us to use an explicit
+229           Intent when creating a PendingItent to be informed of the user's choice
+230        -->
+231        <receiver
+231-->[:share_plus] /Users/danieanwar/StudioProjects/ops_mobile/build/share_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:26:9-32:20
+232            android:name="dev.fluttercommunity.plus.share.SharePlusPendingIntent"
+232-->[:share_plus] /Users/danieanwar/StudioProjects/ops_mobile/build/share_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:27:13-82
+233            android:exported="false" >
+233-->[:share_plus] /Users/danieanwar/StudioProjects/ops_mobile/build/share_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:28:13-37
+234            <intent-filter>
+234-->[:share_plus] /Users/danieanwar/StudioProjects/ops_mobile/build/share_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:29:13-31:29
+235                <action android:name="EXTRA_CHOSEN_COMPONENT" />
+235-->[:share_plus] /Users/danieanwar/StudioProjects/ops_mobile/build/share_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:30:17-65
+235-->[:share_plus] /Users/danieanwar/StudioProjects/ops_mobile/build/share_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:30:25-62
+236            </intent-filter>
+237        </receiver>
+238
+239        <activity
+239-->[:url_launcher_android] /Users/danieanwar/StudioProjects/ops_mobile/build/url_launcher_android/intermediates/merged_manifest/debug/AndroidManifest.xml:8:9-11:74
+240            android:name="io.flutter.plugins.urllauncher.WebViewActivity"
+240-->[:url_launcher_android] /Users/danieanwar/StudioProjects/ops_mobile/build/url_launcher_android/intermediates/merged_manifest/debug/AndroidManifest.xml:9:13-74
+241            android:exported="false"
+241-->[:url_launcher_android] /Users/danieanwar/StudioProjects/ops_mobile/build/url_launcher_android/intermediates/merged_manifest/debug/AndroidManifest.xml:10:13-37
+242            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+242-->[:url_launcher_android] /Users/danieanwar/StudioProjects/ops_mobile/build/url_launcher_android/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-71
+243
+244        <uses-library
+244-->[androidx.window:window:1.2.0] /Users/danieanwar/.gradle/caches/transforms-3/e5c1e0176888da682b3a0f4ac381d0ef/transformed/jetified-window-1.2.0/AndroidManifest.xml:23:9-25:40
+245            android:name="androidx.window.extensions"
+245-->[androidx.window:window:1.2.0] /Users/danieanwar/.gradle/caches/transforms-3/e5c1e0176888da682b3a0f4ac381d0ef/transformed/jetified-window-1.2.0/AndroidManifest.xml:24:13-54
+246            android:required="false" />
+246-->[androidx.window:window:1.2.0] /Users/danieanwar/.gradle/caches/transforms-3/e5c1e0176888da682b3a0f4ac381d0ef/transformed/jetified-window-1.2.0/AndroidManifest.xml:25:13-37
+247        <uses-library
+247-->[androidx.window:window:1.2.0] /Users/danieanwar/.gradle/caches/transforms-3/e5c1e0176888da682b3a0f4ac381d0ef/transformed/jetified-window-1.2.0/AndroidManifest.xml:26:9-28:40
+248            android:name="androidx.window.sidecar"
+248-->[androidx.window:window:1.2.0] /Users/danieanwar/.gradle/caches/transforms-3/e5c1e0176888da682b3a0f4ac381d0ef/transformed/jetified-window-1.2.0/AndroidManifest.xml:27:13-51
+249            android:required="false" />
+249-->[androidx.window:window:1.2.0] /Users/danieanwar/.gradle/caches/transforms-3/e5c1e0176888da682b3a0f4ac381d0ef/transformed/jetified-window-1.2.0/AndroidManifest.xml:28:13-37
+250
+251        <provider
+251-->[androidx.emoji2:emoji2:1.2.0] /Users/danieanwar/.gradle/caches/transforms-3/84fe3cd2971184e6b526133c885953f3/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
+252            android:name="androidx.startup.InitializationProvider"
+252-->[androidx.emoji2:emoji2:1.2.0] /Users/danieanwar/.gradle/caches/transforms-3/84fe3cd2971184e6b526133c885953f3/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:25:13-67
+253            android:authorities="com.intishaka.ops_mobile.androidx-startup"
+253-->[androidx.emoji2:emoji2:1.2.0] /Users/danieanwar/.gradle/caches/transforms-3/84fe3cd2971184e6b526133c885953f3/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:26:13-68
+254            android:exported="false" >
+254-->[androidx.emoji2:emoji2:1.2.0] /Users/danieanwar/.gradle/caches/transforms-3/84fe3cd2971184e6b526133c885953f3/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:27:13-37
+255            <meta-data
+255-->[androidx.emoji2:emoji2:1.2.0] /Users/danieanwar/.gradle/caches/transforms-3/84fe3cd2971184e6b526133c885953f3/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:29:13-31:52
+256                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+256-->[androidx.emoji2:emoji2:1.2.0] /Users/danieanwar/.gradle/caches/transforms-3/84fe3cd2971184e6b526133c885953f3/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:30:17-75
+257                android:value="androidx.startup" />
+257-->[androidx.emoji2:emoji2:1.2.0] /Users/danieanwar/.gradle/caches/transforms-3/84fe3cd2971184e6b526133c885953f3/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:31:17-49
+258            <meta-data
+258-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/danieanwar/.gradle/caches/transforms-3/d8104b0d4766fa4b4acbcdb524db8ad7/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:29:13-31:52
+259                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+259-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/danieanwar/.gradle/caches/transforms-3/d8104b0d4766fa4b4acbcdb524db8ad7/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:30:17-78
+260                android:value="androidx.startup" />
+260-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/danieanwar/.gradle/caches/transforms-3/d8104b0d4766fa4b4acbcdb524db8ad7/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:31:17-49
+261            <meta-data
+261-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
+262                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+262-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+263                android:value="androidx.startup" />
+263-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
+264        </provider>
+265
+266        <receiver
+266-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:29:9-40:20
+267            android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
+267-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:30:13-78
+268            android:exported="true"
+268-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:31:13-36
+269            android:permission="com.google.android.c2dm.permission.SEND" >
+269-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:32:13-73
+270            <intent-filter>
+270-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:30:13-32:29
+271                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+271-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:31:17-81
+271-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:31:25-78
+272            </intent-filter>
+273
+274            <meta-data
+274-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:37:13-39:40
+275                android:name="com.google.android.gms.cloudmessaging.FINISHED_AFTER_HANDLED"
+275-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:38:17-92
+276                android:value="true" />
+276-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:39:17-37
+277        </receiver>
+278        <!--
+279             FirebaseMessagingService performs security checks at runtime,
+280             but set to not exported to explicitly avoid allowing another app to call it.
+281        -->
+282        <service
+282-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:46:9-53:19
+283            android:name="com.google.firebase.messaging.FirebaseMessagingService"
+283-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:47:13-82
+284            android:directBootAware="true"
+284-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:48:13-43
+285            android:exported="false" >
+285-->[com.google.firebase:firebase-messaging:24.0.1] /Users/danieanwar/.gradle/caches/transforms-3/866214485c642826aca8d8135511a4a3/transformed/jetified-firebase-messaging-24.0.1/AndroidManifest.xml:49:13-37
+286            <intent-filter android:priority="-500" >
+286-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:21:13-23:29
+287                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+287-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:22:17-78
+287-->[:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:22:25-75
+288            </intent-filter>
+289        </service>
+290
+291        <activity
+291-->[com.google.android.gms:play-services-base:18.3.0] /Users/danieanwar/.gradle/caches/transforms-3/47087dfb22c2c9d03b7ae84540f24222/transformed/jetified-play-services-base-18.3.0/AndroidManifest.xml:20:9-22:45
+292            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+292-->[com.google.android.gms:play-services-base:18.3.0] /Users/danieanwar/.gradle/caches/transforms-3/47087dfb22c2c9d03b7ae84540f24222/transformed/jetified-play-services-base-18.3.0/AndroidManifest.xml:20:19-85
+293            android:exported="false"
+293-->[com.google.android.gms:play-services-base:18.3.0] /Users/danieanwar/.gradle/caches/transforms-3/47087dfb22c2c9d03b7ae84540f24222/transformed/jetified-play-services-base-18.3.0/AndroidManifest.xml:22:19-43
+294            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+294-->[com.google.android.gms:play-services-base:18.3.0] /Users/danieanwar/.gradle/caches/transforms-3/47087dfb22c2c9d03b7ae84540f24222/transformed/jetified-play-services-base-18.3.0/AndroidManifest.xml:21:19-78
+295
+296        <service
+296-->[com.google.firebase:firebase-sessions:2.0.4] /Users/danieanwar/.gradle/caches/transforms-3/ba753d90142cd50cf196a98a83a9e3a0/transformed/jetified-firebase-sessions-2.0.4/AndroidManifest.xml:22:9-25:40
+297            android:name="com.google.firebase.sessions.SessionLifecycleService"
+297-->[com.google.firebase:firebase-sessions:2.0.4] /Users/danieanwar/.gradle/caches/transforms-3/ba753d90142cd50cf196a98a83a9e3a0/transformed/jetified-firebase-sessions-2.0.4/AndroidManifest.xml:23:13-80
+298            android:enabled="true"
+298-->[com.google.firebase:firebase-sessions:2.0.4] /Users/danieanwar/.gradle/caches/transforms-3/ba753d90142cd50cf196a98a83a9e3a0/transformed/jetified-firebase-sessions-2.0.4/AndroidManifest.xml:24:13-35
+299            android:exported="false" />
+299-->[com.google.firebase:firebase-sessions:2.0.4] /Users/danieanwar/.gradle/caches/transforms-3/ba753d90142cd50cf196a98a83a9e3a0/transformed/jetified-firebase-sessions-2.0.4/AndroidManifest.xml:25:13-37
+300
+301        <provider
+301-->[com.google.firebase:firebase-common:21.0.0] /Users/danieanwar/.gradle/caches/transforms-3/9a3d5821b22b8b888e32206147f20029/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:23:9-28:39
+302            android:name="com.google.firebase.provider.FirebaseInitProvider"
+302-->[com.google.firebase:firebase-common:21.0.0] /Users/danieanwar/.gradle/caches/transforms-3/9a3d5821b22b8b888e32206147f20029/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:24:13-77
+303            android:authorities="com.intishaka.ops_mobile.firebaseinitprovider"
+303-->[com.google.firebase:firebase-common:21.0.0] /Users/danieanwar/.gradle/caches/transforms-3/9a3d5821b22b8b888e32206147f20029/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:25:13-72
+304            android:directBootAware="true"
+304-->[com.google.firebase:firebase-common:21.0.0] /Users/danieanwar/.gradle/caches/transforms-3/9a3d5821b22b8b888e32206147f20029/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:26:13-43
+305            android:exported="false"
+305-->[com.google.firebase:firebase-common:21.0.0] /Users/danieanwar/.gradle/caches/transforms-3/9a3d5821b22b8b888e32206147f20029/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:27:13-37
+306            android:initOrder="100" />
+306-->[com.google.firebase:firebase-common:21.0.0] /Users/danieanwar/.gradle/caches/transforms-3/9a3d5821b22b8b888e32206147f20029/transformed/jetified-firebase-common-21.0.0/AndroidManifest.xml:28:13-36
+307
+308        <meta-data
+308-->[com.google.android.gms:play-services-basement:18.3.0] /Users/danieanwar/.gradle/caches/transforms-3/d2a45db228ec3758ccdd35ccda7f9f39/transformed/jetified-play-services-basement-18.3.0/AndroidManifest.xml:21:9-23:69
+309            android:name="com.google.android.gms.version"
+309-->[com.google.android.gms:play-services-basement:18.3.0] /Users/danieanwar/.gradle/caches/transforms-3/d2a45db228ec3758ccdd35ccda7f9f39/transformed/jetified-play-services-basement-18.3.0/AndroidManifest.xml:22:13-58
+310            android:value="@integer/google_play_services_version" />
+310-->[com.google.android.gms:play-services-basement:18.3.0] /Users/danieanwar/.gradle/caches/transforms-3/d2a45db228ec3758ccdd35ccda7f9f39/transformed/jetified-play-services-basement-18.3.0/AndroidManifest.xml:23:13-66
+311
+312        <receiver
+312-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
+313            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+313-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
+314            android:directBootAware="false"
+314-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
+315            android:enabled="true"
+315-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
+316            android:exported="true"
+316-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
+317            android:permission="android.permission.DUMP" >
+317-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
+318            <intent-filter>
+318-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
+319                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+319-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
+319-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
+320            </intent-filter>
+321            <intent-filter>
+321-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
+322                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+322-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
+322-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
+323            </intent-filter>
+324            <intent-filter>
+324-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
+325                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+325-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
+325-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+326            </intent-filter>
+327            <intent-filter>
+327-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
+328                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+328-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
+328-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/danieanwar/.gradle/caches/transforms-3/2723478f2fe9f8dec683d4f73729181e/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:50:25-92
+329            </intent-filter>
+330        </receiver>
+331
+332        <service
+332-->[com.google.android.datatransport:transport-backend-cct:3.3.0] /Users/danieanwar/.gradle/caches/transforms-3/88537c8fcec373955c62b11f2381a556/transformed/jetified-transport-backend-cct-3.3.0/AndroidManifest.xml:26:9-32:19
+333            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+333-->[com.google.android.datatransport:transport-backend-cct:3.3.0] /Users/danieanwar/.gradle/caches/transforms-3/88537c8fcec373955c62b11f2381a556/transformed/jetified-transport-backend-cct-3.3.0/AndroidManifest.xml:27:13-103
+334            android:exported="false" >
+334-->[com.google.android.datatransport:transport-backend-cct:3.3.0] /Users/danieanwar/.gradle/caches/transforms-3/88537c8fcec373955c62b11f2381a556/transformed/jetified-transport-backend-cct-3.3.0/AndroidManifest.xml:28:13-37
+335            <meta-data
+335-->[com.google.android.datatransport:transport-backend-cct:3.3.0] /Users/danieanwar/.gradle/caches/transforms-3/88537c8fcec373955c62b11f2381a556/transformed/jetified-transport-backend-cct-3.3.0/AndroidManifest.xml:29:13-31:39
+336                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+336-->[com.google.android.datatransport:transport-backend-cct:3.3.0] /Users/danieanwar/.gradle/caches/transforms-3/88537c8fcec373955c62b11f2381a556/transformed/jetified-transport-backend-cct-3.3.0/AndroidManifest.xml:30:17-94
+337                android:value="cct" />
+337-->[com.google.android.datatransport:transport-backend-cct:3.3.0] /Users/danieanwar/.gradle/caches/transforms-3/88537c8fcec373955c62b11f2381a556/transformed/jetified-transport-backend-cct-3.3.0/AndroidManifest.xml:31:17-36
+338        </service>
+339        <service
+339-->[com.google.android.datatransport:transport-runtime:3.3.0] /Users/danieanwar/.gradle/caches/transforms-3/5302b0440781e0c353cad44f5b58c0c1/transformed/jetified-transport-runtime-3.3.0/AndroidManifest.xml:24:9-28:19
+340            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+340-->[com.google.android.datatransport:transport-runtime:3.3.0] /Users/danieanwar/.gradle/caches/transforms-3/5302b0440781e0c353cad44f5b58c0c1/transformed/jetified-transport-runtime-3.3.0/AndroidManifest.xml:25:13-117
+341            android:exported="false"
+341-->[com.google.android.datatransport:transport-runtime:3.3.0] /Users/danieanwar/.gradle/caches/transforms-3/5302b0440781e0c353cad44f5b58c0c1/transformed/jetified-transport-runtime-3.3.0/AndroidManifest.xml:26:13-37
+342            android:permission="android.permission.BIND_JOB_SERVICE" >
+342-->[com.google.android.datatransport:transport-runtime:3.3.0] /Users/danieanwar/.gradle/caches/transforms-3/5302b0440781e0c353cad44f5b58c0c1/transformed/jetified-transport-runtime-3.3.0/AndroidManifest.xml:27:13-69
+343        </service>
+344
+345        <receiver
+345-->[com.google.android.datatransport:transport-runtime:3.3.0] /Users/danieanwar/.gradle/caches/transforms-3/5302b0440781e0c353cad44f5b58c0c1/transformed/jetified-transport-runtime-3.3.0/AndroidManifest.xml:30:9-32:40
+346            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+346-->[com.google.android.datatransport:transport-runtime:3.3.0] /Users/danieanwar/.gradle/caches/transforms-3/5302b0440781e0c353cad44f5b58c0c1/transformed/jetified-transport-runtime-3.3.0/AndroidManifest.xml:31:13-132
+347            android:exported="false" />
+347-->[com.google.android.datatransport:transport-runtime:3.3.0] /Users/danieanwar/.gradle/caches/transforms-3/5302b0440781e0c353cad44f5b58c0c1/transformed/jetified-transport-runtime-3.3.0/AndroidManifest.xml:32:13-37
+348    </application>
+349
+350</manifest>
