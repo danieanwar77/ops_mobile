@@ -57,13 +57,16 @@ class DataDetail {
       List<Oos>? oos, 
       List<Lap>? lap, 
       List<StdMethod>? stdMethod, 
-      List<PicHist>? picHist,}){
+      List<PicHist>? picHist,
+      List<Laboratory>? laboratory
+  }){
     _detail = detail;
     _sow = sow;
     _oos = oos;
     _lap = lap;
     _stdMethod = stdMethod;
     _picHist = picHist;
+    _laboratory = laboratory;
 }
 
   DataDetail.fromJson(dynamic json) {
@@ -98,6 +101,12 @@ class DataDetail {
         _picHist?.add(PicHist.fromJson(v));
       });
     }
+    if (json['laboratory'] != null) {
+      _laboratory = [];
+      json['laboratory'].forEach((v) {
+        _laboratory?.add(Laboratory.fromJson(v));
+      });
+    }
   }
   Detail? _detail;
   List<Sow>? _sow;
@@ -105,18 +114,21 @@ class DataDetail {
   List<Lap>? _lap;
   List<StdMethod>? _stdMethod;
   List<PicHist>? _picHist;
+  List<Laboratory>? _laboratory;
 DataDetail copyWith({  Detail? detail,
   List<Sow>? sow,
   List<Oos>? oos,
   List<Lap>? lap,
   List<StdMethod>? stdMethod,
   List<PicHist>? picHist,
+  List<Laboratory>? laboratory,
 }) => DataDetail(  detail: detail ?? _detail,
   sow: sow ?? _sow,
   oos: oos ?? _oos,
   lap: lap ?? _lap,
   stdMethod: stdMethod ?? _stdMethod,
   picHist: picHist ?? _picHist,
+  laboratory: laboratory ?? _laboratory,
 );
   Detail? get detail => _detail;
   List<Sow>? get sow => _sow;
@@ -124,6 +136,7 @@ DataDetail copyWith({  Detail? detail,
   List<Lap>? get lap => _lap;
   List<StdMethod>? get stdMethod => _stdMethod;
   List<PicHist>? get picHist => _picHist;
+  List<Laboratory>? get laboratory => _laboratory;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -144,6 +157,9 @@ DataDetail copyWith({  Detail? detail,
     }
     if (_picHist != null) {
       map['pic_hist'] = _picHist?.map((v) => v.toJson()).toList();
+    }
+    if (_laboratory != null) {
+      map['laboratory'] = _laboratory?.map((v) => v.toJson()).toList();
     }
     return map;
   }
@@ -472,7 +488,9 @@ class Detail {
       String? ettaVessel, 
       String? startDateOfAttendance, 
       String? endDateOfAttendance, 
-      dynamic lokasiKerja, 
+      dynamic lokasiKerja,
+      num? idPicInspector,
+      num? idPicLaboratory,
       String? picLaboratory, 
       String? picInspector, 
       String? destinationCountry, 
@@ -523,6 +541,8 @@ class Detail {
     _startDateOfAttendance = startDateOfAttendance;
     _endDateOfAttendance = endDateOfAttendance;
     _lokasiKerja = lokasiKerja;
+    _idPicInspector = idPicInspector;
+    _idPicLaboratory = idPicLaboratory;
     _picLaboratory = picLaboratory;
     _picInspector = picInspector;
     _destinationCountry = destinationCountry;
@@ -576,6 +596,8 @@ class Detail {
     _startDateOfAttendance = json['start_date_of_attendance'];
     _endDateOfAttendance = json['end_date_of_attendance'];
     _lokasiKerja = json['lokasi_kerja'];
+    _idPicInspector = json['id_pic_inspector'];
+    _idPicLaboratory = json['id_pic_laboratory'];
     _picLaboratory = json['pic_laboratory'];
     _picInspector = json['pic_inspector'];
     _destinationCountry = json['destination_country'];
@@ -627,6 +649,8 @@ class Detail {
   String? _startDateOfAttendance;
   String? _endDateOfAttendance;
   dynamic _lokasiKerja;
+  num? _idPicInspector;
+  num? _idPicLaboratory;
   String? _picLaboratory;
   String? _picInspector;
   String? _destinationCountry;
@@ -677,6 +701,8 @@ Detail copyWith({  num? id,
   String? startDateOfAttendance,
   String? endDateOfAttendance,
   dynamic lokasiKerja,
+  num? idPicInspector,
+  num? idPicLaboratory,
   String? picLaboratory,
   String? picInspector,
   String? destinationCountry,
@@ -727,6 +753,8 @@ Detail copyWith({  num? id,
   startDateOfAttendance: startDateOfAttendance ?? _startDateOfAttendance,
   endDateOfAttendance: endDateOfAttendance ?? _endDateOfAttendance,
   lokasiKerja: lokasiKerja ?? _lokasiKerja,
+  idPicInspector: idPicInspector ?? _idPicInspector,
+  idPicLaboratory: idPicLaboratory ?? _idPicLaboratory,
   picLaboratory: picLaboratory ?? _picLaboratory,
   picInspector: picInspector ?? _picInspector,
   destinationCountry: destinationCountry ?? _destinationCountry,
@@ -778,6 +806,8 @@ Detail copyWith({  num? id,
   String? get startDateOfAttendance => _startDateOfAttendance;
   String? get endDateOfAttendance => _endDateOfAttendance;
   dynamic get lokasiKerja => _lokasiKerja;
+  num? get idPicInspector => _idPicInspector;
+  num? get idPicLaboratory => _idPicLaboratory;
   String? get picLaboratory => _picLaboratory;
   String? get picInspector => _picInspector;
   String? get destinationCountry => _destinationCountry;
@@ -831,6 +861,8 @@ Detail copyWith({  num? id,
     map['start_date_of_attendance'] = _startDateOfAttendance;
     map['end_date_of_attendance'] = _endDateOfAttendance;
     map['lokasi_kerja'] = _lokasiKerja;
+    map['id_pic_laboratory'] = _idPicLaboratory;
+    map['id_pic_inspector'] = _idPicInspector;
     map['pic_laboratory'] = _picLaboratory;
     map['pic_inspector'] = _picInspector;
     map['destination_country'] = _destinationCountry;
@@ -847,4 +879,48 @@ Detail copyWith({  num? id,
     return map;
   }
 
+}
+
+class Laboratory {
+  // int laboratoriumId;
+  // String name;
+  //
+  // factory Laboratory.fromJson(Map<String, dynamic> json) => Laboratory(
+  //   laboratoriumId: json["laboratorium_id"],
+  //   name: json["name"],
+  // );
+  //
+  // Map<String, dynamic> toJson() => {
+  //   "laboratorium_id": laboratoriumId,
+  //   "name": name,
+  // };
+  Laboratory({
+    num? laboratoriumId,
+    String? name,}){
+    _laboratoriumId = laboratoriumId;
+    _name = name;
+  }
+
+  Laboratory.fromJson(dynamic json) {
+    _laboratoriumId = json['laboratorium_id'];
+    _name = json['name'];
+  }
+  num? _laboratoriumId;
+  String? _name;
+  Laboratory copyWith({
+    num? laboratoriumId,
+    String? name,
+  }) => Laboratory(
+    laboratoriumId: laboratoriumId ?? _laboratoriumId,
+    name: name ?? _name,
+  );
+  num? get laboratoriumId => _laboratoriumId;
+  String? get name => _name;
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['laboratorium_id'] = _laboratoriumId;
+    map['name'] = _name;
+    return map;
+  }
 }

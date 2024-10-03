@@ -126,7 +126,7 @@ class HomeScreen extends StatelessWidget{
                                       width: (MediaQuery.sizeOf(context).width / 3) - 36,
                                       child: InkWell(
                                         onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 2});
+                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 2, 'employeeId' : controller.userData.value?.id ?? 0});
                                         },
                                         child: Column(
                                           children: [
@@ -153,7 +153,7 @@ class HomeScreen extends StatelessWidget{
                                       width: (MediaQuery.sizeOf(context).width / 3) - 32,
                                       child: InkWell(
                                         onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 3});
+                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 3, 'employeeId': controller.userData.value?.id ?? 0});
                                         },
                                         child: Column(
                                           children: [
@@ -180,7 +180,7 @@ class HomeScreen extends StatelessWidget{
                                       width: (MediaQuery.sizeOf(context).width / 3) - 36,
                                       child: InkWell(
                                         onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 4});
+                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 4, 'employeeId': controller.userData.value?.id ?? 0});
                                         },
                                         child: Column(
                                           children: [
@@ -215,7 +215,7 @@ class HomeScreen extends StatelessWidget{
                                       width: (MediaQuery.sizeOf(context).width / 3) - 36,
                                       child: InkWell(
                                         onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 6});
+                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 6, 'employeeId': controller.userData.value?.id ?? 0});
                                         },
                                         child: Column(
                                           children: [
@@ -242,7 +242,7 @@ class HomeScreen extends StatelessWidget{
                                       width: (MediaQuery.sizeOf(context).width / 3) - 32,
                                       child: InkWell(
                                         onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 5});
+                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 5, 'employeeId': controller.userData.value?.id ?? 0});
                                         },
                                         child: Column(
                                           children: [
@@ -269,7 +269,7 @@ class HomeScreen extends StatelessWidget{
                                       width: (MediaQuery.sizeOf(context).width / 3) - 36,
                                       child: InkWell(
                                         onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 7});
+                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 7, 'employeeId': controller.userData.value?.id ?? 0});
                                         },
                                         child: Column(
                                           children: [

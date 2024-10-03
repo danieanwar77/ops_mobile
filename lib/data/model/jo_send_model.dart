@@ -485,3 +485,98 @@ class Barge {
   }
 
 }
+
+class ActivityAct5Lab {
+  ActivityAct5Lab({
+    num? tHJoId,
+    num? tDJoLaboratoryId,
+    num? mStatuslaboratoryprogresId,
+    String? transDate,
+    String? startActivityTime,
+    String? endActivityTime,
+    int? totalSampleReceived,
+    int? totalSampleAnalyzed,
+    int? totalSamplePreparation,
+    num? createdBy,}){
+    _tHJoId = tHJoId;
+    _tDJoLaboratoryId = tDJoLaboratoryId;
+    _mStatuslaboratoryprogresId = mStatuslaboratoryprogresId;
+    _transDate = transDate;
+    _startActivityTime = startActivityTime;
+    _endActivityTime = endActivityTime;
+    _totalSampleReceived = totalSampleReceived;
+    _totalSampleAnalyzed = totalSampleAnalyzed;
+    _totalSamplePreparation = totalSamplePreparation;
+    _createdBy = createdBy;
+  }
+
+  ActivityAct5Lab.fromJson(dynamic json) {
+    _tHJoId = json['t_h_jo_id'];
+    _tDJoLaboratoryId = json['t_d_jo_laboratory_id'];
+    _mStatuslaboratoryprogresId = json['m_statuslaboratoryprogres_id'];
+    _transDate = json['trans_date'];
+    _startActivityTime = json['start_activity_time'];
+    _endActivityTime = json['end_activity_time'];
+    _totalSampleReceived = json['total_sample_received'];
+    _totalSampleAnalyzed = json['total_sample_analyzed'];
+    _totalSamplePreparation = json['total_sample_preparation'];
+    _createdBy = json['created_by'];
+  }
+  num? _tHJoId;
+  num? _tDJoLaboratoryId;
+  num? _mStatuslaboratoryprogresId;
+  String? _transDate;
+  String? _startActivityTime;
+  String? _endActivityTime;
+  int? _totalSampleReceived;
+  int? _totalSampleAnalyzed;
+  int? _totalSamplePreparation;
+  num? _createdBy;
+  ActivityAct5Lab copyWith({  num? tHJoId,
+    num? tDJoLaboratoryId,
+    num? mStatuslaboratoryprogresId,
+    String? transDate,
+    String? startActivityTime,
+    String? endActivityTime,
+    int? totalSampleReceived,
+    int? totalSampleAnalyzed,
+    int? totalSamplePreparation,
+    num? createdBy,
+  }) => ActivityAct5Lab(  tHJoId: tHJoId ?? _tHJoId,
+    tDJoLaboratoryId: tDJoLaboratoryId ?? _tDJoLaboratoryId,
+    mStatuslaboratoryprogresId: mStatuslaboratoryprogresId ?? _mStatuslaboratoryprogresId,
+    transDate: transDate ?? _transDate,
+    startActivityTime: startActivityTime ?? _startActivityTime,
+    endActivityTime: endActivityTime ?? _endActivityTime,
+    totalSampleReceived: totalSampleReceived ?? _totalSampleReceived,
+    totalSampleAnalyzed: totalSampleAnalyzed ?? _totalSampleAnalyzed,
+    totalSamplePreparation: totalSamplePreparation ?? _totalSamplePreparation,
+    createdBy: createdBy ?? _createdBy,
+  );
+  num? get tHJoId => _tHJoId;
+  num? get tDJoLaboratoryId => _tDJoLaboratoryId;
+  num? get mStatuslaboratoryprogresId => _mStatuslaboratoryprogresId;
+  String? get transDate => _transDate;
+  String? get startActivityTime => _startActivityTime;
+  String? get endActivityTime => _endActivityTime;
+  int? get totalSampleReceived => _totalSampleReceived;
+  int? get totalSampleAnalyzed => _totalSampleAnalyzed;
+  int? get totalSamplePreparation => _totalSamplePreparation;
+  num? get createdBy => _createdBy;
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['t_h_jo_id'] = _tHJoId;
+    map['t_d_jo_laboratory_id'] = _tDJoLaboratoryId;
+    map['m_statuslaboratoryprogres_id'] = _mStatuslaboratoryprogresId;
+    map['trans_date'] = _transDate;
+    map['start_activity_time'] = _startActivityTime;
+    map['end_activity_time'] = _endActivityTime;
+    map['total_sample_received'] = _totalSampleReceived;
+    map['total_sample_analyzed'] = _totalSampleAnalyzed;
+    map['total_sample_preparation'] = _totalSamplePreparation;
+    map['created_by'] = _createdBy;
+    return map;
+  }
+
+}

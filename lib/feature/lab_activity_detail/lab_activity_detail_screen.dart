@@ -64,7 +64,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                         const VerticalDivider(width: 1),
                                         const SizedBox(width:16),
                                         Expanded( child:
-                                        Text('-',
+                                        Text(controller.prelim.value ?? '-',
                                           style: const TextStyle(
                                             fontSize: 14,
                                           ),
@@ -88,7 +88,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                         const VerticalDivider(width: 1),
                                         const SizedBox(width:16),
                                         Expanded( child:
-                                        Text('-',
+                                        Text('${controller.tat.value.toString() ??  '-'} Hours',
                                           style: const TextStyle(
                                             fontSize: 14,
                                           ),
@@ -122,7 +122,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                 ),
                                               ),
                                               const SizedBox(width: 8),
-                                              Container(
+                                              (controller.activityLabStage == 1 ) ? Container(
                                                   padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                                                   decoration: BoxDecoration(
                                                     color: primaryColor,
@@ -133,16 +133,16 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                           color: Colors.white
                                                       )
                                                   )
-                                              ),
+                                              ) : const SizedBox(),
                                               Spacer(),
-                                              IconButton(
+                                              (controller.activityLabStage < 6 ) ? IconButton(
                                                   onPressed: (){
                                                     controller.activityLabStage < 5 ?
                                                     controller.drawerDailyActivityLab()
                                                     : controller.drawerDailyActivity5Lab();
                                                   },
                                                   icon: Image.asset('assets/icons/addactivity.png', height: 32,)
-                                              )
+                                              ) : const SizedBox()
                                             ]
                                         ),
                                         const SizedBox(height: 16),
@@ -568,148 +568,161 @@ class LabActivityDetailScreen extends StatelessWidget{
                                               ) : const SizedBox(),
                                             ]
                                         ) : const SizedBox(),
-                                        controller.dataListActivityLab5.value.isNotEmpty ? Column(
+                                        controller.activity5LabListStages.value.isNotEmpty ? Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              const Text('Stage 5: Issued Analyzed Result',
-                                                style: TextStyle(
-                                                    color: green,
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w700
-                                                ),
+                                          children: [
+                                            const Text('Stage 5: Issued Analyzed Result',
+                                              style: TextStyle(
+                                                  color: green,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w700
                                               ),
-                                              const SizedBox(height: 8),
-                                              Column(
-                                                  children:[
-                                                    Row(
+                                            ),
+                                            const SizedBox(height: 8),
+                                            ListView.builder(
+                                                physics: NeverScrollableScrollPhysics(),
+                                                shrinkWrap: true,
+                                                itemCount: controller.activity5LabListStages.value.length,
+                                                itemBuilder: (context, index){
+                                                  var activity = controller.activity5LabListStages.value[index];
+                                                  return Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
                                                       children: [
-                                                        Expanded( child:
-                                                        Text('Activity Date',
-                                                          style: TextStyle(
-                                                              fontSize: 14,
-                                                              fontWeight: FontWeight.w700
-                                                          ),
-                                                        ),
-                                                        ),
-                                                        VerticalDivider(width: 1),
-                                                        SizedBox(width:16),
-                                                        Expanded( child:
-                                                        Text('-',
-                                                          style: TextStyle(
-                                                            fontSize: 14,
-                                                          ),
-                                                        ),
+                                                        Column(
+                                                            children:[
+                                                              Row(
+                                                                children: [
+                                                                  Expanded( child:
+                                                                  Text('Activity Date',
+                                                                    style: TextStyle(
+                                                                        fontSize: 14,
+                                                                        fontWeight: FontWeight.w700
+                                                                    ),
+                                                                  ),
+                                                                  ),
+                                                                  VerticalDivider(width: 1),
+                                                                  SizedBox(width:16),
+                                                                  Expanded( child:
+                                                                  Text(activity.transDate ?? '-',
+                                                                    style: TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
+                                                                  ),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                              const Divider(
+                                                                  thickness: 0.4
+                                                              ),
+                                                              Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    child:
+                                                                    Text('Activity Time',
+                                                                      style: TextStyle(
+                                                                          fontSize: 14,
+                                                                          fontWeight: FontWeight.w700
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  VerticalDivider(width: 1),
+                                                                  SizedBox(width:16),
+                                                                  Expanded(
+                                                                    child:
+                                                                    Text('${activity.startActivityTime ?? '-'} - ${activity.endActivityTime ?? '-'}',
+                                                                      style: TextStyle(
+                                                                        fontSize: 14,
+                                                                      ),
+                                                                    ),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                              const Divider(
+                                                                  thickness: 0.4
+                                                              ),
+                                                              Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    child:
+                                                                    Text('Total Sample Received',
+                                                                      style: TextStyle(
+                                                                          fontSize: 14,
+                                                                          fontWeight: FontWeight.w700
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  VerticalDivider(width: 1),
+                                                                  SizedBox(width:16),
+                                                                  Expanded(
+                                                                    child:
+                                                                    Text(activity.totalSampleReceived.toString() ?? '-',
+                                                                      style: TextStyle(
+                                                                        fontSize: 14,
+                                                                      ),
+                                                                    ),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                              const Divider(
+                                                                  thickness: 0.4
+                                                              ),
+                                                              Row(
+                                                                children: [
+                                                                  Expanded( child:
+                                                                  Text('Total Sample Preparation',
+                                                                    style: TextStyle(
+                                                                        fontSize: 14,
+                                                                        fontWeight: FontWeight.w700
+                                                                    ),
+                                                                  ),
+                                                                  ),
+                                                                  VerticalDivider(width: 1),
+                                                                  SizedBox(width:16),
+                                                                  Expanded( child:
+                                                                  Text(activity.totalSamplePreparation.toString() ?? '-',
+                                                                    style: TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
+                                                                  ),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                              const Divider(
+                                                                  thickness: 0.4
+                                                              ),
+                                                              Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    child:
+                                                                    Text('Total Sample Analyzed',
+                                                                      style: TextStyle(
+                                                                          fontSize: 14,
+                                                                          fontWeight: FontWeight.w700
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  VerticalDivider(width: 1),
+                                                                  SizedBox(width:16),
+                                                                  Expanded(
+                                                                    child:
+                                                                    Text(activity.totalSampleAnalyzed.toString() ?? '-',
+                                                                      style: TextStyle(
+                                                                        fontSize: 14,
+                                                                      ),
+                                                                    ),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                              const Divider(
+                                                                  thickness: 0.4
+                                                              ),
+                                                            ]
                                                         )
-                                                      ],
-                                                    ),
-                                                    const Divider(
-                                                        thickness: 0.4
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child:
-                                                          Text('Activity Time',
-                                                            style: TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight: FontWeight.w700
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        VerticalDivider(width: 1),
-                                                        SizedBox(width:16),
-                                                        Expanded(
-                                                          child:
-                                                          Text('-',
-                                                            style: TextStyle(
-                                                              fontSize: 14,
-                                                            ),
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    const Divider(
-                                                        thickness: 0.4
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child:
-                                                          Text('Total Sample Received',
-                                                            style: TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight: FontWeight.w700
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        VerticalDivider(width: 1),
-                                                        SizedBox(width:16),
-                                                        Expanded(
-                                                          child:
-                                                          Text('-',
-                                                            style: TextStyle(
-                                                              fontSize: 14,
-                                                            ),
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    const Divider(
-                                                        thickness: 0.4
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Expanded( child:
-                                                        Text('Total Sample Preparation',
-                                                          style: TextStyle(
-                                                              fontSize: 14,
-                                                              fontWeight: FontWeight.w700
-                                                          ),
-                                                        ),
-                                                        ),
-                                                        VerticalDivider(width: 1),
-                                                        SizedBox(width:16),
-                                                        Expanded( child:
-                                                        Text('-',
-                                                          style: TextStyle(
-                                                            fontSize: 14,
-                                                          ),
-                                                        ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    const Divider(
-                                                        thickness: 0.4
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child:
-                                                          Text('Total Sample Analyzed',
-                                                            style: TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight: FontWeight.w700
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        VerticalDivider(width: 1),
-                                                        SizedBox(width:16),
-                                                        Expanded(
-                                                          child:
-                                                          Text('-',
-                                                            style: TextStyle(
-                                                              fontSize: 14,
-                                                            ),
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    const Divider(
-                                                        thickness: 0.4
-                                                    ),
-                                                  ]
-                                              )
-                                            ]
+                                                      ]
+                                                  );
+                                                }
+                                            )
+                                          ]
                                         ) : const SizedBox()
                                       ]
                                   )

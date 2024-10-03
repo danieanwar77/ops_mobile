@@ -6,6 +6,7 @@ class JoListDailyActivity6 {
   JoListDailyActivity6({
       num? httpCode,
       DataListActivity6? data,
+      Activity6Attachments? image,
       String? message,}){
     _httpCode = httpCode;
     _data = data;
@@ -15,20 +16,25 @@ class JoListDailyActivity6 {
   JoListDailyActivity6.fromJson(dynamic json) {
     _httpCode = json['http_code'];
     _data = json['data'] != null ? DataListActivity6.fromJson(json['data']) : null;
+    _image = json['image'] != null ? Activity6Attachments.fromJson(json['image']) : null;
     _message = json['message'];
   }
   num? _httpCode;
   DataListActivity6? _data;
+  Activity6Attachments? _image;
   String? _message;
 JoListDailyActivity6 copyWith({  num? httpCode,
   DataListActivity6? data,
+  Activity6Attachments? image,
   String? message,
 }) => JoListDailyActivity6(  httpCode: httpCode ?? _httpCode,
   data: data ?? _data,
+  image: image ?? _image,
   message: message ?? _message,
 );
   num? get httpCode => _httpCode;
   DataListActivity6? get data => _data;
+  Activity6Attachments? get image => _image;
   String? get message => _message;
 
   Map<String, dynamic> toJson() {
@@ -36,6 +42,9 @@ JoListDailyActivity6 copyWith({  num? httpCode,
     map['http_code'] = _httpCode;
     if (_data != null) {
       map['data'] = _data?.toJson();
+    }
+    if (_image != null) {
+      map['image'] = _image?.toJson();
     }
     map['message'] = _message;
     return map;
@@ -364,4 +373,89 @@ class DataActivity6 {
     return map;
   }
 
+}
+
+class Activity6Attachments {
+  // Activity6Attachments({
+  //   Attach? attach
+  // }){
+  //   _attach = attach;
+  // }
+  //
+  // Activity6Attachments.fromJson(dynamic json) {
+  //   _attach = json['attach'];
+  // }
+  // Attach? _attach;
+  // Activity6Attachments copyWith({  Attach? attach,
+  // }) => Activity6Attachments(  attach: attach ?? _attach,
+  // );
+  // Attach? get attach => _attach;
+  //
+  // Map<String, dynamic> toJson() {
+  //   final map = <String, dynamic>{};
+  //   map['attach'] = _attach;
+  //   return map;
+  // }
+
+  Activity6Attachments({
+    List<Attach>? attach,}){
+    _attach = attach;
+  }
+
+  Activity6Attachments.fromJson(dynamic json) {
+    if (json['attach'] != null) {
+      _attach = [];
+      json['attach'].forEach((v) {
+        _attach?.add(Attach.fromJson(v));
+      });
+    }
+  }
+  List<Attach>? _attach;
+
+  Activity6Attachments copyWith({
+    List<Attach>? attach,
+  }) => Activity6Attachments(
+    attach: attach ?? _attach,
+  );
+
+  List<Attach>? get attach => _attach;
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    if (_attach != null) {
+      map['attach'] = _attach?.map((v) => v.toJson()).toList();
+    }
+    return map;
+  }
+}
+
+class Attach {
+  Attach({
+    String? pathName,
+    String? description,
+  }){
+    _pathName = pathName;
+    _description = description;
+  }
+
+  Attach.fromJson(dynamic json) {
+    _pathName = json['path_name'];
+    _description = json['description'];
+  }
+  String? _pathName;
+  String? _description;
+  Attach copyWith({  String? pathName,
+    String? description,
+  }) => Attach(  pathName: pathName ?? _pathName,
+    description: description ?? _description
+  );
+  String? get pathName => _pathName;
+  String? get description => _description;
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['path_name'] = _pathName;
+    map['description'] = _description;
+    return map;
+  }
 }

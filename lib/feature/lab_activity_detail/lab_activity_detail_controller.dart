@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -11,16 +12,24 @@ import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/jo_list_daily_activity_lab.dart';
 import 'package:ops_mobile/data/model/jo_list_daily_activity_lab5.dart';
+import 'package:ops_mobile/data/model/response_jo_insert_activity5_lab.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity_lab.dart';
+import 'package:ops_mobile/data/storage.dart';
+
+import '../../data/model/user_model.dart';
 
 class LabActivityDetailController extends BaseController{
 
+  Rx<Data?> userData = Rx(Data());
+  bool isLoading = false;
   RxList<DataActivityLab> dataListActivityLab = RxList();
   RxList<DataActivityLab5> dataListActivityLab5 = RxList();
   RxList<File> dailyActivityLabPhotos = RxList();
   RxInt adddailyActivityLabPhotosCount = RxInt(1);
   RxList<ActivityLab> activityLabList = RxList();
   RxList<ActivityLab> activityLabListStages = RxList();
+  RxList<ActivityAct5Lab> activity5LabList = RxList();
+  RxList<ActivityAct5Lab> activity5LabListStages = RxList();
   RxList<TextEditingController> activityLabListTextController = RxList();
   int activityLabStage = 1;
   List<String> labStagesName = ['Sample on Delivery', 'Sample Received', 'Preparation for Analyze', 'Analyze on Progress', 'Issued Analyzed Result'];
@@ -35,54 +44,128 @@ class LabActivityDetailController extends BaseController{
   TextEditingController activityRemarks = TextEditingController();
   RxBool editActivityMode = false.obs;
   RxInt editActivityIndex = 0.obs;
+  RxString prelim = ''.obs;
+  RxInt tat = 0.obs;
+  TextEditingController sampleReceived = TextEditingController();
+  TextEditingController samplePreparation = TextEditingController();
+  TextEditingController sampleAnalyzed = TextEditingController();
 
   @override
   void onInit() async {
+    userData.value = Data.fromJson(jsonDecode(await StorageCore().storage.read('login')));
     var argument = await Get.arguments;
     id = argument['id'];
     labId = argument['labId'];
-    dataListActivityLab.value = argument['dataActivityLab'] ?? [];
-    dataListActivityLab5.value = argument['dataActivityLab5'] ?? [];
-
-    if(dataListActivityLab.value.isNotEmpty){
-      for(var i = 1; i < 5; i++){
-        final List<DataActivityLab> dataLab = dataListActivityLab.value.where((data) => data.mStatuslaboratoryprogresId == i).toList();
-        if(dataLab.isNotEmpty){
-          dataLab.forEach((data){
-            activityLabListStages.value.add(ActivityLab(
-              tHJoId: id,
-              tDJoLaboratoryId: data.dJoLaboratoryId,
-              mStatuslaboratoryprogresId: data.mStatuslaboratoryprogresId,
-              transDate: data.transDate,
-              startActivityTime: data.startActivityTime,
-              endActivityTime: data.endActivityTime,
-              activity: data.activity,
-              createdBy: 0,
-              remarks: data.remarks,
-            ));
-          });
-        }
-      }
-    }
-
-
-    dataListActivityLab.value.forEach((data){
-      activityLabList.value.add(ActivityLab(
-        tHJoId: id,
-        tDJoLaboratoryId: labId,
-        mStatuslaboratoryprogresId: activityLabStage,
-        transDate: activityDate.text,
-        startActivityTime: activityStartTime.text,
-        endActivityTime: activityEndTime.text,
-        activity: activityText.text,
-        createdBy: 0,
-        remarks: '',
-      ));
-    });
-
-    debugPrint('data activity lab : ${jsonEncode(dataListActivityLab.value)}');
-    debugPrint('data activity lab 5 : ${jsonEncode(dataListActivityLab5.value)}');
+    debugPrint('arguments lab: id = $id, labId = $labId');
+    isLoading == true;
+    await getData();
+    update();
     super.onInit();
+  }
+
+  Future<void> getData() async{
+    await getJoDailyActivityLab();
+    await getJoDailyActivityLab5();
+    isLoading == false;
+    update();
+  }
+
+  Future<void> getJoDailyActivityLab() async{
+    var response = await repository.getJoListDailyActivityLab(id,labId) ?? JoListDailyActivityLab();
+    debugPrint('Jo Daily Activity Lab: ${jsonEncode(response)}');
+    dataListActivityLab.value = response?.data?.data ?? [];
+    if(dataListActivityLab.value.isNotEmpty){
+      dataListActivityLab.value.forEach((item){
+        activityLabListStages.value.add(ActivityLab(
+          tHJoId: id,
+          tDJoLaboratoryId: item.dJoLaboratoryId,
+          mStatuslaboratoryprogresId: item.mStatuslaboratoryprogresId,
+          transDate: item.transDate,
+          startActivityTime: item.startActivityTime,
+          endActivityTime: item.endActivityTime,
+          activity: item.activity,
+          createdBy: 0,
+          remarks: item.remarks,
+        )
+        );
+      });
+    }
+    activityLabStage = activityLabStage + int.parse(activityLabListStages.value.last.mStatuslaboratoryprogresId.toString());
+    update();
+  }
+
+  Future<void> getJoDailyActivityLab5() async{
+    var response = await repository.getJoListDailyActivityLab5(6) ?? JoListDailyActivityLab5();
+    debugPrint('JO Daily Activity Lab 5: ${jsonEncode(response)}');
+    dataListActivityLab5.value = response?.data?.data ?? [];
+    if(dataListActivityLab5.value.isNotEmpty){
+      dataListActivityLab5.value.forEach((item){
+        activity5LabListStages.value.add(ActivityAct5Lab(
+          tHJoId: id,
+          tDJoLaboratoryId: labId,
+          mStatuslaboratoryprogresId: item.mStatuslaboratoryprogresId,
+          transDate: item.transDate,
+          startActivityTime: item.startActivityTime,
+          endActivityTime: item.endActivityTime,
+          totalSampleReceived: int.parse(item.totalSampleReceived.toString()),
+          totalSampleAnalyzed: int.parse(item.totalSampleAnalyzed.toString()),
+          totalSamplePreparation: int.parse(item.totalSamplePreparation.toString()),
+          createdBy: 0,
+        ));
+      });
+    }
+    countPrelimTat();
+    activityLabStage++;
+    update();
+  }
+
+  void countPrelimTat(){
+    prelim.value = activity5LabListStages.value.first.transDate ?? '';
+    var dateFormat = DateFormat('yyyy-MM-dd');
+    var format = DateFormat('HH:mm');
+    var startDate = dateFormat.parse(activityLabListStages.value.first.transDate!);
+    var endDate = dateFormat.parse(activity5LabListStages.value.first.transDate!);
+
+    if(startDate == endDate){
+      var startDateTime = format.parse(activityLabListStages.value.first.startActivityTime!);
+      var endDateTime = format.parse(activity5LabListStages.value.first.endActivityTime!);
+      var countHours = getDiffHours(startDateTime, endDateTime);
+      debugPrint('check count hours $countHours');
+      tat.value = countHours;
+    } else {
+      var startDateTime = format.parse(activityLabListStages.value.first.startActivityTime!);
+      var endDateTime = format.parse(activity5LabListStages.value.first.endActivityTime!);
+      var startHourDay = format.parse('24:00:00');
+      var endHourDay = format.parse('00:00:00');
+
+      var startEndHour = getDiffHours(startDateTime, startHourDay);
+      var endEndHour = getDiffHours(endHourDay, endDateTime);
+
+      var difference = daysBetween(startDate, endDate);
+      var countHours = 0;
+
+        countHours = ((difference - 2) * 24) + (startEndHour + endEndHour);
+
+      // debugPrint('check > start : $startEndHour, end: $endEndHour');
+      // debugPrint('check count hours $countHours');
+
+      tat.value = countHours;
+    }
+  }
+
+  int getDiffHours(DateTime start, DateTime end) {
+
+      Duration diff = end.difference(start);
+      final hours = diff.inHours;
+      final minutes = diff.inMinutes % 60;
+      //debugPrint('$hours hours $minutes minutes');
+      return hours;
+  }
+
+  int daysBetween(DateTime from, DateTime to) {
+    from = DateTime(from.year, from.month, from.day);
+    to = DateTime(to.year, to.month, to.day);
+    return (to.difference(from).inHours / 24).round();
   }
 
   Future cameraImage() async {
@@ -164,7 +247,7 @@ class LabActivityDetailController extends BaseController{
       startActivityTime: activityStartTime.text,
       endActivityTime: activityEndTime.text,
       activity: activityText.text,
-      createdBy: 0,
+      createdBy: userData.value?.id ?? 0,
       remarks: '',
     ));
 
@@ -258,7 +341,6 @@ class LabActivityDetailController extends BaseController{
     } else if(activityLabList.value.where((data) => data.mStatuslaboratoryprogresId == activityLabStage).toList().isEmpty) {
       return 'failed';
     }
-
   }
 
   Future<void> postInsertActivityLab(data) async {
@@ -271,6 +353,7 @@ class LabActivityDetailController extends BaseController{
         GetBuilder(
           init: LabActivityDetailController(),
           builder: (controller) => Container(
+              margin: EdgeInsets.only(top: 24),
               padding: EdgeInsets.all(24),
               width: double.infinity,
               decoration: BoxDecoration(
@@ -611,7 +694,7 @@ class LabActivityDetailController extends BaseController{
                       Expanded(
                         child: ElevatedButton(
                             onPressed: () {
-                              checkActivityList();
+                              Get.back();
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
@@ -693,8 +776,8 @@ class LabActivityDetailController extends BaseController{
               style: TextStyle(
                   fontWeight: FontWeight.bold),
             ),
-            onPressed: () {
-              var result = addActivityStages();
+            onPressed: () async {
+              var result = await addActivityStages();
               if(result == 'success'){
                 Get.back();
                 openDialog("Success", "Activity Stage ${activityLabStage-1} berhasil ditambahkan");
@@ -709,6 +792,31 @@ class LabActivityDetailController extends BaseController{
     );
   }
 
+  Future<String?> addActivity5LabStages() async {
+    var data = ActivityAct5Lab(
+      tHJoId: id,
+      tDJoLaboratoryId: labId,
+      mStatuslaboratoryprogresId: activityLabStage,
+      transDate: '2024-10-03',
+      startActivityTime: '02:30:00',
+      endActivityTime: '03:30:00',
+      totalSampleReceived: int.parse(sampleReceived.text),
+      totalSampleAnalyzed: int.parse(sampleAnalyzed.text),
+      totalSamplePreparation: int.parse(samplePreparation.text),
+      createdBy: userData.value?.id ?? 0,
+    );
+    activity5LabList.value.add(data);
+    postInsertActivity5Lab(activity5LabList.value);
+    activity5LabListStages.value.add(data);
+    countPrelimTat();
+    return 'success';
+  }
+
+  Future<void> postInsertActivity5Lab(data) async {
+    var response = await repository.insertActivity5Lab(data) ?? ResponseJoInsertActivity5Lab();
+    debugPrint('insert activity 5 Lab response: ${jsonEncode(response.message)}');
+  }
+
   void drawerDailyActivity5Lab(){
     Get.bottomSheet(
         GetBuilder(
@@ -720,7 +828,7 @@ class LabActivityDetailController extends BaseController{
                   color: Colors.white,
                   borderRadius: BorderRadius.only(topRight: Radius.circular(24), topLeft: Radius.circular(24))
               ),
-              child: Obx(() => Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
@@ -744,6 +852,7 @@ class LabActivityDetailController extends BaseController{
                           ),
                           const SizedBox(height: 16,),
                           TextFormField(
+                            controller: sampleReceived,
                             cursorColor: onFocusColor,
                             style: const TextStyle(color: onFocusColor),
                             decoration: InputDecoration(
@@ -762,6 +871,7 @@ class LabActivityDetailController extends BaseController{
                           ),
                           const SizedBox(height: 16,),
                           TextFormField(
+                            controller: samplePreparation,
                             cursorColor: onFocusColor,
                             style: const TextStyle(color: onFocusColor),
                             decoration: InputDecoration(
@@ -780,6 +890,7 @@ class LabActivityDetailController extends BaseController{
                           ),
                           const SizedBox(height: 16,),
                           TextFormField(
+                            controller: sampleAnalyzed,
                             cursorColor: onFocusColor,
                             style: const TextStyle(color: onFocusColor),
                             decoration: InputDecoration(
@@ -806,7 +917,7 @@ class LabActivityDetailController extends BaseController{
                       Expanded(
                         child: ElevatedButton(
                             onPressed: () {
-
+                              Get.back();
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
@@ -833,7 +944,7 @@ class LabActivityDetailController extends BaseController{
                       Expanded(
                         child: ElevatedButton(
                             onPressed: () {
-
+                              addActivity5LabStageConfirm();
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: primaryColor,
@@ -862,8 +973,44 @@ class LabActivityDetailController extends BaseController{
               ),
               )
           ),
-        ),
         isScrollControlled: true
+    );
+  }
+
+  void addActivity5LabStageConfirm() {
+    Get.dialog(
+      AlertDialog(
+        title: Text('Attention',
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: primaryColor
+          ),
+        ),
+        content: Text('Apakah benar anda akan menyimpan perubahan stage issued analyzed result ini? pastikan data yg anda input benar.'),
+        actions: [
+          TextButton(
+            child: const Text("Close"),
+            onPressed: () => Get.back(),
+          ),
+          TextButton(
+            child: const Text("OK",
+              style: TextStyle(
+                  fontWeight: FontWeight.bold),
+            ),
+            onPressed: () async {
+              var result = await addActivity5LabStages();
+              if(result == 'success'){
+                Get.back();
+                openDialog("Success", "Activity Stage ${activityLabStage-1} berhasil ditambahkan");
+              } else {
+                Get.back();
+                openDialog("Failed", "Activity Stage $activityLabStage masih kosong atau belum diinput");
+              }
+            },
+          ),
+        ],
+      ),
     );
   }
 

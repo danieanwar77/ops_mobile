@@ -36,6 +36,8 @@ class JoDetailController extends BaseController {
   Rx<Data?> userData = Rx(Data());
 
   final PathProviderPlatform providerAndroid = PathProviderPlatform.instance;
+  int picInspector = 0;
+  int picLaboratory = 0;
   bool isLoadingJO = false;
   Rx<DataDetail> dataJoDetail = Rx(DataDetail());
   Rx<DataPIC> dataJoPIC = Rx(DataPIC());
@@ -43,6 +45,7 @@ class JoDetailController extends BaseController {
   Rx<DataListActivity> dataListActivity = Rx(DataListActivity());
   Rx<DataListActivity5> dataListActivity5 = Rx(DataListActivity5());
   Rx<DataListActivity6> dataListActivity6 = Rx(DataListActivity6());
+  Rx<Activity6Attachments> dataListActivity6Attachments = Rx(Activity6Attachments());
   Rx<DataListActivityLab> dataListActivityLab = Rx(DataListActivityLab());
   Rx<DataListActivityLab5> dataListActivityLab5 = Rx(DataListActivityLab5());
   RxList<String> barges = RxList();
@@ -53,7 +56,7 @@ class JoDetailController extends BaseController {
   RxList<TextEditingController> dailyActivityPhotosDesc = RxList();
   RxInt adddailyActivityPhotosCount = RxInt(1);
   Rx<TextEditingController> dailyActivityPhotosDescEdit = TextEditingController().obs;
-  RxList<String> labs = RxList();
+  RxList<Laboratory> labs = RxList();
   RxList<Activity> activityList = RxList();
   RxList<Activity> activityListStages = RxList();
   RxList<TextEditingController> activityListTextController = RxList();
@@ -121,13 +124,16 @@ class JoDetailController extends BaseController {
 
   Future<void> getData() async{
     await getJoDetail();
+    picInspector = int.parse(dataJoDetail.value.detail?.idPicInspector != null ? dataJoDetail.value.detail!.idPicInspector.toString() : '0');
+    picLaboratory = int.parse(dataJoDetail.value.detail?.idPicLaboratory != null ? dataJoDetail.value.detail!.idPicLaboratory.toString() : '0');
+    debugPrint('id pic inspector: $picInspector , laboratory: $picLaboratory');
     await getJoPIC();
     await getJoDailyPhoto();
     await getJoDailyActivity();
     await getJoDailyActivity5();
     await getJoDailyActivity6();
-    await getJoDailyActivityLab();
-    await getJoDailyActivityLab5();
+    // await getJoDailyActivityLab();
+    // await getJoDailyActivityLab5();
     isLoadingJO == false;
     update();
   }
@@ -135,11 +141,16 @@ class JoDetailController extends BaseController {
   Future<void> getJoDetail() async{
     var response = await repository.getJoDetail(id) ?? JoDetailModel();
     debugPrint(jsonEncode(response));
+    debugPrint('JO Laboratories: ${jsonEncode(response.data?.laboratory)}');
     dataJoDetail.value = response?.data ?? DataDetail();
+    var labo = response.data?.laboratory ?? [];
     barges.value = dataJoDetail.value.detail?.barge?.split('|') ?? [];
     barges.value.forEach((_){
       bargesController.value.add(TextEditingController());
     });
+    if(labo!.isNotEmpty){
+      labs.value = labo!;
+    }
     bargesCount = barges.value.length;
     activity5bargesCount = bargesCount;
     activity5Barges.value = barges.value;
@@ -242,28 +253,50 @@ class JoDetailController extends BaseController {
   Future<void> getJoDailyActivity6() async{
     var response = await repository.getJoListDailyActivity6(id) ?? JoListDailyActivity6();
     debugPrint('JO Daily Activity 6: ${jsonEncode(response)}');
+    debugPrint('JO Daily Activity 6 Attachments: ${jsonEncode(response.image)}');
     dataListActivity6.value = response?.data ?? DataListActivity6();
+    dataListActivity6Attachments.value = response?.image ?? Activity6Attachments();
+    var data = dataListActivity6.value;
+    var dataAttach = dataListActivity6Attachments.value;
+    data.data?.forEach((act){
+      activity6ListStages.value.add(Activity(
+        tHJoId: act.tHJoId,
+        mStatusinspectionstagesId: act.mStatusinspectionstagesId,
+        transDate: act.transDate,
+        startActivityTime: act.startActivityTime,
+        endActivityTime: act.endActivityTime,
+        activity: act.activity,
+        createdBy: 0,
+        remarks: act.remarks
+      ));
+    });
+    dataAttach.attach?.forEach((attach)async{
+      activity6Attachments.value = [];
+      final File data = await getImagesFromUrl(attach.pathName!);
+      activity6Attachments.value.add(data);
+
+    });
   }
 
-  Future<void> getJoDailyActivityLab() async{
-    var response = await repository.getJoListDailyActivityLab(6) ?? JoListDailyActivityLab();
-    debugPrint('Jo Daily Activity Lab: ${jsonEncode(response)}');
-    dataListActivityLab.value = response?.data ?? DataListActivityLab();
-    dataListActivityLab.value.data!.forEach((item){
-      labs.value.add(item.laboratoriumName!);
-    });
-    update();
-  }
-
-  Future<void> getJoDailyActivityLab5() async{
-    var response = await repository.getJoListDailyActivityLab5(6) ?? JoListDailyActivityLab5();
-    debugPrint('JO Daily Activity Lab 5: ${jsonEncode(response)}');
-    dataListActivityLab5.value = response?.data ?? DataListActivityLab5();
-    dataListActivityLab5.value.data!.forEach((item){
-      labs.value.add(item.laboratoriumName!);
-    });
-    update();
-  }
+  // Future<void> getJoDailyActivityLab() async{
+  //   var response = await repository.getJoListDailyActivityLab(6) ?? JoListDailyActivityLab();
+  //   debugPrint('Jo Daily Activity Lab: ${jsonEncode(response)}');
+  //   dataListActivityLab.value = response?.data ?? DataListActivityLab();
+  //   dataListActivityLab.value.data!.forEach((item){
+  //     labs.value.add(item.laboratoriumName!);
+  //   });
+  //   update();
+  // }
+  //
+  // Future<void> getJoDailyActivityLab5() async{
+  //   var response = await repository.getJoListDailyActivityLab5(6) ?? JoListDailyActivityLab5();
+  //   debugPrint('JO Daily Activity Lab 5: ${jsonEncode(response)}');
+  //   dataListActivityLab5.value = response?.data ?? DataListActivityLab5();
+  //   dataListActivityLab5.value.data!.forEach((item){
+  //     labs.value.add(item.laboratoriumName!);
+  //   });
+  //   update();
+  // }
 
   Future cameraImage() async {
     File? image;
@@ -2586,10 +2619,8 @@ class JoDetailController extends BaseController {
     );
   }
 
-  void detailLabActivity(String? lab) {
-    List<DataActivityLab> activityLab = dataListActivityLab.value.data?.where((item)=>item.laboratoriumName == lab).toList() ?? [];
-    List<DataActivityLab5> activityLab5 = dataListActivityLab5.value.data?.where((item)=>item.laboratoriumName == lab).toList() ?? [];
-    Get.to(LabActivityDetailScreen(), arguments: {'dataActivityLab' : [], 'dataActivityLab5' : [], 'id' : id, 'labId' : 6});
+  void detailLabActivity(int? lab) {
+    Get.to(LabActivityDetailScreen(), arguments: {'id' : id, 'labId' : lab});
   }
 
   void addActivityStageConfirm() {

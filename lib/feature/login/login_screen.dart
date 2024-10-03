@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
+import 'package:ops_mobile/feature/get_data/get_data_screen.dart';
 import 'package:ops_mobile/feature/home/home_screen.dart';
 import 'package:ops_mobile/feature/login/login_controller.dart';
 import 'package:ops_mobile/feature/settings/settings_screen.dart';
@@ -137,7 +138,7 @@ class LoginScreen extends StatelessWidget {
                           ),
                           ElevatedButton(
                               onPressed: () {
-
+                                Get.to<void>(const GetDataScreen());
                               },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,

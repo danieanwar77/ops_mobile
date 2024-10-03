@@ -247,17 +247,20 @@ Links copyWith({  dynamic url,
 
 class DataActivityLab5 {
   DataActivityLab5({
-      num? laboratoryStagesId, 
-      num? laboratoryActivityId, 
-      num? dJoLaboratoryId, 
-      num? mStatuslaboratoryprogresId, 
-      String? stagesName, 
-      String? transDate, 
-      dynamic remarks, 
-      String? startActivityTime, 
-      dynamic endActivityTime, 
-      String? activity, 
-      String? laboratoriumName,}){
+    num? laboratoryStagesId,
+    num? laboratoryActivityId,
+    num? dJoLaboratoryId,
+    num? mStatuslaboratoryprogresId,
+    String? stagesName,
+    String? transDate,
+    dynamic remarks,
+    String? startActivityTime,
+    String? endActivityTime,
+    String? activity,
+    num? totalSampleReceived,
+    num? totalSampleAnalyzed,
+    num? totalSamplePreparation,
+    String? laboratoriumName,}){
     _laboratoryStagesId = laboratoryStagesId;
     _laboratoryActivityId = laboratoryActivityId;
     _dJoLaboratoryId = dJoLaboratoryId;
@@ -268,8 +271,11 @@ class DataActivityLab5 {
     _startActivityTime = startActivityTime;
     _endActivityTime = endActivityTime;
     _activity = activity;
+    _totalSampleReceived = totalSampleReceived;
+    _totalSampleAnalyzed = totalSampleAnalyzed;
+    _totalSamplePreparation = totalSamplePreparation;
     _laboratoriumName = laboratoriumName;
-}
+  }
 
   DataActivityLab5.fromJson(dynamic json) {
     _laboratoryStagesId = json['laboratory_stages_id'];
@@ -282,6 +288,9 @@ class DataActivityLab5 {
     _startActivityTime = json['start_activity_time'];
     _endActivityTime = json['end_activity_time'];
     _activity = json['activity'];
+    _totalSampleReceived = json['total_sample_received'];
+    _totalSampleAnalyzed = json['total_sample_analyzed'];
+    _totalSamplePreparation = json['total_sample_preparation'];
     _laboratoriumName = json['laboratorium_name'];
   }
   num? _laboratoryStagesId;
@@ -292,32 +301,41 @@ class DataActivityLab5 {
   String? _transDate;
   dynamic _remarks;
   String? _startActivityTime;
-  dynamic _endActivityTime;
+  String? _endActivityTime;
   String? _activity;
+  num? _totalSampleReceived;
+  num? _totalSampleAnalyzed;
+  num? _totalSamplePreparation;
   String? _laboratoriumName;
   DataActivityLab5 copyWith({  num? laboratoryStagesId,
-  num? laboratoryActivityId,
-  num? dJoLaboratoryId,
-  num? mStatuslaboratoryprogresId,
-  String? stagesName,
-  String? transDate,
-  dynamic remarks,
-  String? startActivityTime,
-  dynamic endActivityTime,
-  String? activity,
-  String? laboratoriumName,
-}) => DataActivityLab5(  laboratoryStagesId: laboratoryStagesId ?? _laboratoryStagesId,
-  laboratoryActivityId: laboratoryActivityId ?? _laboratoryActivityId,
-  dJoLaboratoryId: dJoLaboratoryId ?? _dJoLaboratoryId,
-  mStatuslaboratoryprogresId: mStatuslaboratoryprogresId ?? _mStatuslaboratoryprogresId,
-  stagesName: stagesName ?? _stagesName,
-  transDate: transDate ?? _transDate,
-  remarks: remarks ?? _remarks,
-  startActivityTime: startActivityTime ?? _startActivityTime,
-  endActivityTime: endActivityTime ?? _endActivityTime,
-  activity: activity ?? _activity,
-  laboratoriumName: laboratoriumName ?? _laboratoriumName,
-);
+    num? laboratoryActivityId,
+    num? dJoLaboratoryId,
+    num? mStatuslaboratoryprogresId,
+    String? stagesName,
+    String? transDate,
+    dynamic remarks,
+    String? startActivityTime,
+    String? endActivityTime,
+    String? activity,
+    num? totalSampleReceived,
+    num? totalSampleAnalyzed,
+    num? totalSamplePreparation,
+    String? laboratoriumName,
+  }) => DataActivityLab5(  laboratoryStagesId: laboratoryStagesId ?? _laboratoryStagesId,
+    laboratoryActivityId: laboratoryActivityId ?? _laboratoryActivityId,
+    dJoLaboratoryId: dJoLaboratoryId ?? _dJoLaboratoryId,
+    mStatuslaboratoryprogresId: mStatuslaboratoryprogresId ?? _mStatuslaboratoryprogresId,
+    stagesName: stagesName ?? _stagesName,
+    transDate: transDate ?? _transDate,
+    remarks: remarks ?? _remarks,
+    startActivityTime: startActivityTime ?? _startActivityTime,
+    endActivityTime: endActivityTime ?? _endActivityTime,
+    activity: activity ?? _activity,
+    totalSampleReceived: totalSampleReceived ?? _totalSampleReceived,
+    totalSampleAnalyzed: totalSampleAnalyzed ?? _totalSampleAnalyzed,
+    totalSamplePreparation: totalSamplePreparation ?? _totalSamplePreparation,
+    laboratoriumName: laboratoriumName ?? _laboratoriumName,
+  );
   num? get laboratoryStagesId => _laboratoryStagesId;
   num? get laboratoryActivityId => _laboratoryActivityId;
   num? get dJoLaboratoryId => _dJoLaboratoryId;
@@ -326,8 +344,11 @@ class DataActivityLab5 {
   String? get transDate => _transDate;
   dynamic get remarks => _remarks;
   String? get startActivityTime => _startActivityTime;
-  dynamic get endActivityTime => _endActivityTime;
+  String? get endActivityTime => _endActivityTime;
   String? get activity => _activity;
+  num? get totalSampleReceived => _totalSampleReceived;
+  num? get totalSampleAnalyzed => _totalSampleAnalyzed;
+  num? get totalSamplePreparation => _totalSamplePreparation;
   String? get laboratoriumName => _laboratoriumName;
 
   Map<String, dynamic> toJson() {
@@ -342,6 +363,9 @@ class DataActivityLab5 {
     map['start_activity_time'] = _startActivityTime;
     map['end_activity_time'] = _endActivityTime;
     map['activity'] = _activity;
+    map['total_sample_received'] = _totalSampleReceived;
+    map['total_sample_analyzed'] = _totalSampleAnalyzed;
+    map['total_sample_preparation'] = _totalSamplePreparation;
     map['laboratorium_name'] = _laboratoriumName;
     return map;
   }

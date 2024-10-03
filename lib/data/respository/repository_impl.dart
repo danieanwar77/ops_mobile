@@ -20,6 +20,7 @@ import 'package:ops_mobile/data/model/response_jo_activity_photo.dart';
 import 'package:ops_mobile/data/model/response_jo_change_status.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity5.dart';
+import 'package:ops_mobile/data/model/response_jo_insert_activity5_lab.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity_lab.dart';
 import 'package:ops_mobile/data/model/response_jo_update_activiy_photo.dart';
 import 'package:ops_mobile/data/model/user_model.dart';
@@ -53,10 +54,10 @@ class RepositoryImpl implements Repository {
     return response?.body;
   }
 
-  FutureOr<JoListModel?> getJoList(int status) async {
+  FutureOr<JoListModel?> getJoList(int status, int employee) async {
     late Response? response;
     try{
-      response = await networkCore.getRequest("/transaksi/jo/$status",
+      response = await networkCore.getRequest("/transaksi/jo/$status/$employee",
           decoder: (val) => JoListModel.fromJson(val),
           headers: {
             'Accept': 'application/json',
@@ -102,7 +103,7 @@ class RepositoryImpl implements Repository {
   FutureOr<JoDetailModel?> getJoDetail(int id)async{
     Response? response;
     try{
-      response = await networkCore.getRequest('/transaksi/jo/detail/$id',
+      response = await networkCore.getRequest('/transaksi/jo/$id',
           decoder: (val) => JoDetailModel.fromJson(val),
           headers: {
             'Accept': 'application/json',
@@ -120,7 +121,7 @@ class RepositoryImpl implements Repository {
   FutureOr<JoPicModel?> getJoPIC(int id)async{
     Response? response;
     try{
-      response = await networkCore.getRequest('/transaksi/jo/pic/$id',
+      response = await networkCore.getRequest('/transaksi/jo/pic/detail/$id',
           decoder: (val) => JoPicModel.fromJson(val),
           headers: {
             'Accept': 'application/json',
@@ -207,10 +208,10 @@ class RepositoryImpl implements Repository {
     return response?.body;
   }
 
-  FutureOr<JoListDailyActivityLab?> getJoListDailyActivityLab(int id)async{
+  FutureOr<JoListDailyActivityLab?> getJoListDailyActivityLab(int id, int labId)async{
     Response? response;
     try{
-      response = await networkCore.getRequest('/transaksi/jo/progress_daily_laboratory/activity/$id',
+      response = await networkCore.getRequest('/transaksi/jo/progress_daily_laboratory/activity/$id/$labId',
           decoder: (val) => JoListDailyActivityLab.fromJson(val),
           headers: {
             'Accept': 'application/json',
@@ -228,7 +229,7 @@ class RepositoryImpl implements Repository {
   FutureOr<JoListDailyActivityLab5?> getJoListDailyActivityLab5(int id)async{
     Response? response;
     try{
-      response = await networkCore.getRequest('/transaksi/jo/progress_daily_activity/activity_5/$id',
+      response = await networkCore.getRequest('/transaksi/jo/progress_daily_laboratory/activity_5/$id',
           decoder: (val) => JoListDailyActivityLab5.fromJson(val),
           headers: {
             'Accept': 'application/json',
@@ -380,7 +381,26 @@ class RepositoryImpl implements Repository {
           },
           decoder: (val) => ResponseJoInsertActivityLab.fromJson(val),
           headers: {
-            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+      );
+    } on Exception catch(e){
+      debugPrint(e.toString());
+      rethrow;
+    }
+
+    return response?.body;
+  }
+
+  FutureOr<ResponseJoInsertActivity5Lab> insertActivity5Lab(List<ActivityAct5Lab> data)async{
+    Response? response;
+    try{
+      response = await networkCore.postRequst('/transaksi/jo/progress_daily_laboratory/activity_5',
+          body: {
+            "formDataArray" : data
+          },
+          decoder: (val) => ResponseJoInsertActivity5Lab.fromJson(val),
+          headers: {
             'Content-Type': 'application/json'
           }
       );

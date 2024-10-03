@@ -1,6 +1,6 @@
 -- Merging decision tree log ---
 application
-INJECTED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:2:5-32:19
+INJECTED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:2:5-33:19
 MERGED from [:firebase_crashlytics] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_crashlytics/intermediates/merged_manifest/debug/AndroidManifest.xml:7:5-13:19
 MERGED from [:firebase_crashlytics] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_crashlytics/intermediates/merged_manifest/debug/AndroidManifest.xml:7:5-13:19
 MERGED from [:firebase_messaging] /Users/danieanwar/StudioProjects/ops_mobile/build/firebase_messaging/intermediates/merged_manifest/debug/AndroidManifest.xml:13:5-46:19
@@ -70,11 +70,11 @@ MERGED from [com.google.android.datatransport:transport-runtime:3.3.0] /Users/da
 	android:name
 		INJECTED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml
 manifest
-ADDED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:1:1-33:12
-INJECTED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:1:1-33:12
-INJECTED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:1:1-33:12
-INJECTED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:1:1-33:12
-MERGED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:1:1-33:12
+ADDED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:1:1-34:12
+INJECTED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:1:1-34:12
+INJECTED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:1:1-34:12
+INJECTED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:1:1-34:12
+MERGED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:1:1-34:12
 MERGED from [:connectivity_plus] /Users/danieanwar/StudioProjects/ops_mobile/build/connectivity_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [:device_info_plus] /Users/danieanwar/StudioProjects/ops_mobile/build/device_info_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
 MERGED from [:file_picker] /Users/danieanwar/StudioProjects/ops_mobile/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-19:12
@@ -167,15 +167,15 @@ INJECTED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/debug/
 INJECTED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/debug/AndroidManifest.xml:1:1-7:12
 	package
 		INJECTED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml
-		ADDED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:1:1-33:12
+		ADDED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:1:1-34:12
 		INJECTED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/debug/AndroidManifest.xml
 	android:versionName
 		INJECTED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml
-		ADDED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:1:1-33:12
+		ADDED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:1:1-34:12
 		INJECTED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/debug/AndroidManifest.xml
 	android:versionCode
 		INJECTED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml
-		ADDED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:1:1-33:12
+		ADDED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:1:1-34:12
 		INJECTED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/debug/AndroidManifest.xml
 	xmlns:android
 		ADDED from /Users/danieanwar/StudioProjects/ops_mobile/android/app/src/main/AndroidManifest.xml:1:11-69

@@ -2871,11 +2871,11 @@ class JoWaitingScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(16),
                         child: Obx(() => Column(
                             children: [
-                              for (var lab in controller.labs.value.toSet().toList())
+                              for (var lab in controller.labs.value)
                                 SizedBox(
                                   child: InkWell(
                                     onTap: (){
-                                      controller.detailLabActivity(lab);
+                                      controller.detailLabActivity(int.parse(lab.laboratoriumId.toString()));
                                     },
                                     child: Card(
                                         color: Colors.white,
@@ -2887,7 +2887,7 @@ class JoWaitingScreen extends StatelessWidget {
                                               Row(
                                                 children: [
                                                   Expanded(
-                                                    child: Text(lab ?? '-',
+                                                    child: Text(lab.name ?? '-',
                                                       style: TextStyle(
                                                           fontSize: 14,
                                                           fontWeight: FontWeight.w700
