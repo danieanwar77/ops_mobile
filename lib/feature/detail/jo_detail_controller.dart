@@ -124,8 +124,8 @@ class JoDetailController extends BaseController {
 
   Future<void> getData() async{
     await getJoDetail();
-    picInspector = int.parse(dataJoDetail.value.detail?.idPicInspector != null ? dataJoDetail.value.detail!.idPicInspector.toString() : '0');
-    picLaboratory = int.parse(dataJoDetail.value.detail?.idPicLaboratory != null ? dataJoDetail.value.detail!.idPicLaboratory.toString() : '0');
+    picInspector = int.parse(dataJoDetail.value.detail?.idPicInspector != null ? dataJoDetail.value.detail!.idPicInspector.toString() == userData.value!.id.toString() ? dataJoDetail.value.detail!.idPicInspector.toString() : '0' : '0');
+    picLaboratory = int.parse(dataJoDetail.value.detail?.idPicLaboratory != null ? dataJoDetail.value.detail!.idPicLaboratory.toString() == userData.value!.id.toString() ? dataJoDetail.value.detail!.idPicLaboratory.toString() : '0' : '0');
     debugPrint('id pic inspector: $picInspector , laboratory: $picLaboratory');
     await getJoPIC();
     await getJoDailyPhoto();
@@ -223,26 +223,28 @@ class JoDetailController extends BaseController {
   Future<void> getJoDailyActivity5() async{
     var response = await repository.getJoListDailyActivity5(id) ?? JoListDailyActivity5();
     debugPrint('JO Daily Activity 5: ${jsonEncode(response)}');
-    dataListActivity5.value = response?.data ?? DataListActivity5();
-    var data = dataListActivity5.value;
-    var dataBarge = data.barge!.map((item){return Barge(barge: item.barge);}).toList();
-    var dataTranshipment = data.transhipment!.map((item){return Transhipment(
-      jetty: item.jetty,
-      initialDate: item.initialDate,
-      finalDate: item.finalDate,
-      deliveryQty: item.deliveryQty.toString(),
-    );}).toList();
-    activity5ListStages.value.add(FormDataArray(
-        tHJoId: id,
-        mStatusinspectionstagesId: 5,
-        uomId: 3,
-        transDate: data.detail!.first.transDate,
-        actualQty: data.detail!.first.actualQty.toString(),
-        createdBy: 0,
-        vessel: data.detail!.first.vessel,
-        barge: dataBarge,
-        transhipment: dataTranshipment
-    ));
+    if(response.data!.detail!.isNotEmpty){
+      dataListActivity5.value = response?.data ?? DataListActivity5();
+      var data = dataListActivity5.value;
+      var dataBarge = data.barge!.map((item){return Barge(barge: item.barge);}).toList();
+      var dataTranshipment = data.transhipment!.map((item){return Transhipment(
+        jetty: item.jetty,
+        initialDate: item.initialDate,
+        finalDate: item.finalDate,
+        deliveryQty: item.deliveryQty.toString(),
+      );}).toList();
+      activity5ListStages.value.add(FormDataArray(
+          tHJoId: id,
+          mStatusinspectionstagesId: 5,
+          uomId: 3,
+          transDate: data.detail!.first.transDate,
+          actualQty: data.detail!.first.actualQty.toString(),
+          createdBy: 0,
+          vessel: data.detail!.first.vessel,
+          barge: dataBarge,
+          transhipment: dataTranshipment
+      ));
+    }
     // if(dataListActivity5.value.data!.isNotEmpty){
     //   dataListActivity5.value.data!.forEach((data){
     //
@@ -907,9 +909,8 @@ class JoDetailController extends BaseController {
     update();
   }
 
-  String? addActivityStages(){
+  Future<String?> addActivityStages() async {
     if(activityList.value.where((data) => data.mStatusinspectionstagesId == activityStage).toList().isNotEmpty){
-      activityStage++;
       var post = activityList.value.map((value) => Activity(
         tHJoId: value.tHJoId,
         mStatusinspectionstagesId: value.mStatusinspectionstagesId,
@@ -920,18 +921,23 @@ class JoDetailController extends BaseController {
         createdBy: value.createdBy,
         remarks: value.remarks,
       ).toJson()).toList();
-      postInsertActivity(post);
-      for(var item in activityList.value){
-        activityListStages.value.add(item);
+      var send = await postInsertActivity(post);
+      if(send == 'success'){
+        changeStatusJo();
+        activityStage++;
+        for(var item in activityList.value){
+          activityListStages.value.add(item);
+        }
+        activityList.value = [];
+        activityListTextController.value = [];
+        editActivityMode.value = false;
+        activityDate.text = '';
+        activityStartTime.text = '';
+        activityEndTime.text = '';
+        activityText.text = '';
+      } else {
+        return 'failed';
       }
-      activityList.value = [];
-      activityListTextController.value = [];
-      editActivityMode.value = false;
-      activityDate.text = '';
-      activityStartTime.text = '';
-      activityEndTime.text = '';
-      activityText.text = '';
-      update();
       return 'success';
     } else if(activityList.value.where((data) => data.mStatusinspectionstagesId == activityStage).toList().isEmpty) {
       return 'failed';
@@ -939,9 +945,14 @@ class JoDetailController extends BaseController {
 
   }
 
-  Future<void> postInsertActivity(data) async {
+  Future<String> postInsertActivity(data) async {
     var response = await repository.insertActivityInspection(data) ?? ResponseJoInsertActivity();
     debugPrint('insert activity response: ${jsonEncode(response.message)}');
+    if(response.message == 'Inspection berhasil ditambahkan.'){
+      return 'success';
+    } else {
+      return 'failed';
+    }
   }
 
   void drawerDailyActivity(){

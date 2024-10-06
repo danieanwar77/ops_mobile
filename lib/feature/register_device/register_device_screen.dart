@@ -104,7 +104,7 @@ class RegisterDeviceScreen extends StatelessWidget{
                               child: controller.isLoading.value == true ? CircularProgressIndicator(
                                 backgroundColor: Colors.white,
                               ) : Text(
-                                'Log In',
+                                'Register',
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,

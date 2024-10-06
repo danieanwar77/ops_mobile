@@ -67,18 +67,18 @@ class JoWaitingScreen extends StatelessWidget {
                           Tab(
                             text: 'PIC',
                           ),
-                          Tab(
+                          controller.picInspector != 0 ? Tab(
                             text: 'Progress & Daily Activity',
-                          ),
-                          Tab(
+                          ) : const SizedBox.shrink(),
+                          controller.picLaboratory != 0 ? Tab(
                             text: 'Laboratory Progress',
-                          ),
-                          Tab(
+                          ) : const SizedBox.shrink(),
+                          controller.picInspector != 0 ? Tab(
                               text: 'Document - Inspection'
-                          ),
-                          Tab(
+                          ) : const SizedBox.shrink(),
+                          controller.picLaboratory != 0 ? Tab(
                               text: 'Document - Laboratory'
-                          ),
+                          ) : const SizedBox.shrink(),
                         ],
                       ),
                     ),
@@ -1781,7 +1781,7 @@ class JoWaitingScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SingleChildScrollView(
+                    controller.picInspector != 0 ? SingleChildScrollView(
                       child: Padding(
                           padding: const EdgeInsets.all(16),
                           child: Obx(() => Column(
@@ -2865,8 +2865,9 @@ class JoWaitingScreen extends StatelessWidget {
                           ),
                           )
                       ),
-                    ),
-                    SingleChildScrollView(
+                    )
+                        : const SizedBox.shrink(),
+                    controller.picLaboratory != 0 ? SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Obx(() => Column(
@@ -2908,8 +2909,9 @@ class JoWaitingScreen extends StatelessWidget {
                         ),
                         ),
                       ),
-                    ),
-                    SingleChildScrollView(
+                    )
+                        : const SizedBox.shrink(),
+                    controller.picInspector != 0 ? SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(
@@ -3095,8 +3097,9 @@ class JoWaitingScreen extends StatelessWidget {
                             ]
                         ),
                       ),
-                    ),
-                    SingleChildScrollView(
+                    )
+                        : const SizedBox.shrink(),
+                    controller.picLaboratory != 0 ? SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(
@@ -3282,7 +3285,8 @@ class JoWaitingScreen extends StatelessWidget {
                             ]
                         ),
                       ),
-                    ),
+                    )
+                        : const SizedBox.shrink(),
                   ],
                 )
             )
