@@ -48,26 +48,27 @@ class HomeScreen extends StatelessWidget{
                                   child: Image.asset('assets/icons/user.png'),
                                 ),
                                 const SizedBox(width: 18,),
-                                const Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text('Andri',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white
+                                Obx(()=> Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(controller.userData.value?.fullname ?? '-',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white
+                                            ),
                                           ),
-                                        ),
-                                        Text('Surveyor',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white
-                                          ),
-                                        )
-                                      ],
-                                    )
+                                          Text(controller.userData.value?.position ?? '-',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                  ),
                                 ),
                                 IconButton(
                                     onPressed: (){
@@ -84,11 +85,12 @@ class HomeScreen extends StatelessWidget{
                               ],
                             ),
                             const SizedBox(height: 24,),
-                            const Text('Welcome Andri',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white
+                            Obx(() => Text('Welcome ${controller.userData.value?.fullname ?? '-'}',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white
+                                ),
                               ),
                             ),
                           ],

@@ -112,7 +112,7 @@ class GetDataScreen extends StatelessWidget{
                       const Spacer(),
                       ElevatedButton(
                           onPressed: () {
-
+                            controller.readZip();
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: primaryColor,

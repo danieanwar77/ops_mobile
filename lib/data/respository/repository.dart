@@ -11,6 +11,7 @@ import 'package:ops_mobile/data/model/jo_list_daily_activity_lab.dart';
 import 'package:ops_mobile/data/model/jo_list_daily_activity_lab5.dart';
 import 'package:ops_mobile/data/model/jo_list_model.dart';
 import 'package:ops_mobile/data/model/jo_pic_model.dart';
+import 'package:ops_mobile/data/model/jo_response_delete_activity_photo.dart';
 import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
 import 'package:ops_mobile/data/model/login_model.dart';
@@ -37,10 +38,15 @@ abstract interface class Repository {
   FutureOr<JoListDailyActivityLab?> getJoListDailyActivityLab(int id, int labId);
   FutureOr<JoListDailyActivityLab5?> getJoListDailyActivityLab5(int id);
   FutureOr<ResponseJoActivityPhoto?> insertActivityDailyPhoto(File photo, int id, String desc);
-  FutureOr<ResponseJoUpdateActiviyPhoto?> updateActivityDailyPhoto(File photo, int id);
+  FutureOr<ResponseJoUpdateActiviyPhoto?> updateActivityDailyPhoto(File photo, int id, String desc);
+  FutureOr<JoResponseDeleteActivityPhoto?> deleteActivityPhoto(int id);
   FutureOr<ResponseJoChangeStatus> changeStatusJo(String id, String status);
   FutureOr<ResponseJoInsertActivity> insertActivityInspection(dynamic data);
+  FutureOr<ResponseJoInsertActivity> updateActivityInspection(dynamic data, int id);
   FutureOr<ResponseJoInsertActivity5> insertActivityInspection5(List<FormDataArray> data);
+  FutureOr<ResponseJoInsertActivity5> updateActivityInspection5(List<FormDataArray> data, int id);
+  FutureOr<ResponseJoInsertActivity5> insertActivityInspection6(List<FormDataArray> data);
+  FutureOr<ResponseJoInsertActivity5> updateActivityInspection6(List<FormDataArray> data, int id);
   FutureOr<ResponseJoInsertActivityLab> insertActivityLab(List<ActivityLab> data);
   FutureOr<ResponseJoInsertActivity5Lab> insertActivity5Lab(List<ActivityAct5Lab> data);
 }

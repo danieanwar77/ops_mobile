@@ -1,23 +1,151 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
+import 'package:ops_mobile/core/core/constant/app_constant.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
+import 'package:ops_mobile/data/model/jo_daily_photo.dart';
+import 'package:ops_mobile/data/model/jo_detail_model.dart';
+import 'package:ops_mobile/data/model/jo_list_daily_activity.dart';
+import 'package:ops_mobile/data/model/jo_list_daily_activity5.dart';
+import 'package:ops_mobile/data/model/jo_list_daily_activity6.dart';
+import 'package:ops_mobile/data/model/jo_list_daily_activity_lab.dart';
+import 'package:ops_mobile/data/model/jo_list_daily_activity_lab5.dart';
+import 'package:ops_mobile/data/model/jo_pic_model.dart';
+import 'package:ops_mobile/data/model/jo_send_model.dart';
+import 'package:ops_mobile/data/model/login_data_model.dart';
+import 'package:ops_mobile/data/model/response_jo_insert_activity.dart';
+import 'package:ops_mobile/data/model/response_jo_insert_activity5.dart';
+import 'package:ops_mobile/data/respository/repository.dart';
+import 'package:ops_mobile/data/storage.dart';
+import 'package:ops_mobile/feature/documents/documents_screen.dart';
+import 'package:ops_mobile/feature/lab_activity_detail/lab_activity_detail_screen.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
-class DocumentsController extends BaseController{
+class JoWaitingController extends BaseController {
+  // Data User
+  Rx<Data?> userData = Rx(Data());
 
   // Settings
+  final PathProviderPlatform providerAndroid = PathProviderPlatform.instance;
   final picker = ImagePicker();
+  RxBool activitySubmitted = RxBool(false);
+  final _formKey = GlobalKey<FormState>();
 
-  RxString documentType = ''.obs;
+  // Detail Data
+  late int id;
+  late int statusId;
+  List<String> activityStages = [
+    'Waiting for Arrival',
+    'Ship Arrived',
+    'Ship Berthing',
+    'Work Commence',
+    'Work Complete',
+    'Report to Client'
+  ];
+  int picInspector = 0;
+  int picLaboratory = 0;
+  List<Tab> joDetailTab = [];
+  List<Tab> joWaitingTab = [];
+  bool isLoadingJO = false;
+  bool isLoadingJOImage = false;
+  Rx<DataDetail> dataJoDetail = Rx(DataDetail());
+  Rx<DataPIC> dataJoPIC = Rx(DataPIC());
+
+  // Activity Inspection Data
+  RxList<DataDailyPhoto> dataJoDailyPhotos = RxList();
+  Rx<DataListActivity> dataListActivity = Rx(DataListActivity());
+  Rx<DataListActivity5> dataListActivity5 = Rx(DataListActivity5());
+  RxList<String> barges = RxList();
+  RxList<String> activity5Barges = RxList();
+  RxList<TextEditingController> bargesController = RxList();
+  Rx<DataListActivity6> dataListActivity6 = Rx(DataListActivity6());
+  Rx<Activity6Attachments> dataListActivity6Attachments =
+  Rx(Activity6Attachments());
+
+  // Activity Lab Data
+  Rx<DataListActivityLab> dataListActivityLab = Rx(DataListActivityLab());
+  Rx<DataListActivityLab5> dataListActivityLab5 = Rx(DataListActivityLab5());
+  RxList<Laboratory> labs = RxList();
+
+  // Activity Inspection Photo Variables & Temporary
+  RxList<File> dailyActivityPhotos = RxList();
+  RxList<File> dailyActivityPhotosTemp = RxList();
+  RxList<String> dailyActivityPhotosDescText = RxList();
+  RxList<String> dailyActivityPhotosDescTextTemp = RxList();
+  RxList<TextEditingController> dailyActivityPhotosDesc = RxList();
+  RxList<TextEditingController> dailyActivityPhotosDescTemp = RxList();
+  RxInt adddailyActivityPhotosCount = RxInt(0);
+  Rx<TextEditingController> dailyActivityPhotosDescEdit =
+      TextEditingController().obs;
+  Rx<File> activityPreviewFoto = Rx(File(''));
+
+  // Activity Inspection Variables & Temporary
+  RxList<Activity> activityList = RxList();
+  RxList<Activity> activityListStages = RxList();
+  RxList<TextEditingController> activityListTextController = RxList();
+  int activityStage = 1;
+  RxList<TextEditingController> jettyListTextController = RxList();
+  RxList<TextEditingController> initialDateActivity5ListTextController =
+  RxList();
+  RxList<TextEditingController> finalDateActivity5ListTextController = RxList();
+  RxList<TextEditingController> deliveryQtyListTextController = RxList();
+  TextEditingController activityDate = TextEditingController();
+  bool activityDateValidate = true;
+  TextEditingController activityStartTime = TextEditingController();
+  bool activityStartTimeValidate = true;
+  TextEditingController activityEndTime = TextEditingController();
+  bool activityEndTimeValidate = true;
+  TextEditingController activityText = TextEditingController();
+  bool activityTextValidate = true;
+  TextEditingController activityRemarks = TextEditingController();
+  RxBool editActivityMode = RxBool(false);
+  RxInt editActivityIndex = 0.obs;
+
+  // Activity 5 Inspection Variables & Temporary
+  RxInt activity5FormCount = 1.obs;
+  RxList<FormDataArray> activity5List = RxList();
+  RxList<FormDataArray> activity5ListStages = RxList();
+  RxList<Transhipment> activity5TranshipmentList = RxList();
+  TextEditingController vesselController = TextEditingController();
+  TextEditingController uomController = TextEditingController();
+  TextEditingController qtyController = TextEditingController();
+  int bargesCount = 0;
+  int activity5bargesCount = 0;
+
+  // Activity 6 Inspection Variables & Temporary
+  RxList<Activity> activity6List = RxList();
+  RxList<Activity> activity6ListStages = RxList();
+  RxList<TextEditingController> activity6ListTextController = RxList();
+  Rx<TextEditingController> certificateNumberTextController =
+      TextEditingController().obs;
+  Rx<TextEditingController> certificateDateTextController =
+      TextEditingController().obs;
+  Rx<TextEditingController> certificateBlankoNumberTextController =
+      TextEditingController().obs;
+  Rx<TextEditingController> certificateLHVNumberTextController =
+      TextEditingController().obs;
+  Rx<TextEditingController> certificateLSNumberTextController =
+      TextEditingController().obs;
+
+  // Activity 6 Inspection Variables & Temporary
+  TextEditingController activity6Date = TextEditingController();
+  TextEditingController activity6StartTime = TextEditingController();
+  TextEditingController activity6EndTime = TextEditingController();
+  TextEditingController activity6Text = TextEditingController();
+  TextEditingController activity6Remarks = TextEditingController();
+  RxList<File> activity6Attachments = RxList();
+  RxList<File> activity6AttachmentsStage = RxList();
 
   // Activities Documents
   late File? sampleFile;
@@ -27,35 +155,291 @@ class DocumentsController extends BaseController{
   TextEditingController documentCertificateBlanko = TextEditingController();
   TextEditingController documentCertificateLhv = TextEditingController();
   TextEditingController documentCertificateLs = TextEditingController();
-  RxList<Map<String, dynamic>> documents = RxList();
-  RxList<List<File>> documentsAttachments = RxList();
-  RxList<File> documentAttachments = RxList();
+  RxList<Map<String, dynamic>> documentInspection = RxList();
+  RxList<File> documentInspectionAttachments = RxList();
+  RxList<Map<String, dynamic>> documentLaboratory = RxList();
+  RxList<File> documentLaboratoryAttachments = RxList();
+  RxList<Map<String, dynamic>> documentMap = RxList();
 
   @override
-  void onInit()async{
-    var arguments = await Get.arguments;
-    documentType.value = arguments['type'] ?? '';
+  void onInit() async {
+    userData.value =
+        Data.fromJson(jsonDecode(await StorageCore().storage.read('login')));
+    debugPrint('data users: ${jsonEncode(userData.value)}');
+    sampleFile = File('assets/sample/sample1.pdf');
+    var argument = await Get.arguments;
+    id = argument['id'];
+    statusId = argument['status'];
+    isLoadingJO == true;
     update();
-    debugPrint('document type : $documentType');
-    drawerAddDocument(documentType.value);
+    await getData();
+    debugPrint('activity stage now: $activityStage');
+
+    super.onInit();
   }
 
-  Future<void> selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        firstDate: DateTime.now().subtract(Duration(days: 1)),
-        lastDate: DateTime(
-            DateTime.now().year, DateTime.now().month, DateTime.now().day + 1));
-    if (picked != null) {
-      documentCertificateDate.text = DateFormat('yyyy-MM-dd').format(picked).toString();
+  // Get Data
+
+  Future<void> getData() async {
+    await getJoDetail();
+    picInspector = int.parse(dataJoDetail.value.detail?.idPicInspector != null
+        ? dataJoDetail.value.detail!.idPicInspector.toString() ==
+        userData.value!.id.toString()
+        ? dataJoDetail.value.detail!.idPicInspector.toString()
+        : '0'
+        : '0');
+    update();
+    picLaboratory = int.parse(dataJoDetail.value.detail?.idPicLaboratory != null
+        ? dataJoDetail.value.detail!.idPicLaboratory.toString() ==
+        userData.value!.id.toString()
+        ? dataJoDetail.value.detail!.idPicLaboratory.toString()
+        : '0'
+        : '0');
+    update();
+    debugPrint('id pic inspector: $picInspector , laboratory: $picLaboratory');
+    if(picInspector != '0' && picLaboratory == 0){
+
+      joWaitingTab = [
+        Tab(
+          text: 'Detail',
+        ),
+        Tab(
+          text: 'KOS',
+        ),
+        Tab(
+          text: 'PIC',
+        ),
+        Tab(
+          text: 'Progress & Daily Activity',
+        ),
+        Tab(
+          text: 'Document - Inspection',
+        ),
+      ];
+      update();
+    } else if(picInspector == 0 && picLaboratory != '0'){
+      joWaitingTab = [
+        Tab(
+          text: 'Detail',
+        ),
+        Tab(
+          text: 'KOS',
+        ),
+        Tab(
+          text: 'PIC',
+        ),
+        Tab(
+          text: 'Laboratory Progress',
+        ),
+        Tab(
+          text: 'Document - Laboratory',
+        ),
+      ];
+      update();
+    } else if(picInspector != '0' && picLaboratory != '0'){
+
+      joWaitingTab = [
+        Tab(
+          text: 'Detail',
+        ),
+        Tab(
+          text: 'KOS',
+        ),
+        Tab(
+          text: 'PIC',
+        ),
+        Tab(
+          text: 'Progress & Daily Activity',
+        ),
+        Tab(
+          text: 'Laboratory Progress',
+        ),
+        Tab(
+          text: 'Document - Inspection',
+        ),
+        Tab(
+          text: 'Document - Laboratory',
+        ),
+      ];
+      update();
+    }
+    await getJoPIC();
+    await getJoDailyPhoto();
+    await getJoDailyActivity();
+    await getJoDailyActivity5();
+    await getJoDailyActivity6();
+    // await getJoDailyActivityLab();
+    // await getJoDailyActivityLab5();
+    isLoadingJO == false;
+    update();
+  }
+
+  Future<void> getJoDetail() async {
+    var response = await repository.getJoDetail(id) ?? JoDetailModel();
+    debugPrint(jsonEncode(response));
+    debugPrint('JO Laboratories: ${jsonEncode(response.data?.laboratory)}');
+    dataJoDetail.value = response?.data ?? DataDetail();
+    var labo = response.data?.laboratory ?? [];
+    barges.value = dataJoDetail.value.detail?.barge?.split('|') ?? [];
+    barges.value.forEach((_) {
+      bargesController.value.add(TextEditingController());
+    });
+    if (labo!.isNotEmpty) {
+      labs.value = labo!;
+    }
+    bargesCount = barges.value.length;
+    activity5bargesCount = bargesCount;
+    activity5Barges.value = barges.value;
+    update();
+    debugPrint('barges : ${jsonEncode(barges.value)}');
+  }
+
+  Future<void> getJoPIC() async {
+    var response = await repository.getJoPIC(id) ?? JoPicModel();
+    debugPrint('JO PIC: ${jsonEncode(response)}');
+    dataJoPIC.value = response?.data ?? DataPIC();
+  }
+
+  Future<void> getJoDailyPhoto() async {
+    var response = await repository.getJoDailyPhoto(id) ?? JoDailyPhoto();
+    debugPrint('JO Daily Photo: ${jsonEncode(response)}');
+    if (response.data!.isNotEmpty) {
+      dataJoDailyPhotos.value = response?.data ?? [];
+      if (dataJoDailyPhotos.value.isNotEmpty) {
+        isLoadingJOImage = true;
+        update();
+        dailyActivityPhotos.value = [];
+        TextEditingController tempPhotoDesc = TextEditingController();
+        dataJoDailyPhotos.value.forEach((data) async {
+          final File photo = await getImagesFromUrl(data.pathPhoto!);
+          dailyActivityPhotos.value.add(photo);
+          tempPhotoDesc.text = data.keterangan ?? '';
+          dailyActivityPhotosDesc.value.add(tempPhotoDesc);
+          dailyActivityPhotosDescText.value.add(data.keterangan ?? '');
+          update();
+        });
+        isLoadingJOImage = false;
+        update();
+      }
     }
   }
 
+  Future<File> getImagesFromUrl(String strURL) async {
+    debugPrint('image path: ${AppConstant.CORE_URL}$strURL');
+    final http.Response responseData =
+    await http.get(Uri.parse('${AppConstant.CORE_URL}/$strURL'));
+    var uint8list = responseData.bodyBytes;
+    var buffer = uint8list.buffer;
+    ByteData byteData = ByteData.view(buffer);
+    var filenameArr = strURL.split("/");
+    var filename = filenameArr.last;
+    var tempDir = await providerAndroid.getTemporaryPath();
+    final File file = await File('${tempDir}/${filename}').writeAsBytes(
+        buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+    debugPrint('image file path: ${file}');
+    return file;
+  }
+
+  Future<void> getJoDailyActivity() async {
+    var response =
+        await repository.getJoListDailyActivity(id) ?? JoListDailyActivity();
+    debugPrint('JO Daily Activity: ${jsonEncode(response)}');
+    dataListActivity.value = response?.data ?? DataListActivity();
+    if (dataListActivity.value.data!.isNotEmpty) {
+      debugPrint(
+          'stage now: ${dataListActivity.value.data!.last.mStatusinspectionstagesId.toString()}');
+      activityStage = int.parse(dataListActivity
+          .value.data!.last.mStatusinspectionstagesId
+          .toString()) +
+          1;
+    }
+    activityListStages.value.clear();
+    dataListActivity.value.data?.forEach((data) {
+      activityListStages.value.add(Activity(
+        tHJoId: data.tHJoId,
+        mStatusinspectionstagesId: data.mStatusinspectionstagesId,
+        transDate: data.transDate,
+        startActivityTime: data.startActivityTime,
+        endActivityTime: data.endActivityTime,
+        activity: data.activity,
+        createdBy: data.createdBy,
+        remarks: data.remarks,
+      ));
+    });
+  }
+
+  Future<void> getJoDailyActivity5() async {
+    var response =
+        await repository.getJoListDailyActivity5(id) ?? JoListDailyActivity5();
+    debugPrint('JO Daily Activity 5: ${jsonEncode(response)}');
+    if (response.data!.detail!.isNotEmpty) {
+      dataListActivity5.value = response?.data ?? DataListActivity5();
+      var data = dataListActivity5.value;
+      var dataBarge = data.barge!.map((item) {
+        return Barge(barge: item.barge);
+      }).toList();
+      var dataTranshipment = data.transhipment!.map((item) {
+        return Transhipment(
+          jetty: item.jetty,
+          initialDate: item.initialDate,
+          finalDate: item.finalDate,
+          deliveryQty: item.deliveryQty.toString(),
+        );
+      }).toList();
+      activity5ListStages.value.add(FormDataArray(
+          tHJoId: id,
+          mStatusinspectionstagesId: 5,
+          uomId: 3,
+          transDate: data.detail!.first.transDate,
+          actualQty: data.detail!.first.actualQty.toString(),
+          createdBy: 0,
+          vessel: data.detail!.first.vessel,
+          barge: dataBarge,
+          transhipment: dataTranshipment));
+    }
+  }
+
+  Future<void> getJoDailyActivity6() async {
+    var response =
+        await repository.getJoListDailyActivity6(id) ?? JoListDailyActivity6();
+    debugPrint('JO Daily Activity 6: ${jsonEncode(response)}');
+    debugPrint(
+        'JO Daily Activity 6 Attachments: ${jsonEncode(response.image)}');
+    dataListActivity6.value = response?.data ?? DataListActivity6();
+    dataListActivity6Attachments.value =
+        response?.image ?? Activity6Attachments();
+    var data = dataListActivity6.value;
+    var dataAttach = dataListActivity6Attachments.value;
+    data.data?.forEach((act) {
+      activity6ListStages.value.add(Activity(
+          tHJoId: act.tHJoId,
+          mStatusinspectionstagesId: act.mStatusinspectionstagesId,
+          transDate: act.transDate,
+          startActivityTime: act.startActivityTime,
+          endActivityTime: act.endActivityTime,
+          activity: act.activity,
+          createdBy: 0,
+          remarks: act.remarks));
+    });
+    dataAttach.attach?.forEach((attach) async {
+      activity6Attachments.value = [];
+      final File data = await getImagesFromUrl(attach.pathName!);
+      activity6Attachments.value.add(data);
+    });
+  }
+
+  void detailLabActivity(int? lab) {
+    Get.to(LabActivityDetailScreen(), arguments: {'id': id, 'labId': lab});
+  }
+
+  // Activity Detail Functions
+
   void previewImage(int index, String photo, String desc) async {
-    var image = await File(photo);
+    dailyActivityPhotosDescEdit.value.text = desc;
+    activityPreviewFoto.value = await File(photo);
     Get.dialog(
       GetBuilder(
-        init: DocumentsController(),
+        init: JoWaitingController(),
         builder: (controller) => AlertDialog(
           title: Row(
             children: [
@@ -82,7 +466,7 @@ class DocumentsController extends BaseController{
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Image.file(
-                    File(image.path),
+                    File(activityPreviewFoto.value.path),
                     fit: BoxFit.cover,
                   ),
                   const SizedBox(
@@ -102,6 +486,17 @@ class DocumentsController extends BaseController{
     );
   }
 
+  void changeStatusJo() async {
+    var response = await repository.changeStatusJo(id.toString(), 3.toString());
+    if (response?.httpCode != 200) {
+      debugPrint('Berhasil ubah status JO.');
+      //openDialog('Success', 'Berhasil ubah status JO.');
+    } else {
+      debugPrint('Gagal ubah status JO');
+      //openDialog('Failed', 'Gagal ubah status JO');
+    }
+  }
+
   void cameraImageDocument() async {
     File? image;
     try {
@@ -109,7 +504,7 @@ class DocumentsController extends BaseController{
       if (pic != null) {
         final imageTemp = File(pic!.path);
         image = imageTemp;
-        documentAttachments.add(image);
+        documentInspectionAttachments.add(image);
         update();
       }
     } on PlatformException catch (e) {
@@ -129,7 +524,7 @@ class DocumentsController extends BaseController{
         xFiles.forEach((data) {
           final fileTemp = File(data!.path);
           final File file = fileTemp;
-          documentAttachments.add(file);
+          documentInspectionAttachments.add(file);
           update();
         });
         openDialog('Success', 'Berhasil menambahkan file.');
@@ -215,10 +610,59 @@ class DocumentsController extends BaseController{
     );
   }
 
+  void openDialog(String type, String text) {
+    Get.dialog(
+      AlertDialog(
+        title: Text(
+          type,
+          style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
+        ),
+        content: Text(text),
+        actions: [
+          TextButton(
+            child: const Text("Close"),
+            onPressed: () => Get.back(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Activities Documents Functions
+
+  Future<void> addDocuments(String type) async {
+    if (documentCertificateNumber.text != '' &&
+        documentCertificateDate.text != '' &&
+        documentCertificateBlanko.text != '' &&
+        documentCertificateLhv.text != '' &&
+        documentCertificateLs.text != '' &&
+        documentLaboratoryAttachments.value.isNotEmpty) {
+      documentMap.value.add({
+        'certNumber': certificateNumberTextController.value.text,
+        'certDate': certificateDateTextController.value.text,
+        'certBlanko': certificateBlankoNumberTextController.value.text,
+        'certLhv': certificateLHVNumberTextController.value.text,
+        'certLs': certificateLSNumberTextController.value.text,
+      });
+    }
+  }
+
+  Future<void> selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        firstDate: DateTime.now().subtract(Duration(days: 1)),
+        lastDate: DateTime(
+            DateTime.now().year, DateTime.now().month, DateTime.now().day + 1));
+    if (picked != null) {
+      documentCertificateDate.text = DateFormat('yyyy-MM-dd').format(picked).toString();
+    }
+  }
+
   void drawerAddDocument(String type) {
     Get.bottomSheet(
       GetBuilder(
-        init: DocumentsController(),
+        init: JoWaitingController(),
         builder: (controller) => Container(
             margin: EdgeInsets.only(top: 48),
             padding: EdgeInsets.all(24),
@@ -378,7 +822,7 @@ class DocumentsController extends BaseController{
                           const SizedBox(
                             height: 16,
                           ),
-                          documentAttachments.value.isNotEmpty
+                          documentInspectionAttachments.value.isNotEmpty
                               ? GridView.builder(
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
@@ -388,10 +832,10 @@ class DocumentsController extends BaseController{
                                 mainAxisSpacing: 8,
                                 crossAxisSpacing: 8,
                               ),
-                              itemCount: documentAttachments.value.length,
+                              itemCount: documentInspectionAttachments.value.length,
                               itemBuilder: (content, index) {
                                 final File photo =
-                                documentAttachments.value[index];
+                                documentInspectionAttachments.value[index];
                                 final String fileType =
                                 checkFileType(photo.path);
                                 var filenameArr = photo.path.split("/");
@@ -497,9 +941,8 @@ class DocumentsController extends BaseController{
                       ),
                       Expanded(
                         child: ElevatedButton(
-                            onPressed: () async {
-                              await addDocuments(type);
-                              Get.back();
+                            onPressed: () {
+                              addDocumentConfirm(type);
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: primaryColor,
@@ -511,7 +954,7 @@ class DocumentsController extends BaseController{
                                 width: double.infinity,
                                 child: Center(
                                     child: Text(
-                                      'Add',
+                                      'Submit',
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 16,
@@ -531,33 +974,9 @@ class DocumentsController extends BaseController{
     );
   }
 
-  Future<void> addDocuments(String type) async {
-    if (documentCertificateNumber.text != '' &&
-        documentCertificateDate.text != '' &&
-        documentCertificateBlanko.text != '' &&
-        documentCertificateLhv.text != '' &&
-        documentCertificateLs.text != '' &&
-        documentAttachments.value.isNotEmpty) {
-        documents.value.add(
-            <String, String>{
-              'certNumber': documentCertificateNumber.value.text,
-              'certDate': documentCertificateDate.value.text,
-              'certBlanko': documentCertificateBlanko.value.text,
-              'certLhv': documentCertificateLhv.value.text,
-              'certLs': documentCertificateLs.value.text
-            }
-        );
-        documentsAttachments.value.add(documentAttachments.value);
-
-    }
-    documentAttachments.value = [];
-    documentCertificateNumber.text = '';
-    documentCertificateDate.text = '';
-    documentCertificateBlanko.text = '';
-    documentCertificateLhv.text = '';
-    documentCertificateLs.text = '';
-    update();
-    debugPrint('documents : ${jsonEncode(documents.value)}');
+  void checkDocumentList(String type) {
+    debugPrint(
+        'document now: ${jsonEncode(type == 'inspect' ? documentInspection.value : documentLaboratory.value)}');
   }
 
   void addDocumentConfirm(String type) {
@@ -584,71 +1003,10 @@ class DocumentsController extends BaseController{
               Get.back();
               Get.back();
               //await addDocuments(type);
-
+              Get.to<void>(() => const DocumentsScreen(),arguments: {
+                'type' : type,
+              });
             },
-          ),
-        ],
-      ),
-    );
-  }
-
-  void previewImageList(int index, String photo) {
-    Get.dialog(
-      AlertDialog(
-        title: Row(
-          children: [
-            Text(
-              'Attachment ${index + 1}',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: primaryColor),
-            ),
-            InkWell(
-              onTap: () {},
-              child: Icon(
-                Icons.delete_forever,
-                color: Colors.red,
-              ),
-            ),
-            Spacer(),
-            IconButton(
-              onPressed: () {
-                Get.back();
-              },
-              icon: Icon(Icons.close),
-            )
-          ],
-        ),
-        content: SizedBox(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.file(
-                File(photo),
-                fit: BoxFit.cover,
-              ),
-            ],
-          ),
-        ),
-        actions: [],
-      ),
-    );
-  }
-
-  void openDialog(String type, String text) {
-    Get.dialog(
-      AlertDialog(
-        title: Text(
-          type,
-          style: TextStyle(
-              fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
-        ),
-        content: Text(text),
-        actions: [
-          TextButton(
-            child: const Text("Close"),
-            onPressed: () => Get.back(),
           ),
         ],
       ),
