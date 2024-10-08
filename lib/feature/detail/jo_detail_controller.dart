@@ -39,6 +39,7 @@ class JoDetailController extends BaseController {
   int picInspector = 0;
   int picLaboratory = 0;
   bool isLoadingJO = false;
+  bool isLoadingJOImage = false;
   Rx<DataDetail> dataJoDetail = Rx(DataDetail());
   Rx<DataPIC> dataJoPIC = Rx(DataPIC());
   RxList<DataDailyPhoto> dataJoDailyPhotos = RxList();
@@ -52,9 +53,12 @@ class JoDetailController extends BaseController {
   RxList<String> activity5Barges = RxList();
   RxList<TextEditingController> bargesController = RxList();
   RxList<File> dailyActivityPhotos = RxList();
+  RxList<File> dailyActivityPhotosTemp = RxList();
   RxList<String> dailyActivityPhotosDescText = RxList();
+  RxList<String> dailyActivityPhotosDescTextTemp = RxList();
   RxList<TextEditingController> dailyActivityPhotosDesc = RxList();
-  RxInt adddailyActivityPhotosCount = RxInt(1);
+  RxList<TextEditingController> dailyActivityPhotosDescTemp = RxList();
+  RxInt adddailyActivityPhotosCount = RxInt(0);
   Rx<TextEditingController> dailyActivityPhotosDescEdit = TextEditingController().obs;
   RxList<Laboratory> labs = RxList();
   RxList<Activity> activityList = RxList();
@@ -106,6 +110,7 @@ class JoDetailController extends BaseController {
   RxList<File> documentInspectionAttachments = RxList();
   RxList<Map<String, dynamic>> documentLaboratory = RxList();
   RxList<File> documentLaboratoryAttachments = RxList();
+  Rx<File> activityPreviewFoto = Rx(File(''));
 
   @override
   void onInit()async{
@@ -116,8 +121,8 @@ class JoDetailController extends BaseController {
     id = argument['id'];
     statusId = argument['status'];
     isLoadingJO == true;
-    await getData();
     update();
+    await getData();
 
     super.onInit();
   }
@@ -167,14 +172,24 @@ class JoDetailController extends BaseController {
   Future<void> getJoDailyPhoto() async{
     var response = await repository.getJoDailyPhoto(id) ?? JoDailyPhoto();
     debugPrint('JO Daily Photo: ${jsonEncode(response)}');
-    dataJoDailyPhotos.value = response?.data ?? [];
-    if(dataJoDailyPhotos.value.isNotEmpty) {
-      dataJoDailyPhotos.value.forEach((data) async {
+    if(response.data!.isNotEmpty){
+      dataJoDailyPhotos.value = response?.data ?? [];
+      if(dataJoDailyPhotos.value.isNotEmpty) {
+        isLoadingJOImage = true;
+        update();
         dailyActivityPhotos.value = [];
-        final File photo = await getImagesFromUrl(data.pathPhoto!);
-        dailyActivityPhotos.value.add(photo);
-        dailyActivityPhotosDescText.value.add(data.keterangan ?? '');
-      });
+        TextEditingController tempPhotoDesc = TextEditingController();
+        dataJoDailyPhotos.value.forEach((data) async {
+          final File photo = await getImagesFromUrl(data.pathPhoto!);
+          dailyActivityPhotos.value.add(photo);
+          tempPhotoDesc.text = data.keterangan ?? '';
+          dailyActivityPhotosDesc.value.add(tempPhotoDesc);
+          dailyActivityPhotosDescText.value.add(data.keterangan ?? '');
+          update();
+        });
+        isLoadingJOImage = false;
+        update();
+      }
     }
   }
 
@@ -215,9 +230,6 @@ class JoDetailController extends BaseController {
 
     }
     );
-    // activityList.value.map((item){return item.transDate;}).toSet().toList().forEach((_){
-    //     activityListTextController.value.add(TextEditingController());
-    // });
   }
 
   Future<void> getJoDailyActivity5() async{
@@ -245,11 +257,6 @@ class JoDetailController extends BaseController {
           transhipment: dataTranshipment
       ));
     }
-    // if(dataListActivity5.value.data!.isNotEmpty){
-    //   dataListActivity5.value.data!.forEach((data){
-    //
-    //   });
-    // }
   }
 
   Future<void> getJoDailyActivity6() async{
@@ -280,25 +287,222 @@ class JoDetailController extends BaseController {
     });
   }
 
-  // Future<void> getJoDailyActivityLab() async{
-  //   var response = await repository.getJoListDailyActivityLab(6) ?? JoListDailyActivityLab();
-  //   debugPrint('Jo Daily Activity Lab: ${jsonEncode(response)}');
-  //   dataListActivityLab.value = response?.data ?? DataListActivityLab();
-  //   dataListActivityLab.value.data!.forEach((item){
-  //     labs.value.add(item.laboratoriumName!);
-  //   });
-  //   update();
-  // }
-  //
-  // Future<void> getJoDailyActivityLab5() async{
-  //   var response = await repository.getJoListDailyActivityLab5(6) ?? JoListDailyActivityLab5();
-  //   debugPrint('JO Daily Activity Lab 5: ${jsonEncode(response)}');
-  //   dataListActivityLab5.value = response?.data ?? DataListActivityLab5();
-  //   dataListActivityLab5.value.data!.forEach((item){
-  //     labs.value.add(item.laboratoriumName!);
-  //   });
-  //   update();
-  // }
+  Future inspectionMediaPickerConfirm(int index) async {
+    Get.dialog(
+      AlertDialog(
+        title: Text('Photo Attachment',
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: primaryColor
+          ),
+        ),
+        content: Text('Pilih sumber foto yang ingin dilampirkan.'),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: Center(
+                  child: SizedBox(
+                    width: 68,
+                    height: 67,
+                    child: ElevatedButton(
+                        onPressed: () async {
+                          Get.back();
+                          var file = await cameraImage();
+                          adddailyActivityPhotos(file,'');
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                side: BorderSide(color: primaryColor),
+                                borderRadius: BorderRadius.circular(12))),
+                        child: Center(
+                            child: Icon(Icons.camera_alt,
+                              color: primaryColor,
+                            )
+                        )
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: SizedBox(
+                    width: 68,
+                    height: 68,
+                    child: ElevatedButton(
+                        onPressed: () async {
+                          Get.back();
+                          var file = await pickImage();
+                          adddailyActivityPhotos(file,'');
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                side: BorderSide(color: primaryColor),
+                                borderRadius: BorderRadius.circular(12))),
+                        child: Center(
+                            child: Icon(Icons.folder_rounded,
+                              color: primaryColor,
+                            )
+                        )
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Future inspectionMediaPickerConfirmEdit(int index) async {
+    Get.dialog(
+      AlertDialog(
+        title: Text('Photo Attachment',
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: primaryColor
+          ),
+        ),
+        content: Text('Pilih sumber foto yang ingin dilampirkan.'),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: Center(
+                  child: SizedBox(
+                    width: 68,
+                    height: 67,
+                    child: ElevatedButton(
+                        onPressed: () async {
+                          Get.back();
+                          var file = await cameraImage();
+                          dailyActivityPhotosTemp.value[index] = file;
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                side: BorderSide(color: primaryColor),
+                                borderRadius: BorderRadius.circular(12))),
+                        child: Center(
+                            child: Icon(Icons.camera_alt,
+                              color: primaryColor,
+                            )
+                        )
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: SizedBox(
+                    width: 68,
+                    height: 68,
+                    child: ElevatedButton(
+                        onPressed: () async {
+                          Get.back();
+                          var file = await pickImage();
+                          dailyActivityPhotosTemp.value[index] = file;
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                side: BorderSide(color: primaryColor),
+                                borderRadius: BorderRadius.circular(12))),
+                        child: Center(
+                            child: Icon(Icons.folder_rounded,
+                              color: primaryColor,
+                            )
+                        )
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Future inspectionMediaPreviewPickerConfirmEdit(int index) async {
+    Get.dialog(
+      AlertDialog(
+        title: Text('Photo Attachment',
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: primaryColor
+          ),
+        ),
+        content: Text('Pilih sumber foto yang ingin dilampirkan.'),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: Center(
+                  child: SizedBox(
+                    width: 68,
+                    height: 67,
+                    child: ElevatedButton(
+                        onPressed: () async {
+                          Get.back();
+                          var file = await cameraImage();
+                          dailyActivityPhotos.value[index] = file;
+                          activityPreviewFoto.value = file;
+                          updateActivityDailyPhoto(file, int.parse(dataJoDailyPhotos.value[index].id!.toString()),dailyActivityPhotosDescEdit.value.text);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                side: BorderSide(color: primaryColor),
+                                borderRadius: BorderRadius.circular(12))),
+                        child: Center(
+                            child: Icon(Icons.camera_alt,
+                              color: primaryColor,
+                            )
+                        )
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: SizedBox(
+                    width: 68,
+                    height: 68,
+                    child: ElevatedButton(
+                        onPressed: () async {
+                          Get.back();
+                          var file = await pickImage();
+                          dailyActivityPhotos.value[index] = file;
+                          activityPreviewFoto.value = file;
+                          updateActivityDailyPhoto(file, int.parse(dataJoDailyPhotos.value[index].id!.toString()),dailyActivityPhotosDescEdit.value.text);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                side: BorderSide(color: primaryColor),
+                                borderRadius: BorderRadius.circular(12))),
+                        child: Center(
+                            child: Icon(Icons.folder_rounded,
+                              color: primaryColor,
+                            )
+                        )
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
 
   Future cameraImage() async {
     File? image;
@@ -314,11 +518,12 @@ class JoDetailController extends BaseController {
   }
 
   Future pickImage() async {
-    File image;
+    File? image;
     try {
-      final pic = await picker.pickImage(source: ImageSource.gallery);
+      final XFile? pic = await picker.pickImage(source: ImageSource.gallery);
       final imageTemp = File(pic!.path);
       image = imageTemp;
+      update();
       return image;
     } on PlatformException catch (e) {
       print('Failed to pick image: $e');
@@ -326,19 +531,20 @@ class JoDetailController extends BaseController {
   }
   
   void adddailyActivityPhotos(File foto, String desc){
-    dailyActivityPhotos.value.add(foto);
-    dailyActivityPhotosDescText.value.add(desc);
+    dailyActivityPhotosTemp.value.add(foto);
+    dailyActivityPhotosDescTextTemp.value.add(desc);
   }
 
   void adddailyActivityPhotoForm(){
     adddailyActivityPhotosCount.value++;
-    dailyActivityPhotosDesc.value.add(TextEditingController());
-    dailyActivityPhotosDescText.value.add('');
+    dailyActivityPhotosDescTemp.value.add(TextEditingController());
+    dailyActivityPhotosDescTextTemp.value.add('');
   }
 
   void removePhotoActivity(){
-    dailyActivityPhotos.value.removeLast();
-    dailyActivityPhotosDesc.value.removeLast();
+    dailyActivityPhotosTemp.value.removeLast();
+    dailyActivityPhotosDescTemp.value.removeLast();
+    dailyActivityPhotosDescTextTemp.value.removeLast();
     adddailyActivityPhotosCount.value--;
     update();
   }
@@ -349,13 +555,15 @@ class JoDetailController extends BaseController {
 
   void sendActivityDailyPhoto() async {
     int success = 0;
-    if(dailyActivityPhotos.value.isNotEmpty && dailyActivityPhotosDesc.value.isNotEmpty){
-      for(var i = 0; i < dailyActivityPhotos.value.length; i++){
+    if(dailyActivityPhotosTemp.value.isNotEmpty && dailyActivityPhotosDescTemp.value.isNotEmpty){
+      for(var i = 0; i < dailyActivityPhotosTemp.value.length; i++){
         final File photo = dailyActivityPhotos.value[i];
-        final String desc = dailyActivityPhotosDesc.value[i].text;
-        String response = await sendPhotos(photo, desc);
+        final TextEditingController desc = dailyActivityPhotosDesc.value[i];
+        String response = await sendPhotos(photo, desc.text);
         if(response == 'success'){
           success++;
+          dailyActivityPhotos.value.add(photo);
+          dailyActivityPhotosDesc.value.add(desc);
         }
       }
     } else {
@@ -367,16 +575,20 @@ class JoDetailController extends BaseController {
       if(activityList.value.isEmpty){
         changeStatusJo();
       }
-      changeStatusJo();
+      // changeStatusJo();
       getJoDailyPhoto();
+      dailyActivityPhotosTemp.value = [];
+      dailyActivityPhotosDescTemp.value = [];
+      dailyActivityPhotosDescTextTemp.value = [];
+      adddailyActivityPhotosCount.value = 0;
     } else {
       openDialog('Attention', 'Beberapa foto gagal dikirim');
     }
 
   }
 
-  Future<String> updateActivityDailyPhoto(File image, int id) async {
-    var response = await repository.updateActivityDailyPhoto(image, id);
+  Future<String> updateActivityDailyPhoto(File image, int id, String desc) async {
+    var response = await repository.updateActivityDailyPhoto(image, id, desc);
     if(response?.httpCode != 200){
       return 'failed';
     } else {
@@ -412,10 +624,10 @@ class JoDetailController extends BaseController {
               color: primaryColor
           ),
         ),
-        content: Text('Apakah anda ingin melanjutkan ke stage berikutnya? jika Ya, anda tidak bisa mengubah stage sebelumnya. Pastikan data yang anda input benar.'),
+        content: Text('Apakah benar anda ingin menambahkan foto JO ini?'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -433,10 +645,61 @@ class JoDetailController extends BaseController {
     );
   }
 
+  Future<String> deletePhoto(int id)async{
+    var response = await repository.deleteActivityPhoto(id);
+    if(response?.message == null){
+      return 'failed';
+    } else {
+      return 'success';
+    }
+  }
+
+  void deleteActivityDailyPhotoConfirm(int id) {
+    Get.dialog(
+      AlertDialog(
+        title: Text('Attention',
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: primaryColor
+          ),
+        ),
+        content: Text('Apakah benar anda ingin menghapus foto JO ini?'),
+        actions: [
+          TextButton(
+            child: const Text("Cancel"),
+            onPressed: () => Get.back(),
+          ),
+          TextButton(
+            child: const Text("OK",
+              style: TextStyle(
+                  fontWeight: FontWeight.bold),
+            ),
+            onPressed: () async {
+              Get.back();
+              var delete = await deletePhoto(id);
+              if(delete == 'success'){
+                var index = dataJoDailyPhotos.value.indexWhere((foto) => foto.id == id);
+                dataJoDailyPhotos.value.removeAt(index);
+                dailyActivityPhotos.value.removeAt(index);
+                update();
+                Get.back();
+              } else {
+                openDialog('Failed', 'Gagal hapus foto');
+              }
+              //sendActivityDailyPhoto();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   void drawerDailyActivityImage(){
-    if(dailyActivityPhotosDesc.value.isEmpty){
-      dailyActivityPhotosDesc.value.add(TextEditingController());
-      dailyActivityPhotosDescText.value.add('');
+    if(dailyActivityPhotosDescTemp.value.isEmpty){
+      adddailyActivityPhotosCount.value++;
+      dailyActivityPhotosDescTemp.value.add(TextEditingController());
+      dailyActivityPhotosDescTextTemp.value.add('');
     }
     Get.bottomSheet(
       GetBuilder(
@@ -452,7 +715,7 @@ class JoDetailController extends BaseController {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Daily Activity',
+                Text('Add JO Photos',
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -474,18 +737,20 @@ class JoDetailController extends BaseController {
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Photo ${adddailyActivityPhotosCount.value}'),
+                                    Text('Photo ${index + 1}'),
                                     const SizedBox(height: 8,),
-                                    dailyActivityPhotos.value.isNotEmpty && dailyActivityPhotos.value.length == adddailyActivityPhotosCount.value ? Column(
+                                    index < dailyActivityPhotosTemp.value.length ? Column(
                                       children: [
-                                        Image.file(File(dailyActivityPhotos.value[index].path), fit: BoxFit.fitWidth,),
+                                        InkWell(
+                                            onTap:()async{
+                                              inspectionMediaPickerConfirmEdit(index);
+                                            },
+                                            child: Image.file(File(dailyActivityPhotosTemp.value[index].path), fit: BoxFit.fitWidth,)),
                                         const SizedBox(height: 8,),
                                       ],
-                                    ) : const SizedBox(),
-                                    InkWell(
+                                    ) : InkWell(
                                       onTap: () async {
-                                        var foto = await cameraImage();
-                                        adddailyActivityPhotos(foto,'');
+                                        inspectionMediaPickerConfirm(index);
                                       },
                                       child: Container(
                                         height: 54,
@@ -503,7 +768,7 @@ class JoDetailController extends BaseController {
                                     ),
                                     const SizedBox(height: 16,),
                                     TextFormField(
-                                      controller: dailyActivityPhotosDesc.value[index],
+                                      controller: dailyActivityPhotosDescTemp.value[index],
                                       onChanged: (value){
                                         editPhotoActivityDesc(index, value);
                                       },
@@ -529,7 +794,7 @@ class JoDetailController extends BaseController {
                               }),
                           Row(
                             children: [
-                              adddailyActivityPhotosCount.value < 5 ? InkWell(
+                              InkWell(
                                 onTap: (){
                                   adddailyActivityPhotoForm();
                                   update();
@@ -548,7 +813,7 @@ class JoDetailController extends BaseController {
                                     ),
                                   ),
                                 ),
-                              ) : const SizedBox(),
+                              ),
                               adddailyActivityPhotosCount.value > 1 ? InkWell(
                                 onTap: (){
                                   removePhotoActivity();
@@ -640,9 +905,9 @@ class JoDetailController extends BaseController {
     );
   }
 
-  void previewImage(int index,String photo, String desc){
+  void previewImage(int index,String photo, String desc)async{
     dailyActivityPhotosDescEdit.value.text = desc;
-    Rx<File> foto = File(photo).obs;
+    activityPreviewFoto.value = await File(photo);
     Get.dialog(
       GetBuilder(
         init: JoDetailController(),
@@ -657,7 +922,9 @@ class JoDetailController extends BaseController {
                 ),
               ),
               dataJoDetail.value.detail?.statusJo == 'Assigned' || dataJoDetail.value.detail?.statusJo == 'On Progres' ? InkWell(
-                onTap: (){},
+                onTap: (){
+                  deleteActivityDailyPhotoConfirm(int.parse(dataJoDailyPhotos.value[index].id!.toString()));
+                },
                 child: Icon(Icons.delete_forever, color: Colors.red,),
               ) : const SizedBox(),
               Spacer(),
@@ -675,31 +942,37 @@ class JoDetailController extends BaseController {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.file(
-                    File(foto.value.path),
-                    fit: BoxFit.cover,
-                  ),
-                  const SizedBox(height: 16,),
                   InkWell(
-                    onTap: () async {
-                      var image = await cameraImage();
-                      foto.value = image;
-                      //updateActivityDailyPhoto(foto, int.parse(dataJoDailyPhotos.value[index].id!.toString()));
-                    },
-                    child: Container(
-                      height: 54,
-                      width: 54,
-                      decoration: BoxDecoration(
-                          border: Border.all(color: primaryColor),
-                          borderRadius: BorderRadius.circular(8)
-                      ),
-                      child: Center(
-                        child: Icon(Icons.camera_alt_sharp,
-                          color: primaryColor,
-                        ),
-                      ),
+                      onTap: () async {
+                        inspectionMediaPreviewPickerConfirmEdit(index);
+
+                      },
+                    child: Image.file(
+                      File(activityPreviewFoto.value.path),
+                      fit: BoxFit.cover,
                     ),
                   ),
+                  const SizedBox(height: 16,),
+                  // InkWell(
+                  //   onTap: () async {
+                  //     var image = await cameraImage();
+                  //     foto.value = image;
+                  //     //updateActivityDailyPhoto(foto, int.parse(dataJoDailyPhotos.value[index].id!.toString()));
+                  //   },
+                  //   child: Container(
+                  //     height: 54,
+                  //     width: 54,
+                  //     decoration: BoxDecoration(
+                  //         border: Border.all(color: primaryColor),
+                  //         borderRadius: BorderRadius.circular(8)
+                  //     ),
+                  //     child: Center(
+                  //       child: Icon(Icons.camera_alt_sharp,
+                  //         color: primaryColor,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                   const SizedBox(height: 16,),
                   dataJoDetail.value.detail?.statusJo == 'Assigned' || dataJoDetail.value.detail?.statusJo == 'On Progres' ? TextFormField(
                     controller: dailyActivityPhotosDescEdit.value,
@@ -727,7 +1000,7 @@ class JoDetailController extends BaseController {
             dataJoDetail.value.detail?.statusJo == 'Assigned' || dataJoDetail.value.detail?.statusJo == 'On Progres' ? ElevatedButton(
                 onPressed: () {
                   editPhotoActivityDesc(index, dailyActivityPhotosDescEdit.value.text);
-                  updateActivityConfirm(File(photo), int.parse(dataJoDailyPhotos.value[index].id!.toString()));
+                  updateActivityConfirm(File(photo), int.parse(dataJoDailyPhotos.value[index].id!.toString()),dailyActivityPhotosDescEdit.value.text);
                 },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
@@ -754,7 +1027,7 @@ class JoDetailController extends BaseController {
     );
   }
 
-  void updateActivityConfirm(File foto, int index) {
+  void updateActivityConfirm(File foto, int index, String desc) {
     Get.dialog(
       AlertDialog(
         title: Text('Attention',
@@ -776,7 +1049,7 @@ class JoDetailController extends BaseController {
                   fontWeight: FontWeight.bold),
             ),
             onPressed: () async {
-              var result = await updateActivityDailyPhoto(foto, index);
+              var result = await updateActivityDailyPhoto(foto, index, desc);
               if(result == 'success'){
                 Get.back();
                 openDialog("Success", "Berhasil ubah foto.");
@@ -906,6 +1179,12 @@ class JoDetailController extends BaseController {
       activityListTextController.value.removeAt(index);
     }
     activityList.value.removeAt(indexitem);
+    update();
+  }
+
+  void removeActivityByDate(String date, int indexDate){
+    activityList.value.removeWhere((item) => item.transDate == date);
+    activityListTextController.value.removeAt(indexDate);
     update();
   }
 
@@ -1161,7 +1440,11 @@ class JoDetailController extends BaseController {
                                                             ),
                                                             IconButton(
                                                                 onPressed:
-                                                                    () {},
+                                                                    () {
+                                                                      if(activity != null){
+                                                                        removeActivityByDate(activity, index);
+                                                                      }
+                                                                    },
                                                                 icon: Icon(
                                                                   Icons
                                                                       .delete_forever,
@@ -1251,7 +1534,7 @@ class JoDetailController extends BaseController {
                                                   const SizedBox(
                                                     height: 16,
                                                   ),
-                                                  TextFormField(
+                                                  index < (activityListTextController.value.length) ? TextFormField(
                                                     controller: activityListTextController[index],
                                                     onChanged: (value){
                                                       debugPrint(value);
@@ -1285,7 +1568,7 @@ class JoDetailController extends BaseController {
                                                                     onFocusColor),
                                                         fillColor:
                                                             onFocusColor),
-                                                  ),
+                                                  ) : const SizedBox(),
                                                 ],
                                               ),
                                             ),
@@ -1487,8 +1770,8 @@ class JoDetailController extends BaseController {
 
   void drawerDailyActivity5(){
     qtyController.text = dataJoDetail.value.detail!.qty.toString();
-    uomController.text = dataJoDetail.value.detail!.uomName!;
-    vesselController.text = dataJoDetail.value.detail!.vessel!;
+    uomController.text = dataJoDetail.value.detail!.uomName ?? '';
+    vesselController.text = dataJoDetail.value.detail!.vessel ?? '';
     if(activity5TranshipmentList.value.isEmpty){
       jettyListTextController.value.add(TextEditingController());
       initialDateActivity5ListTextController.value.add(TextEditingController());

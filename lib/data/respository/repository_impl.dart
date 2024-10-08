@@ -13,6 +13,7 @@ import 'package:ops_mobile/data/model/jo_list_daily_activity_lab.dart';
 import 'package:ops_mobile/data/model/jo_list_daily_activity_lab5.dart';
 import 'package:ops_mobile/data/model/jo_list_model.dart';
 import 'package:ops_mobile/data/model/jo_pic_model.dart';
+import 'package:ops_mobile/data/model/jo_response_delete_activity_photo.dart';
 import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
 import 'package:ops_mobile/data/model/login_model.dart';
@@ -266,7 +267,7 @@ class RepositoryImpl implements Repository {
     return response?.body;
   }
 
-  FutureOr<ResponseJoUpdateActiviyPhoto?> updateActivityDailyPhoto(File photo, int id)async{
+  FutureOr<ResponseJoUpdateActiviyPhoto?> updateActivityDailyPhoto(File photo, int id, String desc)async{
     Response? response;
     var filenameArr = photo.path.split("/");
     var filename = filenameArr.last;
@@ -276,9 +277,29 @@ class RepositoryImpl implements Repository {
         body: FormData({
           'photo': MultipartFile(image, filename: filename, contentType: 'image'),
           'photoId': id,
+          'description': desc
         }),
         decoder: (val) => ResponseJoUpdateActiviyPhoto.fromJson(val),
       );
+    } on Exception catch(e){
+      debugPrint(e.toString());
+      rethrow;
+    }
+
+    return response?.body;
+  }
+
+  FutureOr<JoResponseDeleteActivityPhoto?> deleteActivityPhoto(int id)async{
+    Response? response;
+    try{
+      response = await networkCore.delete('/transaksi/jo/progress_daily_activity/delete_photo/$id',
+          decoder: (val) => JoResponseDeleteActivityPhoto.fromJson(val),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+      );
+
     } on Exception catch(e){
       debugPrint(e.toString());
       rethrow;

@@ -32,12 +32,6 @@ class JoDetailScreen extends StatelessWidget {
               backgroundColor: primaryColor,
               foregroundColor: Colors.white,
               automaticallyImplyLeading: true,
-              // leading: GestureDetector(
-              //     onTap: () => Get.back<void>(),
-              //     child: const Icon(
-              //       Icons.arrow_back_ios,
-              //       color: Colors.white,
-              //     )),
               title: const Text(
                 'JO Details',
                 style: TextStyle(
@@ -1505,36 +1499,40 @@ class JoDetailScreen extends StatelessWidget {
                                             const Divider(
                                                 thickness: 0.4
                                             ),
-                                            controller.dataJoPIC.value.lab!.isNotEmpty ? Column(
+                                            controller.dataJoPIC.value != null ? Column(
                                               children: [
-                                                for(var i = 0; i < controller.dataJoPIC.value.lab!.length; i++)  Column(
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Expanded( child:
-                                                        Text('Laboratory ${i+1}',
-                                                          style: TextStyle(
-                                                              fontSize: 14,
-                                                              fontWeight: FontWeight.w700
+                                                controller.dataJoPIC.value.lab != null ? Column(
+                                                    children: [
+                                                      for(var i = 0; i < controller.dataJoPIC.value.lab!.length; i++)  Column(
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              Expanded( child:
+                                                              Text('Laboratory ${i+1}',
+                                                                style: TextStyle(
+                                                                    fontSize: 14,
+                                                                    fontWeight: FontWeight.w700
+                                                                ),
+                                                              ),
+                                                              ),
+                                                              const VerticalDivider(width: 1),
+                                                              const SizedBox(width:16),
+                                                              Expanded( child:
+                                                              Text(controller.dataJoPIC.value.lab![i].name ?? '-',
+                                                                style: const TextStyle(
+                                                                  fontSize: 14,
+                                                                ),
+                                                              ),
+                                                              )
+                                                            ],
                                                           ),
-                                                        ),
-                                                        ),
-                                                        const VerticalDivider(width: 1),
-                                                        const SizedBox(width:16),
-                                                        Expanded( child:
-                                                        Text(controller.dataJoPIC.value.lab![i].name ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          const Divider(
+                                                              thickness: 0.4
                                                           ),
-                                                        ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    const Divider(
-                                                        thickness: 0.4
-                                                    ),
-                                                  ],
-                                                ),
+                                                        ],
+                                                      ),
+                                                ]
+                                                ) : const SizedBox(),
                                               ],
                                             ) : const SizedBox(),
                                           ],
@@ -1828,6 +1826,7 @@ class JoDetailScreen extends StatelessWidget {
                                             const Divider(
                                                 thickness: 0.4
                                             ),
+                                            controller.isLoadingJOImage == false ?
                                             controller.dailyActivityPhotos.value.isNotEmpty ? GridView.builder(
                                               shrinkWrap: true,
                                                 physics: NeverScrollableScrollPhysics(),
@@ -1853,7 +1852,12 @@ class JoDetailScreen extends StatelessWidget {
                                                     ),
                                                   );
                                                 }
-                                            ) : const SizedBox()
+                                            ) : const SizedBox() :
+                                                Expanded(
+                                                    child: Center(
+                                                        child: CircularProgressIndicator()
+                                                    )
+                                                ),
                                           ],
                                         ),
                                       )
