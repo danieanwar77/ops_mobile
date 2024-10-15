@@ -163,8 +163,7 @@ class JoWaitingController extends BaseController {
 
   @override
   void onInit() async {
-    userData.value =
-        Data.fromJson(jsonDecode(await StorageCore().storage.read('login')));
+    //userData.value = Data.fromJson(jsonDecode(await StorageCore().storage.read('login'))) ?? Data();
     debugPrint('data users: ${jsonEncode(userData.value)}');
     sampleFile = File('assets/sample/sample1.pdf');
     var argument = await Get.arguments;

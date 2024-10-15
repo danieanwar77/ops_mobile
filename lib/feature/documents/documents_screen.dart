@@ -33,6 +33,25 @@ class DocumentsScreen extends StatelessWidget{
             padding: const EdgeInsets.all(24),
             child: Obx(() => Column(
                 children: [
+                  Row(
+                    children: [
+                      Expanded(child: SizedBox()),
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: primaryColor,
+                        ),
+                        child: IconButton(
+
+                            onPressed: (){
+                              controller.drawerAddDocument(controller.documentType.value);
+                            },
+                            icon: Icon(Icons.add, color: Colors.white,)
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 16,),
                   controller.documents.value.isNotEmpty ? ListView.builder(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
@@ -278,20 +297,25 @@ class DocumentsScreen extends StatelessWidget{
                                     const VerticalDivider(width: 1),
                                     const SizedBox(width:16),
                                     Expanded(
-                                        child: Container(
-                                          padding: EdgeInsets.all(16),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(color: Colors.orange),
-                                              borderRadius: BorderRadius.circular(16)
-                                          ),
-                                          child: Center(
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                Icon(Icons.edit,color: Colors.orange),
-                                                const SizedBox(width:8),
-                                                Text('Edit',style: TextStyle(color: Colors.orange),),
-                                              ],
+                                        child: InkWell(
+                                          onTap: (){
+                                            controller.drawerEditDocument(index);
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.all(16),
+                                            decoration: BoxDecoration(
+                                                border: Border.all(color: Colors.orange),
+                                                borderRadius: BorderRadius.circular(16)
+                                            ),
+                                            child: Center(
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(Icons.edit,color: Colors.orange),
+                                                  const SizedBox(width:8),
+                                                  Text('Edit',style: TextStyle(color: Colors.orange),),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         )

@@ -15,6 +15,7 @@ import 'package:ops_mobile/data/model/jo_response_delete_activity_photo.dart';
 import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
 import 'package:ops_mobile/data/model/login_model.dart';
+import 'package:ops_mobile/data/model/response_gendata_file.dart';
 import 'package:ops_mobile/data/model/response_jo_activity_photo.dart';
 import 'package:ops_mobile/data/model/response_jo_change_status.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity.dart';
@@ -22,9 +23,12 @@ import 'package:ops_mobile/data/model/response_jo_insert_activity5.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity5_lab.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity_lab.dart';
 import 'package:ops_mobile/data/model/response_jo_update_activiy_photo.dart';
+import 'package:ops_mobile/data/model/response_register_device.dart';
 import 'package:ops_mobile/data/model/user_model.dart';
 
 abstract interface class Repository {
+  FutureOr<ResponseRegisterDevice> registerDevice(String employeeId, String uuid);
+  FutureOr<ResponseGendataFile> getGenData(String employeeId);
   FutureOr<UserModel?> getUser(int page);
   FutureOr<JoListModel?> getJoList(int status, int employee);
   FutureOr<LoginModel?> login(String username, String password);

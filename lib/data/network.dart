@@ -24,6 +24,10 @@ class NetworkCore extends GetConnect {
     super.onInit();
   }
 
+  void setBaseUrl(String url){
+    httpClient.baseUrl = url;
+  }
+
   Future<Response<dynamic>?> getRequest<T>(String url,
       {Map<String, String>? headers,
       Map<String, dynamic>? queryParameters,

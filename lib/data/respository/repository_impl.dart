@@ -18,6 +18,7 @@ import 'package:ops_mobile/data/model/jo_response_delete_activity_photo.dart';
 import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
 import 'package:ops_mobile/data/model/login_model.dart';
+import 'package:ops_mobile/data/model/response_gendata_file.dart';
 import 'package:ops_mobile/data/model/response_jo_activity_photo.dart';
 import 'package:ops_mobile/data/model/response_jo_change_status.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity.dart';
@@ -25,6 +26,7 @@ import 'package:ops_mobile/data/model/response_jo_insert_activity5.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity5_lab.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity_lab.dart';
 import 'package:ops_mobile/data/model/response_jo_update_activiy_photo.dart';
+import 'package:ops_mobile/data/model/response_register_device.dart';
 import 'package:ops_mobile/data/model/user_model.dart';
 import 'package:ops_mobile/data/network.dart';
 import 'package:ops_mobile/data/respository/repository.dart';
@@ -35,6 +37,45 @@ class RepositoryImpl implements Repository {
   NetworkCore networkCore;
 
   @override
+  FutureOr<ResponseRegisterDevice> registerDevice(String employeeId, String uuid) async {
+    late Response? response;
+    try{
+      response = await networkCore.postRequest('/registerdevice',
+          body: {
+            'e_number' : employeeId,
+            'imei' : uuid
+          },
+          decoder: ResponseRegisterDevice.fromJson,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+      );
+    } on Exception catch(e) {
+      debugPrint(e.toString());
+      rethrow;
+    }
+    return response?.body;
+  }
+
+  FutureOr<ResponseGendataFile> getGenData(String employeeId) async {
+    late Response? response;
+    try{
+      response = await networkCore.postRequest('/mobilegetfile',
+          body: {
+            'e_number': employeeId
+          },
+          decoder: ResponseGendataFile.fromJson,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+      );
+    } on Exception catch(e){
+      debugPrint(e.toString());
+      rethrow;
+    }
+    return response?.body;
+  }
+
   FutureOr<UserModel?> getUser(int page) async {
     late Response? response;
     try {
@@ -57,7 +98,7 @@ class RepositoryImpl implements Repository {
   FutureOr<JoListModel?> getJoList(int status, int employee) async {
     late Response? response;
     try{
-      response = await networkCore.getRequest('/transaksi/jo/$status/$employee',
+      response = await networkCore.getRequest('/transaksi/jo/$status/1624',
           decoder: (val) => JoListModel.fromJson(val),
           headers: {
             'Accept': 'application/json',
