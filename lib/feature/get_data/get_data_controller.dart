@@ -12,6 +12,8 @@ import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/core/core/constant/app_constant.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/data/model/response_gendata_file.dart';
+import 'package:ops_mobile/data/model/response_register_device.dart';
+import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path_provider_android/path_provider_android.dart';
@@ -55,7 +57,8 @@ class GetDataController extends BaseController{
     debugPrint('settings data: ${jsonEncode(settingsData)}');
     //storagePermission = await Permission.manageExternalStorage.status;
     update();
-      Permission.storage.request();
+    Permission.storage.request();
+    Permission.manageExternalStorage.request();
       // Permission.manageExternalStorage.request();
   }
 
@@ -72,16 +75,18 @@ class GetDataController extends BaseController{
 
   Future<void> getGenData()async{
     try{
-      var response = await repository.getGenData(settingsData['employee']);
+      var response = await repository.getGenData(settingsData['e_number']);
         if(response.file != null){
           await createFileFromBase64Str(response.file!);
-          readZip();
+          await readZip();
+          final data = await SqlHelper.getLogin(settingsData['e_number']);
+          debugPrint('user data: $data');
           openDialog('Success', 'Berhasil ambil data');
         } else {
           openDialog('Failed', 'Data gagal diambil');
         }
     } catch(e) {
-      openDialog('Failed', 'Data gagal diambil');
+      openDialog('Failed', '$e');
     }
   }
 
@@ -104,9 +109,18 @@ class GetDataController extends BaseController{
   Future<String> createFileFromBase64Str(String code) async {
     final encodedStr = code;
     Uint8List bytes = base64.decode(encodedStr);
-    final dir = await providerAndroid.getApplicationDocumentsPath();
-    File file = File(
-        "$dir/application.zip");
+    final dir = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
+    bool exists = await Directory('$dir/ops').exists();
+
+    if(exists == false){
+      Directory('$dir/ops').create();
+    }
+
+    if(await File("$dir/ops/application.zip").exists()){
+      File("$dir/ops/application.zip").deleteSync();
+    }
+
+    File file = File("$dir/ops/application.zip");
     await file.writeAsBytes(bytes);
     return file.path;
   }
@@ -130,14 +144,14 @@ class GetDataController extends BaseController{
     );
   }
 
-  void readZip()async{
+  Future<void> readZip()async{
     // Get app directory
-    var path = await providerAndroid.getApplicationDocumentsPath();
+    var path = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
 
     debugPrint('path app : $path');
 
     // Read the Zip file from disk.
-    final bytes = File('$path/application.zip').readAsBytesSync();
+    final bytes = File('$path/ops/application.zip').readAsBytesSync();
 
 // Decode the Zip file
     final archive = ZipDecoder().decodeBytes(bytes);
@@ -147,11 +161,11 @@ class GetDataController extends BaseController{
       final filename = file.name;
       if (file.isFile) {
         final data = file.content as List<int>;
-        File('$path/ops/out/' + filename)
+        File('$path/ops/' + filename)
           ..createSync(recursive: true)
           ..writeAsBytesSync(data);
       } else {
-        Directory('$path/ops/out/' + filename).create(recursive: true);
+        Directory('$path/ops/' + filename).create(recursive: true);
       }
       debugPrint('file extracted: $filename');
     }

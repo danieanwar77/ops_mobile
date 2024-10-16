@@ -6,12 +6,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
-import 'package:ops_mobile/core/core/bindings/global_bindings.dart';
 import 'package:ops_mobile/core/core/constant/app_constant.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/data/model/response_register_device.dart';
 import 'package:ops_mobile/data/network.dart';
-import 'package:ops_mobile/data/respository/repository_impl.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_ios/path_provider_ios.dart';
@@ -85,15 +83,15 @@ class RegisterDeviceController extends BaseController{
           'internet_url' : internetUrlText.text,
           'local_url' : localUrlText.text,
           'uuid' : uuid,
-          'employee' : employeeIdText.text
+          'e_number' : employeeIdText.text
         };
         await StorageCore().storage.write('settings', setting);
         await writeSettings(jsonEncode(setting));
         update();
         openDialog('Success', 'Berhasil register perangkat');
       }
-    } on Exception catch(e){
-      openDialog('Failed', 'Register perangkat gagal');
+    } catch(e){
+      openDialog('Failed', 'Register perangkat gagal: $e');
     }
   }
 

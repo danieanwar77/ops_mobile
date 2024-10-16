@@ -40,7 +40,7 @@ class RepositoryImpl implements Repository {
   FutureOr<ResponseRegisterDevice> registerDevice(String employeeId, String uuid) async {
     late Response? response;
     try{
-      response = await networkCore.postRequest('/registerdevice',
+      response = await networkCore.postRequest('/api/registerdevice',
           body: {
             'e_number' : employeeId,
             'imei' : uuid
@@ -60,7 +60,7 @@ class RepositoryImpl implements Repository {
   FutureOr<ResponseGendataFile> getGenData(String employeeId) async {
     late Response? response;
     try{
-      response = await networkCore.postRequest('/mobilegetfile',
+      response = await networkCore.postRequest('/api/mobilegetfile',
           body: {
             'e_number': employeeId
           },
