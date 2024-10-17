@@ -7,6 +7,8 @@ import 'package:open_filex/open_filex.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/feature/detail/jo_detail_controller.dart';
+import 'package:ops_mobile/feature/documents/documents_screen.dart';
+import 'package:ops_mobile/feature/waiting/jo_waiting_controller.dart';
 
 class JoWaitingScreen extends StatelessWidget {
   const JoWaitingScreen({super.key});
@@ -14,9 +16,9 @@ class JoWaitingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
-      init: JoDetailController(),
+      init: JoWaitingController(),
       builder: (controller) => controller.isLoadingJO == false ?  DefaultTabController(
-        length: 7,
+        length: controller.joWaitingTab.length,
         child: Scaffold(
             appBar: AppBar(
               actions: const [
@@ -57,36 +59,17 @@ class JoWaitingScreen extends StatelessWidget {
                         isScrollable: true,
                         labelColor: primaryColor,
                         unselectedLabelColor: Color(0xff727272),
-                        tabs: [
-                          Tab(
-                            text: 'Detail',
-                          ),
-                          Tab(
-                            text: 'KOS',
-                          ),
-                          Tab(
-                            text: 'PIC',
-                          ),
-                          controller.picInspector != 0 ? Tab(
-                            text: 'Progress & Daily Activity',
-                          ) : const SizedBox.shrink(),
-                          controller.picLaboratory != 0 ? Tab(
-                            text: 'Laboratory Progress',
-                          ) : const SizedBox.shrink(),
-                          controller.picInspector != 0 ? Tab(
-                              text: 'Document - Inspection'
-                          ) : const SizedBox.shrink(),
-                          controller.picLaboratory != 0 ? Tab(
-                              text: 'Document - Laboratory'
-                          ) : const SizedBox.shrink(),
-                        ],
+                        tabAlignment: TabAlignment.start,
+                        tabs: controller.joWaitingTab,
                       ),
                     ),
                   ];
                 },
                 body: TabBarView(
-                  children: [
-                    SingleChildScrollView(
+                  children:
+                  controller.joWaitingTab.map((Tab e) {
+                    return switch(e.text){
+                    'Detail' => SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: SizedBox(
@@ -1035,7 +1018,7 @@ class JoWaitingScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SingleChildScrollView(
+                    'KOS' => SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: SizedBox(
@@ -1359,7 +1342,7 @@ class JoWaitingScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SingleChildScrollView(
+                    'PIC' => SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: SizedBox(
@@ -1781,7 +1764,7 @@ class JoWaitingScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    controller.picInspector != 0 ? SingleChildScrollView(
+                    'Progress & Daily Activity' => SingleChildScrollView(
                       child: Padding(
                           padding: const EdgeInsets.all(16),
                           child: Obx(() => Column(
@@ -1866,51 +1849,6 @@ class JoWaitingScreen extends StatelessWidget {
                                       )
                                   ),
                                 ),
-                                controller.dataJoDetail.value.detail?.statusJo == 'Assigned' || controller.dataJoDetail.value.detail?.statusJo == 'On Progres' ? Column(
-                                    children: [
-                                      const SizedBox(height: 16),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: InkWell(
-                                              onTap:(){
-                                                controller.drawerDailyActivityImage();
-                                              },
-                                              child: Container(
-                                                padding: EdgeInsets.all(16),
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(width: 1, color: primaryColor),
-                                                  borderRadius: BorderRadius.circular(20),
-                                                ),
-                                                child: Row(
-                                                    children: [
-                                                      Icon(
-                                                          Icons.camera_alt_sharp,
-                                                          color: primaryColor
-                                                      ),
-                                                      Expanded(
-                                                          child: Center(
-                                                              child:
-                                                              Text('Add Photo',
-                                                                style: TextStyle(
-                                                                    fontWeight: FontWeight.w700,
-                                                                    color: primaryColor
-                                                                ),
-                                                              )
-                                                          )
-                                                      )
-                                                    ]
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          Expanded(
-                                              child: const SizedBox()
-                                          ),
-                                        ],
-                                      ),
-                                    ]
-                                ) : const SizedBox(),
                                 const SizedBox( height: 16),
                                 SizedBox(
                                     child: Card(
@@ -1942,14 +1880,6 @@ class JoWaitingScreen extends StatelessWidget {
                                                           )
                                                       ) : const SizedBox(),
                                                       Spacer(),
-                                                      controller.dataJoDetail.value.detail?.statusJo == 'Assigned' || controller.dataJoDetail.value.detail?.statusJo == 'On Progres' ? IconButton(
-                                                          onPressed: (){
-                                                            controller.activityStage < 5 ? controller.drawerDailyActivity()
-                                                                : controller.activityStage == 5 ? controller.drawerDailyActivity5()
-                                                                : controller.drawerDailyActivity6();
-                                                          },
-                                                          icon: Image.asset('assets/icons/addactivity.png', height: 32,)
-                                                      ) : const SizedBox()
                                                     ]
                                                 ),
                                                 const SizedBox(height: 16),
@@ -2828,7 +2758,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                               height: 54,
                                                               child: InkWell(
                                                                 onTap: (){
-                                                                  controller.previewImageAct6(index, attach.path);
+                                                                  controller.previewImage(index, attach.path, '');
                                                                 },
                                                                 child: Image.file(
                                                                   File(attach.path),
@@ -2865,9 +2795,8 @@ class JoWaitingScreen extends StatelessWidget {
                           ),
                           )
                       ),
-                    )
-                        : const SizedBox.shrink(),
-                    controller.picLaboratory != 0 ? SingleChildScrollView(
+                    ),
+                    'Laboratory Progress' => SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Obx(() => Column(
@@ -2909,9 +2838,8 @@ class JoWaitingScreen extends StatelessWidget {
                         ),
                         ),
                       ),
-                    )
-                        : const SizedBox.shrink(),
-                    controller.picInspector != 0 ? SingleChildScrollView(
+                    ),
+                    'Document - Inspection' => SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(
@@ -2921,7 +2849,8 @@ class JoWaitingScreen extends StatelessWidget {
                                     Spacer(),
                                     IconButton(
                                         onPressed: (){
-                                          controller.drawerAddDocument('inspect');
+                                          Get.to<void>(DocumentsScreen.new, arguments: {'type' : 'inspect'});
+                                          // controller.drawerAddDocument('inspect');
                                         },
                                         icon: Image.asset('assets/icons/addactivity.png', height: 32,)
                                     )
@@ -2929,10 +2858,10 @@ class JoWaitingScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 16),
                               Card(
-                                  color: Colors.white,
-                                  child: SizedBox(
-                                    width: MediaQuery.sizeOf(context).width - 40,
-                                    child: ExpansionTile(
+                                color: Colors.white,
+                                child: SizedBox(
+                                  width: MediaQuery.sizeOf(context).width - 40,
+                                  child: ExpansionTile(
                                       shape: Border.all(color: Colors.transparent),
                                       title: const Text('Inspection Certificate',
                                         style: TextStyle(
@@ -2944,162 +2873,173 @@ class JoWaitingScreen extends StatelessWidget {
                                       childrenPadding: const EdgeInsets.symmetric(horizontal : 16),
                                       expandedCrossAxisAlignment: CrossAxisAlignment.start,
                                       children: <Widget>[
-                                          Text('Certificate 1',
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w700,
-                                                color: green
-                                            ),
+                                        Text('Certificate 1',
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w700,
+                                              color: green
                                           ),
+                                        ),
                                         const SizedBox(height:16),
-                                          Row(
+                                        Row(
                                           children: [
                                             const Expanded( child:
-                                              Text('No Certificate/Report',
+                                            Text('No Certificate/Report',
                                               style: TextStyle(
-                                                  fontSize: 14,
-                                                  ),
-                                                ),
+                                                fontSize: 14,
                                               ),
+                                            ),
+                                            ),
                                             const VerticalDivider(width: 1),
                                             const SizedBox(width:16),
-                                              Expanded( child:
-                                                Text('-',
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                          const Divider(
-                                              thickness: 0.4
-                                          ),
-                                            Row(
-                                              children: [
-                                                const Expanded( child:
-                                                Text('Date Certificate/Report',
-                                                  style: TextStyle(
-                                                      fontSize: 14,
-                                                  ),
-                                                ),
-                                                ),
-                                                const VerticalDivider(width: 1),
-                                                const SizedBox(width:16),
-                                                Expanded( child:
-                                                Text('-',
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                                )
-                                              ],
+                                            Expanded( child:
+                                            Text('-',
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                              ),
                                             ),
-                                            const Divider(
-                                                thickness: 0.4
+                                            )
+                                          ],
+                                        ),
+                                        const Divider(
+                                            thickness: 0.4
+                                        ),
+                                        Row(
+                                          children: [
+                                            const Expanded( child:
+                                            Text('Date Certificate/Report',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                              ),
                                             ),
-                                            Row(
-                                              children: [
-                                                const Expanded( child:
-                                                Text('No Blanko Certificate',
-                                                  style: TextStyle(
-                                                      fontSize: 14,
-                                                  ),
-                                                ),
-                                                ),
-                                                const VerticalDivider(width: 1),
-                                                const SizedBox(width:16),
-                                                Expanded( child:
-                                                Text('-',
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                                )
-                                              ],
                                             ),
-                                            const Divider(
-                                                thickness: 0.4
+                                            const VerticalDivider(width: 1),
+                                            const SizedBox(width:16),
+                                            Expanded( child:
+                                            Text('-',
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                              ),
                                             ),
-                                            Row(
-                                              children: [
-                                                const Expanded( child:
-                                                Text('LHV Number',
-                                                  style: TextStyle(
-                                                      fontSize: 14,
-                                                  ),
-                                                ),
-                                                ),
-                                                const VerticalDivider(width: 1),
-                                                const SizedBox(width:16),
-                                                Expanded( child:
-                                                Text('-',
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                                )
-                                              ],
+                                            )
+                                          ],
+                                        ),
+                                        const Divider(
+                                            thickness: 0.4
+                                        ),
+                                        Row(
+                                          children: [
+                                            const Expanded( child:
+                                            Text('No Blanko Certificate',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                              ),
                                             ),
-                                            const Divider(
-                                                thickness: 0.4
                                             ),
-                                            Row(
-                                              children: [
-                                                const Expanded( child:
-                                                Text('LS Number',
-                                                  style: TextStyle(
-                                                      fontSize: 14,
-                                                  ),
-                                                ),
-                                                ),
-                                                const VerticalDivider(width: 1),
-                                                const SizedBox(width:16),
-                                                Expanded( child:
-                                                Text('-',
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                                )
-                                              ],
+                                            const VerticalDivider(width: 1),
+                                            const SizedBox(width:16),
+                                            Expanded( child:
+                                            Text('-',
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                              ),
                                             ),
-                                            const Divider(
-                                                thickness: 0.4
+                                            )
+                                          ],
+                                        ),
+                                        const Divider(
+                                            thickness: 0.4
+                                        ),
+                                        Row(
+                                          children: [
+                                            const Expanded( child:
+                                            Text('LHV Number',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                              ),
                                             ),
-                                            Row(
-                                              children: [
-                                                const Expanded( child:
-                                                Text('Upload Attachment Certificate',
-                                                  style: TextStyle(
-                                                      fontSize: 14,
-                                                  ),
-                                                ),
-                                                ),
-                                                const VerticalDivider(width: 1),
-                                                const SizedBox(width:16),
-                                                Expanded( child:
-                                                Text('-',
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                                )
-                                              ],
                                             ),
-                                            const Divider(
-                                                thickness: 0.4
+                                            const VerticalDivider(width: 1),
+                                            const SizedBox(width:16),
+                                            Expanded( child:
+                                            Text('-',
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                              ),
                                             ),
+                                            )
+                                          ],
+                                        ),
+                                        const Divider(
+                                            thickness: 0.4
+                                        ),
+                                        Row(
+                                          children: [
+                                            const Expanded( child:
+                                            Text('LS Number',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                            ),
+                                            const VerticalDivider(width: 1),
+                                            const SizedBox(width:16),
+                                            Expanded( child:
+                                            Text('-',
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                            )
+                                          ],
+                                        ),
+                                        const Divider(
+                                            thickness: 0.4
+                                        ),
+                                        Row(
+                                          children: [
+                                            const Expanded( child:
+                                            Text('Upload Attachment Certificate',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                            ),
+                                            const VerticalDivider(width: 1),
+                                            const SizedBox(width:16),
+                                            Expanded( child:
+                                            InkWell(
+                                              onTap: (){
+                                                OpenFilex.open(controller.sampleFile?.path ?? '');
+                                              },
+                                              child: SizedBox(
+                                                width: 54,
+                                                height: 54,
+                                                child: Center(
+                                                    child: Column(
+                                                      children: [
+                                                        Image.asset('assets/icons/pdfIcon.png', height: 42,),
+                                                        Text('Sample1.pdf', style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
+                                                      ],
+                                                    )
+                                                ),
+                                              ),
+                                            ),
+                                            )
+                                          ],
+                                        ),
+                                        const Divider(
+                                            thickness: 0.4
+                                        ),
                                       ]
+                                  ),
                                 ),
-                              ),
                               )
                             ]
                         ),
                       ),
-                    )
-                        : const SizedBox.shrink(),
-                    controller.picLaboratory != 0 ? SingleChildScrollView(
+                    ),
+                    'Document - Laboratory' => SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(
@@ -3285,9 +3225,19 @@ class JoWaitingScreen extends StatelessWidget {
                             ]
                         ),
                       ),
-                    )
-                        : const SizedBox.shrink(),
-                  ],
+                    ),
+                    _ => const Column(
+                      children: [
+                        Expanded(
+                            child: Center(
+                                child: CircularProgressIndicator()
+                            )
+                        ),
+                      ],
+                    ),
+                    };
+                  }
+                  ).toList()
                 )
             )
         ),

@@ -31,6 +31,7 @@ class RegisterDeviceScreen extends StatelessWidget{
                     height: 24,
                   ),
                   TextFormField(
+                    controller: controller.employeeIdText,
                     cursorColor: onFocusColor,
                     style: const TextStyle(color: onFocusColor),
                     decoration: InputDecoration(
@@ -51,6 +52,7 @@ class RegisterDeviceScreen extends StatelessWidget{
                     height: 24,
                   ),
                   TextFormField(
+                    controller: controller.internetUrlText,
                     cursorColor: onFocusColor,
                     style: const TextStyle(color: onFocusColor),
                     decoration: InputDecoration(
@@ -71,6 +73,7 @@ class RegisterDeviceScreen extends StatelessWidget{
                     height: 24,
                   ),
                   TextFormField(
+                    controller: controller.localUrlText,
                     cursorColor: onFocusColor,
                     style: const TextStyle(color: onFocusColor),
                     decoration: InputDecoration(
@@ -90,7 +93,7 @@ class RegisterDeviceScreen extends StatelessWidget{
                   const Spacer(),
                   ElevatedButton(
                       onPressed: () {
-
+                        controller.registerConfirm();
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,

@@ -19,6 +19,7 @@ import 'package:ops_mobile/data/model/jo_list_daily_activity_lab5.dart';
 import 'package:ops_mobile/data/model/jo_list_model.dart';
 import 'package:ops_mobile/data/model/jo_pic_model.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
+import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/login/login_screen.dart';
 
@@ -43,8 +44,21 @@ class HomeController extends BaseController{
 
   @override
   void onInit()async{
-    userData.value = Data.fromJson(jsonDecode(await StorageCore().storage.read('login')));
+    //userData.value = Data.fromJson(jsonDecode(await StorageCore().storage.read('login')));
+    var data = await SqlHelper.getUserDetail('1234');
+    userData.value = Data(
+      id : data.first['id'],
+      fullname: data.first['fullname'],
+      nip: data.first['e_number'],
+      positionId: data.first['jabatan_id'],
+      position: data.first['jabatan_id'].toString(),
+      divisionId: data.first['division_id'],
+      division: data.first['division'].toString(),
+      superior: data.first['superior_id'].toString()
+    );
+    await StorageCore().storage.write('user', jsonEncode(data));
     debugPrint('data users: ${jsonEncode(userData.value)}');
+    update();
     connectivityResult = await (Connectivity().checkConnectivity());
     //await getJO();
     super.onInit();

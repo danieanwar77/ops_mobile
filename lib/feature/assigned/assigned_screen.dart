@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/feature/assigned/assigned_controller.dart';
 import 'package:ops_mobile/feature/detail/jo_detail_screen.dart';
-import 'package:ops_mobile/feature/detail/jo_waiting_screen.dart';
+import 'package:ops_mobile/feature/waiting/jo_waiting_screen.dart';
 
 class AssignedScreen extends StatelessWidget{
   const AssignedScreen({super.key});

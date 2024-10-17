@@ -35,12 +35,13 @@ class GetDataScreen extends StatelessWidget{
                         cursorColor: onFocusColor,
                         style: const TextStyle(color: onFocusColor),
                         onTap: (){
-                          controller.selectDate(Get.context!);
+                          //controller.selectDate(Get.context!);
                         },
+                        readOnly: true,
                         decoration: InputDecoration(
                             suffixIcon: IconButton(
                                 onPressed: (){
-                                  controller.selectDate(Get.context!);
+                                  //controller.selectDate(Get.context!);
                                 },
                                 icon: const Icon(Icons.calendar_today_rounded)
                             ),
@@ -112,7 +113,7 @@ class GetDataScreen extends StatelessWidget{
                       const Spacer(),
                       ElevatedButton(
                           onPressed: () {
-
+                            controller.getGenData();
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: primaryColor,
