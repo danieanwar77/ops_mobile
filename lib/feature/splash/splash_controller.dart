@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -7,12 +8,15 @@ import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/home/home_screen.dart';
 import 'package:ops_mobile/feature/login/login_screen.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-
-import '../../data/model/login_data_model.dart';
+import 'package:path_provider_android/path_provider_android.dart';
+import 'package:path_provider_ios/path_provider_ios.dart';
 
 class SplashController extends BaseController {
 
   late PackageInfo packageInfo;
+  late var settingsData;
+  final PathProviderAndroid providerAndroid = PathProviderAndroid();
+  final PathProviderIOS providerIOS = PathProviderIOS();
 
   String appName = '';
   String packageName = '';
@@ -38,5 +42,19 @@ class SplashController extends BaseController {
       }
     });
     super.onInit();
+  }
+
+  Future<String> readSettings() async {
+    String text;
+    try {
+      final directory = await providerAndroid.getApplicationDocumentsPath();
+      final File file = File('${directory}/settings.txt');
+      text = await file.readAsString();
+      debugPrint('setting txt: ${jsonDecode(text)}');
+    } catch (e) {
+      print("Couldn't read file");
+      text = '';
+    }
+    return text;
   }
 }
