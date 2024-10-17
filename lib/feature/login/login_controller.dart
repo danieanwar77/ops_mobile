@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:encrypt/encrypt.dart' as enc;
 import 'package:external_path/external_path.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
@@ -20,6 +22,8 @@ class LoginController extends BaseController{
 
   final PathProviderAndroid providerAndroid = PathProviderAndroid();
   final PathProviderIOS providerIOS = PathProviderIOS();
+  static const encryptionChannel = const MethodChannel('enc/dec');
+  String decryptedData = '';
 
   late var loginData;
   late TextEditingController username;
@@ -38,8 +42,14 @@ class LoginController extends BaseController{
     username.text = loginData['e_number'];
     final directory = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
     debugPrint('path directory: $directory');
-    final data = await SqlHelper.getEmployee(loginData['e_number']);
+    final data = await SqlHelper.getEmployeePassword(loginData['e_number']);
     debugPrint('data gendata : ${jsonEncode(data)}');
+    String encryptedText = data.first['password_aes']; // Ganti dengan string terenkripsi
+    String key = '\$NtIsH@k42@@4'; // Kunci AES (32 karakter)
+
+    String decryptedPassword = aesDecryptWithoutIV(encryptedText, key);
+    print('Decrypted Password: $decryptedPassword');
+
     update();
     super.onInit();
   }
@@ -148,5 +158,16 @@ class LoginController extends BaseController{
         // );
 
     }
+  }
+
+  String aesDecryptWithoutIV(String encryptedPassword, String key) {
+    final keyBytes = enc.Key.fromUtf8(key); // Kunci AES, harus 16, 24, atau 32 karakter
+
+    // Inisialisasi enkripsi tanpa IV (menggunakan ECB mode)
+    final encrypter = enc.Encrypter(enc.AES(keyBytes, mode: enc.AESMode.ecb)); // Mode ECB, tidak memerlukan IV
+    final encrypted = enc.Encrypted.fromBase64(encryptedPassword); // Konversi dari base64
+    final decrypted = encrypter.decrypt(encrypted); // Dekripsi tanpa IV
+
+    return decrypted;
   }
 }

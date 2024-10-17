@@ -145,7 +145,7 @@ class SqlHelper extends BaseController {
     return db.query('user', where: "username = ?", whereArgs: [id], limit: 1);
   }
 
-  static Future<List<Map<String, dynamic>>> getEmployee(String id) async {
+  static Future<List<Map<String, dynamic>>> getEmployeePassword(String id) async {
     final db = await SqlHelper.db();
     return db.rawQuery('''
       select u.id, u.password_aes  from employee e 
@@ -159,5 +159,22 @@ class SqlHelper extends BaseController {
     final db = await SqlHelper.db();
     return db.rawQuery('''select id, password_aes  from user
         where username = $id''');
+  }
+
+  static Future<List<Map<String, dynamic>>> decryptPassword(String id) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+    SELECT id, username, CONVERT(AES_DECRYPT(password_aes, '\$NtIsH@k42@@4')) AS password_aes 
+    FROM user 
+    WHERE id = $id;''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getUserDetail(String id) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      select e.id, e.fullname, e.e_number, e.jabatan_id, e.division_id, e.superior_id from employee e
+      join user u on u.username  = e.e_number
+      where e.e_number = "$id"
+    ''');
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ops_mobile/core/core/alice/alice_get_connect.dart';
+import 'package:ops_mobile/feature/home/home_screen.dart';
 import 'package:ops_mobile/feature/splash/splash_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -24,7 +25,7 @@ class App extends StatelessWidget {
                 textTheme: Typography(platform: TargetPlatform.iOS).black.apply(
                     fontSizeFactor: 1,
                     fontFamily: "AlteHaasGrotesk")),
-            home: const SplashScreen(),
+            home: const HomeScreen(),
           ),
         ));
   }
