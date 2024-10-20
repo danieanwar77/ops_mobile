@@ -129,8 +129,9 @@ class GetDataController extends BaseController{
       Directory('$dir/ops').create();
     }
 
-    if(await File("$dir/ops/application.zip").exists()){
-      File("$dir/ops/application.zip").deleteSync();
+    if(await File("$dir/ops").exists()){
+      File("$dir/ops").delete();
+      Directory('$dir/ops').create();
     }
 
     File file = File("$dir/ops/application.zip");

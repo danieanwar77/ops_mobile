@@ -58,7 +58,7 @@ class HomeController extends BaseController{
       fullname: data.first['fullname'],
       nip: data.first['e_number'],
       positionId: data.first['jabatan_id'],
-      position: data.first['jabatan_id'].toString(),
+      position: data.first['jabatan'],
       divisionId: data.first['division_id'],
       division: data.first['division'].toString(),
       superior: data.first['superior_id'].toString()

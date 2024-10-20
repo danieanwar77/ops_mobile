@@ -172,8 +172,10 @@ class SqlHelper extends BaseController {
   static Future<List<Map<String, dynamic>>> getUserDetail(String id) async {
     final db = await SqlHelper.db();
     return db.rawQuery('''
-      select e.id, e.fullname, e.e_number, e.jabatan_id, e.division_id, e.superior_id from employee e
+      select e.id, e.fullname, e.e_number, e.jabatan_id, j.jabatan, e.division_id,  e.superior_id from employee e
       join user u on u.username  = e.e_number
+      join jabatan j on j.id = e.jabatan_id
+      
       where e.e_number = "$id"
     ''');
   }
@@ -206,7 +208,7 @@ class SqlHelper extends BaseController {
     ''');
   }
 
-  static Future<List<Map<String, dynamic>>> getDetailJo(String idJo) async {
+  static Future<List<Map<String, dynamic>>> getDetailJo(int idJo) async {
     final db = await SqlHelper.db();
     return db.rawQuery(''' 
       SELECT
@@ -265,7 +267,7 @@ class SqlHelper extends BaseController {
       left join hris_tb_dev.employee as y on a.pic_laboratory = y.id left join hris_tb_dev.employee as z on a.pic_inspector = z.id
       
       WHERE
-      a.id = ‘$idJo’
+      a.id = $idJo
     ''');
   }
 

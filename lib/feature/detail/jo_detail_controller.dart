@@ -27,6 +27,7 @@ import 'package:ops_mobile/data/model/login_data_model.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity5.dart';
 import 'package:ops_mobile/data/respository/repository.dart';
+import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/lab_activity_detail/lab_activity_detail_screen.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
@@ -163,8 +164,10 @@ class JoDetailController extends BaseController {
     id = argument['id'];
     statusId = argument['status'];
     isLoadingJO == true;
+    final data = await SqlHelper.getDetailJo(id);
+    debugPrint('data detail : ${jsonEncode(data)}');
     update();
-    await getData();
+    //await getData();
     debugPrint('activity stage now: $activityStage');
 
     super.onInit();

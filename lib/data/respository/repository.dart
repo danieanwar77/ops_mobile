@@ -28,6 +28,7 @@ import 'package:ops_mobile/data/model/user_model.dart';
 
 abstract interface class Repository {
   FutureOr<ResponseRegisterDevice> registerDevice(String employeeId, String uuid);
+  FutureOr<ResponseRegisterDevice> deleteRegisterDevice(String employeeId);
   FutureOr<ResponseGendataFile> getGenData(String employeeId, String firebaseToken, String appVersion);
   FutureOr<UserModel?> getUser(int page);
   FutureOr<JoListModel?> getJoList(int status, int employee);

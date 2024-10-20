@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
+import 'package:ops_mobile/core/core/constant/app_constant.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/home/home_screen.dart';
 import 'package:ops_mobile/feature/login/login_screen.dart';
@@ -33,6 +34,13 @@ class SplashController extends BaseController {
     packageName =  packageInfo.packageName;
     version =  packageInfo.version;
     buildNumber =  packageInfo.buildNumber;
+
+    settingsData = jsonDecode(await readSettings());
+
+    AppConstant.BASE_URL = settingsData['internet_url'];
+    network.setBaseUrl(AppConstant.BASE_URL);
+    debugPrint('base url:${AppConstant.BASE_URL}');
+    update();
 
     Future.delayed(const Duration(seconds: 5), (){
       if(userData == ''){

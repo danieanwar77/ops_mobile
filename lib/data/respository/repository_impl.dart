@@ -57,6 +57,22 @@ class RepositoryImpl implements Repository {
     return response?.body;
   }
 
+  FutureOr<ResponseRegisterDevice> deleteRegisterDevice(String employeeId) async {
+    late Response? response;
+    try{
+      response = await networkCore.delete('/api/delete/register/$employeeId',
+          decoder: ResponseRegisterDevice.fromJson,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+      );
+    } on Exception catch(e) {
+      debugPrint(e.toString());
+      rethrow;
+    }
+    return response?.body;
+  }
+
   FutureOr<ResponseGendataFile> getGenData(String employeeId, String firebaseToken, String appVersion) async {
     late Response? response;
     try{
