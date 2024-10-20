@@ -57,12 +57,14 @@ class RepositoryImpl implements Repository {
     return response?.body;
   }
 
-  FutureOr<ResponseGendataFile> getGenData(String employeeId) async {
+  FutureOr<ResponseGendataFile> getGenData(String employeeId, String firebaseToken, String appVersion) async {
     late Response? response;
     try{
       response = await networkCore.postRequest('/api/mobilegetfile',
           body: {
-            'e_number': employeeId
+            'e_number': employeeId,
+            'firebase_token': firebaseToken,
+            'app_version': appVersion
           },
           decoder: ResponseGendataFile.fromJson,
           headers: {

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:archive/archive_io.dart';
 import 'package:external_path/external_path.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -33,6 +34,7 @@ class GetDataController extends BaseController{
   RxString selectedValue = RxString('');
   TextEditingController dateTugas = TextEditingController();
   late PermissionStatus storagePermission;
+  String token = '';
 
   @override
   void onInit()async{
@@ -75,7 +77,8 @@ class GetDataController extends BaseController{
 
   Future<void> getGenData()async{
     try{
-      var response = await repository.getGenData(settingsData['e_number']);
+      // await generateFirebase();
+      var response = await repository.getGenData(settingsData['e_number'], '', '');
         if(response.file != null){
           await createFileFromBase64Str(response.file!);
           await readZip();
@@ -88,6 +91,16 @@ class GetDataController extends BaseController{
     } catch(e) {
       openDialog('Failed', '$e');
     }
+  }
+
+  Future<void> generateFirebase()async{
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    messaging.getToken().then((token) {
+      this.token = token.toString();
+      update();
+      print('firebase_token ${token}');
+    });
   }
 
   Future<String> readSettings() async {

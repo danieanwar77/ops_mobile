@@ -151,7 +151,7 @@ class JoDetailController extends BaseController {
   RxList<File> documentInspectionAttachments = RxList();
   RxList<Map<String, dynamic>> documentLaboratory = RxList();
   RxList<File> documentLaboratoryAttachments = RxList();
-  Rx<File> activityPreviewFoto = Rx(File(''));
+  //Rx<File> activityPreviewFoto = Rx(File(''));
 
   @override
   void onInit() async {

@@ -23,6 +23,7 @@ class LoginController extends BaseController{
   final PathProviderAndroid providerAndroid = PathProviderAndroid();
   final PathProviderIOS providerIOS = PathProviderIOS();
   static const encryptionChannel = const MethodChannel('enc/dec');
+  String encryptedData = '';
   String decryptedData = '';
 
   late var loginData;
@@ -44,10 +45,10 @@ class LoginController extends BaseController{
     debugPrint('path directory: $directory');
     final data = await SqlHelper.getEmployeePassword(loginData['e_number']);
     debugPrint('data gendata : ${jsonEncode(data)}');
-    String encryptedText = data.first['password_aes']; // Ganti dengan string terenkripsi
-    String key = '\$NtIsH@k42@@4'; // Kunci AES (32 karakter)
+    String encryptedText = data.first['password_aes'];
 
-    String decryptedPassword = aesDecryptWithoutIV(encryptedText, key);
+    //aesEncrypt();
+    String decryptedPassword = aesDecrypt('MTIzNDU2Nzg5MDEyMzQ1NkhCM2ZMMW1pbGY4PQ==');
     print('Decrypted Password: $decryptedPassword');
 
     update();
@@ -160,14 +161,37 @@ class LoginController extends BaseController{
     }
   }
 
-  String aesDecryptWithoutIV(String encryptedPassword, String key) {
-    final keyBytes = enc.Key.fromUtf8(key); // Kunci AES, harus 16, 24, atau 32 karakter
+  String? aesEncrypt(){
+    final key = enc.Key.fromUtf8('1234567890123456'); // 32 chars for AES-256
+    final iv = enc.IV.fromUtf8('NtIsH@k42@@4'); // AES block size is 16 bytes
 
-    // Inisialisasi enkripsi tanpa IV (menggunakan ECB mode)
-    final encrypter = enc.Encrypter(enc.AES(keyBytes, mode: enc.AESMode.ecb)); // Mode ECB, tidak memerlukan IV
+    // Step 2: Create the encrypter object (AES with CBC mode and PKCS7 padding)
+    final encrypter = enc.Encrypter(enc.AES(key, mode: enc.AESMode.cbc, padding: 'PKCS7'));
+
+    // Step 3: The plaintext to encrypt
+    final plainText = 'Hello, AES Encryption!';
+
+    // Step 4: Encrypt the plaintext
+    final encrypted = encrypter.encrypt(plainText, iv: iv);
+    print('Encrypted (base64): ${encrypted.base64}');  // Encrypted string in base64 format
+
+    // Step 5: Decrypt the ciphertext
+    final decrypted = encrypter.decrypt(encrypted, iv: iv);
+    print('Decrypted: $decrypted');  // Decrypted text (original plaintext)
+  }
+
+  String aesDecrypt(String encryptedPassword) {
+    final iv = "12345678901234561234567890123456";
+    final key ="iNtIsH@k42@@4G7O";
+
+    final keyBytes = enc.Key.fromUtf8(key); // Kunci AES
+    final ivBytes = enc.IV.fromUtf8(iv);    // IV
+
+    final encrypter = enc.Encrypter(enc.AES(keyBytes, mode: enc.AESMode.cbc, padding: 'PKCS7')); // Mode CBC
     final encrypted = enc.Encrypted.fromBase64(encryptedPassword); // Konversi dari base64
-    final decrypted = encrypter.decrypt(encrypted); // Dekripsi tanpa IV
+    final decrypted = encrypter.decrypt(enc.Encrypted.fromUtf8(encryptedPassword), iv: ivBytes); // Dekripsi menggunakan
 
     return decrypted;
   }
+
 }

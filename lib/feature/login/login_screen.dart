@@ -21,15 +21,16 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    // nanti aplikasikan di synchronizedata
     /// FCMZEIN START
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-    messaging.getToken().then((token) => setState(() {
-      setState(() {
-        this.token = token.toString();
-        print('firebase_token ${token}');
-      });
-    }));
+    // FirebaseMessaging messaging = FirebaseMessaging.instance;
+    //
+    // messaging.getToken().then((token) => setState(() {
+    //   setState(() {
+    //     this.token = token.toString();
+    //     print('firebase_token ${token}');
+    //   });
+    // }));
     /// FCMZEIN END
   }
 

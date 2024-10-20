@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/data/model/jo_assigned_model.dart';
 import 'package:ops_mobile/data/model/jo_list_model.dart';
+import 'package:ops_mobile/data/sqlite.dart';
 
 class AssignedController extends BaseController{
 
@@ -21,7 +22,10 @@ class AssignedController extends BaseController{
     statusJo.value = argument['status'];
     employeeId.value = argument['employeeId'];
     update();
-    getJoList();
+
+    final data = await SqlHelper.getListJo(employeeId.value.toString(),statusJo.toString());
+    debugPrint('data list : ${jsonEncode(data)}');
+    // getJoList();
     super.onInit();
   }
 
