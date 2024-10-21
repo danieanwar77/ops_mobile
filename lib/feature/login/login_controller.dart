@@ -39,6 +39,7 @@ class LoginController extends BaseController{
     username = TextEditingController();
     password = TextEditingController();
     connectivityResult = await (Connectivity().checkConnectivity());
+    //aesEncrypt();
     await readSettings();
     username.text = loginData['e_number'];
     final directory = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
@@ -46,8 +47,6 @@ class LoginController extends BaseController{
     final data = await SqlHelper.getEmployeePassword(loginData['e_number']);
     debugPrint('data gendata : ${jsonEncode(data)}');
     String encryptedText = data.first['password_aes'];
-
-    //aesEncrypt();
     String decryptedPassword = aesDecrypt('MTIzNDU2Nzg5MDEyMzQ1NkhCM2ZMMW1pbGY4PQ==');
     print('Decrypted Password: $decryptedPassword');
 
@@ -162,22 +161,37 @@ class LoginController extends BaseController{
   }
 
   String? aesEncrypt(){
-    final key = enc.Key.fromUtf8('1234567890123456'); // 32 chars for AES-256
-    final iv = enc.IV.fromUtf8('NtIsH@k42@@4'); // AES block size is 16 bytes
+    final iv = enc.IV.fromUtf8('1234567890123456'); // 32 chars for AES-256
+    final key = enc.Key.fromUtf8('iNtIsH@k42@@4G7O'); // AES block size is 16 bytes
 
     // Step 2: Create the encrypter object (AES with CBC mode and PKCS7 padding)
-    final encrypter = enc.Encrypter(enc.AES(key, mode: enc.AESMode.cbc, padding: 'PKCS7'));
+    // final encrypter = enc.Encrypter(enc.AES(key, mode: enc.AESMode.cbc));
 
     // Step 3: The plaintext to encrypt
-    final plainText = 'Hello, AES Encryption!';
+    final plainText = '87654321';
 
     // Step 4: Encrypt the plaintext
-    final encrypted = encrypter.encrypt(plainText, iv: iv);
-    print('Encrypted (base64): ${encrypted.base64}');  // Encrypted string in base64 format
+    // final encrypted = encrypter.encrypt(plainText, iv: iv);
+    // debugPrint('Encrypted (base64): ${encrypted.base64}');  // Encrypted string in base64 format
+    //
+    // // Step 5: Decrypt the ciphertext
+    // final decrypted = encrypter.decrypt(encrypted, iv: iv);
+    // debugPrint('Decrypted: $decrypted');  // Decrypted text (original plaintext)
 
-    // Step 5: Decrypt the ciphertext
-    final decrypted = encrypter.decrypt(encrypted, iv: iv);
-    print('Decrypted: $decrypted');  // Decrypted text (original plaintext)
+    // final keyBytes = enc.Key.fromUtf8(key.toString()); // Kunci harus 32 karakter untuk AES-256
+    // final ivBytes = enc.IV.fromUtf8(iv.toString());    // IV yang sama dengan yang digunakan saat enkripsi
+
+    final decrypter = enc.Encrypter(enc.AES(key, mode: enc.AESMode.cbc));
+    final decrypted = decrypter.decryptBytes(enc.Encrypted.fromBase64('MTIzNDU2Nzg5MDEyMzQ1NkhCM2ZMMW1pbGY4PQ=='), iv: iv);
+    final decryptedData = utf8.decode(decrypted);
+    print(decryptedData);
+
+    // final encrypter = enc.Encrypter(enc.AES(key, mode: enc.AESMode.ctr,padding: null)); // Mode AES CBC
+    // final encrypted = enc.Encrypted.fromBase64('MTIzNDU2Nzg5MDEyMzQ1NkhCM2ZMMW1pbGY4PQ=='); // Dekode base64 0TOfHOAiso/1MvjsRZh0lw==
+    // final decrypted = encrypter.decrypt(encrypted, iv: iv); // Dekripsi
+   // debugPrint('Encrypted (base64): ${encrypted.base64}');
+    debugPrint('Decrypted: $decrypted');
+
   }
 
   String aesDecrypt(String encryptedPassword) {

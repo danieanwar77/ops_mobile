@@ -156,16 +156,26 @@ class JoDetailController extends BaseController {
 
   @override
   void onInit() async {
-    userData.value =
-        Data.fromJson(jsonDecode(await StorageCore().storage.read('login')));
-    debugPrint('data users: ${jsonEncode(userData.value)}');
+    var dataUser = await SqlHelper.getUserDetail('1234');
+    userData.value = Data(
+        id : dataUser.first['id'],
+        fullname: dataUser.first['fullname'],
+        nip: dataUser.first['e_number'],
+        positionId: dataUser.first['jabatan_id'],
+        position: dataUser.first['jabatan'],
+        divisionId: dataUser.first['division_id'],
+        division: dataUser.first['division'].toString(),
+        superior: dataUser.first['superior_id'].toString()
+    );
 
     var argument = await Get.arguments;
     id = argument['id'];
     statusId = argument['status'];
     isLoadingJO == true;
-    final data = await SqlHelper.getDetailJo(id);
-    debugPrint('data detail : ${jsonEncode(data)}');
+    // final data = await SqlHelper.getDetailJo(id);
+    // debugPrint('data detail : ${jsonEncode(data)}');
+    await getJoDetailLocal();
+    isLoadingJO == false;
     update();
     //await getData();
     debugPrint('activity stage now: $activityStage');
@@ -327,6 +337,28 @@ class JoDetailController extends BaseController {
     });
     if (labo!.isNotEmpty) {
       labs.value = labo!;
+    }
+    bargesCount = barges.value.length;
+    activity5bargesCount = bargesCount;
+    activity5Barges.value = barges.value;
+    update();
+    debugPrint('barges : ${jsonEncode(barges.value)}');
+  }
+
+  Future<void> getJoDetailLocal() async {
+    final data = await SqlHelper.getDetailJo(id);
+    debugPrint('data detail : ${jsonEncode(data)}');
+    dataJoDetail.value = DataDetail.fromJson(data.first);
+    var labo = data.first['laboratory'];
+
+    barges.value = dataJoDetail.value.detail?.barge?.split('|') ?? [];
+    barges.value.forEach((_) {
+      bargesController.value.add(TextEditingController());
+    });
+    if (labo != null) {
+      labo.forEach((lab) {
+        labs.value.add(Laboratory.fromJson(lab));
+      });
     }
     bargesCount = barges.value.length;
     activity5bargesCount = bargesCount;

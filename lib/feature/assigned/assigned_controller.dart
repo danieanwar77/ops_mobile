@@ -24,7 +24,8 @@ class AssignedController extends BaseController{
     employeeId.value = argument['employeeId'];
     update();
 
-    final data = await SqlHelper.getListJo(employeeId.value.toString(),statusJo.value.toString());
+    final data = await SqlHelper.getListJo(employeeId.value,statusJo.value);
+    debugPrint('status selected: ${statusJo.value}');
     debugPrint('data list : ${jsonEncode(data)}');
     // getJoList();
     await getJoListLocal();
@@ -43,7 +44,7 @@ class AssignedController extends BaseController{
   }
 
   Future<void> getJoListLocal() async{
-    final data = await SqlHelper.getListJo(employeeId.value.toString(),statusJo.value.toString());
+    final data = await SqlHelper.getListJo(employeeId.value,statusJo.value);
     data.forEach((value){
       dataJoList.value.add(DataJo.fromJson(jsonDecode(jsonEncode(value))));
     });

@@ -35,11 +35,11 @@ class SplashController extends BaseController {
     version =  packageInfo.version;
     buildNumber =  packageInfo.buildNumber;
 
-    settingsData = jsonDecode(await readSettings());
-
-    AppConstant.BASE_URL = settingsData['internet_url'];
-    network.setBaseUrl(AppConstant.BASE_URL);
-    debugPrint('base url:${AppConstant.BASE_URL}');
+    // settingsData = jsonDecode(await readSettings());
+    //
+    // AppConstant.BASE_URL = settingsData['internet_url'];
+    // network.setBaseUrl(AppConstant.BASE_URL);
+    // debugPrint('base url:${AppConstant.BASE_URL}');
     update();
 
     Future.delayed(const Duration(seconds: 5), (){

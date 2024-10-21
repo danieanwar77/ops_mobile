@@ -16,6 +16,7 @@ import 'package:ops_mobile/data/model/response_gendata_file.dart';
 import 'package:ops_mobile/data/model/response_register_device.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
+import 'package:ops_mobile/feature/login/login_screen.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_ios/path_provider_ios.dart';
@@ -25,6 +26,7 @@ import 'package:permission_handler/permission_handler.dart';
 class GetDataController extends BaseController{
 
   late var settingsData;
+  late VoidCallback? action;
   final PathProviderAndroid providerAndroid = PathProviderAndroid();
   final PathProviderIOS providerIOS = PathProviderIOS();
 
@@ -34,7 +36,7 @@ class GetDataController extends BaseController{
   RxString selectedValue = RxString('');
   TextEditingController dateTugas = TextEditingController();
   late PermissionStatus storagePermission;
-  String token = '';
+  // String token = '';
 
   @override
   void onInit()async{
@@ -53,7 +55,7 @@ class GetDataController extends BaseController{
       update();
       network.setBaseUrl(AppConstant.BASE_URL);
     }
-
+    await generateFirebase();
     dateTugas.text = DateFormat('yyyy-MM-dd').format(DateTime.now()).toString();
     await readSettings();
     debugPrint('settings data: ${jsonEncode(settingsData)}');
@@ -75,31 +77,31 @@ class GetDataController extends BaseController{
     }
   }
 
-  Future<void> getGenData()async{
+  Future<void> getGenData(String token)async{
     try{
-      // await generateFirebase();
-      var response = await repository.getGenData(settingsData['e_number'], '', '');
+      var response = await repository.getGenData(settingsData['e_number'], token, '');
         if(response.file != null){
           await createFileFromBase64Str(response.file!);
           await readZip();
           final data = await SqlHelper.getLogin(settingsData['e_number']);
           debugPrint('user data: $data');
-          openDialog('Success', 'Berhasil ambil data');
+
+          openDialog('Success', 'Berhasil ambil data', (){Get.to<void>(LoginScreen());});
         } else {
-          openDialog('Failed', 'Data gagal diambil');
+          openDialog('Failed', 'Data gagal diambil',(){});
         }
     } catch(e) {
-      openDialog('Failed', '$e');
+      openDialog('Failed', '$e', (){});
     }
   }
 
   Future<void> generateFirebase()async{
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    final FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-    messaging.getToken().then((token) {
-      this.token = token.toString();
+    await messaging.getToken().then((token) {
+      token = token.toString();
       update();
-      print('firebase_token ${token}');
+      debugPrint('firebase_token ${token}');
     });
   }
 
@@ -139,7 +141,7 @@ class GetDataController extends BaseController{
     return file.path;
   }
 
-  void openDialog(String type, String text) {
+  void openDialog(String type, String text, VoidCallback func) {
     Get.dialog(
       AlertDialog(
         title: Text(
@@ -151,7 +153,11 @@ class GetDataController extends BaseController{
         actions: [
           TextButton(
             child: const Text("Close"),
-            onPressed: () => Get.back(),
+            onPressed: () {
+              func;
+              Get.back();
+            },
+
           ),
         ],
       ),
