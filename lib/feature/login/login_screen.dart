@@ -135,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ElevatedButton(
                               onPressed: () {
                                 // Get.to<void>(() => const HomeScreen());
-                                controller.logIn();
+                                controller.logInDecrypt();
                               },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: primaryColor,

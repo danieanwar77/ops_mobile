@@ -22,13 +22,11 @@ class LoginController extends BaseController{
 
   final PathProviderAndroid providerAndroid = PathProviderAndroid();
   final PathProviderIOS providerIOS = PathProviderIOS();
-  static const encryptionChannel = const MethodChannel('enc/dec');
-  String encryptedData = '';
-  String decryptedData = '';
 
   late var loginData;
   late TextEditingController username;
   late TextEditingController password;
+  late String decryptedPassword;
   late List<ConnectivityResult> connectivityResult;
   RxString loginToken = RxString('');
   bool isLoading = false;
@@ -39,7 +37,6 @@ class LoginController extends BaseController{
     username = TextEditingController();
     password = TextEditingController();
     connectivityResult = await (Connectivity().checkConnectivity());
-    //aesEncrypt();
     await readSettings();
     username.text = loginData['e_number'];
     final directory = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
@@ -47,8 +44,11 @@ class LoginController extends BaseController{
     final data = await SqlHelper.getEmployeePassword(loginData['e_number']);
     debugPrint('data gendata : ${jsonEncode(data)}');
     String encryptedText = data.first['password_aes'];
-    String decryptedPassword = aesDecrypt('MTIzNDU2Nzg5MDEyMzQ1NkhCM2ZMMW1pbGY4PQ==');
-    print('Decrypted Password: $decryptedPassword');
+    debugPrint('data password : $encryptedText');
+    decryptedPassword = aesEncrypt(encryptedText) ?? '';
+    update();
+    // String decryptedPassword = aesDecrypt(encryptedText);
+    // print('Decrypted Password: $decryptedPassword');
 
     update();
     super.onInit();
@@ -68,6 +68,28 @@ class LoginController extends BaseController{
       text = '';
     }
     return text;
+  }
+
+  void logInDecrypt(){
+    isLoading = true;
+    update();
+    if(decryptedPassword != '' && password.text == decryptedPassword ){
+      isLoading = false;
+      update();
+      Get.to(() => HomeScreen());
+    } else {
+      isLoading = false;
+      update();
+      Get.showSnackbar(
+        GetSnackBar(
+          // title: "Error",
+          backgroundColor: primaryColor,
+          message: "Login failed. Password incorrect.",
+          // icon: const Icon(Icons.error),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
   
   void logIn() async{
@@ -147,63 +169,45 @@ class LoginController extends BaseController{
         username.text = '';
         password.text = '';
         Get.to(() => HomeScreen());
-        // Get.showSnackbar(
-        //   GetSnackBar(
-        //     // title: "Error",
-        //     backgroundColor: primaryColor,
-        //     message: "${response.message}",
-        //     // icon: const Icon(Icons.error),
-        //     duration: const Duration(seconds: 3),
-        //   ),
-        // );
-
     }
   }
 
-  String? aesEncrypt(){
-    final iv = enc.IV.fromUtf8('1234567890123456'); // 32 chars for AES-256
-    final key = enc.Key.fromUtf8('iNtIsH@k42@@4G7O'); // AES block size is 16 bytes
+  String? aesEncrypt(String encryptedPassword){
+    //final encryptedText = '1nSpPO+ndJ8m4n8f3fOscA==';
 
-    // Step 2: Create the encrypter object (AES with CBC mode and PKCS7 padding)
-    // final encrypter = enc.Encrypter(enc.AES(key, mode: enc.AESMode.cbc));
+    // Dekode base64
+    final encryptedBytes = enc.Encrypted.fromBase64(encryptedPassword);
 
-    // Step 3: The plaintext to encrypt
-    final plainText = '87654321';
+    // Kunci dan IV
+    final iv = enc.IV.fromUtf8('1234567890123456');
+    final key = enc.Key.fromUtf8('iNtIsH@k42@@4G7O');
 
-    // Step 4: Encrypt the plaintext
-    // final encrypted = encrypter.encrypt(plainText, iv: iv);
-    // debugPrint('Encrypted (base64): ${encrypted.base64}');  // Encrypted string in base64 format
-    //
-    // // Step 5: Decrypt the ciphertext
-    // final decrypted = encrypter.decrypt(encrypted, iv: iv);
-    // debugPrint('Decrypted: $decrypted');  // Decrypted text (original plaintext)
+    // Buat enkripsi AES dengan mode CBC dan padding PKCS7
+    final encrypter = enc.Encrypter(enc.AES(key, mode: enc.AESMode.cbc));
 
-    // final keyBytes = enc.Key.fromUtf8(key.toString()); // Kunci harus 32 karakter untuk AES-256
-    // final ivBytes = enc.IV.fromUtf8(iv.toString());    // IV yang sama dengan yang digunakan saat enkripsi
+    // Dekripsi
+    try {
+      final decrypted = encrypter.decrypt(encryptedBytes, iv: iv);
 
-    final decrypter = enc.Encrypter(enc.AES(key, mode: enc.AESMode.cbc));
-    final decrypted = decrypter.decryptBytes(enc.Encrypted.fromBase64('MTIzNDU2Nzg5MDEyMzQ1NkhCM2ZMMW1pbGY4PQ=='), iv: iv);
-    final decryptedData = utf8.decode(decrypted);
-    print(decryptedData);
-
-    // final encrypter = enc.Encrypter(enc.AES(key, mode: enc.AESMode.ctr,padding: null)); // Mode AES CBC
-    // final encrypted = enc.Encrypted.fromBase64('MTIzNDU2Nzg5MDEyMzQ1NkhCM2ZMMW1pbGY4PQ=='); // Dekode base64 0TOfHOAiso/1MvjsRZh0lw==
-    // final decrypted = encrypter.decrypt(encrypted, iv: iv); // Dekripsi
-   // debugPrint('Encrypted (base64): ${encrypted.base64}');
-    debugPrint('Decrypted: $decrypted');
+      // Tampilkan hasil dekripsi
+      debugPrint('Hasil dekripsi: $decrypted');
+      return decrypted;
+    } catch (e) {
+      debugPrint('Kesalahan saat dekripsi: $e');
+    }
 
   }
 
   String aesDecrypt(String encryptedPassword) {
-    final iv = "12345678901234561234567890123456";
+    final iv = "1234567890123456";
     final key ="iNtIsH@k42@@4G7O";
 
     final keyBytes = enc.Key.fromUtf8(key); // Kunci AES
     final ivBytes = enc.IV.fromUtf8(iv);    // IV
 
-    final encrypter = enc.Encrypter(enc.AES(keyBytes, mode: enc.AESMode.cbc, padding: 'PKCS7')); // Mode CBC
+    final encrypter = enc.Encrypter(enc.AES(keyBytes, mode: enc.AESMode.cbc)); // Mode CBC
     final encrypted = enc.Encrypted.fromBase64(encryptedPassword); // Konversi dari base64
-    final decrypted = encrypter.decrypt(enc.Encrypted.fromUtf8(encryptedPassword), iv: ivBytes); // Dekripsi menggunakan
+    final decrypted = encrypter.decrypt(encrypted, iv: ivBytes); // Dekripsi menggunakan
 
     return decrypted;
   }

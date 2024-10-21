@@ -48,6 +48,7 @@ class AssignedController extends BaseController{
     data.forEach((value){
       dataJoList.value.add(DataJo.fromJson(jsonDecode(jsonEncode(value))));
     });
+    update();
   }
 
 }

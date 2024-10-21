@@ -203,8 +203,7 @@ class SqlHelper extends BaseController {
       LEFT JOIN m_statusjo AS f ON f.id = a.m_statusjo_id 
       LEFT JOIN m_kos AS g ON a.m_kindofservice_id = g.id 
       WHERE a.m_statusjo_id = $status
-      AND a.pic_inspector = $id 
-      OR a.pic_laboratory = $id 
+      AND (a.pic_inspector = $id OR a.pic_laboratory = $id)
     ''');
   }
 
@@ -235,9 +234,9 @@ class SqlHelper extends BaseController {
       v.name as destination_category_name, w.name as job_category_name, d1.`name`as kos_name,
       l1.vessel, l1.qty,
       c1.name as uom_name, a.created_at as jo_created_date,
-      GROUP_CONCAT(c4.barge, '|') as barge, d11.`name`as market_segment_name,
-      d12.name as sub_market_segment_name 
-      FROM t_h_jo  AS a
+      GROUP_CONCAT(c4.barge , '|') as barge, d11.`name`as market_segment_name,
+      d12.`name`as sub_market_segment_name FROM
+      `t_h_jo` AS a
       left join m_kos as d1 on d1.id = a.m_kindofservice_id JOIN t_h_so AS b ON a.t_so_id = b.id
       JOIN m_statusjo AS c ON a.m_statusjo_id = c.id join m_sbu as d on b.sbu_id = d.id
       left join m_commodity as e on b.commodity_id = e.id
@@ -262,6 +261,91 @@ class SqlHelper extends BaseController {
     ''');
   }
 
+  static Future<List<Map<String, dynamic>>> getDetailJoSow(int idJo) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery(''' 
+      select b3.name, b3.id
+      from t_h_jo
+      join t_d_so_kos as b1 on t_h_jo.t_so_id = b1.so_id and t_h_jo.m_kindofservice_id = b1.kos_id
+      join t_d_so_kos_sow as b2 on b1.id = b2.so_kos_id
+      join m_sow as b3 on b3.id = b2.sow_id
+      where t_h_jo.id = $idJo
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getDetailJoOos(int idJo) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery(''' 
+      select d.name, d.id
+      from t_h_jo as a
+      join t_d_so_kos as b on b.kos_id = a.m_kindofservice_id and b.so_id = a.t_so_id
+      join t_d_so_kos_oos as c on c.so_kos_id = b.id
+      join m_oos as d on d.id = c.oos_id
+      where a.id = $idJo
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getDetailJoLap(int idJo) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery(''' 
+      select d.name, d.id
+      FROM t_h_jo as a
+      join t_d_so_kos as b on b.kos_id = a.m_kindofservice_id and b.so_id = a.t_so_id
+      join t_d_so_kos_oos as c on c.so_kos_id = b.id
+      join m_lap as d on d.id = c.oos_id
+      where a.id = $idJo
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getDetailJoStdMethod(int idJo) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery(''' 
+       $idJo
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getDetailJoPicHistory(int idJo) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery(''' 
+       SELECT a.created_at as assigned_date, b.fullname as assign_by,a.remarks,a.etta_vessel,a.start_date_of_attendance,
+        a.end_date_of_attendance, k.site_office as lokasi_kerja,
+        y.fullname as pic_laboratory,
+        z.fullname as pic_inspector
+        FROM `t_d_jo_pic_history` as a
+        join user_profile as b on a.created_by = b.id
+        join site_office as k on k.id = a.lokasi_kerja
+        join employee as y on a.pic_laboratory = y.id
+        join employee as z on a.pic_inspector = z.id
+        where a.t_h_jo_id = $idJo
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getDetailJoLaboratoryList(int idJo) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery(''' 
+    select a.id,b.laboratorium_id , c.name, max(d.m_statuslaboratoryprogres_id) as max_stage
+    from t_h_jo a
+    join t_d_jo_laboratory b on b.t_h_jo_id = a.id
+    join t_d_jo_laboratory_activity_stages d on d.d_jo_laboratory_id = b.laboratorium_id
+    join m_laboratorium c on c.id = b.laboratorium_id
+    where a.id = $idJo
+    group by b.laboratorium_id
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getDetailJoImageList(int idJo) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery(''' 
+    select a.id,b.laboratorium_id , c.name, max(d.m_statuslaboratoryprogres_id) as max_stage
+    from t_h_jo a
+    join t_d_jo_laboratory b on b.t_h_jo_id = a.id
+    join t_d_jo_laboratory_activity_stages d on d.d_jo_laboratory_id = b.laboratorium_id
+    join m_laboratorium c on c.id = b.laboratorium_id
+    where a.id = $idJo
+    group by b.laboratorium_id
+    ''');
+  }
+
   static Future<List<Map<String, dynamic>>> getDailyPhoto(String idJo) async {
     final db = await SqlHelper.db();
     return db.rawQuery('''
@@ -278,7 +362,7 @@ class SqlHelper extends BaseController {
       a.remarks, b.start_activity_time, b.end_activity_time, b.activity, a.actual_qty
       FROM t_d_jo_inspection_activity_stages AS a
       JOIN t_d_jo_inspection_activity AS b ON a.id = b.t_d_jo_inspection_activity_stages_id JOIN m_statusinspectionstages AS c ON c.id = a.m_statusinspectionstages_id
-      WHERE a.t_h_jo_id = '$idJo'
+      WHERE a.t_h_jo_id = $idJo
     ''');
   }
 
