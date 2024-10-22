@@ -300,7 +300,12 @@ class SqlHelper extends BaseController {
   static Future<List<Map<String, dynamic>>> getDetailJoStdMethod(int idJo) async {
     final db = await SqlHelper.db();
     return db.rawQuery(''' 
-       $idJo
+      select d.name, d.id
+      from t_h_jo as a
+      join t_d_so_kos as b on b.kos_id = a.m_kindofservice_id and b.so_id = a.t_so_id
+      join t_d_so_kos_std_method as c on c.so_kos_id = b.id
+      join m_std_method as d on d.id = c.std_method_id
+      where a.id = $idJo
     ''');
   }
 
@@ -353,7 +358,19 @@ class SqlHelper extends BaseController {
     ''');
   }
 
-  static Future<List<Map<String, dynamic>>> getListActivity(String idJo) async {
+  static Future<List<Map<String, dynamic>>> insertDailyPhoto(int idJo,photo) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      INSERT INTO 
+      t_d_jo_inspection_pict(t_h_jo_id,path_photo,keterangan,code,created_at) 
+      VALUES(
+      $idJo,
+      
+      );
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getListActivity(int idJo) async {
     final db = await SqlHelper.db();
     return db.rawQuery('''
       SELECT
@@ -366,5 +383,101 @@ class SqlHelper extends BaseController {
     ''');
   }
 
+  static Future<List<Map<String, dynamic>>> insertActivityStage(int idJo,int status,String transDate, String remarks, String code, int createdBy, String createdAt) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      INSERT INTO t_d_jo_inspection_activity_stages(
+      t_h_jo_id, 
+      m_statusinspectionstages_id, 
+      trans_date, 
+      remarks, 
+      code, 
+      created_by, 
+      created_at) 
+      VALUES(
+      $idJo,
+      $status,
+      '$transDate',
+      '$remarks',
+      '$code',
+      $createdBy,
+      '$createdAt')
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getActivityStage() async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      SELECT 
+      id, code 
+      FROM t_d_jo_inspection_activity_stages 
+      WHERE ROWID IN ( SELECT max( id ) FROM t_d_jo_inspection_activity_stages )
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> insertActivity(int idJo, int idActStage, String startTime, String endTime, String activity, String code, int idEmployee, String createdAt) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      INSERT INTO 
+      t_d_jo_inspection_activity(
+      t_h_jo_id, 
+      t_d_jo_inspection_activity_stages_id, 
+      start_activity_time, 
+      end_activity_time, 
+      activity, 
+      code, 
+      created_by, 
+      created_at) 
+      VALUES(
+      $idJo,
+      $idActStage,
+      '$startTime',
+      '$endTime',
+      '$activity',
+      '$code',
+      $idEmployee,
+      '$createdAt');
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> updateActivity(int idJo, int idActStage, String startTime, String endTime, String activity, String code, int idEmployee, String updatedAt) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      UPDATE t_d_jo_inspection_activity SET 
+      start_activity_time = '$startTime', 
+      end_activity_time = '$endTime', 
+      activity = '$activity', 
+      updated_by = $idEmployee, 
+      updated_at = '$updatedAt'
+      WHERE
+      t_h_jo_id = $idJo AND
+      code = '$code'
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> deleteActivityStage(int idJo, String code) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      UPDATE t_d_jo_inspection_activity SET 
+      is_active = 0,
+      WHERE
+      t_h_jo_id = $idJo AND
+      code = '$code'
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> deleteActivity(int idJo, String code) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      UPDATE t_d_jo_inspection_activity_stages,t_d_jo_inspection_activity  SET 
+      t_d_jo_inspection_activity_stages.is_active = 0,
+      t_d_jo_inspection_activity.is_active = 0
+      WHERE
+      (t_d_jo_inspection_activity_stages.t_h_jo_id = $idJo AND
+      t_d_jo_inspection_activity_stages.code = '$code') AND 
+      (t_d_jo_inspection_activity.t_h_jo_id = $idJo AND
+      t_d_jo_inspection_activity.code = '$code')
+    ''');
+  }
 
 }
