@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/data/model/jo_assigned_model.dart';
 import 'package:ops_mobile/data/model/jo_list_model.dart';
+import 'package:ops_mobile/data/sqlite.dart';
+import 'package:ops_mobile/data/storage.dart';
 
 class AssignedController extends BaseController{
 
@@ -21,7 +23,12 @@ class AssignedController extends BaseController{
     statusJo.value = argument['status'];
     employeeId.value = argument['employeeId'];
     update();
-    getJoList();
+
+    final data = await SqlHelper.getListJo(employeeId.value,statusJo.value);
+    debugPrint('status selected: ${statusJo.value}');
+    debugPrint('data list : ${jsonEncode(data)}');
+    // getJoList();
+    await getJoListLocal();
     super.onInit();
   }
 
@@ -33,6 +40,14 @@ class AssignedController extends BaseController{
       });
     }
     debugPrint("JO List: ${jsonEncode(dataJoList.value)}");
+    update();
+  }
+
+  Future<void> getJoListLocal() async{
+    final data = await SqlHelper.getListJo(employeeId.value,statusJo.value);
+    data.forEach((value){
+      dataJoList.value.add(DataJo.fromJson(jsonDecode(jsonEncode(value))));
+    });
     update();
   }
 

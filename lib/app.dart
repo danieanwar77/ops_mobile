@@ -25,7 +25,7 @@ class App extends StatelessWidget {
                 textTheme: Typography(platform: TargetPlatform.iOS).black.apply(
                     fontSizeFactor: 1,
                     fontFamily: "AlteHaasGrotesk")),
-            home: const HomeScreen(),
+            home: const SplashScreen(),
           ),
         ));
   }

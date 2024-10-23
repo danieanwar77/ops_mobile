@@ -52,7 +52,7 @@ JoDetailModel copyWith({  num? httpCode,
 
 class DataDetail {
   DataDetail({
-      Detail? detail, 
+      DetailJo? detail,
       List<Sow>? sow, 
       List<Oos>? oos, 
       List<Lap>? lap, 
@@ -70,7 +70,7 @@ class DataDetail {
 }
 
   DataDetail.fromJson(dynamic json) {
-    _detail = json['detail'] != null ? Detail.fromJson(json['detail']) : null;
+    _detail = json['detail'] != null ? DetailJo.fromJson(json['detail']) : null;
     if (json['sow'] != null) {
       _sow = [];
       json['sow'].forEach((v) {
@@ -108,14 +108,14 @@ class DataDetail {
       });
     }
   }
-  Detail? _detail;
+  DetailJo? _detail;
   List<Sow>? _sow;
   List<Oos>? _oos;
   List<Lap>? _lap;
   List<StdMethod>? _stdMethod;
   List<PicHist>? _picHist;
   List<Laboratory>? _laboratory;
-DataDetail copyWith({  Detail? detail,
+DataDetail copyWith({  DetailJo? detail,
   List<Sow>? sow,
   List<Oos>? oos,
   List<Lap>? lap,
@@ -130,7 +130,7 @@ DataDetail copyWith({  Detail? detail,
   picHist: picHist ?? _picHist,
   laboratory: laboratory ?? _laboratory,
 );
-  Detail? get detail => _detail;
+  DetailJo? get detail => _detail;
   List<Sow>? get sow => _sow;
   List<Oos>? get oos => _oos;
   List<Lap>? get lap => _lap;
@@ -450,8 +450,8 @@ Sow copyWith({  String? name,
 /// market_segment_name : "NICKEL"
 /// sub_market_segment_name : "Fero Nickel"
 
-class Detail {
-  Detail({
+class DetailJo {
+  DetailJo({
       num? id, 
       String? soCode, 
       String? code, 
@@ -558,7 +558,7 @@ class Detail {
     _subMarketSegmentName = subMarketSegmentName;
 }
 
-  Detail.fromJson(dynamic json) {
+  DetailJo.fromJson(dynamic json) {
     _id = json['id'];
     _soCode = json['so_code'];
     _code = json['code'];
@@ -649,8 +649,8 @@ class Detail {
   String? _startDateOfAttendance;
   String? _endDateOfAttendance;
   dynamic _lokasiKerja;
-  num? _idPicInspector;
-  num? _idPicLaboratory;
+  dynamic _idPicInspector;
+  dynamic? _idPicLaboratory;
   String? _picLaboratory;
   String? _picInspector;
   String? _destinationCountry;
@@ -664,7 +664,7 @@ class Detail {
   String? _barge;
   String? _marketSegmentName;
   String? _subMarketSegmentName;
-Detail copyWith({  num? id,
+  DetailJo copyWith({  num? id,
   String? soCode,
   String? code,
   String? canceledDate,
@@ -716,7 +716,7 @@ Detail copyWith({  num? id,
   String? barge,
   String? marketSegmentName,
   String? subMarketSegmentName,
-}) => Detail(  id: id ?? _id,
+}) => DetailJo(  id: id ?? _id,
   soCode: soCode ?? _soCode,
   code: code ?? _code,
   canceledDate: canceledDate ?? _canceledDate,
@@ -806,8 +806,8 @@ Detail copyWith({  num? id,
   String? get startDateOfAttendance => _startDateOfAttendance;
   String? get endDateOfAttendance => _endDateOfAttendance;
   dynamic get lokasiKerja => _lokasiKerja;
-  num? get idPicInspector => _idPicInspector;
-  num? get idPicLaboratory => _idPicLaboratory;
+  dynamic? get idPicInspector => _idPicInspector;
+  dynamic? get idPicLaboratory => _idPicLaboratory;
   String? get picLaboratory => _picLaboratory;
   String? get picInspector => _picInspector;
   String? get destinationCountry => _destinationCountry;

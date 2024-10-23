@@ -9,6 +9,8 @@
 
 class Activity{
   Activity({
+      num? id,
+      String? code,
       num? tHJoId, 
       num? mStatusinspectionstagesId, 
       String? transDate, 
@@ -16,7 +18,15 @@ class Activity{
       String? endActivityTime, 
       String? activity, 
       num? createdBy, 
-      String? remarks,}){
+      String? remarks,
+      String? createdAt,
+      num? updatedBy,
+      String? updatedAt,
+      num? isActive,
+      num? isUpload,
+  }){
+    _id = id;
+    _code = code;
     _tHJoId = tHJoId;
     _mStatusinspectionstagesId = mStatusinspectionstagesId;
     _transDate = transDate;
@@ -25,9 +35,16 @@ class Activity{
     _activity = activity;
     _createdBy = createdBy;
     _remarks = remarks;
+    _createdAt = createdAt;
+    _updatedBy = updatedBy;
+    _updatedAt = updatedAt;
+    _isActive = isActive;
+    _isUpload = isUpload;
 }
 
   Activity.fromJson(dynamic json) {
+    _id = json['id'];
+    _code = json['code'];
     _tHJoId = json['t_h_jo_id'];
     _mStatusinspectionstagesId = json['m_statusinspectionstages_id'];
     _transDate = json['trans_date'];
@@ -36,7 +53,14 @@ class Activity{
     _activity = json['activity'];
     _createdBy = json['created_by'];
     _remarks = json['remarks'];
+    _createdAt = json['created_at'];
+    _updatedBy = json['updated_by'];
+    _updatedAt = json['updated_at'];
+    _isActive = json['is_active'];
+    _isUpload = json['is_upload'];
   }
+  num? _id;
+  String? _code;
   num? _tHJoId;
   num? _mStatusinspectionstagesId;
   String? _transDate;
@@ -45,7 +69,14 @@ class Activity{
   String? _activity;
   num? _createdBy;
   String? _remarks;
-  Activity copyWith({  num? tHJoId,
+  String? _createdAt;
+  num? _updatedBy;
+  String? _updatedAt;
+  num? _isActive;
+  num? _isUpload;
+  Activity copyWith({  num? id,
+  String? code,
+  num? tHJoId,
   num? mStatusinspectionstagesId,
   String? transDate,
   String? startActivityTime,
@@ -53,7 +84,14 @@ class Activity{
   String? activity,
   num? createdBy,
   String? remarks,
-}) => Activity(  tHJoId: tHJoId ?? _tHJoId,
+  String? createdAt,
+  num? updatedBy,
+  String? updatedAt,
+  num? isActive,
+  num? isUpload,
+}) => Activity(  id: id ?? _id,
+  code: code ?? _code,
+  tHJoId: tHJoId ?? _tHJoId,
   mStatusinspectionstagesId: mStatusinspectionstagesId ?? _mStatusinspectionstagesId,
   transDate: transDate ?? _transDate,
   startActivityTime: startActivityTime ?? _startActivityTime,
@@ -61,7 +99,14 @@ class Activity{
   activity: activity ?? _activity,
   createdBy: createdBy ?? _createdBy,
   remarks: remarks ?? _remarks,
+  createdAt: createdAt ?? _createdAt,
+  updatedBy: updatedBy ?? _updatedBy,
+  updatedAt: updatedAt ?? _updatedAt,
+  isActive: isActive ?? _isActive,
+  isUpload: isUpload ?? _isUpload,
 );
+  num? get id => _id;
+  String? get code => _code;
   num? get tHJoId => _tHJoId;
   num? get mStatusinspectionstagesId => _mStatusinspectionstagesId;
   String? get transDate => _transDate;
@@ -70,9 +115,16 @@ class Activity{
   String? get activity => _activity;
   num? get createdBy => _createdBy;
   String? get remarks => _remarks;
+  String? get createdAt => _createdAt;
+  num? get updatedBy => _updatedBy;
+  String? get updatedAt => _updatedAt;
+  num? get isActive => _isActive;
+  num? get isUpload => _isUpload;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
+    map['id'] = _id;
+    map['code'] = _code;
     map['t_h_jo_id'] = _tHJoId;
     map['m_statusinspectionstages_id'] = _mStatusinspectionstagesId;
     map['trans_date'] = _transDate;
@@ -81,6 +133,11 @@ class Activity{
     map['activity'] = _activity;
     map['created_by'] = _createdBy;
     map['remarks'] = _remarks;
+    map['created_at'] = createdAt;
+    map['updated_by'] = updatedBy;
+    map['updated_at'] = updatedAt;
+    map['is_active'] = isActive;
+    map['is_upload'] = isUpload;
     return map;
   }
 

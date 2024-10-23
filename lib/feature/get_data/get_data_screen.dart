@@ -1,11 +1,30 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/feature/get_data/get_data_controller.dart';
 
-class GetDataScreen extends StatelessWidget{
+class GetDataScreen extends StatefulWidget{
   const GetDataScreen({super.key});
+
+  @override
+  State<GetDataScreen> createState() => _GetDataScreenState();
+}
+
+class _GetDataScreenState extends State<GetDataScreen> {
+  late String tokenFirebase;
+
+  @override
+  void initState() {
+    final FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    messaging.getToken().then((token) {
+      tokenFirebase = token.toString();
+      debugPrint('firebase_token ${token}');
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +132,7 @@ class GetDataScreen extends StatelessWidget{
                       const Spacer(),
                       ElevatedButton(
                           onPressed: () {
-                            controller.getGenData();
+                            controller.getGenData(tokenFirebase);
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: primaryColor,

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,8 +23,14 @@ import 'package:ops_mobile/data/model/login_data_model.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/login/login_screen.dart';
+import 'package:path_provider_android/path_provider_android.dart';
+import 'package:path_provider_ios/path_provider_ios.dart';
 
 class HomeController extends BaseController{
+
+  final PathProviderAndroid providerAndroid = PathProviderAndroid();
+  final PathProviderIOS providerIOS = PathProviderIOS();
+  late var loginData;
 
   Rx<Data?> userData = Rx(Data());
   RxList<DataJo> dataJoList = RxList();
@@ -51,7 +58,7 @@ class HomeController extends BaseController{
       fullname: data.first['fullname'],
       nip: data.first['e_number'],
       positionId: data.first['jabatan_id'],
-      position: data.first['jabatan_id'].toString(),
+      position: data.first['jabatan'],
       divisionId: data.first['division_id'],
       division: data.first['division'].toString(),
       superior: data.first['superior_id'].toString()

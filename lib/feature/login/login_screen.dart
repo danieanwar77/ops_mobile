@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
@@ -6,8 +7,32 @@ import 'package:ops_mobile/feature/home/home_screen.dart';
 import 'package:ops_mobile/feature/login/login_controller.dart';
 import 'package:ops_mobile/feature/settings/settings_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+
+  String token = '';
+  @override
+  void initState() {
+    super.initState();
+    // nanti aplikasikan di synchronizedata
+    /// FCMZEIN START
+    // FirebaseMessaging messaging = FirebaseMessaging.instance;
+    //
+    // messaging.getToken().then((token) => setState(() {
+    //   setState(() {
+    //     this.token = token.toString();
+    //     print('firebase_token ${token}');
+    //   });
+    // }));
+    /// FCMZEIN END
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +56,7 @@ class LoginScreen extends StatelessWidget {
                           ),
                           Row(
                             children: [
-                              const Expanded(child: 
+                              const Expanded(child:
                                 SizedBox()
                               ),
                               InkWell(
@@ -110,7 +135,7 @@ class LoginScreen extends StatelessWidget {
                           ElevatedButton(
                               onPressed: () {
                                 // Get.to<void>(() => const HomeScreen());
-                                controller.logIn();
+                                controller.logInDecrypt();
                               },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: primaryColor,

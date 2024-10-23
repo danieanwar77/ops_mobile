@@ -248,7 +248,8 @@ Links copyWith({  dynamic url,
 class DataActivity {
   DataActivity({
       num? inspectionStagesId, 
-      num? inspectionActivityId, 
+      num? inspectionActivityId,
+      String? code,
       num? tHJoId, 
       num? mStatusinspectionstagesId, 
       String? stagesName, 
@@ -258,9 +259,15 @@ class DataActivity {
       String? endActivityTime, 
       String? activity,
       num? createdBy,
-      dynamic actualQty,}){
+      dynamic actualQty,
+      String? createdAt,
+      num? updatedBy,
+      String? updatedAt,
+      num? isActive,
+      num? isUpload,}){
     _inspectionStagesId = inspectionStagesId;
     _inspectionActivityId = inspectionActivityId;
+    _code = code;
     _tHJoId = tHJoId;
     _mStatusinspectionstagesId = mStatusinspectionstagesId;
     _stagesName = stagesName;
@@ -271,11 +278,17 @@ class DataActivity {
     _activity = activity;
     _createdBy = createdBy;
     _actualQty = actualQty;
+    _createdAt = createdAt;
+    _updatedBy = updatedBy;
+    _updatedAt = updatedAt;
+    _isActive = isActive;
+    _isUpload = isUpload;
 }
 
   DataActivity.fromJson(dynamic json) {
     _inspectionStagesId = json['inspection_stages_id'];
     _inspectionActivityId = json['inspection_activity_id'];
+    _code = json['code'];
     _tHJoId = json['t_h_jo_id'];
     _mStatusinspectionstagesId = json['m_statusinspectionstages_id'];
     _stagesName = json['stages_name'];
@@ -286,9 +299,15 @@ class DataActivity {
     _activity = json['activity'];
     _createdBy = json['created_by'];
     _actualQty = json['actual_qty'];
+    _createdAt = json['created_at'];
+    _updatedBy = json['updated_by'];
+    _updatedAt = json['updated_at'];
+    _isActive = json['is_active'];
+    _isUpload = json['is_upload'];
   }
   num? _inspectionStagesId;
   num? _inspectionActivityId;
+  String? _code;
   num? _tHJoId;
   num? _mStatusinspectionstagesId;
   String? _stagesName;
@@ -299,8 +318,14 @@ class DataActivity {
   String? _activity;
   num? _createdBy;
   dynamic _actualQty;
-  DataActivity copyWith({  num? inspectionStagesId,
+  String? _createdAt;
+  num? _updatedBy;
+  String? _updatedAt;
+  num? _isActive;
+  num? _isUpload;
+  DataActivity copyWith({   num? inspectionStagesId,
   num? inspectionActivityId,
+  String? code,
   num? tHJoId,
   num? mStatusinspectionstagesId,
   String? stagesName,
@@ -311,8 +336,14 @@ class DataActivity {
   String? activity,
   num? createdBy,
   dynamic actualQty,
-}) => DataActivity(  inspectionStagesId: inspectionStagesId ?? _inspectionStagesId,
+  String? createdAt,
+  num? updatedBy,
+  String? updatedAt,
+  num? isActive,
+  num? isUpload,
+  }) => DataActivity(  inspectionStagesId: inspectionStagesId ?? _inspectionStagesId,
   inspectionActivityId: inspectionActivityId ?? _inspectionActivityId,
+  code: code ?? _code,
   tHJoId: tHJoId ?? _tHJoId,
   mStatusinspectionstagesId: mStatusinspectionstagesId ?? _mStatusinspectionstagesId,
   stagesName: stagesName ?? _stagesName,
@@ -323,9 +354,15 @@ class DataActivity {
   activity: activity ?? _activity,
   createdBy: createdBy ?? _createdBy,
   actualQty: actualQty ?? _actualQty,
+  createdAt: createdAt ?? _createdAt,
+  updatedBy: updatedBy ?? _updatedBy,
+  updatedAt: updatedAt ?? _updatedAt,
+  isActive: isActive ?? _isActive,
+  isUpload: isUpload ?? _isUpload,
 );
   num? get inspectionStagesId => _inspectionStagesId;
   num? get inspectionActivityId => _inspectionActivityId;
+  String? get code => _code;
   num? get tHJoId => _tHJoId;
   num? get mStatusinspectionstagesId => _mStatusinspectionstagesId;
   String? get stagesName => _stagesName;
@@ -336,11 +373,17 @@ class DataActivity {
   String? get activity => _activity;
   num? get createdBy => _createdBy;
   dynamic get actualQty => _actualQty;
+  String? get createdAt => _createdAt;
+  num? get updatedBy => _updatedBy;
+  String? get updatedAt => _updatedAt;
+  num? get isActive => _isActive;
+  num? get isUpload => _isUpload;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['inspection_stages_id'] = _inspectionStagesId;
     map['inspection_activity_id'] = _inspectionActivityId;
+    map['code'] = _code;
     map['t_h_jo_id'] = _tHJoId;
     map['m_statusinspectionstages_id'] = _mStatusinspectionstagesId;
     map['stages_name'] = _stagesName;
@@ -351,6 +394,11 @@ class DataActivity {
     map['activity'] = _activity;
     map['created_by'] = _createdBy;
     map['actual_qty'] = _actualQty;
+    map['created_at'] = createdAt;
+    map['updated_by'] = updatedBy;
+    map['updated_at'] = updatedAt;
+    map['is_active'] = isActive;
+    map['is_upload'] = isUpload;
     return map;
   }
 

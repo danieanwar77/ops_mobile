@@ -1,9 +1,18 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
+import 'package:path_provider_android/path_provider_android.dart';
+import 'package:path_provider_ios/path_provider_ios.dart';
 
 class SettingsController extends BaseController{
+
+  late var settingsData;
+  final PathProviderAndroid providerAndroid = PathProviderAndroid();
+  final PathProviderIOS providerIOS = PathProviderIOS();
 
   TextEditingController username = TextEditingController();
   TextEditingController password = TextEditingController();
@@ -15,6 +24,23 @@ class SettingsController extends BaseController{
     Future.delayed(Duration(milliseconds: 500),(){
       drawerAddDocument();
     });
+    settingsData = jsonDecode(await readSettings());
+    update();
+    debugPrint('settings data: ${settingsData}');
+  }
+
+  Future<String> readSettings() async {
+    String text;
+    try {
+      final directory = await providerAndroid.getApplicationDocumentsPath();
+      final File file = File('${directory}/settings.txt');
+      text = await file.readAsString();
+      debugPrint('setting txt: ${jsonDecode(text)}');
+    } catch (e) {
+      print("Couldn't read file");
+      text = '';
+    }
+    return text;
   }
 
   void drawerAddDocument(){
@@ -154,14 +180,10 @@ class SettingsController extends BaseController{
             ),
             onPressed: () async {
               Get.back();
-              // var result = await addDocuments(type);
-              // if(result == 'success'){
-              //   Get.back();
-              //   openDialog("Success", "Finalisasi JO berhasil ditambahkan");
-              // } else {
-              //   Get.back();
-              //   openDialog("Failed", "Finalisasi JO masih kosong atau belum diinput");
-              // }
+              var response = await repository.deleteRegisterDevice(settingsData['e_number'].toString());
+              if(response.code == 200 && response.message == 'Delete Succesfuly'){
+                openDialog('Success', 'Berhasil hapus data register perangkat');
+              }
             },
           ),
         ],
