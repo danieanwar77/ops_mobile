@@ -376,7 +376,7 @@ class SqlHelper extends BaseController {
       SELECT
       a.id AS inspection_stages_id,
       b.code AS code,
-      b.id AS inspection_activity_id, a.t_h_jo_id, a.m_statusinspectionstages_id, c.`name` AS stages_name, a.trans_date,
+      b.id AS inspection_activity_id, a.t_h_jo_id, a.code AS stage_code, a.m_statusinspectionstages_id, c.`name` AS stages_name, a.trans_date,
       a.remarks, b.start_activity_time, b.end_activity_time, b.activity, a.actual_qty
       FROM t_d_jo_inspection_activity_stages AS a
       JOIN t_d_jo_inspection_activity AS b ON a.id = b.t_d_jo_inspection_activity_stages_id JOIN m_statusinspectionstages AS c ON c.id = a.m_statusinspectionstages_id
@@ -412,7 +412,17 @@ class SqlHelper extends BaseController {
       SELECT 
       id, code 
       FROM t_d_jo_inspection_activity_stages 
-      WHERE ROWID IN ( SELECT max( id ) FROM t_d_jo_inspection_activity_stages WHERE trans_date = '$date' AND created_by =  )
+      WHERE ROWID IN ( SELECT max( id ) FROM t_d_jo_inspection_activity_stages WHERE trans_date = '$date' AND created_by = $employee )
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getActivityStageId(String date, int employee, int id) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      SELECT 
+      id, code 
+      FROM t_d_jo_inspection_activity_stages 
+      WHERE id = $id AND trans_date = '$date' AND created_by = $employee
     ''');
   }
 
@@ -438,6 +448,28 @@ class SqlHelper extends BaseController {
       '$code',
       $idEmployee,
       '$createdAt');
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getActivityId(int employee, int id, String code) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      SELECT 
+      id, code 
+      FROM t_d_jo_inspection_activity 
+      WHERE id = $id AND code = $code AND created_by = $employee
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> updateActivityStage(int id, String remarks, int idEmployee, String updatedAt) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      UPDATE t_d_jo_inspection_activity_stage SET 
+      remarks = 'remarks',
+      updated_by = $idEmployee, 
+      updated_at = '$updatedAt'
+      WHERE
+      id = $id
     ''');
   }
 
