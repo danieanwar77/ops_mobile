@@ -250,7 +250,8 @@ class DataActivity {
       num? inspectionStagesId, 
       num? inspectionActivityId,
       String? code,
-      num? tHJoId, 
+      num? tHJoId,
+      String? stageCode,
       num? mStatusinspectionstagesId, 
       String? stagesName, 
       String? transDate, 
@@ -269,6 +270,7 @@ class DataActivity {
     _inspectionActivityId = inspectionActivityId;
     _code = code;
     _tHJoId = tHJoId;
+    _stageCode = stageCode;
     _mStatusinspectionstagesId = mStatusinspectionstagesId;
     _stagesName = stagesName;
     _transDate = transDate;
@@ -290,6 +292,7 @@ class DataActivity {
     _inspectionActivityId = json['inspection_activity_id'];
     _code = json['code'];
     _tHJoId = json['t_h_jo_id'];
+    _stageCode = json['stage_code'];
     _mStatusinspectionstagesId = json['m_statusinspectionstages_id'];
     _stagesName = json['stages_name'];
     _transDate = json['trans_date'];
@@ -309,6 +312,7 @@ class DataActivity {
   num? _inspectionActivityId;
   String? _code;
   num? _tHJoId;
+  String? _stageCode;
   num? _mStatusinspectionstagesId;
   String? _stagesName;
   String? _transDate;
@@ -327,6 +331,7 @@ class DataActivity {
   num? inspectionActivityId,
   String? code,
   num? tHJoId,
+  String? stageCode,
   num? mStatusinspectionstagesId,
   String? stagesName,
   String? transDate,
@@ -345,6 +350,7 @@ class DataActivity {
   inspectionActivityId: inspectionActivityId ?? _inspectionActivityId,
   code: code ?? _code,
   tHJoId: tHJoId ?? _tHJoId,
+  stageCode: stageCode ?? _stageCode,
   mStatusinspectionstagesId: mStatusinspectionstagesId ?? _mStatusinspectionstagesId,
   stagesName: stagesName ?? _stagesName,
   transDate: transDate ?? _transDate,
@@ -364,6 +370,7 @@ class DataActivity {
   num? get inspectionActivityId => _inspectionActivityId;
   String? get code => _code;
   num? get tHJoId => _tHJoId;
+  String? get stageCode => _stageCode;
   num? get mStatusinspectionstagesId => _mStatusinspectionstagesId;
   String? get stagesName => _stagesName;
   String? get transDate => _transDate;
@@ -385,6 +392,7 @@ class DataActivity {
     map['inspection_activity_id'] = _inspectionActivityId;
     map['code'] = _code;
     map['t_h_jo_id'] = _tHJoId;
+    map['stage_code'] = _stageCode;
     map['m_statusinspectionstages_id'] = _mStatusinspectionstagesId;
     map['stages_name'] = _stagesName;
     map['trans_date'] = _transDate;

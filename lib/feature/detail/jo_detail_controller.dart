@@ -495,6 +495,7 @@ class JoDetailController extends BaseController {
         id: data.inspectionActivityId,
         code: data.code,
         tHJoId: data.tHJoId,
+        stageId: data.inspectionStagesId,
         mStatusinspectionstagesId: data.mStatusinspectionstagesId,
         transDate: data.transDate,
         startActivityTime: data.startActivityTime,
@@ -524,6 +525,7 @@ class JoDetailController extends BaseController {
           id: data.inspectionActivityId,
           code: data.code,
           tHJoId: data.tHJoId,
+          stageId: data.inspectionStagesId,
           mStatusinspectionstagesId: data.mStatusinspectionstagesId,
           transDate: data.transDate,
           startActivityTime: data.startActivityTime,
@@ -1472,6 +1474,7 @@ class JoDetailController extends BaseController {
       id: 0,
       code: '',
       tHJoId: id,
+      stageId: 0,
       mStatusinspectionstagesId: activityStage,
       transDate: activityDate.text,
       startActivityTime: activityStartTime.text,
@@ -1510,6 +1513,7 @@ class JoDetailController extends BaseController {
       id: activityList.value[editActivityIndex.value].id,
       code: activityList.value[editActivityIndex.value].code,
       tHJoId: id,
+      stageId: activityList.value[editActivityIndex.value].stageId,
       mStatusinspectionstagesId: activityStage,
       transDate: activityDate.text,
       startActivityTime: activityStartTime.text,
@@ -1654,7 +1658,7 @@ class JoDetailController extends BaseController {
               var time = DateFormat('yyyyMMddHms').format(DateTime.now());
               var code = 'JOAIDA-${userData.value!.nip!}-${time.toString()}$itemCount';
               var stageAct = await SqlHelper.getActivityStage(actDate[i]!, int.parse(userData.value!.nip!));
-              var sendAct = await postInsertActivityLocal(stageAct.first['id'], actItem.startActivityTime!,actItem.endActivityTime!,actItem.activity!,code,int.parse(userData.value!.nip!));
+              var sendAct = await postInsertActivityLocal(stageAct.first['id'], actItem.startActivityTime!,actItem.endActivityTime!,actItem.activity!,code,userData.value!.id!.toInt());
               if(sendAct != 'success'){
                 debugPrint('Problem with sending SQL Activity Item');
               }
@@ -1734,7 +1738,7 @@ class JoDetailController extends BaseController {
   Future<String> postInsertActivityStageLocal(String transDate, String remarks, String code ) async {
     try{
       var time = DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now());
-      await SqlHelper.insertActivityStage(id, activityStage, transDate, remarks, code, int.parse(userData.value!.nip!), time.toString());
+      await SqlHelper.insertActivityStage(id, activityStage, transDate, remarks, code, userData.value!.id!.toInt(), time.toString());
       return 'success';
     } catch(e) {
       return 'failed';
@@ -2387,25 +2391,25 @@ class JoDetailController extends BaseController {
         .where((data) => data.mStatusinspectionstagesId == activityStage)
         .toList()
         .isNotEmpty) {
-      var post = activityList.value
-          .map((value) => Activity(
-                id: value.id,
-                code: value.code,
-                tHJoId: value.tHJoId,
-                mStatusinspectionstagesId: value.mStatusinspectionstagesId,
-                transDate: value.transDate,
-                startActivityTime: value.startActivityTime,
-                endActivityTime: value.endActivityTime,
-                activity: value.activity,
-                createdBy: value.createdBy,
-                remarks: value.remarks,
-                createdAt: value.createdAt,
-                updatedBy: value.updatedBy,
-                updatedAt: value.updatedAt,
-                isActive: value.isActive,
-                isUpload: value.isUpload,
-              ).toJson())
-          .toList();
+      // var post = activityList.value
+      //     .map((value) => Activity(
+      //           id: value.id,
+      //           code: value.code,
+      //           tHJoId: value.tHJoId,
+      //           mStatusinspectionstagesId: value.mStatusinspectionstagesId,
+      //           transDate: value.transDate,
+      //           startActivityTime: value.startActivityTime,
+      //           endActivityTime: value.endActivityTime,
+      //           activity: value.activity,
+      //           createdBy: value.createdBy,
+      //           remarks: value.remarks,
+      //           createdAt: value.createdAt,
+      //           updatedBy: value.updatedBy,
+      //           updatedAt: value.updatedAt,
+      //           isActive: value.isActive,
+      //           isUpload: value.isUpload,
+      //         ).toJson())
+      //     .toList();
 
       // var send = await postUpdateActivity(post);
       // if (send == 'success') {
@@ -2425,8 +2429,7 @@ class JoDetailController extends BaseController {
       //   return 'failed';
       // }
 
-      var itemCount = 0;
-      var itemActCount = 0;
+
       var actDate = activityList.value
           .map((item) {
         return item.transDate;
@@ -2439,33 +2442,71 @@ class JoDetailController extends BaseController {
       })
           .toSet()
           .toList();
+      var itemCount = 0;
+      var itemActCount = 0;
       if(actDate.length == actRemarks.length){
         itemCount++;
 
-        for (var item in activityList.value) {
-          activityListStages.value.add(item);
-        }
-
         for(var i = 0; i < actRemarks.length; i++){
           debugPrint('date : ${actDate[i]}');
-          var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-          var code = 'JOAID-${userData.value!.nip!}-${time.toString()}$itemCount';
-          var sendStage = await postInsertActivityStageLocal(actDate[i]!, actRemarks[i]!, code );
-          if(sendStage != 'success'){
-            debugPrint('Problem with sending SQL Activity Stage');
-          } else {
-            activityList.value.where((item) => item.transDate == actDate[i]).forEach((actItem)async{
-              itemActCount++;
-              var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-              var code = 'JOAIDA-${userData.value!.nip!}-${time.toString()}$itemCount';
-              var stageAct = await SqlHelper.getActivityStage(actDate[i]!, int.parse(userData.value!.nip!));
-              var sendAct = await postInsertActivityLocal(stageAct.first['id'], actItem.startActivityTime!,actItem.endActivityTime!,actItem.activity!,code,int.parse(userData.value!.nip!));
-              if(sendAct != 'success'){
-                debugPrint('Problem with sending SQL Activity Item');
+          for(var item in activityList.value.where((act) => act.transDate == actDate[i])){
+            itemActCount++;
+            if(item.stageId != 0 && item.stageId != null){
+              var checkId = await SqlHelper.getActivityStageId(actDate[i]!, userData.value!.id!.toInt(), item.stageId!.toInt());
+              if(checkId.isNotEmpty && checkId.length == 1){
+                var updateStage = await postUpdateActivityStageLocal(item.stageId!.toInt(), item.remarks ?? '');
+                if(updateStage != 'success'){
+                  debugPrint('Problem with sending update SQL Activity Stage Item');
+                }
+                var checkActId = await SqlHelper.getActivityId( userData.value!.id!.toInt(), item.id?.toInt() ?? 0, item.code ?? '');
+                if(checkActId.isNotEmpty && checkId.length == 1){
+                  var updateAct = await postUpdateActivityLocal(item.id!.toInt(), item.stageId!.toInt(), item.startActivityTime!, item.endActivityTime!, item.activity!, item.code!);
+                  if(updateAct != 'success'){
+                    debugPrint('Problem with sending update SQL Activity Item');
+                  }
+                } else {
+                  var time = DateFormat('yyyyMMddHms').format(DateTime.now());
+                  var code = 'JOAIDA-${userData.value!.nip!}-${time.toString()}$itemCount';
+                  var sendAct = await postInsertActivityLocal(checkId.first['id'], item.startActivityTime!,item.endActivityTime!,item.activity!,code,userData.value!.id!.toInt());
+                  if(sendAct != 'success'){
+                    debugPrint('Problem with sending SQL Activity Item');
+                  }
+                }
               }
-            });
-            itemActCount = 0;
+              // else {
+              //   var time = DateFormat('yyyyMMddHms').format(DateTime.now());
+              //   var code = 'JOAID-${userData.value!.nip!}-${time.toString()}$itemCount';
+              //   var sendStage = await postInsertActivityStageLocal(actDate[i]!, actRemarks[i]!, code );
+              //   if(sendStage != 'success'){
+              //     debugPrint('Problem with sending SQL Activity Stage');
+              //   } else {
+              //       var time = DateFormat('yyyyMMddHms').format(DateTime.now());
+              //       var code = 'JOAIDA-${userData.value!.nip!}-${time.toString()}$itemCount';
+              //       var stageAct = await SqlHelper.getActivityStage(actDate[i]!, userData.value!.id!.toInt());
+              //       var sendAct = await postInsertActivityLocal(stageAct.first['id'], item.startActivityTime!,item.endActivityTime!,item.activity!,code,userData.value!.id!.toInt());
+              //       if(sendAct != 'success'){
+              //         debugPrint('Problem with sending SQL Activity Item');
+              //       }
+              //   }
+              // }
+            } else {
+              var time = DateFormat('yyyyMMddHms').format(DateTime.now());
+              var code = 'JOAID-${userData.value!.nip!}-${time.toString()}$itemCount';
+              var sendStage = await postInsertActivityStageLocal(actDate[i]!, actRemarks[i]!, code );
+              if(sendStage != 'success'){
+                debugPrint('Problem with sending SQL Activity Stage');
+              } else {
+                var time = DateFormat('yyyyMMddHms').format(DateTime.now());
+                var code = 'JOAIDA-${userData.value!.nip!}-${time.toString()}$itemCount';
+                var stageAct = await SqlHelper.getActivityStage(actDate[i]!, userData.value!.id!.toInt());
+                var sendAct = await postInsertActivityLocal(stageAct.first['id'], item.startActivityTime!,item.endActivityTime!,item.activity!,code,userData.value!.id!.toInt());
+                if(sendAct != 'success'){
+                  debugPrint('Problem with sending SQL Activity Item');
+                }
+              }
+            }
           }
+          itemActCount = 0;
         }
       }
 
@@ -2504,6 +2545,26 @@ class JoDetailController extends BaseController {
     if (response.message == 'Inspection berhasil ditambahkan.') {
       return 'success';
     } else {
+      return 'failed';
+    }
+  }
+
+  Future<String> postUpdateActivityStageLocal(int id, String remarks) async {
+    try{
+      var time = DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now());
+      await SqlHelper.updateActivityStage(id, remarks, userData.value!.id!.toInt(), time);
+      return 'success';
+    } catch(e) {
+      return 'failed';
+    }
+  }
+
+  Future<String> postUpdateActivityLocal(int id,int idActStage,String startTime,String endTime,String activity,String code) async {
+    try{
+      var time = DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now());
+      await SqlHelper.updateActivity(id, idActStage, startTime, endTime, activity, code, userData.value!.id!.toInt(), time);
+      return 'success';
+    } catch(e) {
       return 'failed';
     }
   }

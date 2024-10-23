@@ -11,7 +11,9 @@ class Activity{
   Activity({
       num? id,
       String? code,
-      num? tHJoId, 
+      num? tHJoId,
+      num? stageId,
+      String? stageCode,
       num? mStatusinspectionstagesId, 
       String? transDate, 
       String? startActivityTime, 
@@ -28,6 +30,8 @@ class Activity{
     _id = id;
     _code = code;
     _tHJoId = tHJoId;
+    _stageId = stageId;
+    _stageCode = stageCode;
     _mStatusinspectionstagesId = mStatusinspectionstagesId;
     _transDate = transDate;
     _startActivityTime = startActivityTime;
@@ -46,6 +50,8 @@ class Activity{
     _id = json['id'];
     _code = json['code'];
     _tHJoId = json['t_h_jo_id'];
+    _stageId = json['inspection_stages_id'];
+    _stageCode = json['stage_code'];
     _mStatusinspectionstagesId = json['m_statusinspectionstages_id'];
     _transDate = json['trans_date'];
     _startActivityTime = json['start_activity_time'];
@@ -62,6 +68,8 @@ class Activity{
   num? _id;
   String? _code;
   num? _tHJoId;
+  num? _stageId;
+  String? _stageCode;
   num? _mStatusinspectionstagesId;
   String? _transDate;
   String? _startActivityTime;
@@ -77,6 +85,8 @@ class Activity{
   Activity copyWith({  num? id,
   String? code,
   num? tHJoId,
+  num? stageId,
+  String? stageCode,
   num? mStatusinspectionstagesId,
   String? transDate,
   String? startActivityTime,
@@ -92,6 +102,8 @@ class Activity{
 }) => Activity(  id: id ?? _id,
   code: code ?? _code,
   tHJoId: tHJoId ?? _tHJoId,
+  stageId: stageId ?? _stageId,
+  stageCode: stageCode ?? _stageCode,
   mStatusinspectionstagesId: mStatusinspectionstagesId ?? _mStatusinspectionstagesId,
   transDate: transDate ?? _transDate,
   startActivityTime: startActivityTime ?? _startActivityTime,
@@ -108,6 +120,8 @@ class Activity{
   num? get id => _id;
   String? get code => _code;
   num? get tHJoId => _tHJoId;
+  num? get stageId => _stageId;
+  String? get stageCode => _stageCode;
   num? get mStatusinspectionstagesId => _mStatusinspectionstagesId;
   String? get transDate => _transDate;
   String? get startActivityTime => _startActivityTime;
@@ -126,6 +140,8 @@ class Activity{
     map['id'] = _id;
     map['code'] = _code;
     map['t_h_jo_id'] = _tHJoId;
+    map['inspection_stages_id'] = _stageId;
+    map['stage_code'] = _stageCode;
     map['m_statusinspectionstages_id'] = _mStatusinspectionstagesId;
     map['trans_date'] = _transDate;
     map['start_activity_time'] = _startActivityTime;
