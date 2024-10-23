@@ -375,6 +375,7 @@ class SqlHelper extends BaseController {
     return db.rawQuery('''
       SELECT
       a.id AS inspection_stages_id,
+      b.code AS code,
       b.id AS inspection_activity_id, a.t_h_jo_id, a.m_statusinspectionstages_id, c.`name` AS stages_name, a.trans_date,
       a.remarks, b.start_activity_time, b.end_activity_time, b.activity, a.actual_qty
       FROM t_d_jo_inspection_activity_stages AS a
@@ -405,13 +406,13 @@ class SqlHelper extends BaseController {
     ''');
   }
 
-  static Future<List<Map<String, dynamic>>> getActivityStage() async {
+  static Future<List<Map<String, dynamic>>> getActivityStage(String date, int employee) async {
     final db = await SqlHelper.db();
     return db.rawQuery('''
       SELECT 
       id, code 
       FROM t_d_jo_inspection_activity_stages 
-      WHERE ROWID IN ( SELECT max( id ) FROM t_d_jo_inspection_activity_stages )
+      WHERE ROWID IN ( SELECT max( id ) FROM t_d_jo_inspection_activity_stages WHERE trans_date = '$date' AND created_by =  )
     ''');
   }
 
@@ -440,7 +441,7 @@ class SqlHelper extends BaseController {
     ''');
   }
 
-  static Future<List<Map<String, dynamic>>> updateActivity(int idJo, int idActStage, String startTime, String endTime, String activity, String code, int idEmployee, String updatedAt) async {
+  static Future<List<Map<String, dynamic>>> updateActivity(int id, int idActStage, String startTime, String endTime, String activity, String code, int idEmployee, String updatedAt) async {
     final db = await SqlHelper.db();
     return db.rawQuery('''
       UPDATE t_d_jo_inspection_activity SET 
@@ -450,7 +451,7 @@ class SqlHelper extends BaseController {
       updated_by = $idEmployee, 
       updated_at = '$updatedAt'
       WHERE
-      t_h_jo_id = $idJo AND
+      id = $id AND
       code = '$code'
     ''');
   }
@@ -466,17 +467,14 @@ class SqlHelper extends BaseController {
     ''');
   }
 
-  static Future<List<Map<String, dynamic>>> deleteActivity(int idJo, String code) async {
+  static Future<List<Map<String, dynamic>>> deleteActivity(int id, String code) async {
     final db = await SqlHelper.db();
     return db.rawQuery('''
-      UPDATE t_d_jo_inspection_activity_stages,t_d_jo_inspection_activity  SET 
-      t_d_jo_inspection_activity_stages.is_active = 0,
-      t_d_jo_inspection_activity.is_active = 0
+      UPDATE t_d_jo_inspection_activity  SET 
+      is_active = 0
       WHERE
-      (t_d_jo_inspection_activity_stages.t_h_jo_id = $idJo AND
-      t_d_jo_inspection_activity_stages.code = '$code') AND 
-      (t_d_jo_inspection_activity.t_h_jo_id = $idJo AND
-      t_d_jo_inspection_activity.code = '$code')
+      id = $id AND
+      code = '$code'
     ''');
   }
 

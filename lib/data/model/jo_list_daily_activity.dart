@@ -248,7 +248,8 @@ Links copyWith({  dynamic url,
 class DataActivity {
   DataActivity({
       num? inspectionStagesId, 
-      num? inspectionActivityId, 
+      num? inspectionActivityId,
+      String? code,
       num? tHJoId, 
       num? mStatusinspectionstagesId, 
       String? stagesName, 
@@ -266,6 +267,7 @@ class DataActivity {
       num? isUpload,}){
     _inspectionStagesId = inspectionStagesId;
     _inspectionActivityId = inspectionActivityId;
+    _code = code;
     _tHJoId = tHJoId;
     _mStatusinspectionstagesId = mStatusinspectionstagesId;
     _stagesName = stagesName;
@@ -286,6 +288,7 @@ class DataActivity {
   DataActivity.fromJson(dynamic json) {
     _inspectionStagesId = json['inspection_stages_id'];
     _inspectionActivityId = json['inspection_activity_id'];
+    _code = json['code'];
     _tHJoId = json['t_h_jo_id'];
     _mStatusinspectionstagesId = json['m_statusinspectionstages_id'];
     _stagesName = json['stages_name'];
@@ -304,6 +307,7 @@ class DataActivity {
   }
   num? _inspectionStagesId;
   num? _inspectionActivityId;
+  String? _code;
   num? _tHJoId;
   num? _mStatusinspectionstagesId;
   String? _stagesName;
@@ -319,8 +323,9 @@ class DataActivity {
   String? _updatedAt;
   num? _isActive;
   num? _isUpload;
-  DataActivity copyWith({  num? inspectionStagesId,
+  DataActivity copyWith({   num? inspectionStagesId,
   num? inspectionActivityId,
+  String? code,
   num? tHJoId,
   num? mStatusinspectionstagesId,
   String? stagesName,
@@ -338,6 +343,7 @@ class DataActivity {
   num? isUpload,
   }) => DataActivity(  inspectionStagesId: inspectionStagesId ?? _inspectionStagesId,
   inspectionActivityId: inspectionActivityId ?? _inspectionActivityId,
+  code: code ?? _code,
   tHJoId: tHJoId ?? _tHJoId,
   mStatusinspectionstagesId: mStatusinspectionstagesId ?? _mStatusinspectionstagesId,
   stagesName: stagesName ?? _stagesName,
@@ -356,6 +362,7 @@ class DataActivity {
 );
   num? get inspectionStagesId => _inspectionStagesId;
   num? get inspectionActivityId => _inspectionActivityId;
+  String? get code => _code;
   num? get tHJoId => _tHJoId;
   num? get mStatusinspectionstagesId => _mStatusinspectionstagesId;
   String? get stagesName => _stagesName;
@@ -376,6 +383,7 @@ class DataActivity {
     final map = <String, dynamic>{};
     map['inspection_stages_id'] = _inspectionStagesId;
     map['inspection_activity_id'] = _inspectionActivityId;
+    map['code'] = _code;
     map['t_h_jo_id'] = _tHJoId;
     map['m_statusinspectionstages_id'] = _mStatusinspectionstagesId;
     map['stages_name'] = _stagesName;

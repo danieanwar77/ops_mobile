@@ -492,6 +492,8 @@ class JoDetailController extends BaseController {
     activityListStages.value.clear();
     dataListActivity.value.forEach((data) {
       activityListStages.value.add(Activity(
+        id: data.inspectionActivityId,
+        code: data.code,
         tHJoId: data.tHJoId,
         mStatusinspectionstagesId: data.mStatusinspectionstagesId,
         transDate: data.transDate,
@@ -519,6 +521,8 @@ class JoDetailController extends BaseController {
       activityListStages.value.clear();
       dataListActivity.value.forEach((data) {
         activityListStages.value.add(Activity(
+          id: data.inspectionActivityId,
+          code: data.code,
           tHJoId: data.tHJoId,
           mStatusinspectionstagesId: data.mStatusinspectionstagesId,
           transDate: data.transDate,
@@ -1465,6 +1469,8 @@ class JoDetailController extends BaseController {
     }
 
     activityList.value.add(Activity(
+      id: 0,
+      code: '',
       tHJoId: id,
       mStatusinspectionstagesId: activityStage,
       transDate: activityDate.text,
@@ -1501,6 +1507,8 @@ class JoDetailController extends BaseController {
 
   void editActivity() {
     activityList.value[editActivityIndex.value] = Activity(
+      id: activityList.value[editActivityIndex.value].id,
+      code: activityList.value[editActivityIndex.value].code,
       tHJoId: id,
       mStatusinspectionstagesId: activityStage,
       transDate: activityDate.text,
@@ -1530,15 +1538,21 @@ class JoDetailController extends BaseController {
     for (var i = 0; i < activityList.value.length; i++) {
       if (activityList.value[i].transDate.toString() == date) {
         activityList.value[i] = Activity(
+          id: activityList.value[i].id,
+          code: activityList.value[i].code,
           tHJoId: id,
-          mStatusinspectionstagesId:
-              activityList.value[i].mStatusinspectionstagesId,
+          mStatusinspectionstagesId: activityList.value[i].mStatusinspectionstagesId,
           transDate: activityList.value[i].transDate,
           startActivityTime: activityList.value[i].startActivityTime,
           endActivityTime: activityList.value[i].endActivityTime,
           activity: activityList.value[i].activity,
           createdBy: userData.value!.id,
           remarks: remarksController.text,
+          createdAt: '',
+          updatedBy: 0,
+          updatedAt: '',
+          isActive: 0,
+          isUpload: 0,
         );
       }
     }
@@ -1551,8 +1565,8 @@ class JoDetailController extends BaseController {
   Future<void> removeActivity(int indexitem, int index, int stage) async {
     var dateLength = activityList.value
         .where((item) =>
-            item.transDate == activityList.value[indexitem].transDate &&
-            item.mStatusinspectionstagesId == stage)
+    item.transDate == activityList.value[indexitem].transDate &&
+        item.mStatusinspectionstagesId == stage)
         .length;
     if (dateLength == 1) {
       activityListTextController.value.removeAt(index);
@@ -1562,6 +1576,44 @@ class JoDetailController extends BaseController {
   }
 
   Future<void> removeActivityByDate(String date, int indexDate, int stage) async {
+    activityList.value.removeWhere((item) =>
+    item.transDate == date && item.mStatusinspectionstagesId == stage);
+    activityListTextController.value.removeAt(indexDate);
+    update();
+  }
+
+  Future<void> removeActivityLocal(int indexitem, int index, int stage, int id, String code) async {
+    debugPrint('id: $id, code: $code');
+    if(id != 0 && code != ''){
+      try{
+        await SqlHelper.deleteActivity(id, code);
+        var dateLength = activityList.value
+            .where((item) =>
+        item.transDate == activityList.value[indexitem].transDate &&
+            item.mStatusinspectionstagesId == stage)
+            .length;
+        if (dateLength == 1) {
+          activityListTextController.value.removeAt(index);
+        }
+        activityList.value.removeAt(indexitem);
+      } catch(e) {
+        debugPrint('error delete activity: ${e.toString()}');
+      }
+    } else {
+      var dateLength = activityList.value
+          .where((item) =>
+      item.transDate == activityList.value[indexitem].transDate &&
+          item.mStatusinspectionstagesId == stage)
+          .length;
+      if (dateLength == 1) {
+        activityListTextController.value.removeAt(index);
+      }
+      activityList.value.removeAt(indexitem);
+    }
+    update();
+  }
+
+  Future<void> removeActivityByDateLocal(String date, int indexDate, int stage) async {
     activityList.value.removeWhere((item) =>
         item.transDate == date && item.mStatusinspectionstagesId == stage);
     activityListTextController.value.removeAt(indexDate);
@@ -1601,7 +1653,7 @@ class JoDetailController extends BaseController {
               itemActCount++;
               var time = DateFormat('yyyyMMddHms').format(DateTime.now());
               var code = 'JOAIDA-${userData.value!.nip!}-${time.toString()}$itemCount';
-              var stageAct = await SqlHelper.getActivityStage();
+              var stageAct = await SqlHelper.getActivityStage(actDate[i]!, int.parse(userData.value!.nip!));
               var sendAct = await postInsertActivityLocal(stageAct.first['id'], actItem.startActivityTime!,actItem.endActivityTime!,actItem.activity!,code,int.parse(userData.value!.nip!));
               if(sendAct != 'success'){
                 debugPrint('Problem with sending SQL Activity Item');
@@ -2105,7 +2157,8 @@ class JoDetailController extends BaseController {
                                                                               activity!,
                                                                               indexItem,
                                                                               index,
-                                                                              activityStage);
+                                                                              activityStage
+                                                                          );
                                                                         },
                                                                         child:
                                                                             Icon(
@@ -2336,6 +2389,8 @@ class JoDetailController extends BaseController {
         .isNotEmpty) {
       var post = activityList.value
           .map((value) => Activity(
+                id: value.id,
+                code: value.code,
                 tHJoId: value.tHJoId,
                 mStatusinspectionstagesId: value.mStatusinspectionstagesId,
                 transDate: value.transDate,
@@ -2369,6 +2424,50 @@ class JoDetailController extends BaseController {
       // } else {
       //   return 'failed';
       // }
+
+      var itemCount = 0;
+      var itemActCount = 0;
+      var actDate = activityList.value
+          .map((item) {
+        return item.transDate;
+      })
+          .toSet()
+          .toList();
+      var actRemarks = activityList.value
+          .map((item) {
+        return item.remarks;
+      })
+          .toSet()
+          .toList();
+      if(actDate.length == actRemarks.length){
+        itemCount++;
+
+        for (var item in activityList.value) {
+          activityListStages.value.add(item);
+        }
+
+        for(var i = 0; i < actRemarks.length; i++){
+          debugPrint('date : ${actDate[i]}');
+          var time = DateFormat('yyyyMMddHms').format(DateTime.now());
+          var code = 'JOAID-${userData.value!.nip!}-${time.toString()}$itemCount';
+          var sendStage = await postInsertActivityStageLocal(actDate[i]!, actRemarks[i]!, code );
+          if(sendStage != 'success'){
+            debugPrint('Problem with sending SQL Activity Stage');
+          } else {
+            activityList.value.where((item) => item.transDate == actDate[i]).forEach((actItem)async{
+              itemActCount++;
+              var time = DateFormat('yyyyMMddHms').format(DateTime.now());
+              var code = 'JOAIDA-${userData.value!.nip!}-${time.toString()}$itemCount';
+              var stageAct = await SqlHelper.getActivityStage(actDate[i]!, int.parse(userData.value!.nip!));
+              var sendAct = await postInsertActivityLocal(stageAct.first['id'], actItem.startActivityTime!,actItem.endActivityTime!,actItem.activity!,code,int.parse(userData.value!.nip!));
+              if(sendAct != 'success'){
+                debugPrint('Problem with sending SQL Activity Item');
+              }
+            });
+            itemActCount = 0;
+          }
+        }
+      }
 
       // check ui
       activityListStages.value
@@ -2711,7 +2810,7 @@ class JoDetailController extends BaseController {
                                                                 onTap: () {
                                                                   if (activity !=
                                                                       null) {
-                                                                    removeActivityByDate(
+                                                                    removeActivityByDateLocal(
                                                                         activity,
                                                                         index,
                                                                         activityStage);
@@ -2811,10 +2910,13 @@ class JoDetailController extends BaseController {
                                                                     InkWell(
                                                                         onTap:
                                                                             () {
-                                                                          removeActivity(
+                                                                          removeActivityLocal(
                                                                               indexItem,
                                                                               index,
-                                                                              activityStage);
+                                                                              activityStage,
+                                                                              activityList.value[indexItem].id?.toInt() ?? 0,
+                                                                              activityList.value[indexItem].code ?? ''
+                                                                          );
                                                                         },
                                                                         child:
                                                                             Icon(
@@ -3052,7 +3154,65 @@ class JoDetailController extends BaseController {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             onPressed: () async {
-              await removeActivityByDate(date, indexDate, stage);
+              await removeActivityByDateLocal(date, indexDate, stage);
+              Get.back();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void removeActivityConfirmLocal(String date, int indexitem, int index, int stage, int id, String code) {
+    Get.dialog(
+      AlertDialog(
+        title: Text(
+          'Attention',
+          style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
+        ),
+        content: Text('Apakah anda ingin menghapus activity date $date'),
+        actions: [
+          TextButton(
+            child: const Text("Close"),
+            onPressed: () => Get.back(),
+          ),
+          TextButton(
+            child: const Text(
+              "OK",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            onPressed: () async {
+              await removeActivityLocal(indexitem, index, stage, id, code);
+              Get.back();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void removeActivityByDateConfirmLocal(String date, int indexDate, int stage) {
+    Get.dialog(
+      AlertDialog(
+        title: Text(
+          'Attention',
+          style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
+        ),
+        content: Text('Apakah anda ingin menghapus activity date $date'),
+        actions: [
+          TextButton(
+            child: const Text("Close"),
+            onPressed: () => Get.back(),
+          ),
+          TextButton(
+            child: const Text(
+              "OK",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            onPressed: () async {
+              await removeActivityByDateLocal(date, indexDate, stage);
               Get.back();
             },
           ),

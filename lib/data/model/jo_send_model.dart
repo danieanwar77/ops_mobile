@@ -9,6 +9,8 @@
 
 class Activity{
   Activity({
+      num? id,
+      String? code,
       num? tHJoId, 
       num? mStatusinspectionstagesId, 
       String? transDate, 
@@ -23,6 +25,8 @@ class Activity{
       num? isActive,
       num? isUpload,
   }){
+    _id = id;
+    _code = code;
     _tHJoId = tHJoId;
     _mStatusinspectionstagesId = mStatusinspectionstagesId;
     _transDate = transDate;
@@ -39,6 +43,8 @@ class Activity{
 }
 
   Activity.fromJson(dynamic json) {
+    _id = json['id'];
+    _code = json['code'];
     _tHJoId = json['t_h_jo_id'];
     _mStatusinspectionstagesId = json['m_statusinspectionstages_id'];
     _transDate = json['trans_date'];
@@ -53,6 +59,8 @@ class Activity{
     _isActive = json['is_active'];
     _isUpload = json['is_upload'];
   }
+  num? _id;
+  String? _code;
   num? _tHJoId;
   num? _mStatusinspectionstagesId;
   String? _transDate;
@@ -66,7 +74,9 @@ class Activity{
   String? _updatedAt;
   num? _isActive;
   num? _isUpload;
-  Activity copyWith({  num? tHJoId,
+  Activity copyWith({  num? id,
+  String? code,
+  num? tHJoId,
   num? mStatusinspectionstagesId,
   String? transDate,
   String? startActivityTime,
@@ -79,7 +89,9 @@ class Activity{
   String? updatedAt,
   num? isActive,
   num? isUpload,
-}) => Activity(  tHJoId: tHJoId ?? _tHJoId,
+}) => Activity(  id: id ?? _id,
+  code: code ?? _code,
+  tHJoId: tHJoId ?? _tHJoId,
   mStatusinspectionstagesId: mStatusinspectionstagesId ?? _mStatusinspectionstagesId,
   transDate: transDate ?? _transDate,
   startActivityTime: startActivityTime ?? _startActivityTime,
@@ -93,6 +105,8 @@ class Activity{
   isActive: isActive ?? _isActive,
   isUpload: isUpload ?? _isUpload,
 );
+  num? get id => _id;
+  String? get code => _code;
   num? get tHJoId => _tHJoId;
   num? get mStatusinspectionstagesId => _mStatusinspectionstagesId;
   String? get transDate => _transDate;
@@ -109,6 +123,8 @@ class Activity{
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
+    map['id'] = _id;
+    map['code'] = _code;
     map['t_h_jo_id'] = _tHJoId;
     map['m_statusinspectionstages_id'] = _mStatusinspectionstagesId;
     map['trans_date'] = _transDate;
