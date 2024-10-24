@@ -381,6 +381,8 @@ class SqlHelper extends BaseController {
       FROM t_d_jo_inspection_activity_stages AS a
       JOIN t_d_jo_inspection_activity AS b ON a.id = b.t_d_jo_inspection_activity_stages_id JOIN m_statusinspectionstages AS c ON c.id = a.m_statusinspectionstages_id
       WHERE a.t_h_jo_id = $idJo
+      AND a.is_active = 1
+      AND b.is_active = 1
     ''');
   }
 
@@ -422,7 +424,18 @@ class SqlHelper extends BaseController {
       SELECT 
       id, code 
       FROM t_d_jo_inspection_activity_stages 
-      WHERE id = $id AND trans_date = '$date' AND created_by = $employee
+      WHERE id = $id AND trans_date = '$date' AND created_by = $employee AND is_active = 1
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getActivityListStage(int id) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      SELECT 
+      id, code 
+      FROM t_d_jo_inspection_activity 
+      WHERE t_d_jo_inspection_activity_stages_id = $id
+      AND is_active = 1
     ''');
   }
 
@@ -437,6 +450,7 @@ class SqlHelper extends BaseController {
       end_activity_time, 
       activity, 
       code, 
+      is_active,
       created_by, 
       created_at) 
       VALUES(
@@ -446,6 +460,7 @@ class SqlHelper extends BaseController {
       '$endTime',
       '$activity',
       '$code',
+      1,
       $idEmployee,
       '$createdAt');
     ''');
@@ -457,16 +472,16 @@ class SqlHelper extends BaseController {
       SELECT 
       id, code 
       FROM t_d_jo_inspection_activity 
-      WHERE id = $id AND code = $code AND created_by = $employee
+      WHERE id = $id AND code = '$code' AND created_by = $employee
     ''');
   }
 
   static Future<List<Map<String, dynamic>>> updateActivityStage(int id, String remarks, int idEmployee, String updatedAt) async {
     final db = await SqlHelper.db();
     return db.rawQuery('''
-      UPDATE t_d_jo_inspection_activity_stage SET 
-      remarks = 'remarks',
-      updated_by = $idEmployee, 
+      UPDATE t_d_jo_inspection_activity_stages SET
+      remarks = '$remarks',
+      updated_by = $idEmployee,
       updated_at = '$updatedAt'
       WHERE
       id = $id
@@ -476,11 +491,11 @@ class SqlHelper extends BaseController {
   static Future<List<Map<String, dynamic>>> updateActivity(int id, int idActStage, String startTime, String endTime, String activity, String code, int idEmployee, String updatedAt) async {
     final db = await SqlHelper.db();
     return db.rawQuery('''
-      UPDATE t_d_jo_inspection_activity SET 
-      start_activity_time = '$startTime', 
-      end_activity_time = '$endTime', 
-      activity = '$activity', 
-      updated_by = $idEmployee, 
+      UPDATE t_d_jo_inspection_activity SET
+      start_activity_time = '$startTime',
+      end_activity_time = '$endTime',
+      activity = '$activity',
+      updated_by = $idEmployee,
       updated_at = '$updatedAt'
       WHERE
       id = $id AND
@@ -492,9 +507,9 @@ class SqlHelper extends BaseController {
     final db = await SqlHelper.db();
     return db.rawQuery('''
       UPDATE t_d_jo_inspection_activity SET 
-      is_active = 0,
+      is_active = 0
       WHERE
-      t_h_jo_id = $idJo AND
+      id = $idJo AND
       code = '$code'
     ''');
   }
