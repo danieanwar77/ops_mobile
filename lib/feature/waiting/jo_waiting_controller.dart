@@ -27,6 +27,7 @@ import 'package:ops_mobile/data/model/login_data_model.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity5.dart';
 import 'package:ops_mobile/data/respository/repository.dart';
+import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/documents/documents_screen.dart';
 import 'package:ops_mobile/feature/lab_activity_detail/lab_activity_detail_screen.dart';
@@ -172,6 +173,7 @@ class JoWaitingController extends BaseController {
     isLoadingJO == true;
     update();
     await getData();
+    //await getJoDetailLocal();
     debugPrint('activity stage now: $activityStage');
 
     super.onInit();
@@ -179,8 +181,82 @@ class JoWaitingController extends BaseController {
 
   // Get Data
 
+  Future<void> getJoDetailLocal() async {
+    final data = await SqlHelper.getDetailJo(id);
+    debugPrint('data detail : ${jsonEncode(data.first)}');
+    final sow = await SqlHelper.getDetailJoSow(id);
+    debugPrint('data detail SOW : ${jsonEncode(sow)}');
+    final oos = await SqlHelper.getDetailJoOos(id);
+    debugPrint('data detail OOS : ${jsonEncode(oos)}');
+    final lap = await SqlHelper.getDetailJoLap(id);
+    debugPrint('data detail LAP : ${jsonEncode(lap)}');
+    // final std = await SqlHelper.getDetailJoStdMethod(id);
+    // debugPrint('data detail Std Method : ${jsonEncode(std)}');
+    final pic = await SqlHelper.getDetailJoPicHistory(id);
+    debugPrint('data detail PIC History : ${jsonEncode(pic)}');
+    dataJoDetail.value = DataDetail.fromJson(data.first);
+    final labo = await SqlHelper.getDetailJoLaboratoryList(id);
+    debugPrint('data detail ListLaboratory : ${jsonEncode(labo)}');
+
+    dataJoDetail.value = DataDetail(
+        detail: DetailJo.fromJson(data.first),
+        sow: sow.map((item){
+          return Sow(
+              id: item['id'],
+              name: item['name']
+          );
+        }).toList(),
+        oos: oos.map((item){
+          return Oos(
+              id: item['id'],
+              name: item['name']
+          );
+        }).toList(),
+        lap: lap.map((item){
+          return Lap(
+              id: item['id'],
+              name: item['name']
+          );
+        }).toList(),
+        stdMethod:
+        // std.map((item){
+        //   return StdMethod(
+        //       id: item['id'],
+        //       name: item['name']
+        //   );
+        // }).toList()
+        []
+        ,
+        picHist: pic.map((item){
+          return PicHist.fromJson(item);
+        }).toList(),
+        laboratory: labo.map((item){
+          return Laboratory(
+              laboratoriumId: item['laboratorium_id'],
+              name: item['name']
+          );
+        }).toList()
+    );
+
+    barges.value = dataJoDetail.value.detail?.barge?.split('|') ?? [];
+    barges.value.forEach((_) {
+      bargesController.value.add(TextEditingController());
+    });
+    if(labo != null) {
+      labo.forEach((lab) {
+        labs.value.add(Laboratory.fromJson(lab));
+      });
+    }
+    bargesCount = barges.value.length;
+    activity5bargesCount = bargesCount;
+    activity5Barges.value = barges.value;
+    update();
+    debugPrint('barges : ${jsonEncode(barges.value)}');
+  }
+
   Future<void> getData() async {
-    await getJoDetail();
+    //await getJoDetail();
+    await getJoDetailLocal();
     picInspector = int.parse(dataJoDetail.value.detail?.idPicInspector != null
         ? dataJoDetail.value.detail!.idPicInspector.toString() ==
         userData.value!.id.toString()
@@ -262,7 +338,7 @@ class JoWaitingController extends BaseController {
       ];
       update();
     }
-    await getJoPIC();
+   // await getJoPIC();
     await getJoDailyPhoto();
     await getJoDailyActivity();
     await getJoDailyActivity5();

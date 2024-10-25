@@ -11,13 +11,16 @@ import 'package:mime/mime.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
+import 'package:ops_mobile/data/model/t_d_jo_finalize_inspection.dart';
+import 'package:ops_mobile/data/sqlite.dart';
+import 'package:ops_mobile/data/storage.dart';
 
-class DocumentsController extends BaseController{
-
+class DocumentsController extends BaseController {
   // Settings
   final picker = ImagePicker();
 
   RxString documentType = ''.obs;
+  RxString idJo = ''.obs;
 
   // Activities Documents
   late File? sampleFile;
@@ -30,11 +33,14 @@ class DocumentsController extends BaseController{
   RxList<Map<String, dynamic>> documents = RxList();
   RxList<List<File>> documentsAttachments = RxList();
   RxList<File> documentAttachments = RxList();
+  final _formKey = GlobalKey<FormState>();
+  final _formKeyEdit = GlobalKey<FormState>();
 
   @override
-  void onInit()async{
+  void onInit() async {
     var arguments = await Get.arguments;
     documentType.value = arguments['type'] ?? '';
+    idJo.value = arguments['id'] ?? '0';
     update();
     debugPrint('document type : ${documentType.value}');
     drawerAddDocument(documentType.value);
@@ -47,7 +53,8 @@ class DocumentsController extends BaseController{
         lastDate: DateTime(
             DateTime.now().year, DateTime.now().month, DateTime.now().day + 1));
     if (picked != null) {
-      documentCertificateDate.text = DateFormat('yyyy-MM-dd').format(picked).toString();
+      documentCertificateDate.text =
+          DateFormat('yyyy-MM-dd').format(picked).toString();
     }
   }
 
@@ -77,7 +84,7 @@ class DocumentsController extends BaseController{
           ),
           content: SizedBox(
             child: Obx(
-                  () => Column(
+              () => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -88,7 +95,6 @@ class DocumentsController extends BaseController{
                   const SizedBox(
                     height: 16,
                   ),
-
                   const SizedBox(
                     height: 16,
                   ),
@@ -123,7 +129,8 @@ class DocumentsController extends BaseController{
       final FilePickerResult? attach = await FilePicker.platform.pickFiles(
           allowMultiple: true,
           type: FileType.custom,
-          allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf']);
+          //allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf']);
+          allowedExtensions: ['pdf']);
       if (attach != null) {
         final List<XFile> xFiles = attach.xFiles;
         xFiles.forEach((data) {
@@ -179,9 +186,9 @@ class DocumentsController extends BaseController{
                                 borderRadius: BorderRadius.circular(12))),
                         child: Center(
                             child: Icon(
-                              Icons.camera_alt,
-                              color: primaryColor,
-                            ))),
+                          Icons.camera_alt,
+                          color: primaryColor,
+                        ))),
                   ),
                 ),
               ),
@@ -202,9 +209,9 @@ class DocumentsController extends BaseController{
                                 borderRadius: BorderRadius.circular(12))),
                         child: Center(
                             child: Icon(
-                              Icons.folder_rounded,
-                              color: primaryColor,
-                            ))),
+                          Icons.folder_rounded,
+                          color: primaryColor,
+                        ))),
                   ),
                 ),
               ),
@@ -229,11 +236,13 @@ class DocumentsController extends BaseController{
                     topRight: Radius.circular(24),
                     topLeft: Radius.circular(24))),
             child: Obx(
-                  () => Column(
+              () => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     child: SingleChildScrollView(
+                        child: Form(
+                      key: _formKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -251,18 +260,24 @@ class DocumentsController extends BaseController{
                             controller: documentCertificateNumber,
                             cursorColor: onFocusColor,
                             style: const TextStyle(color: onFocusColor),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Field wajib diisi!';
+                              }
+                              return null;
+                            },
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide:
-                                  const BorderSide(color: onFocusColor),
+                                      const BorderSide(color: onFocusColor),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 labelText: 'No Certificate/Report*',
                                 floatingLabelStyle:
-                                const TextStyle(color: onFocusColor),
+                                    const TextStyle(color: onFocusColor),
                                 fillColor: onFocusColor),
                           ),
                           const SizedBox(
@@ -289,13 +304,19 @@ class DocumentsController extends BaseController{
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide:
-                                  const BorderSide(color: onFocusColor),
+                                      const BorderSide(color: onFocusColor),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 labelText: 'Date Certificate/Report*',
                                 floatingLabelStyle:
-                                const TextStyle(color: onFocusColor),
+                                    const TextStyle(color: onFocusColor),
                                 fillColor: onFocusColor),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Field wajib diisi!';
+                              }
+                              return null;
+                            },
                           ),
                           const SizedBox(
                             height: 16,
@@ -310,13 +331,19 @@ class DocumentsController extends BaseController{
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide:
-                                  const BorderSide(color: onFocusColor),
+                                      const BorderSide(color: onFocusColor),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 labelText: 'No Blanko Certificate*',
                                 floatingLabelStyle:
-                                const TextStyle(color: onFocusColor),
+                                    const TextStyle(color: onFocusColor),
                                 fillColor: onFocusColor),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Field wajib diisi!';
+                              }
+                              return null;
+                            },
                           ),
                           const SizedBox(
                             height: 16,
@@ -331,13 +358,19 @@ class DocumentsController extends BaseController{
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide:
-                                  const BorderSide(color: onFocusColor),
+                                      const BorderSide(color: onFocusColor),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 labelText: 'LHV Number*',
                                 floatingLabelStyle:
-                                const TextStyle(color: onFocusColor),
+                                    const TextStyle(color: onFocusColor),
                                 fillColor: onFocusColor),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Field wajib diisi!';
+                              }
+                              return null;
+                            },
                           ),
                           const SizedBox(
                             height: 16,
@@ -352,13 +385,19 @@ class DocumentsController extends BaseController{
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide:
-                                  const BorderSide(color: onFocusColor),
+                                      const BorderSide(color: onFocusColor),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 labelText: 'LS Number*',
                                 floatingLabelStyle:
-                                const TextStyle(color: onFocusColor),
+                                    const TextStyle(color: onFocusColor),
                                 fillColor: onFocusColor),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Field wajib diisi!';
+                              }
+                              return null;
+                            },
                           ),
                           const SizedBox(
                             height: 16,
@@ -380,63 +419,63 @@ class DocumentsController extends BaseController{
                           ),
                           documentAttachments.value.isNotEmpty
                               ? GridView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 5,
-                                mainAxisSpacing: 8,
-                                crossAxisSpacing: 8,
-                              ),
-                              itemCount: documentAttachments.value.length,
-                              itemBuilder: (content, index) {
-                                final File photo =
-                                documentAttachments.value[index];
-                                final String fileType =
-                                checkFileType(photo.path);
-                                var filenameArr = photo.path.split("/");
-                                var filename = filenameArr.last;
-                                return fileType == 'image'
-                                    ? SizedBox(
-                                  width: 54,
-                                  height: 54,
-                                  child: InkWell(
-                                    onTap: () {
-                                      previewImage(
-                                          index, photo.path, '');
-                                    },
-                                    child: Image.file(
-                                      File(photo.path),
-                                      fit: BoxFit.cover,
-                                    ),
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 5,
+                                    mainAxisSpacing: 8,
+                                    crossAxisSpacing: 8,
                                   ),
-                                )
-                                    : fileType == 'doc'
-                                    ? InkWell(
-                                  onTap: () {
-                                    OpenFilex.open(photo.path);
-                                  },
-                                  child: SizedBox(
-                                    width: 54,
-                                    height: 54,
-                                    child: Center(
-                                        child: Column(
-                                          children: [
-                                            Image.asset(
-                                              'assets/icons/pdfIcon.png',
-                                              height: 42,
+                                  itemCount: documentAttachments.value.length,
+                                  itemBuilder: (content, index) {
+                                    final File photo =
+                                        documentAttachments.value[index];
+                                    final String fileType =
+                                        checkFileType(photo.path);
+                                    var filenameArr = photo.path.split("/");
+                                    var filename = filenameArr.last;
+                                    return fileType == 'image'
+                                        ? SizedBox(
+                                            width: 54,
+                                            height: 54,
+                                            child: InkWell(
+                                              onTap: () {
+                                                previewImage(
+                                                    index, photo.path, '');
+                                              },
+                                              child: Image.file(
+                                                File(photo.path),
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
-                                            Text(filename,
-                                                style: TextStyle(
-                                                    fontSize: 8),
-                                                overflow: TextOverflow
-                                                    .ellipsis)
-                                          ],
-                                        )),
-                                  ),
-                                )
-                                    : SizedBox();
-                              })
+                                          )
+                                        : fileType == 'doc'
+                                            ? InkWell(
+                                                onTap: () {
+                                                  OpenFilex.open(photo.path);
+                                                },
+                                                child: SizedBox(
+                                                  width: 54,
+                                                  height: 54,
+                                                  child: Center(
+                                                      child: Column(
+                                                    children: [
+                                                      Image.asset(
+                                                        'assets/icons/pdfIcon.png',
+                                                        height: 42,
+                                                      ),
+                                                      Text(filename,
+                                                          style: TextStyle(
+                                                              fontSize: 8),
+                                                          overflow: TextOverflow
+                                                              .ellipsis)
+                                                    ],
+                                                  )),
+                                                ),
+                                              )
+                                            : SizedBox();
+                                  })
                               : const SizedBox(),
                           const SizedBox(
                             height: 16,
@@ -453,19 +492,19 @@ class DocumentsController extends BaseController{
                                     shape: RoundedRectangleBorder(
                                         side: BorderSide(color: primaryColor),
                                         borderRadius:
-                                        BorderRadius.circular(12))),
+                                            BorderRadius.circular(12))),
                                 child: Center(
                                     child: Icon(
-                                      Icons.folder_rounded,
-                                      color: primaryColor,
-                                    ))),
+                                  Icons.folder_rounded,
+                                  color: primaryColor,
+                                ))),
                           ),
                           const SizedBox(
                             height: 16,
                           ),
                         ],
                       ),
-                    ),
+                    )),
                   ),
                   Row(
                     children: [
@@ -481,16 +520,16 @@ class DocumentsController extends BaseController{
                                     borderRadius: BorderRadius.circular(12))),
                             child: Container(
                                 padding:
-                                const EdgeInsets.symmetric(vertical: 12),
+                                    const EdgeInsets.symmetric(vertical: 12),
                                 width: double.infinity,
                                 child: Center(
                                     child: Text(
-                                      'Cancel',
-                                      style: TextStyle(
-                                          color: primaryColor,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                    )))),
+                                  'Cancel',
+                                  style: TextStyle(
+                                      color: primaryColor,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                )))),
                       ),
                       const SizedBox(
                         width: 16,
@@ -498,8 +537,11 @@ class DocumentsController extends BaseController{
                       Expanded(
                         child: ElevatedButton(
                             onPressed: () async {
-                              await addDocuments(type);
-                              Get.back();
+                              debugPrint('form key ${_formKey.currentState}');
+                              if (_formKey.currentState!.validate()) {
+                                await addDocuments(type);
+                                Get.back();
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: primaryColor,
@@ -507,16 +549,16 @@ class DocumentsController extends BaseController{
                                     borderRadius: BorderRadius.circular(12))),
                             child: Container(
                                 padding:
-                                const EdgeInsets.symmetric(vertical: 12),
+                                    const EdgeInsets.symmetric(vertical: 12),
                                 width: double.infinity,
                                 child: Center(
                                     child: Text(
-                                      'Add',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                    )))),
+                                  'Add',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                )))),
                       ),
                     ],
                   ),
@@ -551,16 +593,18 @@ class DocumentsController extends BaseController{
                     topRight: Radius.circular(24),
                     topLeft: Radius.circular(24))),
             child: Obx(
-                  () => Column(
+              () => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     child: SingleChildScrollView(
+                        child: Form(
+                      key: _formKeyEdit,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Add Stage Inspection',
+                            'Edit Stage Inspection',
                             style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -579,13 +623,19 @@ class DocumentsController extends BaseController{
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide:
-                                  const BorderSide(color: onFocusColor),
+                                      const BorderSide(color: onFocusColor),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 labelText: 'No Certificate/Report*',
                                 floatingLabelStyle:
-                                const TextStyle(color: onFocusColor),
+                                    const TextStyle(color: onFocusColor),
                                 fillColor: onFocusColor),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Field wajib diisi!';
+                              }
+                              return null;
+                            },
                           ),
                           const SizedBox(
                             height: 16,
@@ -611,13 +661,19 @@ class DocumentsController extends BaseController{
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide:
-                                  const BorderSide(color: onFocusColor),
+                                      const BorderSide(color: onFocusColor),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 labelText: 'Date Certificate/Report*',
                                 floatingLabelStyle:
-                                const TextStyle(color: onFocusColor),
+                                    const TextStyle(color: onFocusColor),
                                 fillColor: onFocusColor),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Field wajib diisi!';
+                              }
+                              return null;
+                            },
                           ),
                           const SizedBox(
                             height: 16,
@@ -632,13 +688,19 @@ class DocumentsController extends BaseController{
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide:
-                                  const BorderSide(color: onFocusColor),
+                                      const BorderSide(color: onFocusColor),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 labelText: 'No Blanko Certificate*',
                                 floatingLabelStyle:
-                                const TextStyle(color: onFocusColor),
+                                    const TextStyle(color: onFocusColor),
                                 fillColor: onFocusColor),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Field wajib diisi!';
+                              }
+                              return null;
+                            },
                           ),
                           const SizedBox(
                             height: 16,
@@ -653,13 +715,19 @@ class DocumentsController extends BaseController{
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide:
-                                  const BorderSide(color: onFocusColor),
+                                      const BorderSide(color: onFocusColor),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 labelText: 'LHV Number*',
                                 floatingLabelStyle:
-                                const TextStyle(color: onFocusColor),
+                                    const TextStyle(color: onFocusColor),
                                 fillColor: onFocusColor),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Field wajib diisi!';
+                              }
+                              return null;
+                            },
                           ),
                           const SizedBox(
                             height: 16,
@@ -674,13 +742,19 @@ class DocumentsController extends BaseController{
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide:
-                                  const BorderSide(color: onFocusColor),
+                                      const BorderSide(color: onFocusColor),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 labelText: 'LS Number*',
                                 floatingLabelStyle:
-                                const TextStyle(color: onFocusColor),
+                                    const TextStyle(color: onFocusColor),
                                 fillColor: onFocusColor),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Field wajib diisi!';
+                              }
+                              return null;
+                            },
                           ),
                           const SizedBox(
                             height: 16,
@@ -702,63 +776,63 @@ class DocumentsController extends BaseController{
                           ),
                           documentAttachments.value.isNotEmpty
                               ? GridView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 5,
-                                mainAxisSpacing: 8,
-                                crossAxisSpacing: 8,
-                              ),
-                              itemCount: documentAttachments.value.length,
-                              itemBuilder: (content, index) {
-                                final File photo =
-                                documentAttachments.value[index];
-                                final String fileType =
-                                checkFileType(photo.path);
-                                var filenameArr = photo.path.split("/");
-                                var filename = filenameArr.last;
-                                return fileType == 'image'
-                                    ? SizedBox(
-                                  width: 54,
-                                  height: 54,
-                                  child: InkWell(
-                                    onTap: () {
-                                      previewImage(
-                                          index, photo.path, '');
-                                    },
-                                    child: Image.file(
-                                      File(photo.path),
-                                      fit: BoxFit.cover,
-                                    ),
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 5,
+                                    mainAxisSpacing: 8,
+                                    crossAxisSpacing: 8,
                                   ),
-                                )
-                                    : fileType == 'doc'
-                                    ? InkWell(
-                                  onTap: () {
-                                    OpenFilex.open(photo.path);
-                                  },
-                                  child: SizedBox(
-                                    width: 54,
-                                    height: 54,
-                                    child: Center(
-                                        child: Column(
-                                          children: [
-                                            Image.asset(
-                                              'assets/icons/pdfIcon.png',
-                                              height: 42,
+                                  itemCount: documentAttachments.value.length,
+                                  itemBuilder: (content, index) {
+                                    final File photo =
+                                        documentAttachments.value[index];
+                                    final String fileType =
+                                        checkFileType(photo.path);
+                                    var filenameArr = photo.path.split("/");
+                                    var filename = filenameArr.last;
+                                    return fileType == 'image'
+                                        ? SizedBox(
+                                            width: 54,
+                                            height: 54,
+                                            child: InkWell(
+                                              onTap: () {
+                                                previewImage(
+                                                    index, photo.path, '');
+                                              },
+                                              child: Image.file(
+                                                File(photo.path),
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
-                                            Text(filename,
-                                                style: TextStyle(
-                                                    fontSize: 8),
-                                                overflow: TextOverflow
-                                                    .ellipsis)
-                                          ],
-                                        )),
-                                  ),
-                                )
-                                    : SizedBox();
-                              })
+                                          )
+                                        : fileType == 'doc'
+                                            ? InkWell(
+                                                onTap: () {
+                                                  OpenFilex.open(photo.path);
+                                                },
+                                                child: SizedBox(
+                                                  width: 54,
+                                                  height: 54,
+                                                  child: Center(
+                                                      child: Column(
+                                                    children: [
+                                                      Image.asset(
+                                                        'assets/icons/pdfIcon.png',
+                                                        height: 42,
+                                                      ),
+                                                      Text(filename,
+                                                          style: TextStyle(
+                                                              fontSize: 8),
+                                                          overflow: TextOverflow
+                                                              .ellipsis)
+                                                    ],
+                                                  )),
+                                                ),
+                                              )
+                                            : SizedBox();
+                                  })
                               : const SizedBox(),
                           const SizedBox(
                             height: 16,
@@ -775,19 +849,19 @@ class DocumentsController extends BaseController{
                                     shape: RoundedRectangleBorder(
                                         side: BorderSide(color: primaryColor),
                                         borderRadius:
-                                        BorderRadius.circular(12))),
+                                            BorderRadius.circular(12))),
                                 child: Center(
                                     child: Icon(
-                                      Icons.folder_rounded,
-                                      color: primaryColor,
-                                    ))),
+                                  Icons.folder_rounded,
+                                  color: primaryColor,
+                                ))),
                           ),
                           const SizedBox(
                             height: 16,
                           ),
                         ],
                       ),
-                    ),
+                    )),
                   ),
                   Row(
                     children: [
@@ -803,16 +877,16 @@ class DocumentsController extends BaseController{
                                     borderRadius: BorderRadius.circular(12))),
                             child: Container(
                                 padding:
-                                const EdgeInsets.symmetric(vertical: 12),
+                                    const EdgeInsets.symmetric(vertical: 12),
                                 width: double.infinity,
                                 child: Center(
                                     child: Text(
-                                      'Cancel',
-                                      style: TextStyle(
-                                          color: primaryColor,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                    )))),
+                                  'Cancel',
+                                  style: TextStyle(
+                                      color: primaryColor,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                )))),
                       ),
                       const SizedBox(
                         width: 16,
@@ -820,8 +894,12 @@ class DocumentsController extends BaseController{
                       Expanded(
                         child: ElevatedButton(
                             onPressed: () async {
-                              await addDocuments(documentType.value);
-                              Get.back();
+                              if (_formKeyEdit.currentState!.validate()) {
+                                debugPrint('State ${documentType.value}');
+                                // await addDocuments(documentType.value);
+                                await editDocuments(index);
+                                Get.back();
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: primaryColor,
@@ -829,16 +907,16 @@ class DocumentsController extends BaseController{
                                     borderRadius: BorderRadius.circular(12))),
                             child: Container(
                                 padding:
-                                const EdgeInsets.symmetric(vertical: 12),
+                                    const EdgeInsets.symmetric(vertical: 12),
                                 width: double.infinity,
                                 child: Center(
                                     child: Text(
-                                      'Add',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                    )))),
+                                  'Edit',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                )))),
                       ),
                     ],
                   ),
@@ -860,17 +938,15 @@ class DocumentsController extends BaseController{
         documentCertificateLhv.text != '' &&
         documentCertificateLs.text != '' &&
         documentAttachments.value.isNotEmpty) {
-        documents.value.add(
-            <String, String>{
-              'certNumber': documentCertificateNumber.value.text,
-              'certDate': documentCertificateDate.value.text,
-              'certBlanko': documentCertificateBlanko.value.text,
-              'certLhv': documentCertificateLhv.value.text,
-              'certLs': documentCertificateLs.value.text
-            }
-        );
-        documentsAttachments.value.add(documentAttachments.value);
-
+      documents.value.add(<String, String>{
+        'id': DateTime.now().millisecondsSinceEpoch.toString(),
+        'certNumber': documentCertificateNumber.value.text,
+        'certDate': documentCertificateDate.value.text,
+        'certBlanko': documentCertificateBlanko.value.text,
+        'certLhv': documentCertificateLhv.value.text,
+        'certLs': documentCertificateLs.value.text
+      });
+      documentsAttachments.value.add(documentAttachments.value);
     }
     documentAttachments.value = [];
     documentCertificateNumber.text = '';
@@ -889,16 +965,14 @@ class DocumentsController extends BaseController{
         documentCertificateLhv.text != '' &&
         documentCertificateLs.text != '' &&
         documentAttachments.value.isNotEmpty) {
-      documents.value[index] =
-          <String, String>{
-            'certNumber': documentCertificateNumber.value.text,
-            'certDate': documentCertificateDate.value.text,
-            'certBlanko': documentCertificateBlanko.value.text,
-            'certLhv': documentCertificateLhv.value.text,
-            'certLs': documentCertificateLs.value.text
-          };
+      documents.value[index] = <String, String>{
+        'certNumber': documentCertificateNumber.value.text,
+        'certDate': documentCertificateDate.value.text,
+        'certBlanko': documentCertificateBlanko.value.text,
+        'certLhv': documentCertificateLhv.value.text,
+        'certLs': documentCertificateLs.value.text
+      };
       documentsAttachments.value[index] = documentAttachments.value;
-
     }
     documentAttachments.value = [];
     documentCertificateNumber.text = '';
@@ -908,6 +982,50 @@ class DocumentsController extends BaseController{
     documentCertificateLs.text = '';
     update();
     debugPrint('documents : ${jsonEncode(documents.value)}');
+  }
+
+  Future<void> deleteDocumentUI(String id) async {
+    // documents  remove by id
+    documents.removeWhere((document) => document['id'] == id);
+    update();
+  }
+
+  Future<void> editListDocument(int index) async {
+    if (documentCertificateNumber.text != '' &&
+        documentCertificateDate.text != '' &&
+        documentCertificateBlanko.text != '' &&
+        documentCertificateLhv.text != '' &&
+        documentCertificateLs.text != '' &&
+        documentAttachments.value.isNotEmpty) {
+      documents.value[index] = {
+        'id': documents.value[index]['id'], // mempertahankan id yang ada
+        'certNumber': documentCertificateNumber.value.text,
+        'certDate': documentCertificateDate.value.text,
+        'certBlanko': documentCertificateBlanko.value.text,
+        'certLhv': documentCertificateLhv.value.text,
+        'certLs': documentCertificateLs.value.text
+      };
+      documentsAttachments.value[index] = documentAttachments.value;
+      // cari document berdasarkan index. ubah value certnumber sampai certls
+      // documents.value.add(
+      //   <String, String>{
+      //     'id': DateTime.now().millisecondsSinceEpoch.toString(),
+      //     'certNumber': documentCertificateNumber.value.text,
+      //     'certDate': documentCertificateDate.value.text,
+      //     'certBlanko': documentCertificateBlanko.value.text,
+      //     'certLhv': documentCertificateLhv.value.text,
+      //     'certLs': documentCertificateLs.value.text
+      //   }
+      // );
+      // documentsAttachments.value.add(documentAttachments.value);
+    }
+    documentAttachments.value = [];
+    documentCertificateNumber.text = '';
+    documentCertificateDate.text = '';
+    documentCertificateBlanko.text = '';
+    documentCertificateLhv.text = '';
+    documentCertificateLs.text = '';
+    update();
   }
 
   void addDocumentConfirm(String type) {
@@ -934,7 +1052,6 @@ class DocumentsController extends BaseController{
               Get.back();
               Get.back();
               //await addDocuments(type);
-
             },
           ),
         ],
@@ -997,11 +1114,93 @@ class DocumentsController extends BaseController{
         content: Text(text),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Ok"),
             onPressed: () => Get.back(),
           ),
         ],
       ),
     );
+  }
+
+  void openDialogV2(String type, String text, VoidCallback callback) {
+    Get.dialog(
+      AlertDialog(
+        title: Text(
+          type,
+          style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
+        ),
+        content: Text(text),
+        actions: [
+          TextButton(
+            child: const Text("Cancel"),
+            onPressed: () => Get.back(),
+          ),
+          TextButton(
+            child: const Text(
+              "Ok",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            onPressed: callback,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> submitDocumentInspec() async {
+    var dataUser = await StorageCore().storage.read('user');
+    debugPrint("submit login ${jsonDecode(dataUser)}");
+    var employeeId = jsonDecode(dataUser)['id'];
+    //submit login [{id: 624, password_aes: 1nSpPO+ndJ8m4n8f3fOscA==}]
+    debugPrint('Submit Document Inspection ${employeeId}');
+    //RxList<Map<String, dynamic>> documents = RxList();
+    //berdasarkan list document dimana isi id,name,
+    /**
+     * 'id': documents.value[index]['id'], // mempertahankan id yang ada
+        'certNumber': documentCertificateNumber.value.text,
+        'certDate': documentCertificateDate.value.text,
+        'certBlanko': documentCertificateBlanko.value.text,
+        'certLhv': documentCertificateLhv.value.text,
+        'certLs': documentCertificateLs.value.text
+     */
+    final db = await SqlHelper.db();
+    // DocumentModel doc = DocumentModel(
+    //   id: document['id'],
+    //   certNumber: document['certNumber'],
+    //   certDate: document['certDate'],
+    //   certBlanko: document['certBlanko'],
+    //   certLhv: document['certLhv'],
+    //   certLs: document['certLs'],
+    // );
+
+    // Loop melalui dokumen dan simpan ke SQLite
+    for (var document in documents.value) {
+      TDJoFinalizeInspection tdJoDocumentInspection = TDJoFinalizeInspection(
+        tHJoId: idJo.value,
+        noReport: document['certNumber'],
+        dateReport: document['certDate'],
+        noBlankoCertificate: document['certBlanko'],
+        lhvNumber: document['certBlanko'],
+        lsNumber: document['certLs'],
+        code: "JDOI-${employeeId}-${DateTime.now().millisecondsSinceEpoch.toString()}",
+        isActive: "1",
+        isUpload: "0",
+        createdBy: employeeId,
+        createdAt: DateTime.now().toString(),
+        updatedBy: "",
+        updatedAt: "",
+      );
+
+      // Menyimpan dokumen ke SQLite
+      await db.insert(
+        't_d_jo_finalize_inspection',  // Nama tabel
+        tdJoDocumentInspection.toJson()
+      );
+    }
+    // Get.back();
+    // Get.back();
   }
 }

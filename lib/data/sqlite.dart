@@ -1,4 +1,5 @@
 import 'package:external_path/external_path.dart';
+import 'package:flutter/widgets.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_ios/path_provider_ios.dart';
@@ -372,7 +373,7 @@ class SqlHelper extends BaseController {
 
   static Future<List<Map<String, dynamic>>> getListActivity(int idJo) async {
     final db = await SqlHelper.db();
-    return db.rawQuery('''
+    String sql = '''
       SELECT
       a.id AS inspection_stages_id,
       b.code AS code,
@@ -383,7 +384,9 @@ class SqlHelper extends BaseController {
       WHERE a.t_h_jo_id = $idJo
       AND a.is_active = 1
       AND b.is_active = 1
-    ''');
+    ''';
+    debugPrint("sql get jo activity ${sql}");
+    return db.rawQuery(sql);
   }
 
   static Future<List<Map<String, dynamic>>> insertActivityStage(int idJo,int status,String transDate, String remarks, String code, int createdBy, String createdAt) async {
@@ -395,6 +398,7 @@ class SqlHelper extends BaseController {
       trans_date, 
       remarks, 
       code, 
+      is_active,
       created_by, 
       created_at) 
       VALUES(
@@ -403,6 +407,7 @@ class SqlHelper extends BaseController {
       '$transDate',
       '$remarks',
       '$code',
+      '1',
       $createdBy,
       '$createdAt')
     ''');
