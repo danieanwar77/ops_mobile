@@ -2849,7 +2849,7 @@ class JoWaitingScreen extends StatelessWidget {
                                     Spacer(),
                                     IconButton(
                                         onPressed: (){
-                                          Get.to<void>(DocumentsScreen.new, arguments: {'type' : 'inspect'});
+                                          Get.to<void>(DocumentsScreen.new, arguments: {'type' : 'inspect','id': controller.id.toString()});
                                           // controller.drawerAddDocument('inspect');
                                         },
                                         icon: Image.asset('assets/icons/addactivity.png', height: 32,)

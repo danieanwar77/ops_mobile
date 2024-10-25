@@ -20,6 +20,7 @@ class AssignedController extends BaseController{
   void onInit()async {
     var argument = await Get.arguments;
     debugPrint('arguments : ${argument['status']}');
+    debugPrint('arguments : ${argument['employeeId']}');
     statusJo.value = argument['status'];
     employeeId.value = argument['employeeId'];
     update();

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
+import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/documents/documents_controller.dart';
 
 class DocumentsScreen extends StatelessWidget{
@@ -29,9 +30,10 @@ class DocumentsScreen extends StatelessWidget{
             ),
           ),
           body: SafeArea(child:
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Obx(() => Column(
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Obx(() => Column(
                 children: [
                   Row(
                     children: [
@@ -42,7 +44,6 @@ class DocumentsScreen extends StatelessWidget{
                           color: primaryColor,
                         ),
                         child: IconButton(
-
                             onPressed: (){
                               controller.drawerAddDocument(controller.documentType.value);
                             },
@@ -279,17 +280,22 @@ class DocumentsScreen extends StatelessWidget{
                                         child: Container(
                                           padding: EdgeInsets.all(16),
                                           decoration: BoxDecoration(
-                                            border: Border.all(color: Colors.red),
-                                            borderRadius: BorderRadius.circular(16)
+                                              border: Border.all(color: Colors.red),
+                                              borderRadius: BorderRadius.circular(16)
                                           ),
                                           child: Center(
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                Icon(Icons.delete_outlined, color: Colors.red),
-                                                const SizedBox(width:8),
-                                                Text('Delete', style: TextStyle(color: Colors.red),),
-                                              ],
+                                            child: InkWell(
+                                              onTap: () => {
+                                                controller.deleteDocumentUI(document['id'])
+                                              } ,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(Icons.delete_outlined, color: Colors.red),
+                                                  const SizedBox(width:8),
+                                                  Text('Delete', style: TextStyle(color: Colors.red),),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         )
@@ -326,9 +332,41 @@ class DocumentsScreen extends StatelessWidget{
                             ),
                           ),
                         );
-                        }
-                      ) : const SizedBox()
+                      }
+                  ) : const SizedBox(),
+                  controller.documents.value.isNotEmpty ?  Row(children: [
+                    Expanded(
+                      child: ElevatedButton(
+                          onPressed: () async {
+                            controller.openDialogV2(
+                                'Attention',
+                                'Apakah benar anda akan submit finalisasi JO Inspection ini? pastikan data yg anda  input benar karena jika anda submit, JO  akan dicomplete-kan.',
+                                    () => {
+                                    controller.submitDocumentInspec()
+                                });
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: primaryColor,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12))),
+                          child: Container(
+                              padding:
+                              const EdgeInsets.symmetric(vertical: 12),
+                              width: double.infinity,
+                              child: const Center(
+                                  child: Text('Submit',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
+                                  )
+                              )
+                          )
+                      ),
+                    )
+                  ],) : const SizedBox(),
                 ],
+              ),
               ),
             ),
           )

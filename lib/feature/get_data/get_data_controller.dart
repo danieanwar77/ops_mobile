@@ -77,9 +77,9 @@ class GetDataController extends BaseController{
     }
   }
 
-  Future<void> getGenData(String token)async{
+  Future<void> getGenData(String token,String apkVersion,String platform)async{
     try{
-      var response = await repository.getGenData(settingsData['e_number'], token, '');
+      var response = await repository.getGenData(settingsData['e_number'], token, apkVersion,platform);
         if(response.file != null){
           await createFileFromBase64Str(response.file!);
           await readZip();

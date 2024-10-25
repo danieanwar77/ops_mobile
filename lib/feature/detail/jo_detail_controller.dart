@@ -26,6 +26,7 @@ import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity5.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_acitivity_stages.dart';
 import 'package:ops_mobile/data/respository/repository.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
@@ -520,6 +521,7 @@ class JoDetailController extends BaseController {
     dataListActivity.value = response.map((item){
       return DataActivity.fromJson(item);
     }).toList();
+    activityListStages.value.clear(); // clear value
     if (dataListActivity.value.isNotEmpty) {
       activityListStages.value.clear();
       dataListActivity.value.forEach((data) {
@@ -1661,6 +1663,174 @@ class JoDetailController extends BaseController {
     update();
   }
 
+  Map<String, List<Activity>> groupActivitiesByTransDate(RxList<Activity> activityList) {
+    // Create a Map to store the grouped activities
+    Map<String, List<Activity>> groupedActivities = {};
+
+    // Iterate through each activity in the RxList
+    for (var activity in activityList) {
+      // Get the trans_date of the current activity
+      String transDate = activity.transDate ?? "UnknowDate";
+
+      // If the trans_date key doesn't exist in the Map, create it
+      if (!groupedActivities.containsKey(transDate)) {
+        groupedActivities[transDate] = [];
+      }
+      // Add the activity to the corresponding group
+      groupedActivities[transDate]!.add(activity);
+    }
+    return groupedActivities;
+  }
+
+  Future<String?> editActivityStages() async {
+    if (activityList.value
+        .where((data) => data.mStatusinspectionstagesId == activityStage)
+        .toList()
+        .isNotEmpty) {
+      debugPrint('data editan untuk edit : ${jsonEncode(activityList.value)}');
+      for(var item in activityList.value){
+        debugPrint("item result ${jsonEncode(item)}");
+        debugPrint("item edit ${item.transDate}");
+        final db = await SqlHelper.db();
+        List<Map<String, dynamic>> result = await db.query(
+          't_d_jo_inspection_activity_stages',
+          where: 'trans_date = ? AND m_statusinspectionstages_id = ?', // Menggunakan AND untuk lebih dari satu kondisi
+          whereArgs: [item.transDate, item.mStatusinspectionstagesId], // Masukkan argumen untuk id dan name
+          limit: 1, // Limit untuk mendapatkan satu hasil saja
+        );
+
+        if(result.isNotEmpty){
+          TDJoInspectionAcitivityStages header = TDJoInspectionAcitivityStages.fromJson(result.first);
+          // update remarks, isactive,updated_at,updated_by
+          //table t_d_jo_inspection_activity_stages dengan model TDJoInspectionAcitivityStages
+          header = header.copyWith(
+            remarks: item.remarks, // Update remarks dengan nilai baru
+            isActive: "1", // Update status aktif
+            updatedAt: DateTime.now().toIso8601String(), // Update waktu dengan waktu saat ini
+            updatedBy: userData.value!.id.toString(), // Update dengan ID user yang melakukan update
+          );
+
+        }
+
+      }
+      var actDate = activityList.value
+          .map((item) {
+        return item.transDate;
+      })
+          .toSet()
+          .toList();
+      debugPrint('dates : ${jsonEncode(actDate)}');
+      var actRemarks = activityList.value
+          .map((item) {
+        return item.remarks;
+      })
+          .toSet()
+          .toList();
+      debugPrint('dates remarks : ${jsonEncode(actRemarks)}');
+      var itemCount = 0;
+      var itemActCount = 0;
+
+      // if(actDate.length == actRemarks.length){
+      //   itemCount++;
+      //
+      //   for(var i = 0; i < actRemarks.length; i++){
+      //     debugPrint('date : ${actDate[i]}');
+      //     debugPrint('remarks : ${actRemarks[i]}');
+      //     var activity = activityList.value.where((act) => act.transDate == actDate[i] && act.mStatusinspectionstagesId == activityStage).toList();
+      //     debugPrint('activity di edit: ${jsonEncode(activity)}');
+      //     for(var item in activity) {
+      //       debugPrint('Activity - ${jsonEncode(item)}');
+      //     }
+      //     // for(var item in activity){
+      //     //   itemActCount++;
+      //     //   if(item.stageId!.toInt() != 0){
+      //     //     debugPrint('yang mau dikirm kondisi stage id tidak 0 : ${actDate[i]!} ${userData.value!.id!.toInt()} ${item.stageId!.toInt()}');
+      //     //     var checkId = await SqlHelper.getActivityStageId(actDate[i]!, userData.value!.id!.toInt(), item.stageId!.toInt());
+      //     //     if(checkId.isNotEmpty && checkId.length == 1){
+      //     //       var updateStage = await postUpdateActivityStageLocal(item.stageId!.toInt(), actRemarks[i]  ?? '', checkId.first['code'] ?? '');
+      //     //       if(updateStage != 'success'){
+      //     //         debugPrint('Problem with sending update SQL Activity Stage Item');
+      //     //       }
+      //     //       var checkActId = await SqlHelper.getActivityId( userData.value!.id!.toInt(), item.id?.toInt() ?? 0, item.code ?? '');
+      //     //       if(checkActId.isNotEmpty && checkId.length > 0){
+      //     //         var updateAct = await postUpdateActivityLocal(item.id!.toInt(), item.stageId!.toInt(), item.startActivityTime!, item.endActivityTime!, item.activity!, item.code!);
+      //     //         if(updateAct != 'success'){
+      //     //           debugPrint('Problem with sending update SQL Activity Item');
+      //     //         }
+      //     //       } else if(checkActId.isEmpty || checkId.length == 0) {
+      //     //         var time = DateFormat('yyyyMMddHms').format(DateTime.now());
+      //     //         var code = 'JOAIDA-${userData.value!.id!}-${time.toString()}$itemActCount';
+      //     //         var sendAct = await postInsertActivityLocal(checkId.first['id'], item.startActivityTime!,item.endActivityTime!,item.activity!,code,userData.value!.id!.toInt());
+      //     //         if(sendAct != 'success'){
+      //     //           debugPrint('Problem with sending SQL Activity Item');
+      //     //         }
+      //     //       }
+      //     //     }
+      //     //     // else {
+      //     //     //   var time = DateFormat('yyyyMMddHms').format(DateTime.now());
+      //     //     //   var code = 'JOAID-${userData.value!.nip!}-${time.toString()}$itemCount';
+      //     //     //   var sendStage = await postInsertActivityStageLocal(actDate[i]!, actRemarks[i]!, code );
+      //     //     //   if(sendStage != 'success'){
+      //     //     //     debugPrint('Problem with sending SQL Activity Stage');
+      //     //     //   } else {
+      //     //     //       var time = DateFormat('yyyyMMddHms').format(DateTime.now());
+      //     //     //       var code = 'JOAIDA-${userData.value!.nip!}-${time.toString()}$itemCount';
+      //     //     //       var stageAct = await SqlHelper.getActivityStage(actDate[i]!, userData.value!.id!.toInt());
+      //     //     //       var sendAct = await postInsertActivityLocal(stageAct.first['id'], item.startActivityTime!,item.endActivityTime!,item.activity!,code,userData.value!.id!.toInt());
+      //     //     //       if(sendAct != 'success'){
+      //     //     //         debugPrint('Problem with sending SQL Activity Item');
+      //     //     //       }
+      //     //     //   }
+      //     //     // }
+      //     //   } else if(item.stageId == null || item.stageId!.toInt() == 0) {
+      //     //     var time = DateFormat('yyyyMMddHms').format(DateTime.now());
+      //     //     var code = 'JOAID-${userData.value!.id!}-${time.toString()}$itemCount';
+      //     //     var sendStage = await postInsertActivityStageLocal(actDate[i]!, actRemarks[i]!, code );
+      //     //     if(sendStage != 'success'){
+      //     //       debugPrint('Problem with sending SQL Activity Stage');
+      //     //     } else {
+      //     //       var time = DateFormat('yyyyMMddHms').format(DateTime.now());
+      //     //       var code = 'JOAIDA-${userData.value!.id!}-${time.toString()}$itemCount';
+      //     //       var stageAct = await SqlHelper.getActivityStage(actDate[i]!, userData.value!.id!.toInt());
+      //     //       var sendAct = await postInsertActivityLocal(stageAct.first['id'], item.startActivityTime!,item.endActivityTime!,item.activity!,code,userData.value!.id!.toInt());
+      //     //       if(sendAct != 'success'){
+      //     //         debugPrint('Problem with sending SQL Activity Item');
+      //     //       }
+      //     //     }
+      //     //   }
+      //     // }
+      //     // itemActCount = 0;
+      //   }
+      // }
+
+      // check ui
+      activityListStages.value
+          .removeWhere((act) => act.mStatusinspectionstagesId == activityStage);
+      for (var item in activityList.value) {
+        activityListStages.value.add(item);
+      }
+      activityList.value = [];
+      activityListTextController.value = [];
+      editActivityMode.value = false;
+      activityDate.text = '';
+      activityStartTime.text = '';
+      activityEndTime.text = '';
+      activityText.text = '';
+
+      await getJoDailyActivity();
+      // activityStage--;
+      update();
+
+      //activitySubmitted.value = true;
+      return 'success';
+    } else if (activityList.value
+        .where((data) => data.mStatusinspectionstagesId == activityStage)
+        .toList()
+        .isEmpty) {
+      return 'failed';
+    }
+  }
+
   Future<String?> addActivityStages() async {
     if (activityList.value
         .where((data) => data.mStatusinspectionstagesId == activityStage)
@@ -1680,6 +1850,7 @@ class JoDetailController extends BaseController {
       })
           .toSet()
           .toList();
+
       if(actDate.length == actRemarks.length){
         itemCount++;
         for(var i = 0; i < actRemarks.length; i++){
@@ -1749,7 +1920,7 @@ class JoDetailController extends BaseController {
       activityText.text = '';
 
       activitySubmitted.value = true;
-      // await getJoDailyActivity();
+       await getJoDailyActivityLocal();
       // activityStage--;
       update();
       return 'success';
@@ -2423,169 +2594,6 @@ class JoDetailController extends BaseController {
     );
   }
 
-  Future<String?> editActivityStages() async {
-    if (activityList.value
-        .where((data) => data.mStatusinspectionstagesId == activityStage)
-        .toList()
-        .isNotEmpty) {
-      // var post = activityList.value
-      //     .map((value) => Activity(
-      //           id: value.id,
-      //           code: value.code,
-      //           tHJoId: value.tHJoId,
-      //           mStatusinspectionstagesId: value.mStatusinspectionstagesId,
-      //           transDate: value.transDate,
-      //           startActivityTime: value.startActivityTime,
-      //           endActivityTime: value.endActivityTime,
-      //           activity: value.activity,
-      //           createdBy: value.createdBy,
-      //           remarks: value.remarks,
-      //           createdAt: value.createdAt,
-      //           updatedBy: value.updatedBy,
-      //           updatedAt: value.updatedAt,
-      //           isActive: value.isActive,
-      //           isUpload: value.isUpload,
-      //         ).toJson())
-      //     .toList();
-
-      // var send = await postUpdateActivity(post);
-      // if (send == 'success') {
-      //   changeStatusJo();
-      //   //activityStage++;
-      //   for (var item in activityList.value) {
-      //     activityListStages.value.add(item);
-      //   }
-      //   activityList.value = [];
-      //   activityListTextController.value = [];
-      //   editActivityMode.value = false;
-      //   activityDate.text = '';
-      //   activityStartTime.text = '';
-      //   activityEndTime.text = '';
-      //   activityText.text = '';
-      // } else {
-      //   return 'failed';
-      // }
-
-      debugPrint('data editan : ${jsonEncode(activityList.value)}');
-      for(var activity in activityList.value){
-        debugPrint("activity 2469 ${jsonEncode(activity)}");
-      }
-      var actDate = activityList.value
-          .map((item) {
-        return item.transDate;
-      })
-          .toSet()
-          .toList();
-      debugPrint('dates : ${jsonEncode(actDate)}');
-      var actRemarks = activityList.value
-          .map((item) {
-        return item.remarks;
-      })
-          .toSet()
-          .toList();
-      debugPrint('dates remarks : ${jsonEncode(actRemarks)}');
-      var itemCount = 0;
-      var itemActCount = 0;
-      if(actDate.length == actRemarks.length){
-        itemCount++;
-
-        for(var i = 0; i < actRemarks.length; i++){
-          debugPrint('date : ${actDate[i]}');
-          debugPrint('remarks : ${actRemarks[i]}');
-          var activity = activityList.value.where((act) => act.transDate == actDate[i] && act.mStatusinspectionstagesId == activityStage).toList();
-          debugPrint('activity di edit: ${jsonEncode(activity)}');
-          for(var item in activity) {
-            debugPrint('Activity - ${jsonEncode(item)}');
-          }
-          // for(var item in activity){
-          //   itemActCount++;
-          //   if(item.stageId!.toInt() != 0){
-          //     debugPrint('yang mau dikirm kondisi stage id tidak 0 : ${actDate[i]!} ${userData.value!.id!.toInt()} ${item.stageId!.toInt()}');
-          //     var checkId = await SqlHelper.getActivityStageId(actDate[i]!, userData.value!.id!.toInt(), item.stageId!.toInt());
-          //     if(checkId.isNotEmpty && checkId.length == 1){
-          //       var updateStage = await postUpdateActivityStageLocal(item.stageId!.toInt(), actRemarks[i]  ?? '', checkId.first['code'] ?? '');
-          //       if(updateStage != 'success'){
-          //         debugPrint('Problem with sending update SQL Activity Stage Item');
-          //       }
-          //       var checkActId = await SqlHelper.getActivityId( userData.value!.id!.toInt(), item.id?.toInt() ?? 0, item.code ?? '');
-          //       if(checkActId.isNotEmpty && checkId.length > 0){
-          //         var updateAct = await postUpdateActivityLocal(item.id!.toInt(), item.stageId!.toInt(), item.startActivityTime!, item.endActivityTime!, item.activity!, item.code!);
-          //         if(updateAct != 'success'){
-          //           debugPrint('Problem with sending update SQL Activity Item');
-          //         }
-          //       } else if(checkActId.isEmpty || checkId.length == 0) {
-          //         var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-          //         var code = 'JOAIDA-${userData.value!.id!}-${time.toString()}$itemActCount';
-          //         var sendAct = await postInsertActivityLocal(checkId.first['id'], item.startActivityTime!,item.endActivityTime!,item.activity!,code,userData.value!.id!.toInt());
-          //         if(sendAct != 'success'){
-          //           debugPrint('Problem with sending SQL Activity Item');
-          //         }
-          //       }
-          //     }
-          //     // else {
-          //     //   var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-          //     //   var code = 'JOAID-${userData.value!.nip!}-${time.toString()}$itemCount';
-          //     //   var sendStage = await postInsertActivityStageLocal(actDate[i]!, actRemarks[i]!, code );
-          //     //   if(sendStage != 'success'){
-          //     //     debugPrint('Problem with sending SQL Activity Stage');
-          //     //   } else {
-          //     //       var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-          //     //       var code = 'JOAIDA-${userData.value!.nip!}-${time.toString()}$itemCount';
-          //     //       var stageAct = await SqlHelper.getActivityStage(actDate[i]!, userData.value!.id!.toInt());
-          //     //       var sendAct = await postInsertActivityLocal(stageAct.first['id'], item.startActivityTime!,item.endActivityTime!,item.activity!,code,userData.value!.id!.toInt());
-          //     //       if(sendAct != 'success'){
-          //     //         debugPrint('Problem with sending SQL Activity Item');
-          //     //       }
-          //     //   }
-          //     // }
-          //   } else if(item.stageId == null || item.stageId!.toInt() == 0) {
-          //     var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-          //     var code = 'JOAID-${userData.value!.id!}-${time.toString()}$itemCount';
-          //     var sendStage = await postInsertActivityStageLocal(actDate[i]!, actRemarks[i]!, code );
-          //     if(sendStage != 'success'){
-          //       debugPrint('Problem with sending SQL Activity Stage');
-          //     } else {
-          //       var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-          //       var code = 'JOAIDA-${userData.value!.id!}-${time.toString()}$itemCount';
-          //       var stageAct = await SqlHelper.getActivityStage(actDate[i]!, userData.value!.id!.toInt());
-          //       var sendAct = await postInsertActivityLocal(stageAct.first['id'], item.startActivityTime!,item.endActivityTime!,item.activity!,code,userData.value!.id!.toInt());
-          //       if(sendAct != 'success'){
-          //         debugPrint('Problem with sending SQL Activity Item');
-          //       }
-          //     }
-          //   }
-          // }
-          // itemActCount = 0;
-        }
-      }
-
-      // check ui
-      activityListStages.value
-          .removeWhere((act) => act.mStatusinspectionstagesId == activityStage);
-      for (var item in activityList.value) {
-        activityListStages.value.add(item);
-      }
-      activityList.value = [];
-      activityListTextController.value = [];
-      editActivityMode.value = false;
-      activityDate.text = '';
-      activityStartTime.text = '';
-      activityEndTime.text = '';
-      activityText.text = '';
-
-      // await getJoDailyActivity();
-      // activityStage--;
-      update();
-
-      //activitySubmitted.value = true;
-      return 'success';
-    } else if (activityList.value
-        .where((data) => data.mStatusinspectionstagesId == activityStage)
-        .toList()
-        .isEmpty) {
-      return 'failed';
-    }
-  }
 
   Future<String> postUpdateActivity(data) async {
     var response = await repository.updateActivityInspection(data, id) ??

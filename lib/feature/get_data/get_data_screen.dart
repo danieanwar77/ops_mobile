@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/feature/get_data/get_data_controller.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class GetDataScreen extends StatefulWidget{
   const GetDataScreen({super.key});
@@ -14,6 +17,8 @@ class GetDataScreen extends StatefulWidget{
 
 class _GetDataScreenState extends State<GetDataScreen> {
   late String tokenFirebase;
+  late String apkVersion;
+  late String platform;
 
   @override
   void initState() {
@@ -23,7 +28,17 @@ class _GetDataScreenState extends State<GetDataScreen> {
       tokenFirebase = token.toString();
       debugPrint('firebase_token ${token}');
     });
+
+    _getAppVersion();
+
     super.initState();
+  }
+
+  Future<void> _getAppVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      apkVersion = 'Version: ${packageInfo.version}';
+    });
   }
 
   @override
@@ -132,7 +147,7 @@ class _GetDataScreenState extends State<GetDataScreen> {
                       const Spacer(),
                       ElevatedButton(
                           onPressed: () {
-                            controller.getGenData(tokenFirebase);
+                            controller.getGenData(tokenFirebase,apkVersion,Platform.isAndroid ? 'Android' : 'IOS');
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: primaryColor,
