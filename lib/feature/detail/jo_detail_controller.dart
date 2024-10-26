@@ -32,6 +32,7 @@ import 'package:ops_mobile/data/respository/repository.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/lab_activity_detail/lab_activity_detail_screen.dart';
+import 'package:ops_mobile/utils/helper.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 class JoDetailController extends BaseController {
@@ -326,7 +327,7 @@ class JoDetailController extends BaseController {
     //await getJoPICLocal();
     // await getJoDailyPhoto();
     // await getJoDailyActivity();
-    //await getJoDailyActivityLocal();
+   // await getJoDailyActivityLocal();
     await getJoDailyActivityLocalV2();
     // await getJoDailyActivity5();
     // await getJoDailyActivity6();
@@ -540,38 +541,6 @@ class JoDetailController extends BaseController {
     debugPrint('data activity: ${jsonEncode(activityListStages.value)}');
   }
 
-  Future<void> getJoDailyActivityLocalV2() async {
-    final db = await SqlHelper.db();
-    List<Map<String, dynamic>> result = await db.query(
-      't_d_jo_inspection_activity_stages',
-      where: 'id = ? and is_active = 1',
-      whereArgs: [
-        id,
-      ],
-    );
-    // dari result diatas looping untuk mendapatkan data t_d_jo_inspection_activity  berdasarkan t_h_jo_id,t_d_jo_inspection_activity_stages_id
-    for (var stage in result) {
-      int tHJoId = stage['t_h_jo_id'];
-      int stageId = stage[
-          'id']; // atau stage['t_d_jo_inspection_activity_stages_id'] jika kolom ini ada
-
-      // Query data terkait dari tabel t_d_jo_inspection_activity berdasarkan t_h_jo_id dan t_d_jo_inspection_activity_stages_id
-      List<Map<String, dynamic>> activityResult = await db.query(
-        't_d_jo_inspection_activity',
-        where: 't_h_jo_id = ? AND t_d_jo_inspection_activity_stages_id = ?',
-        whereArgs: [tHJoId, stageId],
-      );
-
-      // Menambahkan activityResult ke dalam stage dengan key 'listactivity'
-      stage['listactivity'] = activityResult;
-    }
-
-    //conver result to List<TDJoInspectionAcitivityStages>
-    List<TDJoInspectionActivityStages> stagesList = result
-        .map((json) => TDJoInspectionActivityStages.fromJson(json))
-        .toList();
-    stageList.value = stagesList;
-  }
 
   Future<void> getJoDailyActivity5() async {
     var response =
@@ -1532,15 +1501,51 @@ class JoDetailController extends BaseController {
     debugPrint('activities: ${jsonEncode(activityList)}');
   }
 
-  void addActivityV2() {
-    if (activityList.value.isEmpty) {
-      activityListTextController.value.add(TextEditingController());
-    } else {
-      if (activityList.value.last.transDate != activityDate.text) {
-        activityListTextController.value.add(TextEditingController());
-      }
+  Future<void> getJoDailyActivityLocalV2() async {
+    final db = await SqlHelper.db();
+
+    // Retrieve data from the database
+    List<Map<String, dynamic>> result = await db.query(
+      't_d_jo_inspection_activity_stages',
+      where: 't_h_jo_id = ? and is_active = 1',
+      whereArgs: [id],
+    );
+
+    // Create a modifiable list of stages
+    List<Map<String, dynamic>> modifiableResult = result.map((stage) => Map<String, dynamic>.from(stage)).toList();
+
+    for (var stage in modifiableResult) {
+      int tHJoId = stage['t_h_jo_id'];
+      int stageId = stage['id']; // use this or 't_d_jo_inspection_activity_stages_id' if it exists
+      int stageStatusId = stage['m_statusinspectionstages_id'];
+      debugPrint("m_statusinspectionstages_id ${stageStatusId}");
+      activityStage = stageStatusId;
+      activitySubmitted.value = true;
+
+      // Query related data from t_d_jo_inspection_activity
+      List<Map<String, dynamic>> activityResult = await db.query(
+        't_d_jo_inspection_activity',
+        where: 't_h_jo_id = ? and t_d_jo_inspection_activity_stages_id = ? and is_active = ?', // add additional criteria if necessary
+        whereArgs: [tHJoId,stageId,1],
+      );
+      debugPrint(" jo id  ${tHJoId}  jo stage ${stageId}");
+      debugPrint(" result  ${activityResult}");
+
+      // Add activityResult to the current stage
+      stage['listactivity'] = activityResult;
     }
 
+    // Convert the modifiableResult list to List<TDJoInspectionActivityStages>
+    List<TDJoInspectionActivityStages> stagesList = modifiableResult
+        .map((json) => TDJoInspectionActivityStages.fromJson(json))
+        .toList();
+
+    stageList.value = stagesList;
+    debugPrint("stage list 585 ${jsonEncode(stagesList)}");
+    update();
+  }
+
+  void addActivityV2() {
     TDJoInspectionActivity activity = new TDJoInspectionActivity(
         id: DateTime.now().millisecondsSinceEpoch,//Date now to int
         activity: activityText.text,
@@ -1562,14 +1567,14 @@ class JoDetailController extends BaseController {
     //jika transdate tidak null dan transdate tidak sama "" maka update old data
     if (matchingStage.transDate != null && matchingStage.transDate.toString() != "") {
         matchingStage.listActivity?.add(activity);
-        // update oldTdjosn berdasarkan matchingStage
+        //sudah otomatis ke update karena update secara langsung
     } else {
       TDJoInspectionActivityStages stages = new TDJoInspectionActivityStages(
           transDate: activityDate.text,
           mStatusinspectionstagesId: activityStage,
           listActivity: listActivity);
       stageListModal.add(stages);
-
+      activityListTextController.value.add(TextEditingController());
     }
 
     // activityDate.text = '';
@@ -1580,25 +1585,46 @@ class JoDetailController extends BaseController {
   }
 
   void deleteActivityHeaderV2(String transdate) {
-    stageListModal.value.removeWhere((stage) => stage.transDate == transdate);
+    List<TDJoInspectionActivityStages>  stageListModalOld  = stageListModal.map((stage) => TDJoInspectionActivityStages.fromJson(stage.toJson())).toList();
+    //stageListModalOld.removeWhere((stage) => stage.transDate == transdate);
+    int removeIndex = stageListModalOld.indexWhere((stage) => stage.transDate == transdate);
+
+    if (removeIndex != -1) {
+      // Remove the stage based on transdate
+      stageListModalOld.removeAt(removeIndex);
+      stageListModal.value = stageListModalOld;
+
+      // Remove corresponding TextEditingController based on the removed index
+      if (removeIndex < activityListTextController.value.length) {
+        activityListTextController.value.removeAt(removeIndex);
+      }
+    }
+
+    //stageList.value = stageListModalOld;
+    //remove activityListTextController berdasarkan index stageListModalOld.removeWhere
+    activityListTextController.value.add(TextEditingController());
     update();
   }
 
   void deleteActivityDetailV2(String transDate, String actDelete){
-    TDJoInspectionActivityStages? matchingStage = stageListModal.value.firstWhere(
-          (stage) => stage.transDate == activityDate.text,
+    //Copy old data
+    List<TDJoInspectionActivityStages>  stageListModalOld  = stageListModal.map((stage) => TDJoInspectionActivityStages.fromJson(stage.toJson())).toList();
+
+    TDJoInspectionActivityStages? matchingStage = stageListModalOld.firstWhere(
+          (stage) => stage.transDate == transDate,
       orElse: () => TDJoInspectionActivityStages(),
     );
-
     if (matchingStage.transDate != null && matchingStage.transDate.toString() != "") {
       matchingStage.listActivity?.removeWhere((activity) => activity.activity == actDelete);
 
-      int index = stageListModal.indexWhere((stage) => stage.transDate == matchingStage.transDate);
+      int index = stageListModalOld.indexWhere((stage) => stage.transDate == matchingStage.transDate);
 
       if (index != -1) {
-        stageListModal[index] = matchingStage;
+        stageListModalOld[index] = matchingStage;
       }
+
     }
+    stageListModal.value = stageListModalOld;
     update();
   }
 
@@ -1668,6 +1694,170 @@ class JoDetailController extends BaseController {
     }
 
   }
+
+  Future<bool> addActivityStageV2() async {
+    final db = await SqlHelper.db();
+    List<TDJoInspectionActivityStages> stages = stageListModal.value;
+    final createdBy = userData.value!.id;
+    stages.asMap().forEach((index,stage) async {
+      debugPrint("data input ${jsonEncode(stage.toJson())}");
+      TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
+        tHJoId: id,
+        mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
+        transDate: stage.transDate,
+        code: "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+        isUpload: "0",
+        isActive: "1",
+        createdBy: userData.value!.id,
+        createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+        remarks: activityListTextController.value[index].text,
+      );
+      int result =  await db.insert("t_d_jo_inspection_activity_stages", data.toInsert());
+      //dapatkan id yang baru insert
+      List<TDJoInspectionActivity> details = stage.listActivity ?? [];
+      details.forEach((activity) async{
+        TDJoInspectionActivity detail = TDJoInspectionActivity(
+            tHJoId: id,
+            tDJoInspectionActivityStagesId: result,
+            startActivityTime: activity.startActivityTime,
+            endActivityTime: activity.endActivityTime,
+            activity: activity.activity,
+            code: 'JOIAS-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+            isActive: 1,
+            isUpload: 0,
+            createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+            createdBy: createdBy
+        );
+        await db.insert("t_d_jo_inspection_activity",detail.toInsert());
+      });
+    });
+    stageListModal.value = [];
+    activityListTextController.value = [];
+    return true;
+  }
+
+  Future<bool> editActivityStagesV2() async {
+    try {
+      final db = await SqlHelper.db();
+      List<TDJoInspectionActivityStages> stages = stageListModal.value;
+      final createdBy = userData.value!.id;
+      //deactive semua aktifitas dan stagenya
+      // update table t_d_jo_inspection_activity_stages set is_active =0 berdasarkan thjoid dan transdate dan mStatusinspectionstagesId
+      int result = await db.update(
+        't_d_jo_inspection_activity_stages',
+        {'is_active': 0}, // The new value for the is_active field
+        where: 't_h_jo_id = ?  AND m_statusinspectionstages_id = ?',
+        whereArgs: [id,activityStage],
+      );
+
+      //debugPrint("data input edit deactive ${result} ${id} ${statusId}");
+      debugPrint("data input edit remarks ${activityListTextController.value}");
+
+      stages.asMap().forEach((index,stage) async {
+        debugPrint("data input edit ${jsonEncode(stage.toJson())}");
+        if(stage.id != null){
+          TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
+            isUpload: "0",
+            isActive: "1",
+            updatedBy: userData.value!.id.toString(),
+            updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+            remarks: activityListTextController.value[index].text
+          );
+
+          int updated = await db.update(
+            't_d_jo_inspection_activity_stages',
+            data.toEdit(),
+            where: 'id = ? ',
+            whereArgs: [stage.id],
+          );
+
+          //inactive detail
+          int detail = await db.update(
+            't_d_jo_inspection_activity',
+            {'is_active': 0}, // The new value for the is_active field
+            where: 't_d_jo_inspection_activity_stages_id = ?',
+            whereArgs: [stage.id],
+          );
+          List<TDJoInspectionActivity> listActivity = stage.listActivity ?? [];
+          listActivity.forEach((activity) async{
+            if(activity.code != null){
+              //Update
+              TDJoInspectionActivity detail = TDJoInspectionActivity(
+                  startActivityTime: activity.startActivityTime,
+                  endActivityTime: activity.endActivityTime,
+                  activity: activity.activity,
+                  isActive: 1,
+                  isUpload: 0,
+                  updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+                  updatedBy: createdBy.toString()
+              );
+
+              int updated = await db.update(
+                't_d_jo_inspection_activity',
+                detail.toEdit(),
+                where: 'id = ?',
+                whereArgs: [activity.id],
+              );
+              debugPrint("Print Edit ${activity.id} ${updated}");
+            }else{
+              //insert
+              TDJoInspectionActivity detail = TDJoInspectionActivity(
+                  tHJoId: id,
+                  tDJoInspectionActivityStagesId: stage.id,
+                  startActivityTime: activity.startActivityTime,
+                  endActivityTime: activity.endActivityTime,
+                  activity: activity.activity,
+                  code: 'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+                  isActive: 1,
+                  isUpload: 0,
+                  createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+                  createdBy: createdBy
+              );
+              int raw = await db.insert("t_d_jo_inspection_activity",detail.toInsert());
+              debugPrint("Print Edit ${activity.id} ${raw}");
+            }
+          });
+        }else{
+          TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
+            tHJoId: id,
+            mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
+            transDate: stage.transDate,
+            code: "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+            isUpload: "0",
+            isActive: "1",
+            createdBy: userData.value!.id,
+            remarks: activityListTextController.value[index].text,
+            createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+          );
+          int result =  await db.insert("t_d_jo_inspection_activity_stages", data.toInsert());
+          List<TDJoInspectionActivity> details = stage.listActivity ?? [];
+          details.forEach((activity) async{
+            TDJoInspectionActivity detail = TDJoInspectionActivity(
+                tHJoId: id,
+                tDJoInspectionActivityStagesId: result,
+                startActivityTime: activity.startActivityTime,
+                endActivityTime: activity.endActivityTime,
+                activity: activity.activity,
+                code: 'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+                isActive: 1,
+                isUpload: 0,
+                createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+                createdBy: createdBy
+            );
+            await db.insert("t_d_jo_inspection_activity",detail.toInsert());
+          });
+        }
+      });
+      stageListModal.value = [];
+      activityListTextController.value = [];
+      return true;
+    } catch (e) {
+      // Handle any parsing errors
+      return false; // Return the original time if parsing fails
+    }
+
+  }
+
   void toggleEditActivity(int index) {
     activityDate.text = activityList.value[index].transDate!;
     activityStartTime.text = activityList.value[index].startActivityTime!;
@@ -1829,177 +2019,6 @@ class JoDetailController extends BaseController {
     update();
   }
 
-  Map<String, List<Activity>> groupActivitiesByTransDate(
-      RxList<Activity> activityList) {
-    // Create a Map to store the grouped activities
-    Map<String, List<Activity>> groupedActivities = {};
-
-    // Iterate through each activity in the RxList
-    for (var activity in activityList) {
-      // Get the trans_date of the current activity
-      String transDate = activity.transDate ?? "UnknowDate";
-
-      // If the trans_date key doesn't exist in the Map, create it
-      if (!groupedActivities.containsKey(transDate)) {
-        groupedActivities[transDate] = [];
-      }
-      // Add the activity to the corresponding group
-      groupedActivities[transDate]!.add(activity);
-    }
-    return groupedActivities;
-  }
-
-  Future<String?> editActivityStages() async {
-    if (activityList.value
-        .where((data) => data.mStatusinspectionstagesId == activityStage)
-        .toList()
-        .isNotEmpty) {
-      debugPrint('data editan untuk edit : ${jsonEncode(activityList.value)}');
-      for (var item in activityList.value) {
-        debugPrint("item result ${jsonEncode(item)}");
-        debugPrint("item edit ${item.transDate}");
-        final db = await SqlHelper.db();
-        List<Map<String, dynamic>> result = await db.query(
-          't_d_jo_inspection_activity_stages',
-          where:
-              'trans_date = ? AND m_statusinspectionstages_id = ?', // Menggunakan AND untuk lebih dari satu kondisi
-          whereArgs: [
-            item.transDate,
-            item.mStatusinspectionstagesId
-          ], // Masukkan argumen untuk id dan name
-          limit: 1, // Limit untuk mendapatkan satu hasil saja
-        );
-
-        // if(result.isNotEmpty){
-        //   TDJoInspectionAcitivityStages header = TDJoInspectionAcitivityStages.fromJson(result.first);
-        //   // update remarks, isactive,updated_at,updated_by
-        //   //table t_d_jo_inspection_activity_stages dengan model TDJoInspectionAcitivityStages
-        //   header = header.copyWith(
-        //     remarks: item.remarks, // Update remarks dengan nilai baru
-        //     isActive: "1", // Update status aktif
-        //     updatedAt: DateTime.now().toIso8601String(), // Update waktu dengan waktu saat ini
-        //     updatedBy: userData.value!.id.toString(), // Update dengan ID user yang melakukan update
-        //   );
-        //
-        // }
-      }
-      var actDate = activityList.value
-          .map((item) {
-            return item.transDate;
-          })
-          .toSet()
-          .toList();
-      debugPrint('dates : ${jsonEncode(actDate)}');
-      var actRemarks = activityList.value
-          .map((item) {
-            return item.remarks;
-          })
-          .toSet()
-          .toList();
-      debugPrint('dates remarks : ${jsonEncode(actRemarks)}');
-      var itemCount = 0;
-      var itemActCount = 0;
-
-      // if(actDate.length == actRemarks.length){
-      //   itemCount++;
-      //
-      //   for(var i = 0; i < actRemarks.length; i++){
-      //     debugPrint('date : ${actDate[i]}');
-      //     debugPrint('remarks : ${actRemarks[i]}');
-      //     var activity = activityList.value.where((act) => act.transDate == actDate[i] && act.mStatusinspectionstagesId == activityStage).toList();
-      //     debugPrint('activity di edit: ${jsonEncode(activity)}');
-      //     for(var item in activity) {
-      //       debugPrint('Activity - ${jsonEncode(item)}');
-      //     }
-      //     // for(var item in activity){
-      //     //   itemActCount++;
-      //     //   if(item.stageId!.toInt() != 0){
-      //     //     debugPrint('yang mau dikirm kondisi stage id tidak 0 : ${actDate[i]!} ${userData.value!.id!.toInt()} ${item.stageId!.toInt()}');
-      //     //     var checkId = await SqlHelper.getActivityStageId(actDate[i]!, userData.value!.id!.toInt(), item.stageId!.toInt());
-      //     //     if(checkId.isNotEmpty && checkId.length == 1){
-      //     //       var updateStage = await postUpdateActivityStageLocal(item.stageId!.toInt(), actRemarks[i]  ?? '', checkId.first['code'] ?? '');
-      //     //       if(updateStage != 'success'){
-      //     //         debugPrint('Problem with sending update SQL Activity Stage Item');
-      //     //       }
-      //     //       var checkActId = await SqlHelper.getActivityId( userData.value!.id!.toInt(), item.id?.toInt() ?? 0, item.code ?? '');
-      //     //       if(checkActId.isNotEmpty && checkId.length > 0){
-      //     //         var updateAct = await postUpdateActivityLocal(item.id!.toInt(), item.stageId!.toInt(), item.startActivityTime!, item.endActivityTime!, item.activity!, item.code!);
-      //     //         if(updateAct != 'success'){
-      //     //           debugPrint('Problem with sending update SQL Activity Item');
-      //     //         }
-      //     //       } else if(checkActId.isEmpty || checkId.length == 0) {
-      //     //         var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-      //     //         var code = 'JOAIDA-${userData.value!.id!}-${time.toString()}$itemActCount';
-      //     //         var sendAct = await postInsertActivityLocal(checkId.first['id'], item.startActivityTime!,item.endActivityTime!,item.activity!,code,userData.value!.id!.toInt());
-      //     //         if(sendAct != 'success'){
-      //     //           debugPrint('Problem with sending SQL Activity Item');
-      //     //         }
-      //     //       }
-      //     //     }
-      //     //     // else {
-      //     //     //   var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-      //     //     //   var code = 'JOAID-${userData.value!.nip!}-${time.toString()}$itemCount';
-      //     //     //   var sendStage = await postInsertActivityStageLocal(actDate[i]!, actRemarks[i]!, code );
-      //     //     //   if(sendStage != 'success'){
-      //     //     //     debugPrint('Problem with sending SQL Activity Stage');
-      //     //     //   } else {
-      //     //     //       var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-      //     //     //       var code = 'JOAIDA-${userData.value!.nip!}-${time.toString()}$itemCount';
-      //     //     //       var stageAct = await SqlHelper.getActivityStage(actDate[i]!, userData.value!.id!.toInt());
-      //     //     //       var sendAct = await postInsertActivityLocal(stageAct.first['id'], item.startActivityTime!,item.endActivityTime!,item.activity!,code,userData.value!.id!.toInt());
-      //     //     //       if(sendAct != 'success'){
-      //     //     //         debugPrint('Problem with sending SQL Activity Item');
-      //     //     //       }
-      //     //     //   }
-      //     //     // }
-      //     //   } else if(item.stageId == null || item.stageId!.toInt() == 0) {
-      //     //     var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-      //     //     var code = 'JOAID-${userData.value!.id!}-${time.toString()}$itemCount';
-      //     //     var sendStage = await postInsertActivityStageLocal(actDate[i]!, actRemarks[i]!, code );
-      //     //     if(sendStage != 'success'){
-      //     //       debugPrint('Problem with sending SQL Activity Stage');
-      //     //     } else {
-      //     //       var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-      //     //       var code = 'JOAIDA-${userData.value!.id!}-${time.toString()}$itemCount';
-      //     //       var stageAct = await SqlHelper.getActivityStage(actDate[i]!, userData.value!.id!.toInt());
-      //     //       var sendAct = await postInsertActivityLocal(stageAct.first['id'], item.startActivityTime!,item.endActivityTime!,item.activity!,code,userData.value!.id!.toInt());
-      //     //       if(sendAct != 'success'){
-      //     //         debugPrint('Problem with sending SQL Activity Item');
-      //     //       }
-      //     //     }
-      //     //   }
-      //     // }
-      //     // itemActCount = 0;
-      //   }
-      // }
-
-      // check ui
-      activityListStages.value
-          .removeWhere((act) => act.mStatusinspectionstagesId == activityStage);
-      for (var item in activityList.value) {
-        activityListStages.value.add(item);
-      }
-      activityList.value = [];
-      activityListTextController.value = [];
-      editActivityMode.value = false;
-      activityDate.text = '';
-      activityStartTime.text = '';
-      activityEndTime.text = '';
-      activityText.text = '';
-
-      await getJoDailyActivity();
-      // activityStage--;
-      update();
-
-      //activitySubmitted.value = true;
-      return 'success';
-    } else if (activityList.value
-        .where((data) => data.mStatusinspectionstagesId == activityStage)
-        .toList()
-        .isEmpty) {
-      return 'failed';
-    }
-  }
 
   Future<String?> addActivityStages() async {
     if (activityList.value
@@ -2113,6 +2132,8 @@ class JoDetailController extends BaseController {
       return 'failed';
     }
   }
+
+
 
   Future<String> postInsertActivity(data) async {
     var response = await repository.insertActivityInspection(data) ??
@@ -2388,7 +2409,6 @@ class JoDetailController extends BaseController {
                                   if (editActivityMode.value == false) {
                                     addActivityV2();
                                   } else {
-                                    //editActivity();
                                     updateActivityDetailV2();
                                   }
                                 }
@@ -2612,7 +2632,7 @@ class JoDetailController extends BaseController {
                         Expanded(
                           child: ElevatedButton(
                               onPressed: () {
-                                checkActivityList();
+                                //checkActivityList();
                                 cleanActivity();
                                 Get.back();
                               },
@@ -2693,12 +2713,15 @@ class JoDetailController extends BaseController {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             onPressed: () async {
-              var result = await addActivityStages();
-              if (result == 'success') {
+              //var result = await addActivityStages();
+              bool result = await addActivityStageV2();
+
+              if (result) {
                 Get.back();
+                await getJoDailyActivityLocalV2();
                 //openDialog("Success", "Activity Stage ${activityStage-1} berhasil ditambahkan");
                 if (activityStage == 1) {
-                  changeStatusJo();
+                 // changeStatusJo();
                 }
               } else {
                 Get.back();
@@ -2779,22 +2802,18 @@ class JoDetailController extends BaseController {
   }
 
   void drawerDailyActivityEdit(int stage) {
-    activityList.value = activityListStages.value
-        .where((item) => item.mStatusinspectionstagesId == activityStage)
+    List<TDJoInspectionActivityStages> filteredStages = stageList.value
+        .where((itemStage) => itemStage.mStatusinspectionstagesId == stage)
         .toList();
-    var activityEditTemp = activityList.value
-        .map((item) {
-          return item.transDate;
-        })
-        .toSet()
-        .toList();
-    activityEditTemp.forEach((item) {
-      var text = activityList.value.lastWhere((act) => act.transDate == item);
-      activityListTextController.value
-          .add(TextEditingController(text: text.remarks));
+    activityListTextController.value = [];
+    filteredStages.forEach((item){
+        activityListTextController.value.add(TextEditingController(text: item.remarks));
     });
+    stageListModal.value = filteredStages;
+
     update();
-    debugPrint('data yang mau di edit: ${jsonEncode(activityList.value)}');
+    debugPrint('data yang mau di edit: ${filteredStages}');
+    debugPrint('data yang mau di edit: ${jsonEncode(stageListModal.value)}');
     Get.bottomSheet(
         GetBuilder(
           init: JoDetailController(),
@@ -2844,6 +2863,7 @@ class JoDetailController extends BaseController {
                                       showCursor: true,
                                       readOnly: true,
                                       controller: activityDate,
+                                      enabled: enabledDate.value,
                                       cursorColor: onFocusColor,
                                       onTap: () {
                                         selectDate(Get.context!);
@@ -2933,8 +2953,7 @@ class JoDetailController extends BaseController {
                                             cursorColor: onFocusColor,
                                             onTap: () async {
                                               activityEndTime.text =
-                                                  await selectTime(
-                                                      Get.context!);
+                                                  await selectTime(Get.context!);
                                             },
                                             validator: (value) {
                                               if (value == null ||
@@ -3008,9 +3027,9 @@ class JoDetailController extends BaseController {
                               onTap: () {
                                 if (_formKey.currentState!.validate()) {
                                   if (editActivityMode.value == false) {
-                                    addActivity();
+                                    addActivityV2();
                                   } else {
-                                    editActivity();
+                                    updateActivityDetailV2();
                                   }
                                 }
                               },
@@ -3034,263 +3053,196 @@ class JoDetailController extends BaseController {
                             const SizedBox(
                               height: 16,
                             ),
-                            activityList.value.isNotEmpty
+                            stageListModal.value.isNotEmpty
                                 ? ListView.builder(
-                                    shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    itemCount: activityList.value
-                                        .map((item) {
-                                          return item.transDate;
-                                        })
-                                        .toSet()
-                                        .toList()
-                                        .length,
-                                    itemBuilder: (context, index) {
-                                      var activity = activityList.value
-                                          .map((item) {
-                                            return item.transDate;
-                                          })
-                                          .toSet()
-                                          .toList()[index];
-                                      return Column(
-                                        children: [
-                                          Card(
-                                            color: Colors.white,
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 16,
-                                                  right: 16,
-                                                  top: 8,
-                                                  bottom: 16),
-                                              child: Column(
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Expanded(
+                              itemCount: stageListModal.value.length,
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                TDJoInspectionActivityStages stage =
+                                stageListModal.value[index];
+                                return Column(
+                                  children: [
+                                    Card(
+                                        color: Colors.white,
+                                        child: Padding(
+                                            padding:
+                                            const EdgeInsets.only(
+                                                left: 16,
+                                                right: 16,
+                                                top: 8,
+                                                bottom: 16),
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    const Expanded(
                                                         flex: 2,
                                                         child: Text(
                                                           'Date',
                                                           style: TextStyle(
-                                                              fontSize: 14,
+                                                              fontSize:
+                                                              14,
                                                               fontWeight:
-                                                                  FontWeight
-                                                                      .w700),
-                                                        ),
-                                                      ),
-                                                      VerticalDivider(width: 1),
-                                                      SizedBox(width: 16),
-                                                      Expanded(
+                                                              FontWeight
+                                                                  .w700),
+                                                        )),
+                                                    const VerticalDivider(
+                                                        width: 1),
+                                                    const SizedBox(
+                                                        width: 16),
+                                                    Expanded(
                                                         flex: 2,
                                                         child: Row(
                                                           children: [
                                                             Expanded(
                                                               flex: 1,
                                                               child: Text(
-                                                                activity ?? '-',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize: 14,
-                                                                ),
+                                                                stage.transDate ??
+                                                                    '-',
+                                                                style: const TextStyle(
+                                                                    fontSize:
+                                                                    14),
                                                               ),
                                                             ),
                                                             InkWell(
-                                                                onTap: () {
-                                                                  if (activity !=
-                                                                      null) {
-                                                                    removeActivityByDateConfirmLocal(
-                                                                        activity,
-                                                                        index,
-                                                                        activityStage,
-                                                                        activityList.value[index].stageId?.toInt() ??
-                                                                            0,
-                                                                        activityList.value[index].stageCode ??
-                                                                            '');
-                                                                  }
-                                                                },
-                                                                child: Icon(
+                                                              onTap: () {
+                                                                debugPrint('Delete header');
+                                                                deleteActivityHeaderV2(stage!.transDate!);
+                                                              },
+                                                              child: const Icon(
                                                                   Icons
                                                                       .delete_forever,
                                                                   color: Colors
-                                                                      .red,
-                                                                ))
+                                                                      .red),
+                                                            )
                                                           ],
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 16),
-                                                  ListView.builder(
-                                                      shrinkWrap: true,
-                                                      physics:
-                                                          NeverScrollableScrollPhysics(),
-                                                      itemCount: activityList
-                                                          .value.length,
-                                                      itemBuilder:
-                                                          (context, indexItem) {
-                                                        if (activityList
-                                                                .value[
-                                                                    indexItem]
-                                                                .transDate ==
-                                                            activity) {
-                                                          return Row(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Expanded(
+                                                        )),
+                                                  ],
+                                                ),
+                                                const SizedBox(
+                                                  height: 16,
+                                                ),
+                                                ListView.builder(
+                                                    shrinkWrap: true,
+                                                    physics:
+                                                    NeverScrollableScrollPhysics(),
+                                                    itemCount: stage
+                                                        .listActivity!
+                                                        .length ??
+                                                        0,
+                                                    itemBuilder: (context,
+                                                        indexDetail) {
+                                                      TDJoInspectionActivity
+                                                      activity =
+                                                      stage.listActivity![
+                                                      indexDetail];
+                                                      return Row(
+                                                          crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                          children: [
+                                                            Expanded(
                                                                 flex: 1,
-                                                                child: Text(
+                                                                child:
+                                                                Text(
                                                                   'Activities',
                                                                   style: TextStyle(
                                                                       fontSize:
-                                                                          14,
+                                                                      14,
                                                                       fontWeight:
-                                                                          FontWeight
-                                                                              .w700),
-                                                                ),
-                                                              ),
-                                                              VerticalDivider(
-                                                                  width: 1),
-                                                              SizedBox(
-                                                                  width: 8),
-                                                              Expanded(
+                                                                      FontWeight.w700),
+                                                                )),
+                                                            VerticalDivider(
+                                                              width: 1,
+                                                            ),
+                                                            SizedBox(
+                                                              width: 8,
+                                                            ),
+                                                            Expanded(
                                                                 flex: 1,
                                                                 child: Text(
-                                                                  '${activityList.value[indexItem].startActivityTime ?? '-'} - ${activityList.value[indexItem].endActivityTime ?? '-'}',
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          14,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w700),
-                                                                ),
-                                                              ),
-                                                              VerticalDivider(
-                                                                  width: 1),
-                                                              SizedBox(
-                                                                  width: 8),
-                                                              Expanded(
+                                                                    '${Helper.formatToHourMinute(activity!.startActivityTime!)} - ${Helper.formatToHourMinute(activity!.endActivityTime!)}',
+                                                                    style: TextStyle(
+                                                                        fontSize: 14,
+                                                                        fontWeight: FontWeight.w700))),
+                                                            VerticalDivider(
+                                                              width: 1,
+                                                            ),
+                                                            SizedBox(
+                                                              width: 8,
+                                                            ),
+                                                            Expanded(
                                                                 flex: 2,
-                                                                child: Row(
+                                                                child:
+                                                                Row(
                                                                   children: [
                                                                     Expanded(
                                                                       child:
-                                                                          Text(
-                                                                        activityList.value[indexItem].activity ??
-                                                                            '-',
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              14,
-                                                                        ),
+                                                                      Text(
+                                                                        activity.activity ?? '-',
+                                                                        style: TextStyle(fontSize: 14),
                                                                       ),
                                                                     ),
                                                                     InkWell(
-                                                                        onTap:
-                                                                            () {
-                                                                          toggleEditActivity(
-                                                                              indexItem);
-                                                                        },
-                                                                        child:
-                                                                            Icon(
-                                                                          Icons
-                                                                              .mode_edit_outlined,
-                                                                          color:
-                                                                              primaryColor,
-                                                                        )),
+                                                                      onTap: () {
+                                                                        debugPrint('Edit');
+                                                                        editActivityDetailV2(stage!.transDate!,activity!.activity!);
+                                                                      },
+                                                                      child:
+                                                                      Icon(
+                                                                        Icons.mode_edit_outlined,
+                                                                        color: primaryColor,
+                                                                      ),
+                                                                    ),
                                                                     InkWell(
-                                                                        onTap:
-                                                                            () {
-                                                                          removeActivityConfirmLocal(
-                                                                              activity!,
-                                                                              indexItem,
-                                                                              index,
-                                                                              activityStage,
-                                                                              activityList.value[indexItem].id?.toInt() ?? 0,
-                                                                              activityList.value[indexItem].code ?? '',
-                                                                              activityList.value[indexItem].stageId?.toInt() ?? 0);
-                                                                        },
-                                                                        child:
-                                                                            Icon(
-                                                                          Icons
-                                                                              .delete_forever,
-                                                                          color:
-                                                                              Colors.red,
-                                                                        ))
+                                                                      onTap: () {
+                                                                        debugPrint('Hapus detail');
+                                                                        deleteActivityDetailV2(stage!.transDate!,activity!.activity!);
+                                                                      },
+                                                                      child: Icon(
+                                                                        Icons.delete_forever,
+                                                                        color: Colors.red,
+                                                                      ),
+                                                                    ),
                                                                   ],
-                                                                ),
-                                                              )
-                                                            ],
-                                                          );
-                                                        } else {
-                                                          return const SizedBox();
-                                                        }
-                                                      }),
-                                                  const Divider(),
-                                                  const SizedBox(
-                                                    height: 16,
+                                                                ))
+                                                          ]);
+                                                    }),
+                                                TextFormField(
+                                                  inputFormatters: [
+                                                    LengthLimitingTextInputFormatter(
+                                                        250),
+                                                  ],
+                                                  controller: activityListTextController[index],
+                                                  onChanged: (value) {},
+                                                  cursorColor: onFocusColor,
+                                                  style: const TextStyle(
+                                                      color: onFocusColor
                                                   ),
-                                                  index <
-                                                          (activityListTextController
-                                                              .value.length)
-                                                      ? TextFormField(
-                                                          inputFormatters: [
-                                                            LengthLimitingTextInputFormatter(
-                                                                250),
-                                                          ],
-                                                          controller:
-                                                              activityListTextController[
-                                                                  index],
-                                                          onChanged: (value) {
-                                                            debugPrint(value);
-                                                            debugPrint(
-                                                                'text remarks controller : ${activityListTextController[index].text}');
-                                                            editActivityRemarks(
-                                                                activity!,
-                                                                value,
-                                                                index);
-                                                          },
-                                                          cursorColor:
-                                                              onFocusColor,
-                                                          style: const TextStyle(
-                                                              color:
-                                                                  onFocusColor),
-                                                          decoration:
-                                                              InputDecoration(
-                                                                  border:
-                                                                      OutlineInputBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            12),
-                                                                  ),
-                                                                  focusedBorder:
-                                                                      OutlineInputBorder(
-                                                                    borderSide:
-                                                                        const BorderSide(
-                                                                            color:
-                                                                                onFocusColor),
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            12),
-                                                                  ),
-                                                                  labelText:
-                                                                      'Remarks',
-                                                                  floatingLabelStyle:
-                                                                      const TextStyle(
-                                                                          color:
-                                                                              onFocusColor),
-                                                                  fillColor:
-                                                                      onFocusColor),
-                                                        )
-                                                      : const SizedBox(),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    })
-                                : SizedBox(),
+                                                  decoration: InputDecoration(
+                                                      border: OutlineInputBorder(
+                                                        borderRadius: BorderRadius.circular(12),
+                                                      ),
+                                                      focusedBorder: OutlineInputBorder(
+                                                        borderSide: const BorderSide(
+                                                            color: onFocusColor),
+                                                        borderRadius: BorderRadius.circular(12),
+                                                      ),
+                                                      labelText: 'Remarks',
+                                                      floatingLabelStyle:
+                                                      const TextStyle(color: onFocusColor),
+                                                      fillColor: onFocusColor),
+                                                )
+                                              ],
+                                            )
+                                        )
+                                    )
+                                  ],
+                                );
+                              },
+                            )
+                                : SizedBox()
                           ],
                         ),
                       ),
@@ -3381,14 +3333,14 @@ class JoDetailController extends BaseController {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             onPressed: () async {
-              var result = await editActivityStages();
-              if (result == 'success') {
+              bool result = await editActivityStagesV2();
+              if (result) {
                 Get.back();
-                //openDialog("Success", "Activity Stage ${activityStage-1} berhasil ditambahkan");
+                openDialog("Success", "Activity Stage ${activityStage-1} berhasil ditambahkan");
+                await getJoDailyActivityLocalV2();
               } else {
                 Get.back();
-                openDialog("Failed",
-                    "Activity Stage $activityStage masih kosong atau belum diinput");
+                openDialog("Failed", "Activity Stage $activityStage masih kosong atau belum diinput");
               }
             },
           ),
@@ -3525,6 +3477,7 @@ class JoDetailController extends BaseController {
     activityStartTime.text = '';
     activityEndTime.text = '';
     activityText.text = '';
+    stageListModal.value = [];
   }
 
   // Activity 5 Inspection Functions
@@ -4361,6 +4314,8 @@ class JoDetailController extends BaseController {
             onPressed: () async {
               activityStage++;
               activitySubmitted.value = false;
+              stageListModal.value = [];
+              activityListTextController.value = [];
               update();
               Get.back();
             },

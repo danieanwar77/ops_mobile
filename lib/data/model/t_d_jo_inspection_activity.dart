@@ -54,7 +54,7 @@ class TDJoInspectionActivity {
     _isActive = json['is_active'];
     _isUpload = json['is_upload'];
     _createdBy = json['created_by'];
-    _updatedBy = json['updated_by'];
+    _updatedBy = json['updated_by'].toString();
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
   }
@@ -130,6 +130,39 @@ TDJoInspectionActivity copyWith({  num? id,
     map['created_by'] = _createdBy;
     map['updated_by'] = _updatedBy;
     map['created_at'] = _createdAt;
+    map['updated_at'] = _updatedAt;
+    return map;
+  }
+
+  Map<String, dynamic> toInsert() {
+    final map = <String, dynamic>{};
+    map['id'] = _id;
+    map['t_h_jo_id'] = _tHJoId;
+    map['t_d_jo_inspection_activity_stages_id'] = _tDJoInspectionActivityStagesId;
+    map['start_activity_time'] = _startActivityTime;
+    map['end_activity_time'] = _endActivityTime;
+    map['activity'] = _activity;
+    map['code'] = _code;
+    map['is_active'] = _isActive;
+    map['is_upload'] = _isUpload;
+    map['created_by'] = _createdBy;
+    map['updated_by'] = _updatedBy;
+    map['created_at'] = _createdAt;
+    map['updated_at'] = _updatedAt;
+    return map;
+  }
+
+  Map<String, dynamic> toEdit() {
+    final map = <String, dynamic>{};
+    //map['id'] = _id;
+    map['start_activity_time'] = _startActivityTime;
+    map['end_activity_time'] = _endActivityTime;
+    map['activity'] = _activity;
+    map['is_active'] = _isActive;
+    map['is_upload'] = _isUpload;
+    //map['created_by'] = _createdBy;
+    map['updated_by'] = _updatedBy;
+    //map['created_at'] = _createdAt;
     map['updated_at'] = _updatedAt;
     return map;
   }
