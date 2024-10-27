@@ -26,11 +26,14 @@ import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity5.dart';
-import 'package:ops_mobile/data/model/t_d_jo_inspection_acitivity_stages.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_pict.dart';
 import 'package:ops_mobile/data/respository/repository.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/lab_activity_detail/lab_activity_detail_screen.dart';
+import 'package:ops_mobile/utils/helper.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 class JoDetailController extends BaseController {
@@ -75,6 +78,8 @@ class JoDetailController extends BaseController {
   Rx<DataListActivity6> dataListActivity6 = Rx(DataListActivity6());
   Rx<Activity6Attachments> dataListActivity6Attachments =
       Rx(Activity6Attachments());
+  RxList<TDJoInspectionActivityStages> stageList = RxList();
+  RxList<TDJoInspectionActivityStages> stageListModal = RxList();
 
   // Activity Lab Data
   Rx<DataListActivityLab> dataListActivityLab = Rx(DataListActivityLab());
@@ -83,6 +88,7 @@ class JoDetailController extends BaseController {
 
   // Activity Inspection Photo Variables & Temporary
   RxList<File> dailyActivityPhotos = RxList();
+  RxList<TDJoInspectionPict> dailyActivityPhotosV2 = RxList();
   RxList<File> dailyActivityPhotosTemp = RxList();
   RxList<String> dailyActivityPhotosDescText = RxList();
   RxList<String> dailyActivityPhotosDescTextTemp = RxList();
@@ -114,6 +120,7 @@ class JoDetailController extends BaseController {
   TextEditingController activityRemarks = TextEditingController();
   RxBool editActivityMode = RxBool(false);
   RxInt editActivityIndex = 0.obs;
+  RxBool enabledDate = RxBool(true);
 
   // Activity 5 Inspection Variables & Temporary
   RxInt activity5FormCount = 1.obs;
@@ -161,15 +168,14 @@ class JoDetailController extends BaseController {
   void onInit() async {
     var dataUser = await SqlHelper.getUserDetail('1234');
     userData.value = Data(
-        id : dataUser.first['id'],
+        id: dataUser.first['id'],
         fullname: dataUser.first['fullname'],
         nip: dataUser.first['e_number'],
         positionId: dataUser.first['jabatan_id'],
         position: dataUser.first['jabatan'],
         divisionId: dataUser.first['division_id'],
         division: dataUser.first['division'].toString(),
-        superior: dataUser.first['superior_id'].toString()
-    );
+        superior: dataUser.first['superior_id'].toString());
     debugPrint('data user: ${jsonEncode(userData.value)}');
 
     var argument = await Get.arguments;
@@ -207,7 +213,7 @@ class JoDetailController extends BaseController {
         : '0');
     update();
     debugPrint('id pic inspector: $picInspector , laboratory: $picLaboratory');
-    if(picInspector != '0' && picLaboratory == 0){
+    if (picInspector != '0' && picLaboratory == 0) {
       joDetailTab = [
         Tab(
           text: 'Detail',
@@ -241,7 +247,7 @@ class JoDetailController extends BaseController {
         ),
       ];
       update();
-    } else if(picInspector == 0 && picLaboratory != '0'){
+    } else if (picInspector == 0 && picLaboratory != '0') {
       joDetailTab = [
         Tab(
           text: 'Detail',
@@ -275,7 +281,7 @@ class JoDetailController extends BaseController {
         ),
       ];
       update();
-    } else if(picInspector != '0' && picLaboratory != '0'){
+    } else if (picInspector != '0' && picLaboratory != '0') {
       joDetailTab = [
         Tab(
           text: 'Detail',
@@ -321,9 +327,10 @@ class JoDetailController extends BaseController {
     }
     //await getJoPIC();
     //await getJoPICLocal();
-    // await getJoDailyPhoto();
+     await getJoDailyPhotoV2();
     // await getJoDailyActivity();
-    await getJoDailyActivityLocal();
+   // await getJoDailyActivityLocal();
+    await getJoDailyActivityLocalV2();
     // await getJoDailyActivity5();
     // await getJoDailyActivity6();
     // await getJoDailyActivityLab();
@@ -370,50 +377,37 @@ class JoDetailController extends BaseController {
     debugPrint('data detail ListLaboratory : ${jsonEncode(labo)}');
 
     dataJoDetail.value = DataDetail(
-      detail: DetailJo.fromJson(data.first),
-      sow: sow.map((item){
-        return Sow(
-          id: item['id'],
-          name: item['name']
-        );
-      }).toList(),
-      oos: oos.map((item){
-        return Oos(
-          id: item['id'],
-          name: item['name']
-        );
-      }).toList(),
-      lap: lap.map((item){
-        return Lap(
-            id: item['id'],
-            name: item['name']
-        );
-      }).toList(),
-      stdMethod:
-      // std.map((item){
-      //   return StdMethod(
-      //       id: item['id'],
-      //       name: item['name']
-      //   );
-      // }).toList()
-        []
-        ,
-      picHist: pic.map((item){
-        return PicHist.fromJson(item);
-      }).toList(),
-      laboratory: labo.map((item){
-        return Laboratory(
-            laboratoriumId: item['laboratorium_id'],
-            name: item['name']
-        );
-      }).toList()
-    );
+        detail: DetailJo.fromJson(data.first),
+        sow: sow.map((item) {
+          return Sow(id: item['id'], name: item['name']);
+        }).toList(),
+        oos: oos.map((item) {
+          return Oos(id: item['id'], name: item['name']);
+        }).toList(),
+        lap: lap.map((item) {
+          return Lap(id: item['id'], name: item['name']);
+        }).toList(),
+        stdMethod:
+            // std.map((item){
+            //   return StdMethod(
+            //       id: item['id'],
+            //       name: item['name']
+            //   );
+            // }).toList()
+            [],
+        picHist: pic.map((item) {
+          return PicHist.fromJson(item);
+        }).toList(),
+        laboratory: labo.map((item) {
+          return Laboratory(
+              laboratoriumId: item['laboratorium_id'], name: item['name']);
+        }).toList());
 
     barges.value = dataJoDetail.value.detail?.barge?.split('|') ?? [];
     barges.value.forEach((_) {
       bargesController.value.add(TextEditingController());
     });
-    if(labo != null) {
+    if (labo != null) {
       labo.forEach((lab) {
         labs.value.add(Laboratory.fromJson(lab));
       });
@@ -461,6 +455,7 @@ class JoDetailController extends BaseController {
       }
     }
   }
+
 
   Future<File> getImagesFromUrl(String strURL) async {
     debugPrint('image path: ${AppConstant.CORE_URL}$strURL');
@@ -518,7 +513,7 @@ class JoDetailController extends BaseController {
   Future<void> getJoDailyActivityLocal() async {
     var response = await SqlHelper.getListActivity(id);
     debugPrint('JO Daily Activity: ${jsonEncode(response)}');
-    dataListActivity.value = response.map((item){
+    dataListActivity.value = response.map((item) {
       return DataActivity.fromJson(item);
     }).toList();
     activityListStages.value.clear(); // clear value
@@ -548,6 +543,7 @@ class JoDetailController extends BaseController {
     }
     debugPrint('data activity: ${jsonEncode(activityListStages.value)}');
   }
+
 
   Future<void> getJoDailyActivity5() async {
     var response =
@@ -673,41 +669,43 @@ class JoDetailController extends BaseController {
     dailyActivityPhotosDescText[index] = desc;
   }
 
-  void sendActivityDailyPhoto() async {
-    int success = 0;
-    if (dailyActivityPhotosTemp.value.isNotEmpty &&
-        dailyActivityPhotosDescTemp.value.isNotEmpty) {
-      for (var i = 0; i < dailyActivityPhotosTemp.value.length; i++) {
-        final File photo = dailyActivityPhotosTemp.value[i];
-        final TextEditingController desc = dailyActivityPhotosDescTemp.value[i];
-        String response = await sendPhotos(photo, desc.text);
-        if (response == 'success') {
-          success++;
-          dailyActivityPhotos.value.add(photo);
-          dailyActivityPhotosDesc.value.add(desc);
-        }
-      }
-    } else {
-      openDialog('Failed', 'Tidak ada foto yang diupload');
-    }
 
-    if (success == dailyActivityPhotos.value.length) {
-      openDialog('Success', 'Foto berhasil dikirm');
-      if (activityList.value.isEmpty) {
-        changeStatusJo();
-      }
-      // changeStatusJo();
-      getJoDailyPhoto();
-      dailyActivityPhotosTemp.value = [];
-      dailyActivityPhotosDescTemp.value = [];
-      dailyActivityPhotosDescTextTemp.value = [];
-      adddailyActivityPhotosCount.value = 0;
-    } else {
-      openDialog('Attention', 'Beberapa foto gagal dikirim');
-    }
-  }
 
-  Future<String> updateActivityDailyPhoto(File image, int id, String desc) async {
+  // void sendActivityDailyPhoto() async {
+  //   int success = 0;
+  //   if (dailyActivityPhotosTemp.value.isNotEmpty && dailyActivityPhotosDescTemp.value.isNotEmpty) {
+  //     for (var i = 0; i < dailyActivityPhotosTemp.value.length; i++) {
+  //       final File photo = dailyActivityPhotosTemp.value[i];
+  //       final TextEditingController desc = dailyActivityPhotosDescTemp.value[i];
+  //       String response = await sendPhotos(photo, desc.text);
+  //       if (response == 'success') {
+  //         success++;
+  //         dailyActivityPhotos.value.add(photo);
+  //         dailyActivityPhotosDesc.value.add(desc);
+  //       }
+  //     }
+  //   } else {
+  //     openDialog('Failed', 'Tidak ada foto yang diupload');
+  //   }
+  //
+  //   if (success == dailyActivityPhotos.value.length) {
+  //     openDialog('Success', 'Foto berhasil dikirm');
+  //     if (activityList.value.isEmpty) {
+  //       changeStatusJo();
+  //     }
+  //     // changeStatusJo();
+  //     getJoDailyPhoto();
+  //     dailyActivityPhotosTemp.value = [];
+  //     dailyActivityPhotosDescTemp.value = [];
+  //     dailyActivityPhotosDescTextTemp.value = [];
+  //     adddailyActivityPhotosCount.value = 0;
+  //   } else {
+  //     openDialog('Attention', 'Beberapa foto gagal dikirim');
+  //   }
+  // }
+
+  Future<String> updateActivityDailyPhoto(
+      File image, int id, String desc) async {
     var response = await repository.updateActivityDailyPhoto(image, id, desc);
     if (response?.httpCode != 200) {
       return 'failed';
@@ -833,8 +831,7 @@ class JoDetailController extends BaseController {
                                         height: 16,
                                       ),
                                       TextFormField(
-                                        controller: dailyActivityPhotosDescTemp
-                                            .value[index],
+                                        controller: dailyActivityPhotosDescTemp.value[index],
                                         onChanged: (value) {
                                           editPhotoActivityDesc(index, value);
                                         },
@@ -998,8 +995,9 @@ class JoDetailController extends BaseController {
             ),
             onPressed: () {
               //debugPrint('data photo: ${jsonEncode(dailyActivityPhotosTemp.value)}');
+              sendActivityDailyPhotoV2();
               Get.back();
-              sendActivityDailyPhoto();
+
             },
           ),
         ],
@@ -1007,7 +1005,7 @@ class JoDetailController extends BaseController {
     );
   }
 
-  void previewImage(int index, String photo, String desc) async {
+  void previewImage(int index, String photo, String desc,TDJoInspectionPict pict) async {
     dailyActivityPhotosDescEdit.value.text = desc;
     activityPreviewFoto.value = await File(photo);
     Get.dialog(
@@ -1016,19 +1014,21 @@ class JoDetailController extends BaseController {
         builder: (controller) => AlertDialog(
           title: Row(
             children: [
-              Text(
-                'Photo and Description ${index + 1}',
-                style: TextStyle(
+              Expanded(
+                child: Text(
+                  'Photo and Description ${index + 1}',
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
-                    color: primaryColor),
+                    color: primaryColor,
+                  ),
+                ),
               ),
               dataJoDetail.value.detail?.statusJo == 'Assigned' ||
                       dataJoDetail.value.detail?.statusJo == 'On Progres'
                   ? InkWell(
                       onTap: () {
-                        deleteActivityDailyPhotoConfirm(int.parse(
-                            dataJoDailyPhotos.value[index].id!.toString()));
+                        deleteActivityDailyPhotoConfirm(pict!.id!.toInt());
                       },
                       child: Icon(
                         Icons.delete_forever,
@@ -1063,26 +1063,6 @@ class JoDetailController extends BaseController {
                   const SizedBox(
                     height: 16,
                   ),
-                  // InkWell(
-                  //   onTap: () async {
-                  //     var image = await cameraImage();
-                  //     foto.value = image;
-                  //     //updateActivityDailyPhoto(foto, int.parse(dataJoDailyPhotos.value[index].id!.toString()));
-                  //   },
-                  //   child: Container(
-                  //     height: 54,
-                  //     width: 54,
-                  //     decoration: BoxDecoration(
-                  //         border: Border.all(color: primaryColor),
-                  //         borderRadius: BorderRadius.circular(8)
-                  //     ),
-                  //     child: Center(
-                  //       child: Icon(Icons.camera_alt_sharp,
-                  //         color: primaryColor,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
                   const SizedBox(
                     height: 16,
                   ),
@@ -1116,13 +1096,8 @@ class JoDetailController extends BaseController {
                     dataJoDetail.value.detail?.statusJo == 'On Progres'
                 ? ElevatedButton(
                     onPressed: () {
-                      editPhotoActivityDesc(
-                          index, dailyActivityPhotosDescEdit.value.text);
-                      updateActivityConfirm(
-                          File(photo),
-                          int.parse(
-                              dataJoDailyPhotos.value[index].id!.toString()),
-                          dailyActivityPhotosDescEdit.value.text);
+                      editPhotoActivityDescV2(pict!.id!.toInt(),dailyActivityPhotosDescEdit.value.text);
+                      Get.back();
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: primaryColor,
@@ -1171,7 +1146,7 @@ class JoDetailController extends BaseController {
               if (result == 'success') {
                 Get.back();
                 openDialog("Success", "Berhasil ubah foto.");
-                getJoDailyPhoto();
+                getJoDailyPhotoV2();
               } else {
                 Get.back();
                 openDialog("Failed", "Gagal ubah foto.");
@@ -1204,12 +1179,9 @@ class JoDetailController extends BaseController {
             ),
             onPressed: () async {
               Get.back();
-              var delete = await deletePhoto(id);
+              var delete = await deletePhotoV2(id);
               if (delete == 'success') {
-                var index =
-                    dataJoDailyPhotos.value.indexWhere((foto) => foto.id == id);
-                dataJoDailyPhotos.value.removeAt(index);
-                dailyActivityPhotos.value.removeAt(index);
+                await getJoDailyPhotoV2();
                 update();
                 Get.back();
               } else {
@@ -1507,6 +1479,487 @@ class JoDetailController extends BaseController {
     debugPrint('activities: ${jsonEncode(activityList)}');
   }
 
+  Future<void> getJoDailyActivityLocalV2() async {
+    final db = await SqlHelper.db();
+
+    // Retrieve data from the database
+    List<Map<String, dynamic>> result = await db.query(
+      't_d_jo_inspection_activity_stages',
+      where: 't_h_jo_id = ? and is_active = 1',
+      whereArgs: [id],
+    );
+
+    // Create a modifiable list of stages
+    List<Map<String, dynamic>> modifiableResult = result.map((stage) => Map<String, dynamic>.from(stage)).toList();
+
+    for (var stage in modifiableResult) {
+      int tHJoId = stage['t_h_jo_id'];
+      int stageId = stage['id']; // use this or 't_d_jo_inspection_activity_stages_id' if it exists
+      int stageStatusId = stage['m_statusinspectionstages_id'];
+      debugPrint("m_statusinspectionstages_id ${stageStatusId}");
+      activityStage = stageStatusId;
+      activitySubmitted.value = true;
+
+      // Query related data from t_d_jo_inspection_activity
+      List<Map<String, dynamic>> activityResult = await db.query(
+        't_d_jo_inspection_activity',
+        where: 't_h_jo_id = ? and t_d_jo_inspection_activity_stages_id = ? and is_active = ?', // add additional criteria if necessary
+        whereArgs: [tHJoId,stageId,1],
+      );
+      debugPrint(" jo id  ${tHJoId}  jo stage ${stageId}");
+      debugPrint(" result  ${activityResult}");
+
+      // Add activityResult to the current stage
+      stage['listactivity'] = activityResult;
+    }
+
+    // Convert the modifiableResult list to List<TDJoInspectionActivityStages>
+    List<TDJoInspectionActivityStages> stagesList = modifiableResult
+        .map((json) => TDJoInspectionActivityStages.fromJson(json))
+        .toList();
+
+    stageList.value = stagesList;
+    debugPrint("stage list 585 ${jsonEncode(stagesList)}");
+    update();
+  }
+
+  void addActivityV2() {
+    TDJoInspectionActivity activity = new TDJoInspectionActivity(
+        id: DateTime.now().millisecondsSinceEpoch,//Date now to int
+        activity: activityText.text,
+        endActivityTime: activityEndTime.text,
+        startActivityTime: activityStartTime.text,
+    );
+
+    List<TDJoInspectionActivity> listActivity = [];
+    listActivity.add(activity);
+
+    List<TDJoInspectionActivityStages> oldTdJoInspections = stageListModal.value;
+
+    TDJoInspectionActivityStages? matchingStage = oldTdJoInspections.firstWhere(
+          (stage) => stage.transDate == activityDate.text,
+      orElse: () => TDJoInspectionActivityStages(),
+    );
+
+    debugPrint('Matching old Stage ${jsonEncode(matchingStage.toJson())}');
+    //jika transdate tidak null dan transdate tidak sama "" maka update old data
+    if (matchingStage.transDate != null && matchingStage.transDate.toString() != "") {
+        matchingStage.listActivity?.add(activity);
+        //sudah otomatis ke update karena update secara langsung
+    } else {
+      TDJoInspectionActivityStages stages = new TDJoInspectionActivityStages(
+          transDate: activityDate.text,
+          mStatusinspectionstagesId: activityStage,
+          listActivity: listActivity);
+      stageListModal.add(stages);
+      activityListTextController.value.add(TextEditingController());
+    }
+
+    // activityDate.text = '';
+    // activityStartTime.text = '';
+    // activityEndTime.text = '';
+    // activityText.text = '';
+    update();
+  }
+
+  void deleteActivityHeaderV2(String transdate) {
+    List<TDJoInspectionActivityStages>  stageListModalOld  = stageListModal.map((stage) => TDJoInspectionActivityStages.fromJson(stage.toJson())).toList();
+    //stageListModalOld.removeWhere((stage) => stage.transDate == transdate);
+    int removeIndex = stageListModalOld.indexWhere((stage) => stage.transDate == transdate);
+
+    if (removeIndex != -1) {
+      // Remove the stage based on transdate
+      stageListModalOld.removeAt(removeIndex);
+      stageListModal.value = stageListModalOld;
+
+      // Remove corresponding TextEditingController based on the removed index
+      if (removeIndex < activityListTextController.value.length) {
+        activityListTextController.value.removeAt(removeIndex);
+      }
+    }
+
+    //stageList.value = stageListModalOld;
+    //remove activityListTextController berdasarkan index stageListModalOld.removeWhere
+    activityListTextController.value.add(TextEditingController());
+    update();
+  }
+
+  void deleteActivityDetailV2(String transDate, String actDelete){
+    //Copy old data
+    List<TDJoInspectionActivityStages>  stageListModalOld  = stageListModal.map((stage) => TDJoInspectionActivityStages.fromJson(stage.toJson())).toList();
+
+    TDJoInspectionActivityStages? matchingStage = stageListModalOld.firstWhere(
+          (stage) => stage.transDate == transDate,
+      orElse: () => TDJoInspectionActivityStages(),
+    );
+    if (matchingStage.transDate != null && matchingStage.transDate.toString() != "") {
+      matchingStage.listActivity?.removeWhere((activity) => activity.activity == actDelete);
+
+      int index = stageListModalOld.indexWhere((stage) => stage.transDate == matchingStage.transDate);
+
+      if (index != -1) {
+        stageListModalOld[index] = matchingStage;
+      }
+
+    }
+    stageListModal.value = stageListModalOld;
+    update();
+  }
+
+  void editActivityDetailV2(String transDate, String actEdit) {
+    TDJoInspectionActivityStages? matchingStage = stageListModal.value.firstWhere(
+          (stage) => stage.transDate == activityDate.text,
+      orElse: () => TDJoInspectionActivityStages(),
+    );
+
+    if (matchingStage.transDate != null && matchingStage.transDate.toString() != "") {
+      //matchingStage.listActivity?.removeWhere((activity) => activity.activity == actEdit);
+      TDJoInspectionActivity? matchinAtivity = matchingStage.listActivity?.firstWhere(
+          (act) => act.activity == actEdit,
+          orElse: TDJoInspectionActivity.new
+      );
+
+      if(matchinAtivity != null && matchinAtivity.activity.toString() != ""){
+        activityDate.text = matchingStage!.transDate!;
+        activityStartTime.text = matchinAtivity.startActivityTime!;
+        activityEndTime.text = matchinAtivity.endActivityTime!;
+        activityText.text = matchinAtivity.activity!;
+        editActivityMode.value = true;
+        enabledDate.value = false;
+        editActivityIndex.value = matchinAtivity!.id!.toInt();
+        update();
+      }
+    }
+  }
+
+  void updateActivityDetailV2(){
+    // edit Rx
+    TDJoInspectionActivityStages? matchingStage = stageListModal.value.firstWhere(
+          (stage) => stage.transDate == activityDate.text,
+      orElse: () => TDJoInspectionActivityStages(),
+    );
+
+    if (matchingStage.transDate != null && matchingStage.transDate.toString() != "") {
+      //matchingStage.listActivity?.removeWhere((activity) => activity.activity == actEdit);
+      TDJoInspectionActivity? matchinAtivity = matchingStage.listActivity?.firstWhere(
+              (act) => act.id == editActivityIndex.value,
+          orElse: TDJoInspectionActivity.new
+      );
+
+      if (matchinAtivity != null && (matchinAtivity.id ?? 0) > 0) {
+        matchinAtivity.startActivityTime = activityStartTime.text;
+        matchinAtivity.endActivityTime = activityEndTime.text;
+        matchinAtivity.activity = activityText.text;
+
+        //update ke activity
+        int? indexDetail = matchingStage.listActivity?.indexWhere((act) => act!.id! == matchinAtivity!.id!);
+
+        if (indexDetail != null && indexDetail != -1) {
+          matchingStage.listActivity![indexDetail] = matchinAtivity;
+        }
+
+        int index = stageListModal.indexWhere((stage) => stage.transDate == matchingStage.transDate);
+        if (index != -1) {
+          stageListModal[index] = matchingStage;
+        }
+
+        // Reset the edit mode and index
+        editActivityMode.value = false;
+        editActivityIndex.value = 0;
+        enabledDate.value = true;
+        update(); // Notify observers
+      }
+    }
+
+  }
+
+  Future<bool> addActivityStageV2() async {
+    final db = await SqlHelper.db();
+    List<TDJoInspectionActivityStages> stages = stageListModal.value;
+    final createdBy = userData.value!.id;
+    stages.asMap().forEach((index,stage) async {
+      debugPrint("data input ${jsonEncode(stage.toJson())}");
+      TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
+        tHJoId: id,
+        mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
+        transDate: stage.transDate,
+        code: "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+        isUpload: "0",
+        isActive: "1",
+        createdBy: userData.value!.id,
+        createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+        remarks: activityListTextController.value[index].text,
+      );
+      int result =  await db.insert("t_d_jo_inspection_activity_stages", data.toInsert());
+      //dapatkan id yang baru insert
+      List<TDJoInspectionActivity> details = stage.listActivity ?? [];
+      details.forEach((activity) async{
+        TDJoInspectionActivity detail = TDJoInspectionActivity(
+            tHJoId: id,
+            tDJoInspectionActivityStagesId: result,
+            startActivityTime: activity.startActivityTime,
+            endActivityTime: activity.endActivityTime,
+            activity: activity.activity,
+            code: 'JOIAS-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+            isActive: 1,
+            isUpload: 0,
+            createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+            createdBy: createdBy
+        );
+        await db.insert("t_d_jo_inspection_activity",detail.toInsert());
+      });
+    });
+    stageListModal.value = [];
+    activityListTextController.value = [];
+    return true;
+  }
+
+  Future<bool> editActivityStagesV2() async {
+    try {
+      final db = await SqlHelper.db();
+      List<TDJoInspectionActivityStages> stages = stageListModal.value;
+      final createdBy = userData.value!.id;
+      //deactive semua aktifitas dan stagenya
+      // update table t_d_jo_inspection_activity_stages set is_active =0 berdasarkan thjoid dan transdate dan mStatusinspectionstagesId
+      int result = await db.update(
+        't_d_jo_inspection_activity_stages',
+        {'is_active': 0}, // The new value for the is_active field
+        where: 't_h_jo_id = ?  AND m_statusinspectionstages_id = ?',
+        whereArgs: [id,activityStage],
+      );
+
+      //debugPrint("data input edit deactive ${result} ${id} ${statusId}");
+      debugPrint("data input edit remarks ${activityListTextController.value}");
+
+      stages.asMap().forEach((index,stage) async {
+        debugPrint("data input edit ${jsonEncode(stage.toJson())}");
+        if(stage.id != null){
+          TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
+            isUpload: "0",
+            isActive: "1",
+            updatedBy: userData.value!.id.toString(),
+            updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+            remarks: activityListTextController.value[index].text
+          );
+
+          int updated = await db.update(
+            't_d_jo_inspection_activity_stages',
+            data.toEdit(),
+            where: 'id = ? ',
+            whereArgs: [stage.id],
+          );
+
+          //inactive detail
+          int detail = await db.update(
+            't_d_jo_inspection_activity',
+            {'is_active': 0}, // The new value for the is_active field
+            where: 't_d_jo_inspection_activity_stages_id = ?',
+            whereArgs: [stage.id],
+          );
+          List<TDJoInspectionActivity> listActivity = stage.listActivity ?? [];
+          listActivity.forEach((activity) async{
+            if(activity.code != null){
+              //Update
+              TDJoInspectionActivity detail = TDJoInspectionActivity(
+                  startActivityTime: activity.startActivityTime,
+                  endActivityTime: activity.endActivityTime,
+                  activity: activity.activity,
+                  isActive: 1,
+                  isUpload: 0,
+                  updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+                  updatedBy: createdBy.toString()
+              );
+
+              int updated = await db.update(
+                't_d_jo_inspection_activity',
+                detail.toEdit(),
+                where: 'id = ?',
+                whereArgs: [activity.id],
+              );
+              debugPrint("Print Edit ${activity.id} ${updated}");
+            }else{
+              //insert
+              TDJoInspectionActivity detail = TDJoInspectionActivity(
+                  tHJoId: id,
+                  tDJoInspectionActivityStagesId: stage.id,
+                  startActivityTime: activity.startActivityTime,
+                  endActivityTime: activity.endActivityTime,
+                  activity: activity.activity,
+                  code: 'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+                  isActive: 1,
+                  isUpload: 0,
+                  createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+                  createdBy: createdBy
+              );
+              int raw = await db.insert("t_d_jo_inspection_activity",detail.toInsert());
+              debugPrint("Print Edit ${activity.id} ${raw}");
+            }
+          });
+        }else{
+          TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
+            tHJoId: id,
+            mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
+            transDate: stage.transDate,
+            code: "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+            isUpload: "0",
+            isActive: "1",
+            createdBy: userData.value!.id,
+            remarks: activityListTextController.value[index].text,
+            createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+          );
+          int result =  await db.insert("t_d_jo_inspection_activity_stages", data.toInsert());
+          List<TDJoInspectionActivity> details = stage.listActivity ?? [];
+          details.forEach((activity) async{
+            TDJoInspectionActivity detail = TDJoInspectionActivity(
+                tHJoId: id,
+                tDJoInspectionActivityStagesId: result,
+                startActivityTime: activity.startActivityTime,
+                endActivityTime: activity.endActivityTime,
+                activity: activity.activity,
+                code: 'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+                isActive: 1,
+                isUpload: 0,
+                createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+                createdBy: createdBy
+            );
+            await db.insert("t_d_jo_inspection_activity",detail.toInsert());
+          });
+        }
+      });
+      stageListModal.value = [];
+      activityListTextController.value = [];
+      return true;
+    } catch (e) {
+      // Handle any parsing errors
+      return false; // Return the original time if parsing fails
+    }
+
+  }
+
+  void sendActivityDailyPhotoV2() async {
+    int success = 0;
+    final db = await SqlHelper.db();
+    //t_h_jo_id = id
+    //createdBy
+    final createdBy = userData.value!.id;
+    //DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())
+    if (dailyActivityPhotosTemp.value.isNotEmpty && dailyActivityPhotosDescTemp.value.isNotEmpty) {
+      for (var i = 0; i < dailyActivityPhotosTemp.value.length; i++) {
+        final File photo = dailyActivityPhotosTemp.value[i];
+        final TextEditingController desc = dailyActivityPhotosDescTemp.value[i];
+        TDJoInspectionPict pict = TDJoInspectionPict(
+          tHJoId: id,
+          pathPhoto: photo.path,
+          keterangan:desc.text.toString(),
+          code: "JOIP-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now()).toString()}",
+          createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+          isActive: 1,
+          isUpload: 1
+        );
+        int result  = await db.insert("t_d_jo_inspection_pict",pict.toJson());
+
+        if (result > 0) {
+          success++;
+          //dailyActivityPhotos.value.add(photo);
+          //dailyActivityPhotosDesc.value.add(desc);
+        }
+      }
+    } else {
+      openDialog('Failed', 'Tidak ada foto yang diSimpan');
+    }
+
+    debugPrint("count input db ${success}");
+    debugPrint("count input ui ${dailyActivityPhotos.value.length}");
+    if (success == dailyActivityPhotosTemp.value.length) {
+      openDialog('Success', 'Foto berhasil dikirm');
+      if (activityList.value.isEmpty) {
+        //changeStatusJo();
+      }
+      // changeStatusJo();
+      getJoDailyPhotoV2();
+      dailyActivityPhotosTemp.value = [];
+      dailyActivityPhotosDescTemp.value = [];
+      dailyActivityPhotosDescTextTemp.value = [];
+      adddailyActivityPhotosCount.value = 0;
+    } else {
+      openDialog('Attention', 'Beberapa foto gagal dikirim');
+    }
+  }
+
+  Future<void> getJoDailyPhotoV2() async {
+    final db = await SqlHelper.db();
+    List<Map<String, dynamic>> result = await db.query(
+      't_d_jo_inspection_pict',
+      where: 't_h_jo_id = ? and is_active = 1',
+      whereArgs: [id],
+    );
+    dailyActivityPhotos.value = [];
+    dailyActivityPhotosDesc.value = [];
+    dailyActivityPhotosDescText.value = [];
+    dailyActivityPhotosV2.value = [];
+
+    List<TDJoInspectionPict> pict = result
+        .map((json) => TDJoInspectionPict.fromJson(json))
+        .toList();
+    dailyActivityPhotosV2.value = pict;
+    // TextEditingController tempPhotoDesc = TextEditingController();
+    // result.forEach((item) async{
+    //   //final File photo = await getImagesFromUrl(item['path_photo']);
+    //  // dailyActivityPhotos.value.add(item['path_photo']);
+    //   tempPhotoDesc.text = item['keterangan'] ?? '';
+    //   dailyActivityPhotosDesc.value.add(tempPhotoDesc);
+    //   dailyActivityPhotosDescText.value.add(item['keterangan'] ?? '');
+    // });
+
+
+    // var response = await repository.getJoDailyPhoto(id) ?? JoDailyPhoto();
+    // debugPrint('JO Daily Photo: ${jsonEncode(response)}');
+    // if (response.data!.isNotEmpty) {
+    //   dataJoDailyPhotos.value = response?.data ?? [];
+    //   if (dataJoDailyPhotos.value.isNotEmpty) {
+    //     isLoadingJOImage = true;
+    //     update();
+    //     dailyActivityPhotos.value = [];
+    //     TextEditingController tempPhotoDesc = TextEditingController();
+    //     dataJoDailyPhotos.value.forEach((data) async {
+    //       final File photo = await getImagesFromUrl(data.pathPhoto!);
+    //       dailyActivityPhotos.value.add(photo);
+    //       tempPhotoDesc.text = data.keterangan ?? '';
+    //       dailyActivityPhotosDesc.value.add(tempPhotoDesc);
+    //       dailyActivityPhotosDescText.value.add(data.keterangan ?? '');
+    //       update();
+    //     });
+    //     isLoadingJOImage = false;
+    //     update();
+    //   }
+    // }
+  }
+
+  Future<String> deletePhotoV2(int id) async {
+    final db  = await SqlHelper.db();
+
+    int result = await db.update('t_d_jo_inspection_pict', { "is_active" : 0},where: "id = ?",whereArgs: [id]);
+
+    if (result == 0) {
+      return 'failed';
+    } else {
+      return 'success';
+    }
+  }
+
+  void editPhotoActivityDescV2(int idEdit, String desc) async {
+    final db  = await SqlHelper.db();
+
+    int result = await db.update('t_d_jo_inspection_pict', { "keterangan" : desc},where: "id = ?",whereArgs: [idEdit]);
+    if(result > 0){
+      await getJoDailyPhotoV2();
+    }
+    update();
+  }
+
+  //// END V2
+
+
   void toggleEditActivity(int index) {
     activityDate.text = activityList.value[index].transDate!;
     activityStartTime.text = activityList.value[index].startActivityTime!;
@@ -1543,7 +1996,8 @@ class JoDetailController extends BaseController {
     activityEndTime.text = '';
     activityText.text = '';
     update();
-    debugPrint('data activity item yang mau di edit: ${jsonEncode(activityList.value[editActivityIndex.value])}');
+    debugPrint(
+        'data activity item yang mau di edit: ${jsonEncode(activityList.value[editActivityIndex.value])}');
   }
 
   void editActivityRemarks(String date, String val, int index) {
@@ -1558,7 +2012,8 @@ class JoDetailController extends BaseController {
           tHJoId: id,
           stageId: activityList.value[i].stageId ?? 0,
           stageCode: activityList.value[i].stageCode ?? '',
-          mStatusinspectionstagesId: activityList.value[i].mStatusinspectionstagesId,
+          mStatusinspectionstagesId:
+              activityList.value[i].mStatusinspectionstagesId,
           transDate: activityList.value[i].transDate,
           startActivityTime: activityList.value[i].startActivityTime,
           endActivityTime: activityList.value[i].endActivityTime,
@@ -1582,8 +2037,8 @@ class JoDetailController extends BaseController {
   Future<void> removeActivity(int indexitem, int index, int stage) async {
     var dateLength = activityList.value
         .where((item) =>
-    item.transDate == activityList.value[indexitem].transDate &&
-        item.mStatusinspectionstagesId == stage)
+            item.transDate == activityList.value[indexitem].transDate &&
+            item.mStatusinspectionstagesId == stage)
         .length;
     if (dateLength == 1) {
       activityListTextController.value.removeAt(index);
@@ -1592,22 +2047,24 @@ class JoDetailController extends BaseController {
     update();
   }
 
-  Future<void> removeActivityByDate(String date, int indexDate, int stage) async {
+  Future<void> removeActivityByDate(
+      String date, int indexDate, int stage) async {
     activityList.value.removeWhere((item) =>
-    item.transDate == date && item.mStatusinspectionstagesId == stage);
+        item.transDate == date && item.mStatusinspectionstagesId == stage);
     activityListTextController.value.removeAt(indexDate);
     update();
   }
 
-  Future<void> removeActivityLocal(int indexitem, int index, int stage, int id, String code, int stageId) async {
+  Future<void> removeActivityLocal(int indexitem, int index, int stage, int id,
+      String code, int stageId) async {
     debugPrint('id: $id, code: $code');
-    if(id != 0 || code != ''){
-      try{
+    if (id != 0 || code != '') {
+      try {
         await SqlHelper.deleteActivity(id, code);
         var dateLength = activityList.value
             .where((item) =>
-        item.transDate == activityList.value[indexitem].transDate &&
-            item.mStatusinspectionstagesId == stage)
+                item.transDate == activityList.value[indexitem].transDate &&
+                item.mStatusinspectionstagesId == stage)
             .length;
         if (dateLength == 1) {
           activityListTextController.value.removeAt(index);
@@ -1615,14 +2072,14 @@ class JoDetailController extends BaseController {
         }
         activityList.value.removeAt(indexitem);
         update();
-      } catch(e) {
+      } catch (e) {
         debugPrint('error delete activity: ${e.toString()}');
       }
     } else {
       var dateLength = activityList.value
           .where((item) =>
-      item.transDate == activityList.value[indexitem].transDate &&
-          item.mStatusinspectionstagesId == stage)
+              item.transDate == activityList.value[indexitem].transDate &&
+              item.mStatusinspectionstagesId == stage)
           .length;
       if (dateLength == 1) {
         activityListTextController.value.removeAt(index);
@@ -1632,204 +2089,38 @@ class JoDetailController extends BaseController {
       update();
     }
     var checkStage = await SqlHelper.getActivityListStage(stageId);
-    if(checkStage.length == 0){
-      try{
+    if (checkStage.length == 0) {
+      try {
         await SqlHelper.deleteActivityStage(id, code);
-      } catch(e) {
+      } catch (e) {
         debugPrint('error delete activity stage: ${e.toString()}');
       }
     }
     update();
   }
 
-  Future<void> removeActivityByDateLocal(String date, int indexDate, int stage, int id, String code) async {
+  Future<void> removeActivityByDateLocal(
+      String date, int indexDate, int stage, int id, String code) async {
     debugPrint('id: $id, code: $code');
-    if(id != 0 && code != ''){
-      try{
+    if (id != 0 && code != '') {
+      try {
         await SqlHelper.deleteActivityStage(id, code);
         activityList.value.removeWhere((item) =>
-        item.transDate == date && item.mStatusinspectionstagesId == stage);
+            item.transDate == date && item.mStatusinspectionstagesId == stage);
         activityListTextController.value.removeAt(indexDate);
         update();
-      } catch(e) {
+      } catch (e) {
         debugPrint('error delete activity stage: ${e.toString()}');
       }
     } else {
       activityList.value.removeWhere((item) =>
-      item.transDate == date && item.mStatusinspectionstagesId == stage);
+          item.transDate == date && item.mStatusinspectionstagesId == stage);
       activityListTextController.value.removeAt(indexDate);
       update();
     }
     update();
   }
 
-  Map<String, List<Activity>> groupActivitiesByTransDate(RxList<Activity> activityList) {
-    // Create a Map to store the grouped activities
-    Map<String, List<Activity>> groupedActivities = {};
-
-    // Iterate through each activity in the RxList
-    for (var activity in activityList) {
-      // Get the trans_date of the current activity
-      String transDate = activity.transDate ?? "UnknowDate";
-
-      // If the trans_date key doesn't exist in the Map, create it
-      if (!groupedActivities.containsKey(transDate)) {
-        groupedActivities[transDate] = [];
-      }
-      // Add the activity to the corresponding group
-      groupedActivities[transDate]!.add(activity);
-    }
-    return groupedActivities;
-  }
-
-  Future<String?> editActivityStages() async {
-    if (activityList.value
-        .where((data) => data.mStatusinspectionstagesId == activityStage)
-        .toList()
-        .isNotEmpty) {
-      debugPrint('data editan untuk edit : ${jsonEncode(activityList.value)}');
-      for(var item in activityList.value){
-        debugPrint("item result ${jsonEncode(item)}");
-        debugPrint("item edit ${item.transDate}");
-        final db = await SqlHelper.db();
-        List<Map<String, dynamic>> result = await db.query(
-          't_d_jo_inspection_activity_stages',
-          where: 'trans_date = ? AND m_statusinspectionstages_id = ?', // Menggunakan AND untuk lebih dari satu kondisi
-          whereArgs: [item.transDate, item.mStatusinspectionstagesId], // Masukkan argumen untuk id dan name
-          limit: 1, // Limit untuk mendapatkan satu hasil saja
-        );
-
-        if(result.isNotEmpty){
-          TDJoInspectionAcitivityStages header = TDJoInspectionAcitivityStages.fromJson(result.first);
-          // update remarks, isactive,updated_at,updated_by
-          //table t_d_jo_inspection_activity_stages dengan model TDJoInspectionAcitivityStages
-          header = header.copyWith(
-            remarks: item.remarks, // Update remarks dengan nilai baru
-            isActive: "1", // Update status aktif
-            updatedAt: DateTime.now().toIso8601String(), // Update waktu dengan waktu saat ini
-            updatedBy: userData.value!.id.toString(), // Update dengan ID user yang melakukan update
-          );
-
-        }
-
-      }
-      var actDate = activityList.value
-          .map((item) {
-        return item.transDate;
-      })
-          .toSet()
-          .toList();
-      debugPrint('dates : ${jsonEncode(actDate)}');
-      var actRemarks = activityList.value
-          .map((item) {
-        return item.remarks;
-      })
-          .toSet()
-          .toList();
-      debugPrint('dates remarks : ${jsonEncode(actRemarks)}');
-      var itemCount = 0;
-      var itemActCount = 0;
-
-      // if(actDate.length == actRemarks.length){
-      //   itemCount++;
-      //
-      //   for(var i = 0; i < actRemarks.length; i++){
-      //     debugPrint('date : ${actDate[i]}');
-      //     debugPrint('remarks : ${actRemarks[i]}');
-      //     var activity = activityList.value.where((act) => act.transDate == actDate[i] && act.mStatusinspectionstagesId == activityStage).toList();
-      //     debugPrint('activity di edit: ${jsonEncode(activity)}');
-      //     for(var item in activity) {
-      //       debugPrint('Activity - ${jsonEncode(item)}');
-      //     }
-      //     // for(var item in activity){
-      //     //   itemActCount++;
-      //     //   if(item.stageId!.toInt() != 0){
-      //     //     debugPrint('yang mau dikirm kondisi stage id tidak 0 : ${actDate[i]!} ${userData.value!.id!.toInt()} ${item.stageId!.toInt()}');
-      //     //     var checkId = await SqlHelper.getActivityStageId(actDate[i]!, userData.value!.id!.toInt(), item.stageId!.toInt());
-      //     //     if(checkId.isNotEmpty && checkId.length == 1){
-      //     //       var updateStage = await postUpdateActivityStageLocal(item.stageId!.toInt(), actRemarks[i]  ?? '', checkId.first['code'] ?? '');
-      //     //       if(updateStage != 'success'){
-      //     //         debugPrint('Problem with sending update SQL Activity Stage Item');
-      //     //       }
-      //     //       var checkActId = await SqlHelper.getActivityId( userData.value!.id!.toInt(), item.id?.toInt() ?? 0, item.code ?? '');
-      //     //       if(checkActId.isNotEmpty && checkId.length > 0){
-      //     //         var updateAct = await postUpdateActivityLocal(item.id!.toInt(), item.stageId!.toInt(), item.startActivityTime!, item.endActivityTime!, item.activity!, item.code!);
-      //     //         if(updateAct != 'success'){
-      //     //           debugPrint('Problem with sending update SQL Activity Item');
-      //     //         }
-      //     //       } else if(checkActId.isEmpty || checkId.length == 0) {
-      //     //         var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-      //     //         var code = 'JOAIDA-${userData.value!.id!}-${time.toString()}$itemActCount';
-      //     //         var sendAct = await postInsertActivityLocal(checkId.first['id'], item.startActivityTime!,item.endActivityTime!,item.activity!,code,userData.value!.id!.toInt());
-      //     //         if(sendAct != 'success'){
-      //     //           debugPrint('Problem with sending SQL Activity Item');
-      //     //         }
-      //     //       }
-      //     //     }
-      //     //     // else {
-      //     //     //   var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-      //     //     //   var code = 'JOAID-${userData.value!.nip!}-${time.toString()}$itemCount';
-      //     //     //   var sendStage = await postInsertActivityStageLocal(actDate[i]!, actRemarks[i]!, code );
-      //     //     //   if(sendStage != 'success'){
-      //     //     //     debugPrint('Problem with sending SQL Activity Stage');
-      //     //     //   } else {
-      //     //     //       var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-      //     //     //       var code = 'JOAIDA-${userData.value!.nip!}-${time.toString()}$itemCount';
-      //     //     //       var stageAct = await SqlHelper.getActivityStage(actDate[i]!, userData.value!.id!.toInt());
-      //     //     //       var sendAct = await postInsertActivityLocal(stageAct.first['id'], item.startActivityTime!,item.endActivityTime!,item.activity!,code,userData.value!.id!.toInt());
-      //     //     //       if(sendAct != 'success'){
-      //     //     //         debugPrint('Problem with sending SQL Activity Item');
-      //     //     //       }
-      //     //     //   }
-      //     //     // }
-      //     //   } else if(item.stageId == null || item.stageId!.toInt() == 0) {
-      //     //     var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-      //     //     var code = 'JOAID-${userData.value!.id!}-${time.toString()}$itemCount';
-      //     //     var sendStage = await postInsertActivityStageLocal(actDate[i]!, actRemarks[i]!, code );
-      //     //     if(sendStage != 'success'){
-      //     //       debugPrint('Problem with sending SQL Activity Stage');
-      //     //     } else {
-      //     //       var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-      //     //       var code = 'JOAIDA-${userData.value!.id!}-${time.toString()}$itemCount';
-      //     //       var stageAct = await SqlHelper.getActivityStage(actDate[i]!, userData.value!.id!.toInt());
-      //     //       var sendAct = await postInsertActivityLocal(stageAct.first['id'], item.startActivityTime!,item.endActivityTime!,item.activity!,code,userData.value!.id!.toInt());
-      //     //       if(sendAct != 'success'){
-      //     //         debugPrint('Problem with sending SQL Activity Item');
-      //     //       }
-      //     //     }
-      //     //   }
-      //     // }
-      //     // itemActCount = 0;
-      //   }
-      // }
-
-      // check ui
-      activityListStages.value
-          .removeWhere((act) => act.mStatusinspectionstagesId == activityStage);
-      for (var item in activityList.value) {
-        activityListStages.value.add(item);
-      }
-      activityList.value = [];
-      activityListTextController.value = [];
-      editActivityMode.value = false;
-      activityDate.text = '';
-      activityStartTime.text = '';
-      activityEndTime.text = '';
-      activityText.text = '';
-
-      await getJoDailyActivity();
-      // activityStage--;
-      update();
-
-      //activitySubmitted.value = true;
-      return 'success';
-    } else if (activityList.value
-        .where((data) => data.mStatusinspectionstagesId == activityStage)
-        .toList()
-        .isEmpty) {
-      return 'failed';
-    }
-  }
 
   Future<String?> addActivityStages() async {
     if (activityList.value
@@ -1840,34 +2131,46 @@ class JoDetailController extends BaseController {
       var itemActCount = 0;
       var actDate = activityList.value
           .map((item) {
-        return item.transDate;
-      })
+            return item.transDate;
+          })
           .toSet()
           .toList();
       var actRemarks = activityList.value
           .map((item) {
-        return item.remarks;
-      })
+            return item.remarks;
+          })
           .toSet()
           .toList();
 
-      if(actDate.length == actRemarks.length){
+      if (actDate.length == actRemarks.length) {
         itemCount++;
-        for(var i = 0; i < actRemarks.length; i++){
+        for (var i = 0; i < actRemarks.length; i++) {
           debugPrint('date : ${actDate[i]}');
           var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-          var code = 'JOAID-${userData.value!.id!}-${time.toString()}$itemCount';
-          var sendStage = await postInsertActivityStageLocal(actDate[i]!, actRemarks[i]!, code );
-          if(sendStage != 'success'){
+          var code =
+              'JOAID-${userData.value!.id!}-${time.toString()}$itemCount';
+          var sendStage = await postInsertActivityStageLocal(
+              actDate[i]!, actRemarks[i]!, code);
+          if (sendStage != 'success') {
             debugPrint('Problem with sending SQL Activity Stage');
           } else {
-            activityList.value.where((item) => item.transDate == actDate[i]).forEach((actItem)async{
+            activityList.value
+                .where((item) => item.transDate == actDate[i])
+                .forEach((actItem) async {
               itemActCount++;
               var time = DateFormat('yyyyMMddHms').format(DateTime.now());
-              var code = 'JOAIDA-${userData.value!.id!}-${time.toString()}$itemActCount';
-              var stageAct = await SqlHelper.getActivityStage(actDate[i]!, userData.value!.id!.toInt());
-              var sendAct = await postInsertActivityLocal(stageAct.first['id'], actItem.startActivityTime!,actItem.endActivityTime!,actItem.activity!,code,userData.value!.id!.toInt());
-              if(sendAct != 'success'){
+              var code =
+                  'JOAIDA-${userData.value!.id!}-${time.toString()}$itemActCount';
+              var stageAct = await SqlHelper.getActivityStage(
+                  actDate[i]!, userData.value!.id!.toInt());
+              var sendAct = await postInsertActivityLocal(
+                  stageAct.first['id'],
+                  actItem.startActivityTime!,
+                  actItem.endActivityTime!,
+                  actItem.activity!,
+                  code,
+                  userData.value!.id!.toInt());
+              if (sendAct != 'success') {
                 debugPrint('Problem with sending SQL Activity Item');
               }
             });
@@ -1920,7 +2223,7 @@ class JoDetailController extends BaseController {
       activityText.text = '';
 
       activitySubmitted.value = true;
-       await getJoDailyActivityLocal();
+      await getJoDailyActivityLocal();
       // activityStage--;
       update();
       return 'success';
@@ -1931,6 +2234,8 @@ class JoDetailController extends BaseController {
       return 'failed';
     }
   }
+
+
 
   Future<String> postInsertActivity(data) async {
     var response = await repository.insertActivityInspection(data) ??
@@ -1943,36 +2248,40 @@ class JoDetailController extends BaseController {
     }
   }
 
-  Future<String> postInsertActivityStageLocal(String transDate, String remarks, String code ) async {
-    try{
+  Future<String> postInsertActivityStageLocal(
+      String transDate, String remarks, String code) async {
+    try {
       var time = DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now());
-      await SqlHelper.insertActivityStage(id, activityStage, transDate, remarks, code, userData.value!.id!.toInt(), time.toString());
+      await SqlHelper.insertActivityStage(id, activityStage, transDate, remarks,
+          code, userData.value!.id!.toInt(), time.toString());
       return 'success';
-    } catch(e) {
+    } catch (e) {
       return 'failed';
     }
   }
 
-  Future<String> postInsertActivityLocal(int actStageId, String startTime, String endTime, String activity, String code, int idEmployee) async {
-    try{
+  Future<String> postInsertActivityLocal(int actStageId, String startTime,
+      String endTime, String activity, String code, int idEmployee) async {
+    try {
       var time = DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now());
-      await SqlHelper.insertActivity(id, actStageId, startTime, endTime, activity, code, userData.value!.id!.toInt(), time);
+      await SqlHelper.insertActivity(id, actStageId, startTime, endTime,
+          activity, code, userData.value!.id!.toInt(), time);
       return 'success';
-    } catch(e) {
+    } catch (e) {
       return 'failed';
     }
   }
 
   Future<void> validateActivityForm() async {
-    if(activityDate.text == null || activityDate.text.isEmpty){
+    if (activityDate.text == null || activityDate.text.isEmpty) {
       activityDateValidate = false;
       update();
     }
-    if(activityStartTime.text == null || activityStartTime.text.isEmpty){
+    if (activityStartTime.text == null || activityStartTime.text.isEmpty) {
       activityStartTimeValidate = false;
       update();
     }
-    if(activityText.text == null || activityText.text.isEmpty){
+    if (activityText.text == null || activityText.text.isEmpty) {
       activityTextValidate = false;
       update();
     }
@@ -2022,152 +2331,176 @@ class JoDetailController extends BaseController {
                             Form(
                               key: _formKey,
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  TextFormField(
-                                    showCursor: true,
-                                    readOnly: true,
-                                    controller: activityDate,
-                                    cursorColor: onFocusColor,
-                                    onTap: () {
-                                      selectDate(Get.context!);
-                                    },
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Field wajib diisi!';
-                                      }
-                                      return null;
-                                    },
-                                    style: const TextStyle(color: onFocusColor),
-                                    decoration: InputDecoration(
-                                        suffixIcon: IconButton(
-                                            onPressed: () {
-                                              selectDate(Get.context!);
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    TextFormField(
+                                      showCursor: true,
+                                      readOnly: true,
+                                      controller: activityDate,
+                                      enabled: enabledDate.value,
+                                      cursorColor: onFocusColor,
+                                      onTap: () {
+                                        selectDate(Get.context!);
+                                      },
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Field wajib diisi!';
+                                        }
+                                        return null;
+                                      },
+                                      style:
+                                          const TextStyle(color: onFocusColor),
+                                      decoration: InputDecoration(
+                                          suffixIcon: IconButton(
+                                              onPressed: () {
+                                                selectDate(Get.context!);
+                                              },
+                                              icon: Icon(Icons
+                                                  .calendar_today_rounded)),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color:
+                                                    activityDateValidate == true
+                                                        ? onFocusColor
+                                                        : Colors.red),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          labelText: 'Date*',
+                                          floatingLabelStyle: const TextStyle(
+                                              color: onFocusColor),
+                                          fillColor: onFocusColor),
+                                    ),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    Text('Detail Activities'),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextFormField(
+                                            controller: activityStartTime,
+                                            cursorColor:
+                                                activityStartTimeValidate ==
+                                                        true
+                                                    ? onFocusColor
+                                                    : Colors.red,
+                                            onTap: () async {
+                                              activityStartTime.text =
+                                                  await selectTime(
+                                                      Get.context!);
                                             },
-                                            icon: Icon(Icons.calendar_today_rounded
-                                            )),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Field wajib diisi!';
+                                              }
+                                              return null;
+                                            },
+                                            style: const TextStyle(
+                                                color: onFocusColor),
+                                            decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: const BorderSide(
+                                                      color: onFocusColor),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                labelText: 'Start Time*',
+                                                floatingLabelStyle:
+                                                    const TextStyle(
+                                                        color: onFocusColor),
+                                                fillColor: onFocusColor),
+                                          ),
                                         ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide:
-                                          BorderSide(color: activityDateValidate == true ? onFocusColor : Colors.red),
-                                          borderRadius: BorderRadius.circular(12),
+                                        const SizedBox(
+                                          width: 8,
                                         ),
-                                        labelText: 'Date*',
-                                        floatingLabelStyle:
-                                        const TextStyle(color: onFocusColor),
-                                        fillColor: onFocusColor),
-                                  ),
-                                  const SizedBox(
-                                    height: 16,
-                                  ),
-                                  Text('Detail Activities'),
-                                  const SizedBox(
-                                    height: 16,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: TextFormField(
-                                          controller: activityStartTime,
-                                          cursorColor: activityStartTimeValidate == true ? onFocusColor : Colors.red,
-                                          onTap: () async {
-                                            activityStartTime.text =
-                                            await selectTime(Get.context!);
-                                          },
-                                          validator: (value) {
-                                            if (value == null || value.isEmpty) {
-                                              return 'Field wajib diisi!';
-                                            }
-                                            return null;
-                                          },
-                                          style: const TextStyle(color: onFocusColor),
-                                          decoration: InputDecoration(
-                                              border: OutlineInputBorder(
-                                                borderRadius:
+                                        Expanded(
+                                          child: TextFormField(
+                                            controller: activityEndTime,
+                                            cursorColor: onFocusColor,
+                                            onTap: () async {
+                                              activityEndTime.text =
+                                                  await selectTime(
+                                                      Get.context!);
+                                            },
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Field wajib diisi!';
+                                              }
+                                              return null;
+                                            },
+                                            style: const TextStyle(
+                                                color: onFocusColor),
+                                            decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: const BorderSide(
+                                                      color: onFocusColor),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                labelText: 'End Time*',
+                                                floatingLabelStyle:
+                                                    const TextStyle(
+                                                        color: onFocusColor),
+                                                fillColor: onFocusColor),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    TextFormField(
+                                      inputFormatters: [
+                                        LengthLimitingTextInputFormatter(150),
+                                      ],
+                                      controller: activityText,
+                                      cursorColor: onFocusColor,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Field wajib diisi!';
+                                        }
+                                        return null;
+                                      },
+                                      style:
+                                          const TextStyle(color: onFocusColor),
+                                      decoration: InputDecoration(
+                                          border: OutlineInputBorder(
+                                            borderRadius:
                                                 BorderRadius.circular(12),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: const BorderSide(
-                                                    color: onFocusColor),
-                                                borderRadius:
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: const BorderSide(
+                                                color: onFocusColor),
+                                            borderRadius:
                                                 BorderRadius.circular(12),
-                                              ),
-                                              labelText: 'Start Time*',
-                                              floatingLabelStyle: const TextStyle(
-                                                  color: onFocusColor),
-                                              fillColor: onFocusColor),
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        width: 8,
-                                      ),
-                                      Expanded(
-                                        child: TextFormField(
-                                          controller: activityEndTime,
-                                          cursorColor: onFocusColor,
-                                          onTap: () async {
-                                            activityEndTime.text =
-                                            await selectTime(Get.context!);
-                                          },
-                                          validator: (value) {
-                                            if (value == null || value.isEmpty) {
-                                              return 'Field wajib diisi!';
-                                            }
-                                            return null;
-                                          },
-                                          style: const TextStyle(color: onFocusColor),
-                                          decoration: InputDecoration(
-                                              border: OutlineInputBorder(
-                                                borderRadius:
-                                                BorderRadius.circular(12),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: const BorderSide(
-                                                    color: onFocusColor),
-                                                borderRadius:
-                                                BorderRadius.circular(12),
-                                              ),
-                                              labelText: 'End Time*',
-                                              floatingLabelStyle: const TextStyle(
-                                                  color: onFocusColor),
-                                              fillColor: onFocusColor),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 16,
-                                  ),
-                                  TextFormField(
-                                    inputFormatters: [
-                                      LengthLimitingTextInputFormatter(150),
-                                    ],
-                                    controller: activityText,
-                                    cursorColor: onFocusColor,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Field wajib diisi!';
-                                      }
-                                      return null;
-                                    },
-                                    style: const TextStyle(color: onFocusColor),
-                                    decoration: InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide:
-                                          const BorderSide(color: onFocusColor),
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        labelText: 'Activity*',
-                                        floatingLabelStyle:
-                                        const TextStyle(color: onFocusColor),
-                                        fillColor: onFocusColor),
-                                  ),
-                                ]),
+                                          ),
+                                          labelText: 'Activity*',
+                                          floatingLabelStyle: const TextStyle(
+                                              color: onFocusColor),
+                                          fillColor: onFocusColor),
+                                    ),
+                                  ]),
                             ),
                             const SizedBox(
                               height: 16,
@@ -2176,9 +2509,9 @@ class JoDetailController extends BaseController {
                               onTap: () async {
                                 if (_formKey.currentState!.validate()) {
                                   if (editActivityMode.value == false) {
-                                    addActivity();
+                                    addActivityV2();
                                   } else {
-                                    editActivity();
+                                    updateActivityDetailV2();
                                   }
                                 }
                               },
@@ -2202,257 +2535,196 @@ class JoDetailController extends BaseController {
                             const SizedBox(
                               height: 16,
                             ),
-                            activityList.value.isNotEmpty
+                            stageListModal.value.isNotEmpty
                                 ? ListView.builder(
+                                    itemCount: stageListModal.value.length,
                                     shrinkWrap: true,
                                     physics: NeverScrollableScrollPhysics(),
-                                    itemCount: activityList.value
-                                        .map((item) {
-                                          return item.transDate;
-                                        })
-                                        .toSet()
-                                        .toList()
-                                        .length,
                                     itemBuilder: (context, index) {
-                                      var activity = activityList.value
-                                          .map((item) {
-                                            return item.transDate;
-                                          })
-                                          .toSet()
-                                          .toList()[index];
+                                      TDJoInspectionActivityStages stage =
+                                          stageListModal.value[index];
                                       return Column(
                                         children: [
                                           Card(
-                                            color: Colors.white,
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 16,
-                                                  right: 16,
-                                                  top: 8,
-                                                  bottom: 16),
-                                              child: Column(
-                                                children: [
-                                                  Row(
+                                              color: Colors.white,
+                                              child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 16,
+                                                          right: 16,
+                                                          top: 8,
+                                                          bottom: 16),
+                                                  child: Column(
                                                     children: [
-                                                      Expanded(
-                                                        flex: 2,
-                                                        child: Text(
-                                                          'Date',
-                                                          style: TextStyle(
-                                                              fontSize: 14,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w700),
-                                                        ),
-                                                      ),
-                                                      VerticalDivider(width: 1),
-                                                      SizedBox(width: 16),
-                                                      Expanded(
-                                                        flex: 2,
-                                                        child: Row(
-                                                          children: [
-                                                            Expanded(
-                                                              flex: 1,
+                                                      Row(
+                                                        children: [
+                                                          const Expanded(
+                                                              flex: 2,
                                                               child: Text(
-                                                                activity ?? '-',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize: 14,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            InkWell(
-                                                                onTap: () {
-                                                                  if (activity !=
-                                                                      null) {
-                                                                    removeActivityByDateConfirm(
-                                                                        activity,
-                                                                        index,
-                                                                        activityStage);
-                                                                  }
-                                                                },
-                                                                child: Icon(
-                                                                  Icons
-                                                                      .delete_forever,
-                                                                  color: Colors
-                                                                      .red,
-                                                                ))
-                                                          ],
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 16),
-                                                  ListView.builder(
-                                                      shrinkWrap: true,
-                                                      physics:
-                                                          NeverScrollableScrollPhysics(),
-                                                      itemCount: activityList
-                                                          .value.length,
-                                                      itemBuilder:
-                                                          (context, indexItem) {
-                                                        if (activityList
-                                                                .value[
-                                                                    indexItem]
-                                                                .transDate ==
-                                                            activity) {
-                                                          return Row(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Expanded(
-                                                                flex: 1,
-                                                                child: Text(
-                                                                  'Activities',
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          14,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w700),
-                                                                ),
-                                                              ),
-                                                              VerticalDivider(
-                                                                  width: 1),
-                                                              SizedBox(
-                                                                  width: 8),
-                                                              Expanded(
-                                                                flex: 1,
-                                                                child: Text(
-                                                                  '${activityList.value[indexItem].startActivityTime ?? '-'} - ${activityList.value[indexItem].endActivityTime ?? '-'}',
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          14,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w700),
-                                                                ),
-                                                              ),
-                                                              VerticalDivider(
-                                                                  width: 1),
-                                                              SizedBox(
-                                                                  width: 8),
-                                                              Expanded(
-                                                                flex: 2,
-                                                                child: Row(
-                                                                  children: [
-                                                                    Expanded(
+                                                                'Date',
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w700),
+                                                              )),
+                                                          const VerticalDivider(
+                                                              width: 1),
+                                                          const SizedBox(
+                                                              width: 16),
+                                                          Expanded(
+                                                              flex: 2,
+                                                              child: Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    flex: 1,
+                                                                    child: Text(
+                                                                      stage.transDate ??
+                                                                          '-',
+                                                                      style: const TextStyle(
+                                                                          fontSize:
+                                                                              14),
+                                                                    ),
+                                                                  ),
+                                                                  InkWell(
+                                                                    onTap: () {
+                                                                      debugPrint('Delete header');
+                                                                      deleteActivityHeaderV2(stage!.transDate!);
+                                                                    },
+                                                                    child: const Icon(
+                                                                        Icons
+                                                                            .delete_forever,
+                                                                        color: Colors
+                                                                            .red),
+                                                                  )
+                                                                ],
+                                                              )),
+                                                        ],
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 16,
+                                                      ),
+                                                      ListView.builder(
+                                                          shrinkWrap: true,
+                                                          physics:
+                                                              NeverScrollableScrollPhysics(),
+                                                          itemCount: stage
+                                                                  .listActivity!
+                                                                  .length ??
+                                                              0,
+                                                          itemBuilder: (context,
+                                                              indexDetail) {
+                                                            TDJoInspectionActivity
+                                                                activity =
+                                                                stage.listActivity![
+                                                                    indexDetail];
+                                                            return Row(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Expanded(
+                                                                      flex: 1,
                                                                       child:
                                                                           Text(
-                                                                        activityList.value[indexItem].activity ??
-                                                                            '-',
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              14,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                    InkWell(
-                                                                        onTap:
-                                                                            () {
-                                                                          toggleEditActivity(
-                                                                              indexItem);
-                                                                        },
-                                                                        child:
-                                                                            Icon(
-                                                                          Icons
-                                                                              .mode_edit_outlined,
-                                                                          color:
-                                                                              primaryColor,
-                                                                        )),
-                                                                    InkWell(
-                                                                        onTap:
-                                                                            () {
-                                                                          removeActivityConfirm(
-                                                                              activity!,
-                                                                              indexItem,
-                                                                              index,
-                                                                              activityStage
-                                                                          );
-                                                                        },
-                                                                        child:
-                                                                            Icon(
-                                                                          Icons
-                                                                              .delete_forever,
-                                                                          color:
-                                                                              Colors.red,
-                                                                        ))
-                                                                  ],
+                                                                        'Activities',
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                14,
+                                                                            fontWeight:
+                                                                                FontWeight.w700),
+                                                                      )),
+                                                                  VerticalDivider(
+                                                                    width: 1,
+                                                                  ),
+                                                                  SizedBox(
+                                                                    width: 8,
+                                                                  ),
+                                                                  Expanded(
+                                                                      flex: 1,
+                                                                      child: Text(
+                                                                          '${activity.startActivityTime} - ${activity.endActivityTime}',
+                                                                          style: TextStyle(
+                                                                              fontSize: 14,
+                                                                              fontWeight: FontWeight.w700))),
+                                                                  VerticalDivider(
+                                                                    width: 1,
+                                                                  ),
+                                                                  SizedBox(
+                                                                    width: 8,
+                                                                  ),
+                                                                  Expanded(
+                                                                      flex: 2,
+                                                                      child:
+                                                                          Row(
+                                                                        children: [
+                                                                          Expanded(
+                                                                            child:
+                                                                                Text(
+                                                                              activity.activity ?? '-',
+                                                                              style: TextStyle(fontSize: 14),
+                                                                            ),
+                                                                          ),
+                                                                          InkWell(
+                                                                            onTap: () {
+                                                                              debugPrint('Edit');
+                                                                              editActivityDetailV2(stage!.transDate!,activity!.activity!);
+                                                                            },
+                                                                            child:
+                                                                                Icon(
+                                                                              Icons.mode_edit_outlined,
+                                                                              color: primaryColor,
+                                                                            ),
+                                                                          ),
+                                                                          InkWell(
+                                                                            onTap: () {
+                                                                              debugPrint('Hapus detail');
+                                                                              deleteActivityDetailV2(stage!.transDate!,activity!.activity!);
+                                                                            },
+                                                                            child: Icon(
+                                                                              Icons.delete_forever,
+                                                                              color: Colors.red,
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ))
+                                                                ]);
+                                                          }),
+                                                      TextFormField(
+                                                        inputFormatters: [
+                                                          LengthLimitingTextInputFormatter(
+                                                              250),
+                                                        ],
+                                                        controller: activityListTextController[index],
+                                                        onChanged: (value) {},
+                                                        cursorColor: onFocusColor,
+                                                        style: const TextStyle(
+                                                            color: onFocusColor
+                                                        ),
+                                                        decoration: InputDecoration(
+                                                                border: OutlineInputBorder(
+                                                                  borderRadius: BorderRadius.circular(12),
                                                                 ),
-                                                              )
-                                                            ],
-                                                          );
-                                                        } else {
-                                                          return const SizedBox();
-                                                        }
-                                                      }),
-                                                  const Divider(),
-                                                  const SizedBox(
-                                                    height: 16,
-                                                  ),
-                                                  index <
-                                                          (activityListTextController
-                                                              .value.length)
-                                                      ? TextFormField(
-                                                          inputFormatters: [
-                                                            LengthLimitingTextInputFormatter(
-                                                                250),
-                                                          ],
-                                                          controller:
-                                                              activityListTextController[
-                                                                  index],
-                                                          onChanged: (value) {
-                                                            debugPrint(value);
-                                                            debugPrint(
-                                                                'text remarks controller : ${activityListTextController[index].text}');
-                                                            editActivityRemarks(
-                                                                activity!,
-                                                                value,
-                                                                index);
-                                                          },
-                                                          cursorColor:
-                                                              onFocusColor,
-                                                          style: const TextStyle(
-                                                              color:
-                                                                  onFocusColor),
-                                                          decoration:
-                                                              InputDecoration(
-                                                                  border:
-                                                                      OutlineInputBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            12),
-                                                                  ),
-                                                                  focusedBorder:
-                                                                      OutlineInputBorder(
-                                                                    borderSide:
-                                                                        const BorderSide(
-                                                                            color:
-                                                                                onFocusColor),
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            12),
-                                                                  ),
-                                                                  labelText:
-                                                                      'Remarks',
-                                                                  floatingLabelStyle:
-                                                                      const TextStyle(
-                                                                          color:
-                                                                              onFocusColor),
-                                                                  fillColor:
-                                                                      onFocusColor),
-                                                        )
-                                                      : const SizedBox(),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
+                                                                focusedBorder: OutlineInputBorder(
+                                                                  borderSide: const BorderSide(
+                                                                      color: onFocusColor),
+                                                                  borderRadius: BorderRadius.circular(12),
+                                                                ),
+                                                                labelText: 'Remarks',
+                                                                floatingLabelStyle:
+                                                                    const TextStyle(color: onFocusColor),
+                                                                fillColor: onFocusColor),
+                                                      )
+                                                    ],
+                                                  )
+                                              )
+                                          )
                                         ],
                                       );
-                                    })
-                                : SizedBox(),
+                                    },
+                                  )
+                                : SizedBox()
                           ],
                         ),
                       ),
@@ -2462,7 +2734,7 @@ class JoDetailController extends BaseController {
                         Expanded(
                           child: ElevatedButton(
                               onPressed: () {
-                                checkActivityList();
+                                //checkActivityList();
                                 cleanActivity();
                                 Get.back();
                               },
@@ -2543,12 +2815,15 @@ class JoDetailController extends BaseController {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             onPressed: () async {
-              var result = await addActivityStages();
-              if (result == 'success') {
+              //var result = await addActivityStages();
+              bool result = await addActivityStageV2();
+
+              if (result) {
                 Get.back();
+                await getJoDailyActivityLocalV2();
                 //openDialog("Success", "Activity Stage ${activityStage-1} berhasil ditambahkan");
                 if (activityStage == 1) {
-                  changeStatusJo();
+                 // changeStatusJo();
                 }
               } else {
                 Get.back();
@@ -2594,7 +2869,6 @@ class JoDetailController extends BaseController {
     );
   }
 
-
   Future<String> postUpdateActivity(data) async {
     var response = await repository.updateActivityInspection(data, id) ??
         ResponseJoInsertActivity();
@@ -2606,43 +2880,42 @@ class JoDetailController extends BaseController {
     }
   }
 
-  Future<String> postUpdateActivityStageLocal(int id, int idJo, String remarks, String code, int stage, String transDate, int isUpload) async {
-    try{
+  Future<String> postUpdateActivityStageLocal(int id, int idJo, String remarks,
+      String code, int stage, String transDate, int isUpload) async {
+    try {
       var time = DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now());
       //await SqlHelper.updateActivityStage(id, idJo, remarks, userData.value!.id!.toInt(), time, code, stage, transDate, isUpload);
       return 'success';
-    } catch(e) {
+    } catch (e) {
       return 'failed';
     }
   }
 
-  Future<String> postUpdateActivityLocal(int id,int idActStage,String startTime,String endTime,String activity,String code) async {
-    try{
+  Future<String> postUpdateActivityLocal(int id, int idActStage,
+      String startTime, String endTime, String activity, String code) async {
+    try {
       var time = DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now());
-      await SqlHelper.updateActivity(id, idActStage, startTime, endTime, activity, code, userData.value!.id!.toInt(), time);
+      await SqlHelper.updateActivity(id, idActStage, startTime, endTime,
+          activity, code, userData.value!.id!.toInt(), time);
       return 'success';
-    } catch(e) {
+    } catch (e) {
       return 'failed';
     }
   }
 
   void drawerDailyActivityEdit(int stage) {
-    activityList.value = activityListStages.value
-        .where((item) => item.mStatusinspectionstagesId == activityStage)
+    List<TDJoInspectionActivityStages> filteredStages = stageList.value
+        .where((itemStage) => itemStage.mStatusinspectionstagesId == stage)
         .toList();
-    var activityEditTemp = activityList.value
-        .map((item) {
-          return item.transDate;
-        })
-        .toSet()
-        .toList();
-    activityEditTemp.forEach((item) {
-      var text = activityList.value.lastWhere((act) => act.transDate == item);
-      activityListTextController.value
-          .add(TextEditingController(text: text.remarks));
+    activityListTextController.value = [];
+    filteredStages.forEach((item){
+        activityListTextController.value.add(TextEditingController(text: item.remarks));
     });
+    stageListModal.value = filteredStages;
+
     update();
-    debugPrint('data yang mau di edit: ${jsonEncode(activityList.value)}');
+    debugPrint('data yang mau di edit: ${filteredStages}');
+    debugPrint('data yang mau di edit: ${jsonEncode(stageListModal.value)}');
     Get.bottomSheet(
         GetBuilder(
           init: JoDetailController(),
@@ -2686,153 +2959,168 @@ class JoDetailController extends BaseController {
                             Form(
                               key: _formKey,
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  TextFormField(
-                                    showCursor: true,
-                                    readOnly: true,
-                                    controller: activityDate,
-                                    cursorColor: onFocusColor,
-                                    onTap: () {
-                                      selectDate(Get.context!);
-                                    },
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Field wajib diisi!';
-                                      }
-                                      return null;
-                                    },
-                                    style: const TextStyle(color: onFocusColor),
-                                    decoration: InputDecoration(
-                                        suffixIcon: IconButton(
-                                            onPressed: () {
-                                              selectDate(Get.context!);
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    TextFormField(
+                                      showCursor: true,
+                                      readOnly: true,
+                                      controller: activityDate,
+                                      enabled: enabledDate.value,
+                                      cursorColor: onFocusColor,
+                                      onTap: () {
+                                        selectDate(Get.context!);
+                                      },
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Field wajib diisi!';
+                                        }
+                                        return null;
+                                      },
+                                      style:
+                                          const TextStyle(color: onFocusColor),
+                                      decoration: InputDecoration(
+                                          suffixIcon: IconButton(
+                                              onPressed: () {
+                                                selectDate(Get.context!);
+                                              },
+                                              icon: const Icon(Icons
+                                                  .calendar_today_rounded)),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: const BorderSide(
+                                                color: onFocusColor),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          labelText: 'Date*',
+                                          floatingLabelStyle: const TextStyle(
+                                              color: onFocusColor),
+                                          fillColor: onFocusColor),
+                                    ),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    Text('Detail Activities'),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextFormField(
+                                            controller: activityStartTime,
+                                            cursorColor: onFocusColor,
+                                            onTap: () async {
+                                              activityStartTime.text =
+                                                  await selectTime(
+                                                      Get.context!);
                                             },
-                                            icon: const Icon(
-                                                Icons.calendar_today_rounded)),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Field wajib diisi!';
+                                              }
+                                              return null;
+                                            },
+                                            style: const TextStyle(
+                                                color: onFocusColor),
+                                            decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: const BorderSide(
+                                                      color: onFocusColor),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                labelText: 'Start Time*',
+                                                floatingLabelStyle:
+                                                    const TextStyle(
+                                                        color: onFocusColor),
+                                                fillColor: onFocusColor),
+                                          ),
                                         ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide:
-                                          const BorderSide(color: onFocusColor),
-                                          borderRadius: BorderRadius.circular(12),
+                                        const SizedBox(
+                                          width: 8,
                                         ),
-                                        labelText: 'Date*',
-                                        floatingLabelStyle:
-                                        const TextStyle(color: onFocusColor),
-                                        fillColor: onFocusColor),
-                                  ),
-                                  const SizedBox(
-                                    height: 16,
-                                  ),
-                                  Text('Detail Activities'),
-                                  const SizedBox(
-                                    height: 16,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: TextFormField(
-                                          controller: activityStartTime,
-                                          cursorColor: onFocusColor,
-                                          onTap: () async {
-                                            activityStartTime.text =
-                                            await selectTime(Get.context!);
-                                          },
-                                          validator: (value) {
-                                            if (value == null || value.isEmpty) {
-                                              return 'Field wajib diisi!';
-                                            }
-                                            return null;
-                                          },
-                                          style: const TextStyle(color: onFocusColor),
-                                          decoration: InputDecoration(
-                                              border: OutlineInputBorder(
-                                                borderRadius:
+                                        Expanded(
+                                          child: TextFormField(
+                                            controller: activityEndTime,
+                                            cursorColor: onFocusColor,
+                                            onTap: () async {
+                                              activityEndTime.text =
+                                                  await selectTime(Get.context!);
+                                            },
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Field wajib diisi!';
+                                              }
+                                              return null;
+                                            },
+                                            style: const TextStyle(
+                                                color: onFocusColor),
+                                            decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: const BorderSide(
+                                                      color: onFocusColor),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                labelText: 'End Time*',
+                                                floatingLabelStyle:
+                                                    const TextStyle(
+                                                        color: onFocusColor),
+                                                fillColor: onFocusColor),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    TextFormField(
+                                      inputFormatters: [
+                                        LengthLimitingTextInputFormatter(150),
+                                      ],
+                                      controller: activityText,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Field wajib diisi!';
+                                        }
+                                        return null;
+                                      },
+                                      cursorColor: onFocusColor,
+                                      style:
+                                          const TextStyle(color: onFocusColor),
+                                      decoration: InputDecoration(
+                                          border: OutlineInputBorder(
+                                            borderRadius:
                                                 BorderRadius.circular(12),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: const BorderSide(
-                                                    color: onFocusColor),
-                                                borderRadius:
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: const BorderSide(
+                                                color: onFocusColor),
+                                            borderRadius:
                                                 BorderRadius.circular(12),
-                                              ),
-                                              labelText: 'Start Time*',
-                                              floatingLabelStyle: const TextStyle(
-                                                  color: onFocusColor),
-                                              fillColor: onFocusColor),
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        width: 8,
-                                      ),
-                                      Expanded(
-                                        child: TextFormField(
-                                          controller: activityEndTime,
-                                          cursorColor: onFocusColor,
-                                          onTap: () async {
-                                            activityEndTime.text =
-                                            await selectTime(Get.context!);
-                                          },
-                                          validator: (value) {
-                                            if (value == null || value.isEmpty) {
-                                              return 'Field wajib diisi!';
-                                            }
-                                            return null;
-                                          },
-                                          style: const TextStyle(color: onFocusColor),
-                                          decoration: InputDecoration(
-                                              border: OutlineInputBorder(
-                                                borderRadius:
-                                                BorderRadius.circular(12),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: const BorderSide(
-                                                    color: onFocusColor),
-                                                borderRadius:
-                                                BorderRadius.circular(12),
-                                              ),
-                                              labelText: 'End Time*',
-                                              floatingLabelStyle: const TextStyle(
-                                                  color: onFocusColor),
-                                              fillColor: onFocusColor),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 16,
-                                  ),
-                                  TextFormField(
-                                    inputFormatters: [
-                                      LengthLimitingTextInputFormatter(150),
-                                    ],
-                                    controller: activityText,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Field wajib diisi!';
-                                      }
-                                      return null;
-                                    },
-                                    cursorColor: onFocusColor,
-                                    style: const TextStyle(color: onFocusColor),
-                                    decoration: InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide:
-                                          const BorderSide(color: onFocusColor),
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        labelText: 'Activity*',
-                                        floatingLabelStyle:
-                                        const TextStyle(color: onFocusColor),
-                                        fillColor: onFocusColor),
-                                  ),
-                                ]
-                              ),
+                                          ),
+                                          labelText: 'Activity*',
+                                          floatingLabelStyle: const TextStyle(
+                                              color: onFocusColor),
+                                          fillColor: onFocusColor),
+                                    ),
+                                  ]),
                             ),
                             const SizedBox(
                               height: 16,
@@ -2841,9 +3129,9 @@ class JoDetailController extends BaseController {
                               onTap: () {
                                 if (_formKey.currentState!.validate()) {
                                   if (editActivityMode.value == false) {
-                                    addActivity();
+                                    addActivityV2();
                                   } else {
-                                    editActivity();
+                                    updateActivityDetailV2();
                                   }
                                 }
                               },
@@ -2867,263 +3155,196 @@ class JoDetailController extends BaseController {
                             const SizedBox(
                               height: 16,
                             ),
-                            activityList.value.isNotEmpty
+                            stageListModal.value.isNotEmpty
                                 ? ListView.builder(
-                                    shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    itemCount: activityList.value
-                                        .map((item) {
-                                          return item.transDate;
-                                        })
-                                        .toSet()
-                                        .toList()
-                                        .length,
-                                    itemBuilder: (context, index) {
-                                      var activity = activityList.value
-                                          .map((item) {
-                                            return item.transDate;
-                                          })
-                                          .toSet()
-                                          .toList()[index];
-                                      return Column(
-                                        children: [
-                                          Card(
-                                            color: Colors.white,
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 16,
-                                                  right: 16,
-                                                  top: 8,
-                                                  bottom: 16),
-                                              child: Column(
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Expanded(
+                              itemCount: stageListModal.value.length,
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                TDJoInspectionActivityStages stage =
+                                stageListModal.value[index];
+                                return Column(
+                                  children: [
+                                    Card(
+                                        color: Colors.white,
+                                        child: Padding(
+                                            padding:
+                                            const EdgeInsets.only(
+                                                left: 16,
+                                                right: 16,
+                                                top: 8,
+                                                bottom: 16),
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    const Expanded(
                                                         flex: 2,
                                                         child: Text(
                                                           'Date',
                                                           style: TextStyle(
-                                                              fontSize: 14,
+                                                              fontSize:
+                                                              14,
                                                               fontWeight:
-                                                                  FontWeight
-                                                                      .w700),
-                                                        ),
-                                                      ),
-                                                      VerticalDivider(width: 1),
-                                                      SizedBox(width: 16),
-                                                      Expanded(
+                                                              FontWeight
+                                                                  .w700),
+                                                        )),
+                                                    const VerticalDivider(
+                                                        width: 1),
+                                                    const SizedBox(
+                                                        width: 16),
+                                                    Expanded(
                                                         flex: 2,
                                                         child: Row(
                                                           children: [
                                                             Expanded(
                                                               flex: 1,
                                                               child: Text(
-                                                                activity ?? '-',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize: 14,
-                                                                ),
+                                                                stage.transDate ??
+                                                                    '-',
+                                                                style: const TextStyle(
+                                                                    fontSize:
+                                                                    14),
                                                               ),
                                                             ),
                                                             InkWell(
-                                                                onTap: () {
-                                                                  if (activity !=
-                                                                      null) {
-                                                                    removeActivityByDateConfirmLocal(
-                                                                        activity,
-                                                                        index,
-                                                                        activityStage,
-                                                                        activityList.value[index].stageId?.toInt() ?? 0,
-                                                                        activityList.value[index].stageCode ?? ''
-                                                                    );
-                                                                  }
-                                                                },
-                                                                child: Icon(
+                                                              onTap: () {
+                                                                debugPrint('Delete header');
+                                                                deleteActivityHeaderV2(stage!.transDate!);
+                                                              },
+                                                              child: const Icon(
                                                                   Icons
                                                                       .delete_forever,
                                                                   color: Colors
-                                                                      .red,
-                                                                ))
+                                                                      .red),
+                                                            )
                                                           ],
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 16),
-                                                  ListView.builder(
-                                                      shrinkWrap: true,
-                                                      physics:
-                                                          NeverScrollableScrollPhysics(),
-                                                      itemCount: activityList
-                                                          .value.length,
-                                                      itemBuilder:
-                                                          (context, indexItem) {
-                                                        if (activityList
-                                                                .value[
-                                                                    indexItem]
-                                                                .transDate ==
-                                                            activity) {
-                                                          return Row(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Expanded(
+                                                        )),
+                                                  ],
+                                                ),
+                                                const SizedBox(
+                                                  height: 16,
+                                                ),
+                                                ListView.builder(
+                                                    shrinkWrap: true,
+                                                    physics:
+                                                    NeverScrollableScrollPhysics(),
+                                                    itemCount: stage
+                                                        .listActivity!
+                                                        .length ??
+                                                        0,
+                                                    itemBuilder: (context,
+                                                        indexDetail) {
+                                                      TDJoInspectionActivity
+                                                      activity =
+                                                      stage.listActivity![
+                                                      indexDetail];
+                                                      return Row(
+                                                          crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                          children: [
+                                                            Expanded(
                                                                 flex: 1,
-                                                                child: Text(
+                                                                child:
+                                                                Text(
                                                                   'Activities',
                                                                   style: TextStyle(
                                                                       fontSize:
-                                                                          14,
+                                                                      14,
                                                                       fontWeight:
-                                                                          FontWeight
-                                                                              .w700),
-                                                                ),
-                                                              ),
-                                                              VerticalDivider(
-                                                                  width: 1),
-                                                              SizedBox(
-                                                                  width: 8),
-                                                              Expanded(
+                                                                      FontWeight.w700),
+                                                                )),
+                                                            VerticalDivider(
+                                                              width: 1,
+                                                            ),
+                                                            SizedBox(
+                                                              width: 8,
+                                                            ),
+                                                            Expanded(
                                                                 flex: 1,
                                                                 child: Text(
-                                                                  '${activityList.value[indexItem].startActivityTime ?? '-'} - ${activityList.value[indexItem].endActivityTime ?? '-'}',
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          14,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w700),
-                                                                ),
-                                                              ),
-                                                              VerticalDivider(
-                                                                  width: 1),
-                                                              SizedBox(
-                                                                  width: 8),
-                                                              Expanded(
+                                                                    '${Helper.formatToHourMinute(activity!.startActivityTime!)} - ${Helper.formatToHourMinute(activity!.endActivityTime!)}',
+                                                                    style: TextStyle(
+                                                                        fontSize: 14,
+                                                                        fontWeight: FontWeight.w700))),
+                                                            VerticalDivider(
+                                                              width: 1,
+                                                            ),
+                                                            SizedBox(
+                                                              width: 8,
+                                                            ),
+                                                            Expanded(
                                                                 flex: 2,
-                                                                child: Row(
+                                                                child:
+                                                                Row(
                                                                   children: [
                                                                     Expanded(
                                                                       child:
-                                                                          Text(
-                                                                        activityList.value[indexItem].activity ??
-                                                                            '-',
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              14,
-                                                                        ),
+                                                                      Text(
+                                                                        activity.activity ?? '-',
+                                                                        style: TextStyle(fontSize: 14),
                                                                       ),
                                                                     ),
                                                                     InkWell(
-                                                                        onTap:
-                                                                            () {
-                                                                          toggleEditActivity(
-                                                                              indexItem);
-                                                                        },
-                                                                        child:
-                                                                            Icon(
-                                                                          Icons
-                                                                              .mode_edit_outlined,
-                                                                          color:
-                                                                              primaryColor,
-                                                                        )),
+                                                                      onTap: () {
+                                                                        debugPrint('Edit');
+                                                                        editActivityDetailV2(stage!.transDate!,activity!.activity!);
+                                                                      },
+                                                                      child:
+                                                                      Icon(
+                                                                        Icons.mode_edit_outlined,
+                                                                        color: primaryColor,
+                                                                      ),
+                                                                    ),
                                                                     InkWell(
-                                                                        onTap:
-                                                                            () {
-                                                                          removeActivityConfirmLocal(
-                                                                              activity!,
-                                                                              indexItem,
-                                                                              index,
-                                                                              activityStage,
-                                                                              activityList.value[indexItem].id?.toInt() ?? 0,
-                                                                              activityList.value[indexItem].code ?? '',
-                                                                              activityList.value[indexItem].stageId?.toInt() ?? 0
-                                                                          );
-                                                                        },
-                                                                        child:
-                                                                            Icon(
-                                                                          Icons
-                                                                              .delete_forever,
-                                                                          color:
-                                                                              Colors.red,
-                                                                        ))
+                                                                      onTap: () {
+                                                                        debugPrint('Hapus detail');
+                                                                        deleteActivityDetailV2(stage!.transDate!,activity!.activity!);
+                                                                      },
+                                                                      child: Icon(
+                                                                        Icons.delete_forever,
+                                                                        color: Colors.red,
+                                                                      ),
+                                                                    ),
                                                                   ],
-                                                                ),
-                                                              )
-                                                            ],
-                                                          );
-                                                        } else {
-                                                          return const SizedBox();
-                                                        }
-                                                      }),
-                                                  const Divider(),
-                                                  const SizedBox(
-                                                    height: 16,
+                                                                ))
+                                                          ]);
+                                                    }),
+                                                TextFormField(
+                                                  inputFormatters: [
+                                                    LengthLimitingTextInputFormatter(
+                                                        250),
+                                                  ],
+                                                  controller: activityListTextController[index],
+                                                  onChanged: (value) {},
+                                                  cursorColor: onFocusColor,
+                                                  style: const TextStyle(
+                                                      color: onFocusColor
                                                   ),
-                                                  index <
-                                                          (activityListTextController
-                                                              .value.length)
-                                                      ? TextFormField(
-                                                          inputFormatters: [
-                                                            LengthLimitingTextInputFormatter(
-                                                                250),
-                                                          ],
-                                                          controller:
-                                                              activityListTextController[
-                                                                  index],
-                                                          onChanged: (value) {
-                                                            debugPrint(value);
-                                                            debugPrint(
-                                                                'text remarks controller : ${activityListTextController[index].text}');
-                                                            editActivityRemarks(
-                                                                activity!,
-                                                                value,
-                                                                index);
-                                                          },
-                                                          cursorColor:
-                                                              onFocusColor,
-                                                          style: const TextStyle(
-                                                              color:
-                                                                  onFocusColor),
-                                                          decoration:
-                                                              InputDecoration(
-                                                                  border:
-                                                                      OutlineInputBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            12),
-                                                                  ),
-                                                                  focusedBorder:
-                                                                      OutlineInputBorder(
-                                                                    borderSide:
-                                                                        const BorderSide(
-                                                                            color:
-                                                                                onFocusColor),
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            12),
-                                                                  ),
-                                                                  labelText:
-                                                                      'Remarks',
-                                                                  floatingLabelStyle:
-                                                                      const TextStyle(
-                                                                          color:
-                                                                              onFocusColor),
-                                                                  fillColor:
-                                                                      onFocusColor),
-                                                        )
-                                                      : const SizedBox(),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    })
-                                : SizedBox(),
+                                                  decoration: InputDecoration(
+                                                      border: OutlineInputBorder(
+                                                        borderRadius: BorderRadius.circular(12),
+                                                      ),
+                                                      focusedBorder: OutlineInputBorder(
+                                                        borderSide: const BorderSide(
+                                                            color: onFocusColor),
+                                                        borderRadius: BorderRadius.circular(12),
+                                                      ),
+                                                      labelText: 'Remarks',
+                                                      floatingLabelStyle:
+                                                      const TextStyle(color: onFocusColor),
+                                                      fillColor: onFocusColor),
+                                                )
+                                              ],
+                                            )
+                                        )
+                                    )
+                                  ],
+                                );
+                              },
+                            )
+                                : SizedBox()
                           ],
                         ),
                       ),
@@ -3214,14 +3435,14 @@ class JoDetailController extends BaseController {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             onPressed: () async {
-              var result = await editActivityStages();
-              if (result == 'success') {
+              bool result = await editActivityStagesV2();
+              if (result) {
                 Get.back();
-                //openDialog("Success", "Activity Stage ${activityStage-1} berhasil ditambahkan");
+                openDialog("Success", "Activity Stage ${activityStage-1} berhasil ditambahkan");
+                await getJoDailyActivityLocalV2();
               } else {
                 Get.back();
-                openDialog("Failed",
-                    "Activity Stage $activityStage masih kosong atau belum diinput");
+                openDialog("Failed", "Activity Stage $activityStage masih kosong atau belum diinput");
               }
             },
           ),
@@ -3288,7 +3509,8 @@ class JoDetailController extends BaseController {
     );
   }
 
-  void removeActivityConfirmLocal(String date, int indexitem, int index, int stage, int id, String code, int stageId) {
+  void removeActivityConfirmLocal(String date, int indexitem, int index,
+      int stage, int id, String code, int stageId) {
     Get.dialog(
       AlertDialog(
         title: Text(
@@ -3308,7 +3530,8 @@ class JoDetailController extends BaseController {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             onPressed: () async {
-              await removeActivityLocal(indexitem, index, stage, id, code, stageId);
+              await removeActivityLocal(
+                  indexitem, index, stage, id, code, stageId);
               Get.back();
             },
           ),
@@ -3317,7 +3540,8 @@ class JoDetailController extends BaseController {
     );
   }
 
-  void removeActivityByDateConfirmLocal(String date, int indexDate, int stage, int stageId, String code) {
+  void removeActivityByDateConfirmLocal(
+      String date, int indexDate, int stage, int stageId, String code) {
     Get.dialog(
       AlertDialog(
         title: Text(
@@ -3337,7 +3561,8 @@ class JoDetailController extends BaseController {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             onPressed: () async {
-              await removeActivityByDateLocal(date, indexDate, stage, stageId, code);
+              await removeActivityByDateLocal(
+                  date, indexDate, stage, stageId, code);
               Get.back();
             },
           ),
@@ -3346,7 +3571,7 @@ class JoDetailController extends BaseController {
     );
   }
 
-  void cleanActivity(){
+  void cleanActivity() {
     activityList.value = [];
     activityListTextController.value = [];
     editActivityMode.value = false;
@@ -3354,6 +3579,7 @@ class JoDetailController extends BaseController {
     activityStartTime.text = '';
     activityEndTime.text = '';
     activityText.text = '';
+    stageListModal.value = [];
   }
 
   // Activity 5 Inspection Functions
@@ -3507,7 +3733,9 @@ class JoDetailController extends BaseController {
   }
 
   void drawerDailyActivity5() {
-    qtyController.text = dataJoDetail.value.detail!.qty.toString() != null ? dataJoDetail.value.detail!.qty.toString() : '0';
+    qtyController.text = dataJoDetail.value.detail!.qty.toString() != null
+        ? dataJoDetail.value.detail!.qty.toString()
+        : '0';
     uomController.text = dataJoDetail.value.detail!.uomName ?? '';
     vesselController.text = dataJoDetail.value.detail!.vessel ?? '';
     if (activity5TranshipmentList.value.isEmpty) {
@@ -3584,8 +3812,8 @@ class JoDetailController extends BaseController {
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderSide:
-                                            const BorderSide(color: onFocusColor),
+                                        borderSide: const BorderSide(
+                                            color: onFocusColor),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       labelText: 'Actual Qty*',
@@ -3605,8 +3833,8 @@ class JoDetailController extends BaseController {
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderSide:
-                                            const BorderSide(color: onFocusColor),
+                                        borderSide: const BorderSide(
+                                            color: onFocusColor),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       labelText: 'UOM',
@@ -3626,8 +3854,8 @@ class JoDetailController extends BaseController {
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderSide:
-                                            const BorderSide(color: onFocusColor),
+                                        borderSide: const BorderSide(
+                                            color: onFocusColor),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       labelText: 'Vessel',
@@ -3651,8 +3879,8 @@ class JoDetailController extends BaseController {
                                               return Column(
                                                 children: [
                                                   TextFormField(
-                                                    controller:
-                                                        bargesController.value[i],
+                                                    controller: bargesController
+                                                        .value[i],
                                                     cursorColor: onFocusColor,
                                                     onChanged: (value) {
                                                       editBargeForm(i);
@@ -3682,7 +3910,8 @@ class JoDetailController extends BaseController {
                                                             const TextStyle(
                                                                 color:
                                                                     onFocusColor),
-                                                        fillColor: onFocusColor),
+                                                        fillColor:
+                                                            onFocusColor),
                                                   ),
                                                   const SizedBox(
                                                     height: 16,
@@ -3706,7 +3935,8 @@ class JoDetailController extends BaseController {
                                               backgroundColor: Colors.green,
                                               shape: RoundedRectangleBorder(
                                                   borderRadius:
-                                                      BorderRadius.circular(12))),
+                                                      BorderRadius.circular(
+                                                          12))),
                                           child: SizedBox(
                                               width: double.infinity,
                                               child: Center(
@@ -3714,7 +3944,8 @@ class JoDetailController extends BaseController {
                                                 'Add Barge',
                                                 style: TextStyle(
                                                     color: Colors.white,
-                                                    fontWeight: FontWeight.bold),
+                                                    fontWeight:
+                                                        FontWeight.bold),
                                               )))),
                                     ),
                                     const SizedBox(
@@ -3728,13 +3959,16 @@ class JoDetailController extends BaseController {
                                                   removeBargeForm();
                                                 },
                                                 style: ElevatedButton.styleFrom(
-                                                    padding: EdgeInsets.symmetric(
-                                                        vertical: 12),
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 12),
                                                     backgroundColor: Colors.red,
-                                                    shape: RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                                12))),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        12))),
                                                 child: SizedBox(
                                                     width: double.infinity,
                                                     child: Center(
@@ -3775,12 +4009,14 @@ class JoDetailController extends BaseController {
                                                   'KOS Transhipment Form ${index + 1}',
                                                   style: TextStyle(
                                                       fontSize: 16,
-                                                      fontWeight: FontWeight.w700,
+                                                      fontWeight:
+                                                          FontWeight.w700,
                                                       color: primaryColor),
                                                 ),
                                               ),
                                               index ==
-                                                      (activity5FormCount.value -
+                                                      (activity5FormCount
+                                                              .value -
                                                           1)
                                                   ? Row(
                                                       children: [
@@ -3804,19 +4040,21 @@ class JoDetailController extends BaseController {
                                                             child: Center(
                                                               child: Icon(
                                                                 Icons.add,
-                                                                color:
-                                                                    Colors.white,
+                                                                color: Colors
+                                                                    .white,
                                                               ),
                                                             ),
                                                           ),
                                                         ),
-                                                        activity5FormCount.value >
+                                                        activity5FormCount
+                                                                    .value >
                                                                 1
                                                             ? InkWell(
                                                                 onTap: () {
                                                                   removeActivity5Form();
                                                                 },
-                                                                child: Container(
+                                                                child:
+                                                                    Container(
                                                                   margin: EdgeInsets
                                                                       .only(
                                                                           right:
@@ -3848,7 +4086,8 @@ class JoDetailController extends BaseController {
                                           const SizedBox(
                                             height: 16,
                                           ),
-                                          jettyListTextController.value.length > 0
+                                          jettyListTextController.value.length >
+                                                  0
                                               ? TextFormField(
                                                   controller:
                                                       jettyListTextController
@@ -3861,10 +4100,11 @@ class JoDetailController extends BaseController {
                                                   style: const TextStyle(
                                                       color: onFocusColor),
                                                   decoration: InputDecoration(
-                                                      border: OutlineInputBorder(
+                                                      border:
+                                                          OutlineInputBorder(
                                                         borderRadius:
-                                                            BorderRadius.circular(
-                                                                12),
+                                                            BorderRadius
+                                                                .circular(12),
                                                       ),
                                                       focusedBorder:
                                                           OutlineInputBorder(
@@ -3873,8 +4113,8 @@ class JoDetailController extends BaseController {
                                                                 color:
                                                                     onFocusColor),
                                                         borderRadius:
-                                                            BorderRadius.circular(
-                                                                12),
+                                                            BorderRadius
+                                                                .circular(12),
                                                       ),
                                                       labelText: 'Jetty',
                                                       floatingLabelStyle:
@@ -3893,7 +4133,8 @@ class JoDetailController extends BaseController {
                                                     .value[index],
                                             cursorColor: onFocusColor,
                                             onTap: () {
-                                              selectInitialDate5(context, index);
+                                              selectInitialDate5(
+                                                  context, index);
                                             },
                                             onChanged: (value) {
                                               editActivity5Transhipment(index);
@@ -3912,8 +4153,9 @@ class JoDetailController extends BaseController {
                                                     BorderRadius.circular(12),
                                               ),
                                               labelText: 'Initial Date',
-                                              floatingLabelStyle: const TextStyle(
-                                                  color: onFocusColor),
+                                              floatingLabelStyle:
+                                                  const TextStyle(
+                                                      color: onFocusColor),
                                               fillColor: onFocusColor,
                                               suffixIcon: IconButton(
                                                   onPressed: () {
@@ -3952,8 +4194,9 @@ class JoDetailController extends BaseController {
                                                     BorderRadius.circular(12),
                                               ),
                                               labelText: 'Final Date',
-                                              floatingLabelStyle: const TextStyle(
-                                                  color: onFocusColor),
+                                              floatingLabelStyle:
+                                                  const TextStyle(
+                                                      color: onFocusColor),
                                               fillColor: onFocusColor,
                                               suffixIcon: IconButton(
                                                   onPressed: () {
@@ -3990,7 +4233,8 @@ class JoDetailController extends BaseController {
                                                   borderRadius:
                                                       BorderRadius.circular(12),
                                                 ),
-                                                focusedBorder: OutlineInputBorder(
+                                                focusedBorder:
+                                                    OutlineInputBorder(
                                                   borderSide: const BorderSide(
                                                       color: onFocusColor),
                                                   borderRadius:
@@ -4016,7 +4260,8 @@ class JoDetailController extends BaseController {
                                                   borderRadius:
                                                       BorderRadius.circular(12),
                                                 ),
-                                                focusedBorder: OutlineInputBorder(
+                                                focusedBorder:
+                                                    OutlineInputBorder(
                                                   borderSide: const BorderSide(
                                                       color: onFocusColor),
                                                   borderRadius:
@@ -4171,6 +4416,8 @@ class JoDetailController extends BaseController {
             onPressed: () async {
               activityStage++;
               activitySubmitted.value = false;
+              stageListModal.value = [];
+              activityListTextController.value = [];
               update();
               Get.back();
             },
@@ -4323,8 +4570,8 @@ class JoDetailController extends BaseController {
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderSide:
-                                            const BorderSide(color: onFocusColor),
+                                        borderSide: const BorderSide(
+                                            color: onFocusColor),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       labelText: 'Actual Qty*',
@@ -4344,8 +4591,8 @@ class JoDetailController extends BaseController {
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderSide:
-                                            const BorderSide(color: onFocusColor),
+                                        borderSide: const BorderSide(
+                                            color: onFocusColor),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       labelText: 'UOM',
@@ -4365,8 +4612,8 @@ class JoDetailController extends BaseController {
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderSide:
-                                            const BorderSide(color: onFocusColor),
+                                        borderSide: const BorderSide(
+                                            color: onFocusColor),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       labelText: 'Vessel',
@@ -4390,8 +4637,8 @@ class JoDetailController extends BaseController {
                                               return Column(
                                                 children: [
                                                   TextFormField(
-                                                    controller:
-                                                        bargesController.value[i],
+                                                    controller: bargesController
+                                                        .value[i],
                                                     cursorColor: onFocusColor,
                                                     onChanged: (value) {
                                                       editBargeForm(i);
@@ -4421,7 +4668,8 @@ class JoDetailController extends BaseController {
                                                             const TextStyle(
                                                                 color:
                                                                     onFocusColor),
-                                                        fillColor: onFocusColor),
+                                                        fillColor:
+                                                            onFocusColor),
                                                   ),
                                                   const SizedBox(
                                                     height: 16,
@@ -4445,7 +4693,8 @@ class JoDetailController extends BaseController {
                                               backgroundColor: Colors.green,
                                               shape: RoundedRectangleBorder(
                                                   borderRadius:
-                                                      BorderRadius.circular(12))),
+                                                      BorderRadius.circular(
+                                                          12))),
                                           child: SizedBox(
                                               width: double.infinity,
                                               child: Center(
@@ -4453,7 +4702,8 @@ class JoDetailController extends BaseController {
                                                 'Add Barge',
                                                 style: TextStyle(
                                                     color: Colors.white,
-                                                    fontWeight: FontWeight.bold),
+                                                    fontWeight:
+                                                        FontWeight.bold),
                                               )))),
                                     ),
                                     const SizedBox(
@@ -4467,13 +4717,16 @@ class JoDetailController extends BaseController {
                                                   removeBargeForm();
                                                 },
                                                 style: ElevatedButton.styleFrom(
-                                                    padding: EdgeInsets.symmetric(
-                                                        vertical: 12),
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 12),
                                                     backgroundColor: Colors.red,
-                                                    shape: RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                                12))),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        12))),
                                                 child: SizedBox(
                                                     width: double.infinity,
                                                     child: Center(
@@ -4514,12 +4767,14 @@ class JoDetailController extends BaseController {
                                                   'KOS Transhipment Form ${index + 1}',
                                                   style: TextStyle(
                                                       fontSize: 16,
-                                                      fontWeight: FontWeight.w700,
+                                                      fontWeight:
+                                                          FontWeight.w700,
                                                       color: primaryColor),
                                                 ),
                                               ),
                                               index ==
-                                                      (activity5FormCount.value -
+                                                      (activity5FormCount
+                                                              .value -
                                                           1)
                                                   ? Row(
                                                       children: [
@@ -4543,19 +4798,21 @@ class JoDetailController extends BaseController {
                                                             child: Center(
                                                               child: Icon(
                                                                 Icons.add,
-                                                                color:
-                                                                    Colors.white,
+                                                                color: Colors
+                                                                    .white,
                                                               ),
                                                             ),
                                                           ),
                                                         ),
-                                                        activity5FormCount.value >
+                                                        activity5FormCount
+                                                                    .value >
                                                                 1
                                                             ? InkWell(
                                                                 onTap: () {
                                                                   removeActivity5Form();
                                                                 },
-                                                                child: Container(
+                                                                child:
+                                                                    Container(
                                                                   margin: EdgeInsets
                                                                       .only(
                                                                           right:
@@ -4587,7 +4844,8 @@ class JoDetailController extends BaseController {
                                           const SizedBox(
                                             height: 16,
                                           ),
-                                          jettyListTextController.value.length > 0
+                                          jettyListTextController.value.length >
+                                                  0
                                               ? TextFormField(
                                                   controller:
                                                       jettyListTextController
@@ -4600,10 +4858,11 @@ class JoDetailController extends BaseController {
                                                   style: const TextStyle(
                                                       color: onFocusColor),
                                                   decoration: InputDecoration(
-                                                      border: OutlineInputBorder(
+                                                      border:
+                                                          OutlineInputBorder(
                                                         borderRadius:
-                                                            BorderRadius.circular(
-                                                                12),
+                                                            BorderRadius
+                                                                .circular(12),
                                                       ),
                                                       focusedBorder:
                                                           OutlineInputBorder(
@@ -4612,8 +4871,8 @@ class JoDetailController extends BaseController {
                                                                 color:
                                                                     onFocusColor),
                                                         borderRadius:
-                                                            BorderRadius.circular(
-                                                                12),
+                                                            BorderRadius
+                                                                .circular(12),
                                                       ),
                                                       labelText: 'Jetty',
                                                       floatingLabelStyle:
@@ -4632,7 +4891,8 @@ class JoDetailController extends BaseController {
                                                     .value[index],
                                             cursorColor: onFocusColor,
                                             onTap: () {
-                                              selectInitialDate5(context, index);
+                                              selectInitialDate5(
+                                                  context, index);
                                             },
                                             onChanged: (value) {
                                               editActivity5Transhipment(index);
@@ -4644,7 +4904,8 @@ class JoDetailController extends BaseController {
                                                   borderRadius:
                                                       BorderRadius.circular(12),
                                                 ),
-                                                focusedBorder: OutlineInputBorder(
+                                                focusedBorder:
+                                                    OutlineInputBorder(
                                                   borderSide: const BorderSide(
                                                       color: onFocusColor),
                                                   borderRadius:
@@ -4677,7 +4938,8 @@ class JoDetailController extends BaseController {
                                                   borderRadius:
                                                       BorderRadius.circular(12),
                                                 ),
-                                                focusedBorder: OutlineInputBorder(
+                                                focusedBorder:
+                                                    OutlineInputBorder(
                                                   borderSide: const BorderSide(
                                                       color: onFocusColor),
                                                   borderRadius:
@@ -4707,7 +4969,8 @@ class JoDetailController extends BaseController {
                                                   borderRadius:
                                                       BorderRadius.circular(12),
                                                 ),
-                                                focusedBorder: OutlineInputBorder(
+                                                focusedBorder:
+                                                    OutlineInputBorder(
                                                   borderSide: const BorderSide(
                                                       color: onFocusColor),
                                                   borderRadius:
@@ -4733,7 +4996,8 @@ class JoDetailController extends BaseController {
                                                   borderRadius:
                                                       BorderRadius.circular(12),
                                                 ),
-                                                focusedBorder: OutlineInputBorder(
+                                                focusedBorder:
+                                                    OutlineInputBorder(
                                                   borderSide: const BorderSide(
                                                       color: onFocusColor),
                                                   borderRadius:
@@ -5189,12 +5453,12 @@ class JoDetailController extends BaseController {
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                       borderSide:
-                                      const BorderSide(color: onFocusColor),
+                                          const BorderSide(color: onFocusColor),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     labelText: 'Date*',
                                     floatingLabelStyle:
-                                    const TextStyle(color: onFocusColor),
+                                        const TextStyle(color: onFocusColor),
                                     fillColor: onFocusColor),
                               ),
                               const SizedBox(
@@ -5212,7 +5476,7 @@ class JoDetailController extends BaseController {
                                       cursorColor: onFocusColor,
                                       onTap: () async {
                                         activity6StartTime.text =
-                                        await selectTime6(Get.context!);
+                                            await selectTime6(Get.context!);
                                       },
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
@@ -5220,17 +5484,18 @@ class JoDetailController extends BaseController {
                                         }
                                         return null;
                                       },
-                                      style: const TextStyle(color: onFocusColor),
+                                      style:
+                                          const TextStyle(color: onFocusColor),
                                       decoration: InputDecoration(
                                           border: OutlineInputBorder(
                                             borderRadius:
-                                            BorderRadius.circular(12),
+                                                BorderRadius.circular(12),
                                           ),
                                           focusedBorder: OutlineInputBorder(
                                             borderSide: const BorderSide(
                                                 color: onFocusColor),
                                             borderRadius:
-                                            BorderRadius.circular(12),
+                                                BorderRadius.circular(12),
                                           ),
                                           labelText: 'Start Time*',
                                           floatingLabelStyle: const TextStyle(
@@ -5247,7 +5512,7 @@ class JoDetailController extends BaseController {
                                       cursorColor: onFocusColor,
                                       onTap: () async {
                                         activity6EndTime.text =
-                                        await selectTime6(Get.context!);
+                                            await selectTime6(Get.context!);
                                       },
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
@@ -5255,17 +5520,18 @@ class JoDetailController extends BaseController {
                                         }
                                         return null;
                                       },
-                                      style: const TextStyle(color: onFocusColor),
+                                      style:
+                                          const TextStyle(color: onFocusColor),
                                       decoration: InputDecoration(
                                           border: OutlineInputBorder(
                                             borderRadius:
-                                            BorderRadius.circular(12),
+                                                BorderRadius.circular(12),
                                           ),
                                           focusedBorder: OutlineInputBorder(
                                             borderSide: const BorderSide(
                                                 color: onFocusColor),
                                             borderRadius:
-                                            BorderRadius.circular(12),
+                                                BorderRadius.circular(12),
                                           ),
                                           labelText: 'End Time*',
                                           floatingLabelStyle: const TextStyle(
@@ -5294,12 +5560,12 @@ class JoDetailController extends BaseController {
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                       borderSide:
-                                      const BorderSide(color: onFocusColor),
+                                          const BorderSide(color: onFocusColor),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     labelText: 'Activity*',
                                     floatingLabelStyle:
-                                    const TextStyle(color: onFocusColor),
+                                        const TextStyle(color: onFocusColor),
                                     fillColor: onFocusColor),
                               ),
                               const SizedBox(
@@ -5377,14 +5643,16 @@ class JoDetailController extends BaseController {
                                                                         .w700),
                                                           ),
                                                         ),
-                                                        VerticalDivider(width: 1),
+                                                        VerticalDivider(
+                                                            width: 1),
                                                         SizedBox(width: 16),
                                                         Expanded(
                                                           child: Row(
                                                             children: [
                                                               Text(
                                                                 activity ?? '-',
-                                                                style: TextStyle(
+                                                                style:
+                                                                    TextStyle(
                                                                   fontSize: 14,
                                                                 ),
                                                               ),
@@ -5408,8 +5676,8 @@ class JoDetailController extends BaseController {
                                                             NeverScrollableScrollPhysics(),
                                                         itemCount: activity6List
                                                             .value.length,
-                                                        itemBuilder:
-                                                            (context, indexItem) {
+                                                        itemBuilder: (context,
+                                                            indexItem) {
                                                           if (activity6List
                                                                   .value[
                                                                       indexItem]
@@ -5428,8 +5696,7 @@ class JoDetailController extends BaseController {
                                                                         fontSize:
                                                                             14,
                                                                         fontWeight:
-                                                                            FontWeight
-                                                                                .w700),
+                                                                            FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 VerticalDivider(
@@ -5444,8 +5711,7 @@ class JoDetailController extends BaseController {
                                                                         fontSize:
                                                                             14,
                                                                         fontWeight:
-                                                                            FontWeight
-                                                                                .w700),
+                                                                            FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 VerticalDivider(
@@ -5457,9 +5723,7 @@ class JoDetailController extends BaseController {
                                                                   child: Row(
                                                                     children: [
                                                                       Text(
-                                                                        activity6List
-                                                                                .value[indexItem]
-                                                                                .activity ??
+                                                                        activity6List.value[indexItem].activity ??
                                                                             '-',
                                                                         style:
                                                                             TextStyle(
@@ -5470,13 +5734,11 @@ class JoDetailController extends BaseController {
                                                                       InkWell(
                                                                           onTap:
                                                                               () {
-                                                                            toggleEditActivity6(
-                                                                                indexItem);
+                                                                            toggleEditActivity6(indexItem);
                                                                           },
                                                                           child:
                                                                               Icon(
-                                                                            Icons
-                                                                                .mode_edit_outlined,
+                                                                            Icons.mode_edit_outlined,
                                                                             color:
                                                                                 primaryColor,
                                                                           )),
@@ -5490,8 +5752,7 @@ class JoDetailController extends BaseController {
                                                                           },
                                                                           child:
                                                                               Icon(
-                                                                            Icons
-                                                                                .delete_forever,
+                                                                            Icons.delete_forever,
                                                                             color:
                                                                                 Colors.red,
                                                                           ))
@@ -5524,30 +5785,34 @@ class JoDetailController extends BaseController {
                                                       cursorColor: onFocusColor,
                                                       style: const TextStyle(
                                                           color: onFocusColor),
-                                                      decoration: InputDecoration(
-                                                          border:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(12),
-                                                          ),
-                                                          focusedBorder:
-                                                              OutlineInputBorder(
-                                                            borderSide:
-                                                                const BorderSide(
-                                                                    color:
-                                                                        onFocusColor),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(12),
-                                                          ),
-                                                          labelText: 'Remarks',
-                                                          floatingLabelStyle:
-                                                              const TextStyle(
-                                                                  color:
-                                                                      onFocusColor),
-                                                          fillColor:
-                                                              onFocusColor),
+                                                      decoration:
+                                                          InputDecoration(
+                                                              border:
+                                                                  OutlineInputBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            12),
+                                                              ),
+                                                              focusedBorder:
+                                                                  OutlineInputBorder(
+                                                                borderSide:
+                                                                    const BorderSide(
+                                                                        color:
+                                                                            onFocusColor),
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            12),
+                                                              ),
+                                                              labelText:
+                                                                  'Remarks',
+                                                              floatingLabelStyle:
+                                                                  const TextStyle(
+                                                                      color:
+                                                                          onFocusColor),
+                                                              fillColor:
+                                                                  onFocusColor),
                                                     ),
                                                   ],
                                                 ),
@@ -5592,82 +5857,111 @@ class JoDetailController extends BaseController {
                                             checkFileType(photo.path);
                                         var filenameArr = photo.path.split("/");
                                         var filename = filenameArr.last;
-                                        return fileType == 'image' ? SizedBox(
-                                          width: 54,
-                                          height: 66,
-                                          child: Stack(
-                                            children: [
-                                              SizedBox(
+                                        return fileType == 'image'
+                                            ? SizedBox(
                                                 width: 54,
-                                                height: 54,
-                                                child: InkWell(
-                                                  onTap: (){
-                                                    controller.previewImageAct6(index, photo.path);
-                                                  },
-                                                  child: Image.file(
-                                                    File(photo.path),
-                                                    fit: BoxFit.cover,
-                                                  ),
+                                                height: 66,
+                                                child: Stack(
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 54,
+                                                      height: 54,
+                                                      child: InkWell(
+                                                        onTap: () {
+                                                          controller
+                                                              .previewImageAct6(
+                                                                  index,
+                                                                  photo.path);
+                                                        },
+                                                        child: Image.file(
+                                                          File(photo.path),
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Align(
+                                                      alignment:
+                                                          AlignmentDirectional
+                                                              .topEnd,
+                                                      child: SizedBox(
+                                                        height: 12,
+                                                        child: IconButton(
+                                                            onPressed: () {
+                                                              controller
+                                                                  .removeActivity6Files(
+                                                                      index);
+                                                            },
+                                                            icon: Icon(
+                                                              Icons
+                                                                  .remove_circle,
+                                                              size: 12,
+                                                              color: Colors.red,
+                                                            )),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                              ),
-                                              Align(
-                                                alignment: AlignmentDirectional.topEnd,
-                                                child: SizedBox(
-                                                  height: 12,
-                                                  child: IconButton(
-                                                      onPressed: (){
-                                                        controller.removeActivity6Files(index);
-                                                      },
-                                                      icon: Icon(Icons.remove_circle,
-                                                        size: 12,
-                                                        color: Colors.red,
-                                                      )
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ) : fileType == 'doc' ? SizedBox(
-                                          width: 54,
-                                          height: 66,
-                                          child: Stack(
-                                            children: [
-                                              InkWell(
-                                                onTap: (){
-                                                  OpenFilex.open(photo.path);
-                                                },
-                                                child: SizedBox(
-                                                  width: 54,
-                                                  height: 54,
-                                                  child: Center(
-                                                      child: Column(
-                                                        children: [
-                                                          Image.asset('assets/icons/pdfIcon.png', height: 42,),
-                                                          Text(filename, style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
-                                                        ],
-                                                      )
-                                                  ),
-                                                ),
-                                              ),
-                                              Align(
-                                                alignment: AlignmentDirectional.topEnd,
-                                                child: SizedBox(
-                                                  height: 12,
-                                                  child: IconButton(
-                                                      padding: EdgeInsets.zero,
-                                                      onPressed: (){
-                                                        controller.removeActivity6Files(index);
-                                                      },
-                                                      icon: Icon(Icons.remove_circle,
-                                                        size: 12,
-                                                        color: Colors.red,
-                                                      )
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ) : SizedBox();
+                                              )
+                                            : fileType == 'doc'
+                                                ? SizedBox(
+                                                    width: 54,
+                                                    height: 66,
+                                                    child: Stack(
+                                                      children: [
+                                                        InkWell(
+                                                          onTap: () {
+                                                            OpenFilex.open(
+                                                                photo.path);
+                                                          },
+                                                          child: SizedBox(
+                                                            width: 54,
+                                                            height: 54,
+                                                            child: Center(
+                                                                child: Column(
+                                                              children: [
+                                                                Image.asset(
+                                                                  'assets/icons/pdfIcon.png',
+                                                                  height: 42,
+                                                                ),
+                                                                Text(filename,
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            8),
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis)
+                                                              ],
+                                                            )),
+                                                          ),
+                                                        ),
+                                                        Align(
+                                                          alignment:
+                                                              AlignmentDirectional
+                                                                  .topEnd,
+                                                          child: SizedBox(
+                                                            height: 12,
+                                                            child: IconButton(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .zero,
+                                                                onPressed: () {
+                                                                  controller
+                                                                      .removeActivity6Files(
+                                                                          index);
+                                                                },
+                                                                icon: Icon(
+                                                                  Icons
+                                                                      .remove_circle,
+                                                                  size: 12,
+                                                                  color: Colors
+                                                                      .red,
+                                                                )),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  )
+                                                : SizedBox();
                                       })
                                   : const SizedBox(),
                               const SizedBox(
@@ -5683,7 +5977,8 @@ class JoDetailController extends BaseController {
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.white,
                                         shape: RoundedRectangleBorder(
-                                            side: BorderSide(color: primaryColor),
+                                            side:
+                                                BorderSide(color: primaryColor),
                                             borderRadius:
                                                 BorderRadius.circular(12))),
                                     child: Center(
@@ -5711,10 +6006,11 @@ class JoDetailController extends BaseController {
                                     backgroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
                                         side: BorderSide(color: primaryColor),
-                                        borderRadius: BorderRadius.circular(12))),
+                                        borderRadius:
+                                            BorderRadius.circular(12))),
                                 child: Container(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 12),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12),
                                     width: double.infinity,
                                     child: Center(
                                         child: Text(
@@ -5736,10 +6032,11 @@ class JoDetailController extends BaseController {
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: primaryColor,
                                     shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12))),
+                                        borderRadius:
+                                            BorderRadius.circular(12))),
                                 child: Container(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 12),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12),
                                     width: double.infinity,
                                     child: Center(
                                         child: Text(
@@ -5874,11 +6171,19 @@ class JoDetailController extends BaseController {
 
   void drawerDailyActivity6Edit() {
     activity6List.value = [];
-    activity6List.value = activity6ListStages.value.where((item) => item.mStatusinspectionstagesId == activityStage).toList();
-    var activityEditTemp = activity6List.value.map((item){return item.transDate;}).toSet().toList();
-    activityEditTemp.forEach((item){
+    activity6List.value = activity6ListStages.value
+        .where((item) => item.mStatusinspectionstagesId == activityStage)
+        .toList();
+    var activityEditTemp = activity6List.value
+        .map((item) {
+          return item.transDate;
+        })
+        .toSet()
+        .toList();
+    activityEditTemp.forEach((item) {
       var text = activity6List.value.lastWhere((act) => act.transDate == item);
-      activity6ListTextController.value.add(TextEditingController(text: text.remarks));
+      activity6ListTextController.value
+          .add(TextEditingController(text: text.remarks));
     });
     update();
     Get.bottomSheet(
@@ -5980,7 +6285,8 @@ class JoDetailController extends BaseController {
                                         }
                                         return null;
                                       },
-                                      style: const TextStyle(color: onFocusColor),
+                                      style:
+                                          const TextStyle(color: onFocusColor),
                                       decoration: InputDecoration(
                                           border: OutlineInputBorder(
                                             borderRadius:
@@ -6015,7 +6321,8 @@ class JoDetailController extends BaseController {
                                         }
                                         return null;
                                       },
-                                      style: const TextStyle(color: onFocusColor),
+                                      style:
+                                          const TextStyle(color: onFocusColor),
                                       decoration: InputDecoration(
                                           border: OutlineInputBorder(
                                             borderRadius:
@@ -6137,19 +6444,22 @@ class JoDetailController extends BaseController {
                                                                         .w700),
                                                           ),
                                                         ),
-                                                        VerticalDivider(width: 1),
+                                                        VerticalDivider(
+                                                            width: 1),
                                                         SizedBox(width: 16),
                                                         Expanded(
                                                           child: Row(
                                                             children: [
                                                               Text(
                                                                 activity ?? '-',
-                                                                style: TextStyle(
+                                                                style:
+                                                                    TextStyle(
                                                                   fontSize: 14,
                                                                 ),
                                                               ),
                                                               IconButton(
-                                                                  onPressed: () {
+                                                                  onPressed:
+                                                                      () {
                                                                     removeActivity6ByDate(
                                                                         activity!,
                                                                         index,
@@ -6172,8 +6482,8 @@ class JoDetailController extends BaseController {
                                                             NeverScrollableScrollPhysics(),
                                                         itemCount: activity6List
                                                             .value.length,
-                                                        itemBuilder:
-                                                            (context, indexItem) {
+                                                        itemBuilder: (context,
+                                                            indexItem) {
                                                           if (activity6List
                                                                   .value[
                                                                       indexItem]
@@ -6192,8 +6502,7 @@ class JoDetailController extends BaseController {
                                                                         fontSize:
                                                                             14,
                                                                         fontWeight:
-                                                                            FontWeight
-                                                                                .w700),
+                                                                            FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 VerticalDivider(
@@ -6208,8 +6517,7 @@ class JoDetailController extends BaseController {
                                                                         fontSize:
                                                                             14,
                                                                         fontWeight:
-                                                                            FontWeight
-                                                                                .w700),
+                                                                            FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 VerticalDivider(
@@ -6221,9 +6529,7 @@ class JoDetailController extends BaseController {
                                                                   child: Row(
                                                                     children: [
                                                                       Text(
-                                                                        activity6List
-                                                                                .value[indexItem]
-                                                                                .activity ??
+                                                                        activity6List.value[indexItem].activity ??
                                                                             '-',
                                                                         style:
                                                                             TextStyle(
@@ -6234,13 +6540,11 @@ class JoDetailController extends BaseController {
                                                                       InkWell(
                                                                           onTap:
                                                                               () {
-                                                                            toggleEditActivity6(
-                                                                                indexItem);
+                                                                            toggleEditActivity6(indexItem);
                                                                           },
                                                                           child:
                                                                               Icon(
-                                                                            Icons
-                                                                                .mode_edit_outlined,
+                                                                            Icons.mode_edit_outlined,
                                                                             color:
                                                                                 primaryColor,
                                                                           )),
@@ -6254,8 +6558,7 @@ class JoDetailController extends BaseController {
                                                                           },
                                                                           child:
                                                                               Icon(
-                                                                            Icons
-                                                                                .delete_forever,
+                                                                            Icons.delete_forever,
                                                                             color:
                                                                                 Colors.red,
                                                                           ))
@@ -6288,30 +6591,34 @@ class JoDetailController extends BaseController {
                                                       cursorColor: onFocusColor,
                                                       style: const TextStyle(
                                                           color: onFocusColor),
-                                                      decoration: InputDecoration(
-                                                          border:
-                                                              OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(12),
-                                                          ),
-                                                          focusedBorder:
-                                                              OutlineInputBorder(
-                                                            borderSide:
-                                                                const BorderSide(
-                                                                    color:
-                                                                        onFocusColor),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(12),
-                                                          ),
-                                                          labelText: 'Remarks',
-                                                          floatingLabelStyle:
-                                                              const TextStyle(
-                                                                  color:
-                                                                      onFocusColor),
-                                                          fillColor:
-                                                              onFocusColor),
+                                                      decoration:
+                                                          InputDecoration(
+                                                              border:
+                                                                  OutlineInputBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            12),
+                                                              ),
+                                                              focusedBorder:
+                                                                  OutlineInputBorder(
+                                                                borderSide:
+                                                                    const BorderSide(
+                                                                        color:
+                                                                            onFocusColor),
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            12),
+                                                              ),
+                                                              labelText:
+                                                                  'Remarks',
+                                                              floatingLabelStyle:
+                                                                  const TextStyle(
+                                                                      color:
+                                                                          onFocusColor),
+                                                              fillColor:
+                                                                  onFocusColor),
                                                     ),
                                                   ],
                                                 ),
@@ -6356,82 +6663,111 @@ class JoDetailController extends BaseController {
                                             checkFileType(photo.path);
                                         var filenameArr = photo.path.split("/");
                                         var filename = filenameArr.last;
-                                        return fileType == 'image' ? SizedBox(
-                                          width: 54,
-                                          height: 66,
-                                          child: Stack(
-                                            children: [
-                                              SizedBox(
+                                        return fileType == 'image'
+                                            ? SizedBox(
                                                 width: 54,
-                                                height: 54,
-                                                child: InkWell(
-                                                  onTap: (){
-                                                    controller.previewImageAct6(index, photo.path);
-                                                  },
-                                                  child: Image.file(
-                                                    File(photo.path),
-                                                    fit: BoxFit.cover,
-                                                  ),
+                                                height: 66,
+                                                child: Stack(
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 54,
+                                                      height: 54,
+                                                      child: InkWell(
+                                                        onTap: () {
+                                                          controller
+                                                              .previewImageAct6(
+                                                                  index,
+                                                                  photo.path);
+                                                        },
+                                                        child: Image.file(
+                                                          File(photo.path),
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Align(
+                                                      alignment:
+                                                          AlignmentDirectional
+                                                              .topEnd,
+                                                      child: SizedBox(
+                                                        height: 12,
+                                                        child: IconButton(
+                                                            onPressed: () {
+                                                              controller
+                                                                  .removeActivity6Files(
+                                                                      index);
+                                                            },
+                                                            icon: Icon(
+                                                              Icons
+                                                                  .remove_circle,
+                                                              size: 12,
+                                                              color: Colors.red,
+                                                            )),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                              ),
-                                              Align(
-                                                alignment: AlignmentDirectional.topEnd,
-                                                child: SizedBox(
-                                                  height: 12,
-                                                  child: IconButton(
-                                                      onPressed: (){
-                                                        controller.removeActivity6Files(index);
-                                                      },
-                                                      icon: Icon(Icons.remove_circle,
-                                                        size: 12,
-                                                        color: Colors.red,
-                                                      )
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ) : fileType == 'doc' ? SizedBox(
-                                          width: 54,
-                                          height: 66,
-                                          child: Stack(
-                                            children: [
-                                              InkWell(
-                                                onTap: (){
-                                                  OpenFilex.open(photo.path);
-                                                },
-                                                child: SizedBox(
-                                                  width: 54,
-                                                  height: 54,
-                                                  child: Center(
-                                                      child: Column(
-                                                        children: [
-                                                          Image.asset('assets/icons/pdfIcon.png', height: 42,),
-                                                          Text(filename, style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
-                                                        ],
-                                                      )
-                                                  ),
-                                                ),
-                                              ),
-                                              Align(
-                                                alignment: AlignmentDirectional.topEnd,
-                                                child: SizedBox(
-                                                  height: 12,
-                                                  child: IconButton(
-                                                      padding: EdgeInsets.zero,
-                                                      onPressed: (){
-                                                        controller.removeActivity6Files(index);
-                                                      },
-                                                      icon: Icon(Icons.remove_circle,
-                                                        size: 12,
-                                                        color: Colors.red,
-                                                      )
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ) : SizedBox();
+                                              )
+                                            : fileType == 'doc'
+                                                ? SizedBox(
+                                                    width: 54,
+                                                    height: 66,
+                                                    child: Stack(
+                                                      children: [
+                                                        InkWell(
+                                                          onTap: () {
+                                                            OpenFilex.open(
+                                                                photo.path);
+                                                          },
+                                                          child: SizedBox(
+                                                            width: 54,
+                                                            height: 54,
+                                                            child: Center(
+                                                                child: Column(
+                                                              children: [
+                                                                Image.asset(
+                                                                  'assets/icons/pdfIcon.png',
+                                                                  height: 42,
+                                                                ),
+                                                                Text(filename,
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            8),
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis)
+                                                              ],
+                                                            )),
+                                                          ),
+                                                        ),
+                                                        Align(
+                                                          alignment:
+                                                              AlignmentDirectional
+                                                                  .topEnd,
+                                                          child: SizedBox(
+                                                            height: 12,
+                                                            child: IconButton(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .zero,
+                                                                onPressed: () {
+                                                                  controller
+                                                                      .removeActivity6Files(
+                                                                          index);
+                                                                },
+                                                                icon: Icon(
+                                                                  Icons
+                                                                      .remove_circle,
+                                                                  size: 12,
+                                                                  color: Colors
+                                                                      .red,
+                                                                )),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  )
+                                                : SizedBox();
                                       })
                                   : const SizedBox(),
                               const SizedBox(
@@ -6447,7 +6783,8 @@ class JoDetailController extends BaseController {
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.white,
                                         shape: RoundedRectangleBorder(
-                                            side: BorderSide(color: primaryColor),
+                                            side:
+                                                BorderSide(color: primaryColor),
                                             borderRadius:
                                                 BorderRadius.circular(12))),
                                     child: Center(
@@ -6474,10 +6811,11 @@ class JoDetailController extends BaseController {
                                     backgroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
                                         side: BorderSide(color: primaryColor),
-                                        borderRadius: BorderRadius.circular(12))),
+                                        borderRadius:
+                                            BorderRadius.circular(12))),
                                 child: Container(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 12),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12),
                                     width: double.infinity,
                                     child: Center(
                                         child: Text(
@@ -6499,10 +6837,11 @@ class JoDetailController extends BaseController {
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: primaryColor,
                                     shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12))),
+                                        borderRadius:
+                                            BorderRadius.circular(12))),
                                 child: Container(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 12),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12),
                                     width: double.infinity,
                                     child: Center(
                                         child: Text(
