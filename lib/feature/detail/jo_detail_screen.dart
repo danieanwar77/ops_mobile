@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/data/model/jo_send_model.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_pict.dart';
 import 'package:ops_mobile/feature/detail/jo_detail_controller.dart';
 import 'package:ops_mobile/utils/helper.dart';
 
@@ -1827,7 +1828,7 @@ class JoDetailScreen extends StatelessWidget {
                                                   thickness: 0.4
                                               ),
                                               controller.isLoadingJOImage == false ?
-                                              controller.dailyActivityPhotos.value.isNotEmpty ? GridView.builder(
+                                              controller.dailyActivityPhotosV2.value.isNotEmpty ? GridView.builder(
                                                   shrinkWrap: true,
                                                   physics: NeverScrollableScrollPhysics(),
                                                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -1835,18 +1836,19 @@ class JoDetailScreen extends StatelessWidget {
                                                     mainAxisSpacing: 8,
                                                     crossAxisSpacing: 8,
                                                   ),
-                                                  itemCount: controller.dailyActivityPhotos.value.length,
+                                                  itemCount: controller.dailyActivityPhotosV2.value.length,
                                                   itemBuilder: (content, index){
-                                                    final File photo = controller.dailyActivityPhotos.value[index];
+                                                    //final File photo = controller.dailyActivityPhotosV2.value[index];
+                                                    TDJoInspectionPict pict = controller.dailyActivityPhotosV2.value[index];
                                                     return InkWell(
                                                       onTap: (){
-                                                        controller.previewImage(index,photo.path,controller.dailyActivityPhotosDescText[index]);
+                                                        controller.previewImage(index,pict!.pathPhoto!,pict!.keterangan!,pict);
                                                       },
                                                       child: SizedBox(
                                                         width: 54,
                                                         height: 54,
                                                         child: Image.file(
-                                                          File(photo.path),
+                                                          File(pict!.pathPhoto!),
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),

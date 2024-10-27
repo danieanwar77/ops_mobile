@@ -28,6 +28,7 @@ import 'package:ops_mobile/data/model/response_jo_insert_activity.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity5.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_pict.dart';
 import 'package:ops_mobile/data/respository/repository.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
@@ -87,6 +88,7 @@ class JoDetailController extends BaseController {
 
   // Activity Inspection Photo Variables & Temporary
   RxList<File> dailyActivityPhotos = RxList();
+  RxList<TDJoInspectionPict> dailyActivityPhotosV2 = RxList();
   RxList<File> dailyActivityPhotosTemp = RxList();
   RxList<String> dailyActivityPhotosDescText = RxList();
   RxList<String> dailyActivityPhotosDescTextTemp = RxList();
@@ -325,7 +327,7 @@ class JoDetailController extends BaseController {
     }
     //await getJoPIC();
     //await getJoPICLocal();
-    // await getJoDailyPhoto();
+     await getJoDailyPhotoV2();
     // await getJoDailyActivity();
    // await getJoDailyActivityLocal();
     await getJoDailyActivityLocalV2();
@@ -453,6 +455,7 @@ class JoDetailController extends BaseController {
       }
     }
   }
+
 
   Future<File> getImagesFromUrl(String strURL) async {
     debugPrint('image path: ${AppConstant.CORE_URL}$strURL');
@@ -666,39 +669,40 @@ class JoDetailController extends BaseController {
     dailyActivityPhotosDescText[index] = desc;
   }
 
-  void sendActivityDailyPhoto() async {
-    int success = 0;
-    if (dailyActivityPhotosTemp.value.isNotEmpty &&
-        dailyActivityPhotosDescTemp.value.isNotEmpty) {
-      for (var i = 0; i < dailyActivityPhotosTemp.value.length; i++) {
-        final File photo = dailyActivityPhotosTemp.value[i];
-        final TextEditingController desc = dailyActivityPhotosDescTemp.value[i];
-        String response = await sendPhotos(photo, desc.text);
-        if (response == 'success') {
-          success++;
-          dailyActivityPhotos.value.add(photo);
-          dailyActivityPhotosDesc.value.add(desc);
-        }
-      }
-    } else {
-      openDialog('Failed', 'Tidak ada foto yang diupload');
-    }
 
-    if (success == dailyActivityPhotos.value.length) {
-      openDialog('Success', 'Foto berhasil dikirm');
-      if (activityList.value.isEmpty) {
-        changeStatusJo();
-      }
-      // changeStatusJo();
-      getJoDailyPhoto();
-      dailyActivityPhotosTemp.value = [];
-      dailyActivityPhotosDescTemp.value = [];
-      dailyActivityPhotosDescTextTemp.value = [];
-      adddailyActivityPhotosCount.value = 0;
-    } else {
-      openDialog('Attention', 'Beberapa foto gagal dikirim');
-    }
-  }
+
+  // void sendActivityDailyPhoto() async {
+  //   int success = 0;
+  //   if (dailyActivityPhotosTemp.value.isNotEmpty && dailyActivityPhotosDescTemp.value.isNotEmpty) {
+  //     for (var i = 0; i < dailyActivityPhotosTemp.value.length; i++) {
+  //       final File photo = dailyActivityPhotosTemp.value[i];
+  //       final TextEditingController desc = dailyActivityPhotosDescTemp.value[i];
+  //       String response = await sendPhotos(photo, desc.text);
+  //       if (response == 'success') {
+  //         success++;
+  //         dailyActivityPhotos.value.add(photo);
+  //         dailyActivityPhotosDesc.value.add(desc);
+  //       }
+  //     }
+  //   } else {
+  //     openDialog('Failed', 'Tidak ada foto yang diupload');
+  //   }
+  //
+  //   if (success == dailyActivityPhotos.value.length) {
+  //     openDialog('Success', 'Foto berhasil dikirm');
+  //     if (activityList.value.isEmpty) {
+  //       changeStatusJo();
+  //     }
+  //     // changeStatusJo();
+  //     getJoDailyPhoto();
+  //     dailyActivityPhotosTemp.value = [];
+  //     dailyActivityPhotosDescTemp.value = [];
+  //     dailyActivityPhotosDescTextTemp.value = [];
+  //     adddailyActivityPhotosCount.value = 0;
+  //   } else {
+  //     openDialog('Attention', 'Beberapa foto gagal dikirim');
+  //   }
+  // }
 
   Future<String> updateActivityDailyPhoto(
       File image, int id, String desc) async {
@@ -827,8 +831,7 @@ class JoDetailController extends BaseController {
                                         height: 16,
                                       ),
                                       TextFormField(
-                                        controller: dailyActivityPhotosDescTemp
-                                            .value[index],
+                                        controller: dailyActivityPhotosDescTemp.value[index],
                                         onChanged: (value) {
                                           editPhotoActivityDesc(index, value);
                                         },
@@ -992,8 +995,9 @@ class JoDetailController extends BaseController {
             ),
             onPressed: () {
               //debugPrint('data photo: ${jsonEncode(dailyActivityPhotosTemp.value)}');
+              sendActivityDailyPhotoV2();
               Get.back();
-              sendActivityDailyPhoto();
+
             },
           ),
         ],
@@ -1001,7 +1005,7 @@ class JoDetailController extends BaseController {
     );
   }
 
-  void previewImage(int index, String photo, String desc) async {
+  void previewImage(int index, String photo, String desc,TDJoInspectionPict pict) async {
     dailyActivityPhotosDescEdit.value.text = desc;
     activityPreviewFoto.value = await File(photo);
     Get.dialog(
@@ -1010,19 +1014,21 @@ class JoDetailController extends BaseController {
         builder: (controller) => AlertDialog(
           title: Row(
             children: [
-              Text(
-                'Photo and Description ${index + 1}',
-                style: TextStyle(
+              Expanded(
+                child: Text(
+                  'Photo and Description ${index + 1}',
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
-                    color: primaryColor),
+                    color: primaryColor,
+                  ),
+                ),
               ),
               dataJoDetail.value.detail?.statusJo == 'Assigned' ||
                       dataJoDetail.value.detail?.statusJo == 'On Progres'
                   ? InkWell(
                       onTap: () {
-                        deleteActivityDailyPhotoConfirm(int.parse(
-                            dataJoDailyPhotos.value[index].id!.toString()));
+                        deleteActivityDailyPhotoConfirm(pict!.id!.toInt());
                       },
                       child: Icon(
                         Icons.delete_forever,
@@ -1057,26 +1063,6 @@ class JoDetailController extends BaseController {
                   const SizedBox(
                     height: 16,
                   ),
-                  // InkWell(
-                  //   onTap: () async {
-                  //     var image = await cameraImage();
-                  //     foto.value = image;
-                  //     //updateActivityDailyPhoto(foto, int.parse(dataJoDailyPhotos.value[index].id!.toString()));
-                  //   },
-                  //   child: Container(
-                  //     height: 54,
-                  //     width: 54,
-                  //     decoration: BoxDecoration(
-                  //         border: Border.all(color: primaryColor),
-                  //         borderRadius: BorderRadius.circular(8)
-                  //     ),
-                  //     child: Center(
-                  //       child: Icon(Icons.camera_alt_sharp,
-                  //         color: primaryColor,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
                   const SizedBox(
                     height: 16,
                   ),
@@ -1110,13 +1096,8 @@ class JoDetailController extends BaseController {
                     dataJoDetail.value.detail?.statusJo == 'On Progres'
                 ? ElevatedButton(
                     onPressed: () {
-                      editPhotoActivityDesc(
-                          index, dailyActivityPhotosDescEdit.value.text);
-                      updateActivityConfirm(
-                          File(photo),
-                          int.parse(
-                              dataJoDailyPhotos.value[index].id!.toString()),
-                          dailyActivityPhotosDescEdit.value.text);
+                      editPhotoActivityDescV2(pict!.id!.toInt(),dailyActivityPhotosDescEdit.value.text);
+                      Get.back();
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: primaryColor,
@@ -1165,7 +1146,7 @@ class JoDetailController extends BaseController {
               if (result == 'success') {
                 Get.back();
                 openDialog("Success", "Berhasil ubah foto.");
-                getJoDailyPhoto();
+                getJoDailyPhotoV2();
               } else {
                 Get.back();
                 openDialog("Failed", "Gagal ubah foto.");
@@ -1198,12 +1179,9 @@ class JoDetailController extends BaseController {
             ),
             onPressed: () async {
               Get.back();
-              var delete = await deletePhoto(id);
+              var delete = await deletePhotoV2(id);
               if (delete == 'success') {
-                var index =
-                    dataJoDailyPhotos.value.indexWhere((foto) => foto.id == id);
-                dataJoDailyPhotos.value.removeAt(index);
-                dailyActivityPhotos.value.removeAt(index);
+                await getJoDailyPhotoV2();
                 update();
                 Get.back();
               } else {
@@ -1857,6 +1835,130 @@ class JoDetailController extends BaseController {
     }
 
   }
+
+  void sendActivityDailyPhotoV2() async {
+    int success = 0;
+    final db = await SqlHelper.db();
+    //t_h_jo_id = id
+    //createdBy
+    final createdBy = userData.value!.id;
+    //DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())
+    if (dailyActivityPhotosTemp.value.isNotEmpty && dailyActivityPhotosDescTemp.value.isNotEmpty) {
+      for (var i = 0; i < dailyActivityPhotosTemp.value.length; i++) {
+        final File photo = dailyActivityPhotosTemp.value[i];
+        final TextEditingController desc = dailyActivityPhotosDescTemp.value[i];
+        TDJoInspectionPict pict = TDJoInspectionPict(
+          tHJoId: id,
+          pathPhoto: photo.path,
+          keterangan:desc.text.toString(),
+          code: "JOIP-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now()).toString()}",
+          createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+          isActive: 1,
+          isUpload: 1
+        );
+        int result  = await db.insert("t_d_jo_inspection_pict",pict.toJson());
+
+        if (result > 0) {
+          success++;
+          //dailyActivityPhotos.value.add(photo);
+          //dailyActivityPhotosDesc.value.add(desc);
+        }
+      }
+    } else {
+      openDialog('Failed', 'Tidak ada foto yang diSimpan');
+    }
+
+    debugPrint("count input db ${success}");
+    debugPrint("count input ui ${dailyActivityPhotos.value.length}");
+    if (success == dailyActivityPhotosTemp.value.length) {
+      openDialog('Success', 'Foto berhasil dikirm');
+      if (activityList.value.isEmpty) {
+        //changeStatusJo();
+      }
+      // changeStatusJo();
+      getJoDailyPhotoV2();
+      dailyActivityPhotosTemp.value = [];
+      dailyActivityPhotosDescTemp.value = [];
+      dailyActivityPhotosDescTextTemp.value = [];
+      adddailyActivityPhotosCount.value = 0;
+    } else {
+      openDialog('Attention', 'Beberapa foto gagal dikirim');
+    }
+  }
+
+  Future<void> getJoDailyPhotoV2() async {
+    final db = await SqlHelper.db();
+    List<Map<String, dynamic>> result = await db.query(
+      't_d_jo_inspection_pict',
+      where: 't_h_jo_id = ? and is_active = 1',
+      whereArgs: [id],
+    );
+    dailyActivityPhotos.value = [];
+    dailyActivityPhotosDesc.value = [];
+    dailyActivityPhotosDescText.value = [];
+    dailyActivityPhotosV2.value = [];
+
+    List<TDJoInspectionPict> pict = result
+        .map((json) => TDJoInspectionPict.fromJson(json))
+        .toList();
+    dailyActivityPhotosV2.value = pict;
+    // TextEditingController tempPhotoDesc = TextEditingController();
+    // result.forEach((item) async{
+    //   //final File photo = await getImagesFromUrl(item['path_photo']);
+    //  // dailyActivityPhotos.value.add(item['path_photo']);
+    //   tempPhotoDesc.text = item['keterangan'] ?? '';
+    //   dailyActivityPhotosDesc.value.add(tempPhotoDesc);
+    //   dailyActivityPhotosDescText.value.add(item['keterangan'] ?? '');
+    // });
+
+
+    // var response = await repository.getJoDailyPhoto(id) ?? JoDailyPhoto();
+    // debugPrint('JO Daily Photo: ${jsonEncode(response)}');
+    // if (response.data!.isNotEmpty) {
+    //   dataJoDailyPhotos.value = response?.data ?? [];
+    //   if (dataJoDailyPhotos.value.isNotEmpty) {
+    //     isLoadingJOImage = true;
+    //     update();
+    //     dailyActivityPhotos.value = [];
+    //     TextEditingController tempPhotoDesc = TextEditingController();
+    //     dataJoDailyPhotos.value.forEach((data) async {
+    //       final File photo = await getImagesFromUrl(data.pathPhoto!);
+    //       dailyActivityPhotos.value.add(photo);
+    //       tempPhotoDesc.text = data.keterangan ?? '';
+    //       dailyActivityPhotosDesc.value.add(tempPhotoDesc);
+    //       dailyActivityPhotosDescText.value.add(data.keterangan ?? '');
+    //       update();
+    //     });
+    //     isLoadingJOImage = false;
+    //     update();
+    //   }
+    // }
+  }
+
+  Future<String> deletePhotoV2(int id) async {
+    final db  = await SqlHelper.db();
+
+    int result = await db.update('t_d_jo_inspection_pict', { "is_active" : 0},where: "id = ?",whereArgs: [id]);
+
+    if (result == 0) {
+      return 'failed';
+    } else {
+      return 'success';
+    }
+  }
+
+  void editPhotoActivityDescV2(int idEdit, String desc) async {
+    final db  = await SqlHelper.db();
+
+    int result = await db.update('t_d_jo_inspection_pict', { "keterangan" : desc},where: "id = ?",whereArgs: [idEdit]);
+    if(result > 0){
+      await getJoDailyPhotoV2();
+    }
+    update();
+  }
+
+  //// END V2
+
 
   void toggleEditActivity(int index) {
     activityDate.text = activityList.value[index].transDate!;
