@@ -530,4 +530,90 @@ class SqlHelper extends BaseController {
     ''');
   }
 
+  static Future<List<Map<String, dynamic>>> getInspectionDocument(int idJo) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      SELECT 
+      id,
+      t_h_jo_id,
+      no_report, 
+      date_report,
+      no_blanko_certificate,
+      lhv_number,
+      ls_number,
+      code,
+      is_active,
+      is_upload,
+      created_by,
+      updated_by,
+      created_at,
+      updated_at
+      FROM t_d_jo_finalize_inspection
+      WHERE t_h_jo_id = $idJo
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getLaboratoryDocument(int idJo) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      SELECT 
+      id,
+      t_d_jo_laboratory_id,
+      no_report, 
+      date_report,
+      no_blanko_certificate,
+      lhv_number,
+      ls_number,
+      code,
+      is_active,
+      is_upload,
+      created_by,
+      updated_by,
+      created_at,
+      updated_at
+      FROM t_d_jo_finalize_laboratory
+      WHERE t_d_jo_laboratory_id = $idJo
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getInspectionDocumentFiles(List<dynamic> id) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      SELECT 
+      id,
+      t_d_jo_finalize_inspection_id,
+      path_file, 
+      file_name,
+      code,
+      is_active,
+      is_upload,
+      created_by,
+      updated_by,
+      created_at,
+      updated_at
+      FROM t_d_jo_document_inspection
+      WHERE t_d_jo_finalize_inspection_id in (${id.join(',')})
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getLaboratoryDocumentFiles(List<dynamic> id) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      SELECT 
+      id,
+      t_d_jo_finalize_laboratory_id,
+      path_file, 
+      file_name,
+      code,
+      is_active,
+      is_upload,
+      created_by,
+      updated_by,
+      created_at,
+      updated_at
+      FROM t_d_jo_document_laboratory
+      WHERE t_d_jo_finalize_laboratory_id in (${id.join(',')})
+    ''');
+  }
+
 }

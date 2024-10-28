@@ -26,6 +26,11 @@ import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity5.dart';
+import 'package:ops_mobile/data/model/t_d_jo_document_inspection.dart';
+import 'package:ops_mobile/data/model/t_d_jo_document_laboratory.dart';
+import 'package:ops_mobile/data/model/t_d_jo_finalize_inspection_model.dart';
+import 'package:ops_mobile/data/model/t_d_jo_finalize_laboratory.dart';
+import 'package:ops_mobile/data/model/t_d_jo_finalize_laboratory_model.dart';
 import 'package:ops_mobile/data/respository/repository.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
@@ -36,6 +41,7 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 class JoWaitingController extends BaseController {
   // Data User
   Rx<Data?> userData = Rx(Data());
+  late var settingsData;
 
   // Settings
   final PathProviderPlatform providerAndroid = PathProviderPlatform.instance;
@@ -162,11 +168,27 @@ class JoWaitingController extends BaseController {
   RxList<File> documentLaboratoryAttachments = RxList();
   RxList<Map<String, dynamic>> documentMap = RxList();
 
+  RxList<TDJoFinalizeInspectionModel> inspectionDocuments = RxList();
+  RxList<TDJoDocumentInspection> inspectionDocumentsFiles = RxList();
+  RxList<TDJoFinalizeLaboratoryModel> laboratoryDocuments = RxList();
+  RxList<TDJoDocumentLaboratory> laboratoryDocumentsFiles = RxList();
+
   @override
   void onInit() async {
-    //userData.value = Data.fromJson(jsonDecode(await StorageCore().storage.read('login'))) ?? Data();
+    settingsData = jsonDecode(await readSettings());
+    var dataUser = await SqlHelper.getUserDetail(settingsData['e_number']);
+    userData.value = Data(
+        id : dataUser.first['id'],
+        fullname: dataUser.first['fullname'],
+        nip: dataUser.first['e_number'],
+        positionId: dataUser.first['jabatan_id'],
+        position: dataUser.first['jabatan'],
+        divisionId: dataUser.first['division_id'],
+        division: dataUser.first['division'].toString(),
+        superior: dataUser.first['superior_id'].toString()
+    );
     debugPrint('data users: ${jsonEncode(userData.value)}');
-    sampleFile = File('assets/sample/sample1.pdf');
+    // sampleFile = File('assets/sample/sample1.pdf');
     var argument = await Get.arguments;
     id = argument['id'];
     statusId = argument['status'];
@@ -177,6 +199,20 @@ class JoWaitingController extends BaseController {
     debugPrint('activity stage now: $activityStage');
 
     super.onInit();
+  }
+
+  Future<String> readSettings() async {
+    String text;
+    try {
+      final directory = await providerAndroid.getApplicationDocumentsPath();
+      final File file = File('${directory}/settings.txt');
+      text = await file.readAsString();
+      debugPrint('setting txt: ${jsonDecode(text)}');
+    } catch (e) {
+      print("Couldn't read file");
+      text = '';
+    }
+    return text;
   }
 
   // Get Data
@@ -257,6 +293,7 @@ class JoWaitingController extends BaseController {
   Future<void> getData() async {
     //await getJoDetail();
     await getJoDetailLocal();
+    debugPrint('data employee pic: ${dataJoDetail.value.detail?.idPicInspector}, ${dataJoDetail.value.detail?.idPicLaboratory}');
     picInspector = int.parse(dataJoDetail.value.detail?.idPicInspector != null
         ? dataJoDetail.value.detail!.idPicInspector.toString() ==
         userData.value!.id.toString()
@@ -273,7 +310,6 @@ class JoWaitingController extends BaseController {
     update();
     debugPrint('id pic inspector: $picInspector , laboratory: $picLaboratory');
     if(picInspector != '0' && picLaboratory == 0){
-
       joWaitingTab = [
         Tab(
           text: 'Detail',
@@ -339,12 +375,14 @@ class JoWaitingController extends BaseController {
       update();
     }
    // await getJoPIC();
-    await getJoDailyPhoto();
-    await getJoDailyActivity();
-    await getJoDailyActivity5();
-    await getJoDailyActivity6();
+   //  await getJoDailyPhoto();
+   //  await getJoDailyActivity();
+   //  await getJoDailyActivity5();
+   //  await getJoDailyActivity6();
     // await getJoDailyActivityLab();
     // await getJoDailyActivityLab5();
+    await getJoInspectionDocuments();
+    await getJoLaboratoryDocuments();
     isLoadingJO == false;
     update();
   }
@@ -501,6 +539,34 @@ class JoWaitingController extends BaseController {
       final File data = await getImagesFromUrl(attach.pathName!);
       activity6Attachments.value.add(data);
     });
+  }
+
+  Future<void> getJoInspectionDocuments() async {
+    final data = await SqlHelper.getInspectionDocument(id);
+    inspectionDocuments.value = data.map((item){
+      return TDJoFinalizeInspectionModel.fromJson(item);
+    }).toList();
+    debugPrint('data document : ${jsonEncode(inspectionDocuments.value)}');
+    final dataId = data.map((value){return value['id'];}).toList();
+    final dataDocument = await SqlHelper.getInspectionDocumentFiles(dataId);
+    inspectionDocumentsFiles.value = dataDocument.map((item){
+      return TDJoDocumentInspection.fromJson(item);
+    }).toList();
+    debugPrint('data document files : ${jsonEncode(inspectionDocumentsFiles.value)}');
+  }
+
+  Future<void> getJoLaboratoryDocuments() async {
+    final data = await SqlHelper.getLaboratoryDocument(id);
+    laboratoryDocuments.value = data.map((item){
+      return TDJoFinalizeLaboratoryModel.fromJson(item);
+    }).toList();
+    debugPrint('data document : ${jsonEncode(laboratoryDocuments.value)}');
+    final dataId = data.map((value){return value['id'];}).toList();
+    final dataDocument = await SqlHelper.getLaboratoryDocumentFiles(dataId);
+    laboratoryDocumentsFiles.value = dataDocument.map((item){
+      return TDJoDocumentLaboratory.fromJson(item);
+    }).toList();
+    debugPrint('data document files : ${jsonEncode(laboratoryDocumentsFiles.value)}');
   }
 
   void detailLabActivity(int? lab) {
@@ -1084,6 +1150,50 @@ class JoWaitingController extends BaseController {
             },
           ),
         ],
+      ),
+    );
+  }
+
+  void previewImageList(int index, String photo) {
+    Get.dialog(
+      AlertDialog(
+        title: Row(
+          children: [
+            Text(
+              'Attachment ${index + 1}',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: primaryColor),
+            ),
+            InkWell(
+              onTap: () {},
+              child: Icon(
+                Icons.delete_forever,
+                color: Colors.red,
+              ),
+            ),
+            Spacer(),
+            IconButton(
+              onPressed: () {
+                Get.back();
+              },
+              icon: Icon(Icons.close),
+            )
+          ],
+        ),
+        content: SizedBox(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.file(
+                File(photo),
+                fit: BoxFit.cover,
+              ),
+            ],
+          ),
+        ),
+        actions: [],
       ),
     );
   }
