@@ -13,14 +13,15 @@
 /// created_at : "1"
 /// updated_at : "1"
 
-class TDJoFinalizeInspection {
+class TDJoFinalizeLaboratory {
   int? id;
-  int? tHJoId;
+  int? tDJoLabId;
   String noReport;
   String dateReport;
   String noBlankoCertificate;
   String lhvNumber;
   String lsNumber;
+  String pathPdf;
   String code;
   int? isActive;
   int? isUpload;
@@ -30,14 +31,15 @@ class TDJoFinalizeInspection {
   String? updatedAt; // Nullable
 
   // Constructor with required and optional fields
-  TDJoFinalizeInspection({
+  TDJoFinalizeLaboratory({
     this.id, // Nullable
-    required this.tHJoId,
+    required this.tDJoLabId,
     required this.noReport,
     required this.dateReport,
     required this.noBlankoCertificate,
     required this.lhvNumber,
     required this.lsNumber,
+    required this.pathPdf,
     required this.code,
     required this.isActive,
     required this.isUpload,
@@ -48,15 +50,16 @@ class TDJoFinalizeInspection {
   });
 
   // Create a TDJoFinalizeInspection from a JSON map
-  factory TDJoFinalizeInspection.fromJson(Map<String, dynamic> json) {
-    return TDJoFinalizeInspection(
+  factory TDJoFinalizeLaboratory.fromJson(Map<String, dynamic> json) {
+    return TDJoFinalizeLaboratory(
       id: json['id'], // Nullable
-      tHJoId: json['t_h_jo_id'],
+      tDJoLabId: json['t_d_jo_laboratory_id'],
       noReport: json['no_report'],
       dateReport: json['date_report'],
       noBlankoCertificate: json['no_blanko_certificate'],
       lhvNumber: json['lhv_number'],
       lsNumber: json['ls_number'],
+      pathPdf: json['path_pdf'],
       code: json['code'],
       isActive: json['is_active'],
       isUpload: json['is_upload'],
@@ -71,12 +74,13 @@ class TDJoFinalizeInspection {
   Map<String, dynamic> toJson() {
     return {
       'id': id, // Nullable
-      't_h_jo_id': tHJoId,
+      't_d_jo_laboratory_id': tDJoLabId,
       'no_report': noReport,
       'date_report': dateReport,
       'no_blanko_certificate': noBlankoCertificate,
       'lhv_number': lhvNumber,
       'ls_number': lsNumber,
+      'path_pdf': pathPdf,
       'code': code,
       'is_active': isActive,
       'is_upload': isUpload,
@@ -88,14 +92,15 @@ class TDJoFinalizeInspection {
   }
 
   // Copy method for creating a new instance with updated values
-  TDJoFinalizeInspection copyWith({
+  TDJoFinalizeLaboratory copyWith({
     int? id,
-    int? tHJoId,
+    int? tDJoLabId,
     String? noReport,
     String? dateReport,
     String? noBlankoCertificate,
     String? lhvNumber,
     String? lsNumber,
+    String? pathPdf,
     String? code,
     int? isActive,
     int? isUpload,
@@ -104,14 +109,15 @@ class TDJoFinalizeInspection {
     String? createdAt,
     String? updatedAt,
   }) {
-    return TDJoFinalizeInspection(
+    return TDJoFinalizeLaboratory(
       id: id ?? this.id, // Nullable
-      tHJoId: tHJoId ?? this.tHJoId,
+      tDJoLabId: tDJoLabId ?? this.tDJoLabId,
       noReport: noReport ?? this.noReport,
       dateReport: dateReport ?? this.dateReport,
       noBlankoCertificate: noBlankoCertificate ?? this.noBlankoCertificate,
       lhvNumber: lhvNumber ?? this.lhvNumber,
       lsNumber: lsNumber ?? this.lsNumber,
+      pathPdf: pathPdf ?? this.pathPdf,
       code: code ?? this.code,
       isActive: isActive ?? this.isActive,
       isUpload: isUpload ?? this.isUpload,
@@ -123,9 +129,9 @@ class TDJoFinalizeInspection {
   }
 }
 
-class TDJoFinalizeInspectionDocument {
+class TDJoFinalizeLaboratoryDocument {
   int? id;
-  int? tDJoFIId;
+  int? tDJoFLId;
   String pathFile;
   String fileName;
   String code;
@@ -137,9 +143,9 @@ class TDJoFinalizeInspectionDocument {
   String? updatedAt; // Nullable
 
   // Constructor with required and optional fields
-  TDJoFinalizeInspectionDocument({
+  TDJoFinalizeLaboratoryDocument({
     this.id, // Nullable
-    required this.tDJoFIId,
+    required this.tDJoFLId,
     required this.pathFile,
     required this.fileName,
     required this.code,
@@ -152,10 +158,10 @@ class TDJoFinalizeInspectionDocument {
   });
 
   // Create a TDJoFinalizeInspection from a JSON map
-  factory TDJoFinalizeInspectionDocument.fromJson(Map<String, dynamic> json) {
-    return TDJoFinalizeInspectionDocument(
+  factory TDJoFinalizeLaboratoryDocument.fromJson(Map<String, dynamic> json) {
+    return TDJoFinalizeLaboratoryDocument(
       id: json['id'], // Nullable
-      tDJoFIId: json['t_d_jo_finalize_inspection_id'],
+      tDJoFLId: json['t_d_jo_finalize_laboratory_id'],
       pathFile: json['path_file'],
       fileName: json['file_name'],
       code: json['code'],
@@ -172,7 +178,7 @@ class TDJoFinalizeInspectionDocument {
   Map<String, dynamic> toJson() {
     return {
       'id': id, // Nullable
-      't_d_jo_finalize_inspection_id': tDJoFIId,
+      't_d_jo_finalize_laboratory_id': tDJoFLId,
       'path_file': pathFile,
       'file_name': fileName,
       'code': code,
@@ -186,9 +192,9 @@ class TDJoFinalizeInspectionDocument {
   }
 
   // Copy method for creating a new instance with updated values
-  TDJoFinalizeInspectionDocument copyWith({
+  TDJoFinalizeLaboratoryDocument copyWith({
     int? id,
-    int? tDJoFIId,
+    int? tDJoFLId,
     String? pathFile,
     String? fileName,
     String? code,
@@ -199,9 +205,9 @@ class TDJoFinalizeInspectionDocument {
     String? createdAt,
     String? updatedAt,
   }) {
-    return TDJoFinalizeInspectionDocument(
+    return TDJoFinalizeLaboratoryDocument(
       id: id ?? this.id, // Nullable
-      tDJoFIId: tDJoFIId ?? this.tDJoFIId,
+      tDJoFLId: tDJoFLId ?? this.tDJoFLId,
       pathFile: pathFile ?? this.pathFile,
       fileName: fileName ?? this.fileName,
       code: code ?? this.code,

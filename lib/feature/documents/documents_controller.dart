@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,6 +13,7 @@ import 'package:open_filex/open_filex.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/data/model/t_d_jo_finalize_inspection.dart';
+import 'package:ops_mobile/data/model/t_d_jo_finalize_laboratory.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 
@@ -21,6 +23,8 @@ class DocumentsController extends BaseController {
 
   RxString documentType = ''.obs;
   RxString idJo = ''.obs;
+  RxInt statusJo = 0.obs;
+
 
   // Activities Documents
   late File? sampleFile;
@@ -31,16 +35,18 @@ class DocumentsController extends BaseController {
   TextEditingController documentCertificateLhv = TextEditingController();
   TextEditingController documentCertificateLs = TextEditingController();
   RxList<Map<String, dynamic>> documents = RxList();
-  RxList<List<File>> documentsAttachments = RxList();
-  RxList<File> documentAttachments = RxList();
+  RxList<List<String>> documentsAttachments = RxList();
+  RxList<String> documentAttachments = RxList();
   final _formKey = GlobalKey<FormState>();
   final _formKeyEdit = GlobalKey<FormState>();
 
   @override
   void onInit() async {
+    update();
     var arguments = await Get.arguments;
     documentType.value = arguments['type'] ?? '';
     idJo.value = arguments['id'] ?? '0';
+    statusJo.value = arguments['status'] ?? 0;
     update();
     debugPrint('document type : ${documentType.value}');
     drawerAddDocument(documentType.value);
@@ -115,7 +121,7 @@ class DocumentsController extends BaseController {
       if (pic != null) {
         final imageTemp = File(pic!.path);
         image = imageTemp;
-        documentAttachments.add(image);
+        documentAttachments.add(image.path);
         update();
       }
     } on PlatformException catch (e) {
@@ -136,10 +142,10 @@ class DocumentsController extends BaseController {
         xFiles.forEach((data) {
           final fileTemp = File(data!.path);
           final File file = fileTemp;
-          documentAttachments.add(file);
+          documentAttachments.add(file.path);
           update();
         });
-        openDialog('Success', 'Berhasil menambahkan file.');
+        //openDialog('Success', 'Berhasil menambahkan file.');
       }
     } on PlatformException catch (e) {
       openDialog('Failed', e.message ?? 'Gagal menambahkan file.');
@@ -247,7 +253,7 @@ class DocumentsController extends BaseController {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Add Stage Inspection',
+                            'Add Document ${documentType.value == 'inspect' ? 'Inspection' : 'Laboratory'}',
                             style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -429,51 +435,90 @@ class DocumentsController extends BaseController {
                                   ),
                                   itemCount: documentAttachments.value.length,
                                   itemBuilder: (content, index) {
-                                    final File photo =
+                                    final String photo =
                                         documentAttachments.value[index];
                                     final String fileType =
-                                        checkFileType(photo.path);
-                                    var filenameArr = photo.path.split("/");
+                                        checkFileType(photo);
+                                    var filenameArr = photo.split("/");
                                     var filename = filenameArr.last;
                                     return fileType == 'image'
-                                        ? SizedBox(
-                                            width: 54,
-                                            height: 54,
-                                            child: InkWell(
-                                              onTap: () {
-                                                previewImage(
-                                                    index, photo.path, '');
-                                              },
-                                              child: Image.file(
-                                                File(photo.path),
-                                                fit: BoxFit.cover,
+                                        ? Stack(
+                                          children: [
+                                            SizedBox(
+                                              width: 54,
+                                              height: 54,
+                                              child: InkWell(
+                                                onTap: () {
+                                                  previewImage(
+                                                      index, photo, '');
+                                                },
+                                                child: Image.file(
+                                                  File(photo),
+                                                  fit: BoxFit.cover,
+                                                ),
                                               ),
                                             ),
-                                          )
-                                        : fileType == 'doc'
-                                            ? InkWell(
-                                                onTap: () {
-                                                  OpenFilex.open(photo.path);
-                                                },
-                                                child: SizedBox(
-                                                  width: 54,
-                                                  height: 54,
-                                                  child: Center(
-                                                      child: Column(
-                                                    children: [
-                                                      Image.asset(
-                                                        'assets/icons/pdfIcon.png',
-                                                        height: 42,
-                                                      ),
-                                                      Text(filename,
-                                                          style: TextStyle(
-                                                              fontSize: 8),
-                                                          overflow: TextOverflow
-                                                              .ellipsis)
-                                                    ],
-                                                  )),
+                                            Align(
+                                              alignment: AlignmentDirectional.topEnd,
+                                              child: SizedBox(
+                                                height: 12,
+                                                child: IconButton(
+                                                    onPressed: (){
+                                                      controller.removeFiles(index);
+                                                    },
+                                                    icon: Icon(Icons.remove_circle,
+                                                      size: 12,
+                                                      color: Colors.red,
+                                                    )
                                                 ),
-                                              )
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                        : fileType == 'doc'
+                                            ? Stack(
+                                              children: [
+                                                InkWell(
+                                                  onTap: () {
+                                                    OpenFilex.open(photo);
+                                                  },
+                                                  child: SizedBox(
+                                                    width: 54,
+                                                    height: 54,
+                                                    child: Center(
+                                                        child: Column(
+                                                      children: [
+                                                        Image.asset(
+                                                          'assets/icons/pdfIcon.png',
+                                                          height: 42,
+                                                        ),
+                                                        Text(filename,
+                                                            style: TextStyle(
+                                                                fontSize: 8),
+                                                            overflow: TextOverflow
+                                                                .ellipsis)
+                                                      ],
+                                                    )),
+                                                  ),
+                                                ),
+                                                Align(
+                                                  alignment: AlignmentDirectional.topEnd,
+                                                  child: SizedBox(
+                                                    height: 12,
+                                                    child: IconButton(
+                                                        padding: EdgeInsets.zero,
+                                                        onPressed: (){
+                                                          controller.removeFiles(index);
+                                                        },
+                                                        icon: Icon(Icons.remove_circle,
+                                                          size: 12,
+                                                          color: Colors.red,
+                                                        )
+                                                    ),
+                                                  ),
+                                                ),
+                                              ]
+                                            )
                                             : SizedBox();
                                   })
                               : const SizedBox(),
@@ -485,7 +530,7 @@ class DocumentsController extends BaseController {
                             height: 68,
                             child: ElevatedButton(
                                 onPressed: () {
-                                  mediaPickerConfirm();
+                                  fileDocument();
                                 },
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
@@ -511,6 +556,7 @@ class DocumentsController extends BaseController {
                       Expanded(
                         child: ElevatedButton(
                             onPressed: () {
+                              clearDocumentForm();
                               Get.back();
                             },
                             style: ElevatedButton.styleFrom(
@@ -604,7 +650,7 @@ class DocumentsController extends BaseController {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Edit Stage Inspection',
+                            'Edit Document ${documentType.value == 'inspect' ? 'Inspection' : 'Laboratory'}',
                             style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -786,51 +832,91 @@ class DocumentsController extends BaseController {
                                   ),
                                   itemCount: documentAttachments.value.length,
                                   itemBuilder: (content, index) {
-                                    final File photo =
+                                    final String photo =
                                         documentAttachments.value[index];
                                     final String fileType =
-                                        checkFileType(photo.path);
-                                    var filenameArr = photo.path.split("/");
+                                        checkFileType(photo);
+                                    var filenameArr = photo.split("/");
                                     var filename = filenameArr.last;
                                     return fileType == 'image'
-                                        ? SizedBox(
-                                            width: 54,
-                                            height: 54,
-                                            child: InkWell(
-                                              onTap: () {
-                                                previewImage(
-                                                    index, photo.path, '');
-                                              },
-                                              child: Image.file(
-                                                File(photo.path),
-                                                fit: BoxFit.cover,
+                                        ? Stack(
+                                          children: [
+                                            SizedBox(
+                                              width: 54,
+                                              height: 54,
+                                              child: InkWell(
+                                                onTap: () {
+                                                  previewImage(
+                                                      index, photo, '');
+                                                },
+                                                child: Image.file(
+                                                  File(photo),
+                                                  fit: BoxFit.cover,
+                                                ),
                                               ),
                                             ),
-                                          )
-                                        : fileType == 'doc'
-                                            ? InkWell(
-                                                onTap: () {
-                                                  OpenFilex.open(photo.path);
-                                                },
-                                                child: SizedBox(
-                                                  width: 54,
-                                                  height: 54,
-                                                  child: Center(
-                                                      child: Column(
-                                                    children: [
-                                                      Image.asset(
-                                                        'assets/icons/pdfIcon.png',
-                                                        height: 42,
-                                                      ),
-                                                      Text(filename,
-                                                          style: TextStyle(
-                                                              fontSize: 8),
-                                                          overflow: TextOverflow
-                                                              .ellipsis)
-                                                    ],
-                                                  )),
+                                            Align(
+                                              alignment: AlignmentDirectional.topEnd,
+                                              child: SizedBox(
+                                                height: 12,
+                                                child: IconButton(
+                                                    padding: EdgeInsets.zero,
+                                                    onPressed: (){
+                                                      controller.removeFiles(index);
+                                                    },
+                                                    icon: Icon(Icons.remove_circle,
+                                                      size: 12,
+                                                      color: Colors.red,
+                                                    )
                                                 ),
-                                              )
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                        : fileType == 'doc'
+                                            ? Stack(
+                                              children: [
+                                                InkWell(
+                                                  onTap: () {
+                                                    OpenFilex.open(photo);
+                                                  },
+                                                  child: SizedBox(
+                                                    width: 54,
+                                                    height: 54,
+                                                    child: Center(
+                                                        child: Column(
+                                                      children: [
+                                                        Image.asset(
+                                                          'assets/icons/pdfIcon.png',
+                                                          height: 42,
+                                                        ),
+                                                        Text(filename,
+                                                            style: TextStyle(
+                                                                fontSize: 8),
+                                                            overflow: TextOverflow
+                                                                .ellipsis)
+                                                      ],
+                                                    )),
+                                                  ),
+                                                ),
+                                                Align(
+                                                  alignment: AlignmentDirectional.topEnd,
+                                                  child: SizedBox(
+                                                    height: 12,
+                                                    child: IconButton(
+                                                        padding: EdgeInsets.zero,
+                                                        onPressed: (){
+                                                          controller.removeFiles(index);
+                                                        },
+                                                        icon: Icon(Icons.remove_circle,
+                                                          size: 12,
+                                                          color: Colors.red,
+                                                        )
+                                                    ),
+                                                  ),
+                                                ),
+                                              ]
+                                            )
                                             : SizedBox();
                                   })
                               : const SizedBox(),
@@ -842,7 +928,7 @@ class DocumentsController extends BaseController {
                             height: 68,
                             child: ElevatedButton(
                                 onPressed: () {
-                                  mediaPickerConfirm();
+                                  fileDocument();
                                 },
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
@@ -868,6 +954,7 @@ class DocumentsController extends BaseController {
                       Expanded(
                         child: ElevatedButton(
                             onPressed: () {
+                              clearDocumentForm();
                               Get.back();
                             },
                             style: ElevatedButton.styleFrom(
@@ -1027,6 +1114,16 @@ class DocumentsController extends BaseController {
     documentCertificateLs.text = '';
     update();
   }
+  
+  void clearDocumentForm(){
+    documentAttachments.value = [];
+    documentCertificateNumber.text = '';
+    documentCertificateDate.text = '';
+    documentCertificateBlanko.text = '';
+    documentCertificateLhv.text = '';
+    documentCertificateLs.text = '';
+    update();
+  }
 
   void addDocumentConfirm(String type) {
     Get.dialog(
@@ -1103,6 +1200,15 @@ class DocumentsController extends BaseController {
     );
   }
 
+  void removeFiles(int index) {
+    debugPrint('documents attach before remove : ${jsonEncode(documentsAttachments.value)}');
+    debugPrint('document attach before remove : ${jsonEncode(documentAttachments.value)}');
+    documentAttachments.value.removeAt(index);
+    update();
+    debugPrint('documents attach after remove : ${jsonEncode(documentsAttachments.value)}');
+    debugPrint('document attach after remove : ${jsonEncode(documentAttachments.value)}');
+  }
+
   void openDialog(String type, String text) {
     Get.dialog(
       AlertDialog(
@@ -1153,7 +1259,8 @@ class DocumentsController extends BaseController {
   Future<void> submitDocumentInspec() async {
     var dataUser = await StorageCore().storage.read('user');
     debugPrint("submit login ${jsonDecode(dataUser)}");
-    var employeeId = jsonDecode(dataUser)['id'];
+    var employee = jsonDecode(dataUser);
+    var employeeId = employee.first['id'];
     //submit login [{id: 624, password_aes: 1nSpPO+ndJ8m4n8f3fOscA==}]
     debugPrint('Submit Document Inspection ${employeeId}');
     //RxList<Map<String, dynamic>> documents = RxList();
@@ -1177,28 +1284,70 @@ class DocumentsController extends BaseController {
     // );
 
     // Loop melalui dokumen dan simpan ke SQLite
+    late TDJoFinalizeInspection tdJoDocumentInspect;
+    late TDJoFinalizeLaboratory tdJoDocumentLab;
+
     for (var document in documents.value) {
-      TDJoFinalizeInspection tdJoDocumentInspection = TDJoFinalizeInspection(
-        tHJoId: idJo.value,
-        noReport: document['certNumber'],
-        dateReport: document['certDate'],
-        noBlankoCertificate: document['certBlanko'],
-        lhvNumber: document['certBlanko'],
-        lsNumber: document['certLs'],
-        code: "JDOI-${employeeId}-${DateTime.now().millisecondsSinceEpoch.toString()}",
-        isActive: "1",
-        isUpload: "0",
-        createdBy: employeeId,
-        createdAt: DateTime.now().toString(),
-        updatedBy: "",
-        updatedAt: "",
-      );
+      if(documentType.value == 'inspect') {
+        tdJoDocumentInspect = TDJoFinalizeInspection(
+          tHJoId: int.parse(idJo.value),
+          noReport: document['certNumber'],
+          dateReport: document['certDate'],
+          noBlankoCertificate: document['certBlanko'],
+          lhvNumber: document['certLhv'],
+          lsNumber: document['certLs'],
+          code: "JDOI-${employeeId}-${DateTime
+              .now()
+              .millisecondsSinceEpoch
+              .toString()}",
+          isActive: 1,
+          isUpload: 0,
+          createdBy: employeeId,
+          createdAt: DateTime.now().toString(),
+          updatedBy: 0,
+          updatedAt: '',
+        );
+        update();
+        debugPrint('document details: ${jsonEncode(tdJoDocumentInspect)}');
+      } else {
+        tdJoDocumentLab = TDJoFinalizeLaboratory(
+            tDJoLabId: int.parse(idJo.value),
+            noReport: document['certNumber'],
+            dateReport: document['certDate'],
+            noBlankoCertificate: document['certBlanko'],
+            lhvNumber: document['certLhv'],
+            lsNumber: document['certLs'],
+            pathPdf: '-',
+            code: "JDOI-${employeeId}-${DateTime
+                .now()
+                .millisecondsSinceEpoch
+                .toString()}",
+            isActive: 1,
+            isUpload: 0,
+            createdBy: employeeId,
+            createdAt: DateTime.now().toString(),
+            updatedBy: 0,
+            updatedAt: ''
+        );
+        update();
+        debugPrint('document details: ${jsonEncode(tdJoDocumentLab)}');
+      }
+
 
       // Menyimpan dokumen ke SQLite
-      await db.insert(
-        't_d_jo_finalize_inspection',  // Nama tabel
-        tdJoDocumentInspection.toJson()
-      );
+      if(documentType.value == 'inspect') {
+        await db.insert(
+            't_d_jo_finalize_inspection',  // Nama tabel
+            tdJoDocumentInspect.toJson()
+        );
+
+
+      } else {
+        await db.insert(
+            't_d_jo_finalize_laboratory',  // Nama tabel
+            tdJoDocumentLab.toJson()
+        );
+      }
     }
     // Get.back();
     // Get.back();

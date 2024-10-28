@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ops_mobile/feature/login/login_screen.dart';
 import 'package:ops_mobile/feature/register_device/register_device_screen.dart';
 import 'package:ops_mobile/feature/settings/settings_controller.dart';
 
@@ -14,6 +17,10 @@ class SettingsScreen extends StatelessWidget{
         builder: (controller) =>
         Scaffold(
           appBar: AppBar(
+            leading: IconButton(onPressed: (){
+              Get.off<void>(LoginScreen.new);
+            },
+                icon: Icon(Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back)),
             title: Text('Menu Admin',
               style: TextStyle(
                   fontSize: 18,
@@ -25,7 +32,7 @@ class SettingsScreen extends StatelessWidget{
             children: [
               InkWell(
                 onTap: (){
-                  Get.to<void>(() => const RegisterDeviceScreen());
+                  Get.off<void>(() => const RegisterDeviceScreen());
                 },
                 child: Container(
                   width: double.infinity,

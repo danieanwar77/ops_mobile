@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/feature/get_data/get_data_controller.dart';
+import 'package:ops_mobile/feature/login/login_screen.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class GetDataScreen extends StatefulWidget{
@@ -48,6 +49,11 @@ class _GetDataScreenState extends State<GetDataScreen> {
         builder: (controller) => Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
+            leading: IconButton(onPressed: (){
+              Get.off<void>(LoginScreen.new);
+            },
+                icon: Icon(Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back)
+            ),
             title: Text('Ambil Data Harian',
               style: TextStyle(
                   fontSize: 18,

@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
+import 'package:ops_mobile/feature/get_data/get_data_controller.dart';
 import 'package:ops_mobile/feature/get_data/get_data_screen.dart';
 import 'package:ops_mobile/feature/home/home_screen.dart';
 import 'package:ops_mobile/feature/login/login_controller.dart';
@@ -61,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               InkWell(
                                 onTap: (){
-                                  Get.to(() => SettingsScreen());
+                                  Get.off<void>(SettingsScreen());
                                 },
                                 borderRadius: BorderRadius.all(Radius.circular(8)),
                                 child: Container(
@@ -163,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           ElevatedButton(
                               onPressed: () {
-                                Get.to<void>(const GetDataScreen());
+                                Get.off<void>(GetDataScreen());
                               },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,

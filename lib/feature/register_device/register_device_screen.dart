@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/feature/register_device/register_device_controller.dart';
+import 'package:ops_mobile/feature/settings/settings_screen.dart';
 
 class RegisterDeviceScreen extends StatelessWidget{
   const RegisterDeviceScreen({super.key});
@@ -14,6 +17,10 @@ class RegisterDeviceScreen extends StatelessWidget{
       builder: (controller) => Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
+          leading: IconButton(onPressed: (){
+            Get.off<void>(SettingsScreen.new);
+          },
+              icon: Icon(Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back)),
           title: Text('Register Perangkat Pengguna',
             style: TextStyle(
                 fontSize: 18,
