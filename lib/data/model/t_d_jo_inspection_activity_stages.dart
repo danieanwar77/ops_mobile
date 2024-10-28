@@ -1,4 +1,7 @@
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_barge.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages_transhipment.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_vessel.dart';
 
 /// id : 1
 /// t_h_jo_id : 1
@@ -23,6 +26,7 @@ class TDJoInspectionActivityStages {
     String? transDate,
     String? actualQty,
     String? uomId,
+    String? uomName,
     String? remarks,
     String? code,
     String? isActive,
@@ -32,6 +36,8 @@ class TDJoInspectionActivityStages {
     String? createdAt,
     String? updatedAt,
     List<TDJoInspectionActivity>? listActivity,
+    List<TDJoInspectionActivityBarge>? listActivityBarge,
+    List<TDJoInspectionActivityStagesTranshipment>? listactivityStageTranshipment,
   }) {
     _id = id;
     _tHJoId = tHJoId;
@@ -39,6 +45,7 @@ class TDJoInspectionActivityStages {
     _transDate = transDate;
     _actualQty = actualQty;
     _uomId = uomId;
+    _uomName = uomName;
     _remarks = remarks;
     _code = code;
     _isActive = isActive;
@@ -48,6 +55,8 @@ class TDJoInspectionActivityStages {
     _createdAt = createdAt;
     _updatedAt = updatedAt;
     _listActivity = listActivity ?? [];
+    _listActivityBarge = listActivityBarge ?? [];
+    _listActivityStageTranshipment = listactivityStageTranshipment ??[];
   }
 
   TDJoInspectionActivityStages.fromJson(dynamic json) {
@@ -55,8 +64,9 @@ class TDJoInspectionActivityStages {
     _tHJoId = json['t_h_jo_id'];
     _mStatusinspectionstagesId = json['m_statusinspectionstages_id'];
     _transDate = json['trans_date'];
-    _actualQty = json['actual_qty'];
-    _uomId = json['uom_id'];
+    _actualQty = json['actual_qty'].toString();
+    _uomId = json['uom_id'].toString();
+    _uomName = json['uom_name'];
     _remarks = json['remarks'];
     _code = json['code'];
     _isActive = json['is_active'].toString();
@@ -72,6 +82,27 @@ class TDJoInspectionActivityStages {
     } else {
       _listActivity = [];
     }
+    if (json['listactivitybarge'] != null) {
+      _listActivityBarge = (json['listactivitybarge'] as List)
+          .map((e) => TDJoInspectionActivityBarge.fromJson(e))
+          .toList();
+    } else {
+      _listActivityBarge = [];
+    }
+    if (json['listactivitystagetranshipment'] != null) {
+      _listActivityStageTranshipment = (json['listactivitystagetranshipment'] as List)
+          .map((e) => TDJoInspectionActivityStagesTranshipment.fromJson(e))
+          .toList();
+    } else {
+      _listActivityStageTranshipment = [];
+    }
+
+    if (json['activityvesel'] != null) {
+      _activityVessel = TDJoInspectionActivityVessel.fromJson(json['activityvesel']);
+    } else {
+      _activityVessel = null; // atau nilai default sesuai kebutuhan
+    }
+    //listactivitystagetranshipment
   }
 
   num? _id;
@@ -80,6 +111,7 @@ class TDJoInspectionActivityStages {
   String? _transDate;
   String? _actualQty;
   String? _uomId;
+  String? _uomName;
   String? _remarks;
   String? _code;
   String? _isActive;
@@ -89,6 +121,9 @@ class TDJoInspectionActivityStages {
   String? _createdAt;
   String? _updatedAt;
   List<TDJoInspectionActivity>? _listActivity;
+  List<TDJoInspectionActivityBarge>? _listActivityBarge;
+  List<TDJoInspectionActivityStagesTranshipment>? _listActivityStageTranshipment;
+  TDJoInspectionActivityVessel? _activityVessel;
 
   TDJoInspectionActivityStages copyWith({
     num? id,
@@ -97,6 +132,7 @@ class TDJoInspectionActivityStages {
     String? transDate,
     String? actualQty,
     String? uomId,
+    String? uomName,
     String? remarks,
     String? code,
     String? isActive,
@@ -114,6 +150,7 @@ class TDJoInspectionActivityStages {
         transDate: transDate ?? _transDate,
         actualQty: actualQty ?? _actualQty,
         uomId: uomId ?? _uomId,
+        uomName: uomName ?? _uomName,
         remarks: remarks ?? _remarks,
         code: code ?? _code,
         isActive: isActive ?? _isActive,
@@ -131,6 +168,7 @@ class TDJoInspectionActivityStages {
   String? get transDate => _transDate;
   String? get actualQty => _actualQty;
   String? get uomId => _uomId;
+  String? get uomName => _uomName;
   String? get remarks => _remarks;
   String? get code => _code;
   String? get isActive => _isActive;
@@ -140,6 +178,9 @@ class TDJoInspectionActivityStages {
   String? get createdAt => _createdAt;
   String? get updatedAt => _updatedAt;
   List<TDJoInspectionActivity>? get listActivity => _listActivity;
+  List<TDJoInspectionActivityBarge>? get listActivityBarge => _listActivityBarge;
+  List<TDJoInspectionActivityStagesTranshipment>? get listActivityStageTranshipment => _listActivityStageTranshipment;
+  TDJoInspectionActivityVessel? get activityVesel => _activityVessel;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -159,6 +200,12 @@ class TDJoInspectionActivityStages {
     map['updated_at'] = _updatedAt;
     if (_listActivity != null) {
       map['listactivity'] = _listActivity?.map((v) => v.toJson()).toList();
+    }
+    if (_listActivityBarge != null) {
+      map['listactivitybarge'] = _listActivityBarge?.map((v) => v.toJson()).toList();
+    }
+    if (_listActivityStageTranshipment != null) {
+      map['listactivitybarge'] = _listActivityStageTranshipment?.map((v) => v.toJson()).toList();
     }
     return map;
   }
