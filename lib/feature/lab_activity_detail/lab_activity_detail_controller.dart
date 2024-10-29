@@ -37,7 +37,7 @@ class LabActivityDetailController extends BaseController {
   late int labId;
   final picker = ImagePicker();
   bool isLoading = false;
-  int activityLabStage = 1;
+  int activityLabStage = 0;
   List<String> labStagesName = ['Sample on Delivery', 'Sample Received', 'Preparation for Analyze', 'Analyze on Progress', 'Issued Analyzed Result', 'Report to Client'];
   RxString prelim = ''.obs;
   RxInt tat = 0.obs;
@@ -172,6 +172,7 @@ class LabActivityDetailController extends BaseController {
     List<Map<String, dynamic>> mutableRsltLabStages = rsltLabStages.map((e) => Map<String, dynamic>.from(e)).toList();
 
     for (var iLabStage in mutableRsltLabStages) {
+      activityLabStage = iLabStage['m_statuslaboratoryprogres_id'];
       List<Map<String, dynamic>> rsltLabActs = await db.rawQuery('''
         SELECT * from t_d_jo_laboratory_activity 
           where 
@@ -199,29 +200,6 @@ class LabActivityDetailController extends BaseController {
     debugPrint("print jo lab ${jsonEncode(listLabStages)}");
   }
 
-  Future<void> getJoDailyActivityLab() async {
-    var response = await repository.getJoListDailyActivityLab(id, labId) ?? JoListDailyActivityLab();
-    debugPrint('Jo Daily Activity Lab: ${jsonEncode(response)}');
-    dataListActivityLab.value = response?.data?.data ?? [];
-    if (dataListActivityLab.value.isNotEmpty) {
-      dataListActivityLab.value.forEach((item) {
-        activityLabListStages.value.add(ActivityLab(
-          tHJoId: id,
-          tDJoLaboratoryId: item.dJoLaboratoryId,
-          mStatuslaboratoryprogresId: item.mStatuslaboratoryprogresId,
-          transDate: item.transDate,
-          startActivityTime: item.startActivityTime,
-          endActivityTime: item.endActivityTime,
-          activity: item.activity,
-          createdBy: 0,
-          remarks: item.remarks,
-        )
-        );
-      });
-    }
-    activityLabStage = activityLabStage + int.parse(activityLabListStages.value.last.mStatuslaboratoryprogresId.toString());
-    update();
-  }
 
   Future<void> getJoDailyActivityLab5() async {
     var response = await repository.getJoListDailyActivityLab5(6) ?? JoListDailyActivityLab5();
@@ -409,7 +387,7 @@ class LabActivityDetailController extends BaseController {
       matchingStage.listLabActivity?.add(activity);
       debugPrint("print data matchingStage ${jsonEncode(matchingStage)}");
     } else {
-      TDJoLaboratoryActivityStages stages = new TDJoLaboratoryActivityStages(transDate: activityDate.text, mStatuslaboratoryprogresId: activityLabStage, listLabActivity: listActivity);
+      TDJoLaboratoryActivityStages stages = new TDJoLaboratoryActivityStages(transDate: activityDate.text, mStatuslaboratoryprogresId: (activityLabStage+1), listLabActivity: listActivity);
       stageListModal.add(stages);
       activityLabListTextController.value.add(TextEditingController());
     }
@@ -427,6 +405,17 @@ class LabActivityDetailController extends BaseController {
     // activityStartTime.text = '';
     // activityEndTime.text = '';
     // activityText.text = '';
+  }
+
+  void cleanModal(){
+    stageListModal.value = [];
+    activityLabListTextController.value=[];
+  }
+
+  void cleanFormModalStage5(){
+  //  sampleReceived
+    //samplePreparation
+    //sampleAnalyzed
   }
 
   void toggleEditActivity(int index) {
@@ -475,7 +464,7 @@ class LabActivityDetailController extends BaseController {
         TDJoLaboratoryActivityStages labStage = TDJoLaboratoryActivityStages(
           dJoLaboratoryId: joLab.id,
           tHJoId: joLab.tHJoId,
-          mStatuslaboratoryprogresId: activityLabStage,
+          mStatuslaboratoryprogresId: activityLabStage+1,
           transDate: stage.transDate,
           remarks: activityLabListTextController.value[index].text,
           createdBy: createdBy,
@@ -947,7 +936,7 @@ class LabActivityDetailController extends BaseController {
                               height: 16,
                             ),
                             Text(
-                              'Stage ${activityLabStage}: ${labStagesName[activityLabStage - 1]}',
+                              'Stage ${activityLabStage+1}: ${labStagesName[activityLabStage + 1]}',
                               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                             ),
                             const SizedBox(
@@ -1383,7 +1372,7 @@ class LabActivityDetailController extends BaseController {
           'Attention',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Apakah benar anda akan submit stage ${labStagesName[activityLabStage - 1]} ini? pastikan data yg anda input benar.'),
+        content: Text('Apakah benar anda akan submit stage ${labStagesName[activityLabStage + 1]} ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
             child: const Text("Close"),
@@ -1581,7 +1570,7 @@ class LabActivityDetailController extends BaseController {
           TDJoLaboratoryActivityStages labStage = TDJoLaboratoryActivityStages(
             dJoLaboratoryId: joLab.id,
             tHJoId: joLab.tHJoId,
-            mStatuslaboratoryprogresId: activityLabStage,
+            mStatuslaboratoryprogresId: activityLabStage+1,
             transDate: stage.transDate,
             remarks: activityLabListTextController.value[index].text,
             createdBy: createdBy,
@@ -1683,10 +1672,11 @@ class LabActivityDetailController extends BaseController {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             onPressed: () async {
-              activityLabStage++;
-              activitySubmitted.value = false;
+              // activityLabStage++;
+              // activitySubmitted.value = false;
               update();
               Get.back();
+              drawerDailyActivityLab();
             },
           ),
         ],
@@ -1699,26 +1689,57 @@ class LabActivityDetailController extends BaseController {
   // > Add Functions
 
   Future<String?> addActivity5LabStages() async {
-    activity5LabListStages.value = [];
-    var data = ActivityAct5Lab(
-      tHJoId: id,
-      tDJoLaboratoryId: labId,
-      mStatuslaboratoryprogresId: activityLabStage,
-      transDate: '2024-10-03',
-      startActivityTime: '02:30:00',
-      endActivityTime: '03:30:00',
-      totalSampleReceived: int.parse(sampleReceived.text),
-      totalSampleAnalyzed: int.parse(sampleAnalyzed.text),
-      totalSamplePreparation: int.parse(samplePreparation.text),
-      createdBy: userData.value?.id ?? 0,
-    );
-    activity5LabList.value.add(data);
-    // postInsertActivity5Lab(activity5LabList.value);
-    activity5LabListStages.value.add(data);
-    activitySubmitted.value = true;
-    update();
-    countPrelimTat();
-    return 'success';
+    try {
+      // Your logic here
+      final db = await SqlHelper.db();
+      List<TDJoLaboratoryActivityStages> stages = stageListModal.value;
+      final createdBy = userData.value!.id;
+      debugPrint("print jo id ${id}");
+      debugPrint("print jo lab ${jsonEncode(joLaboratory.value)}");
+      TDJoLaboratory joLab = joLaboratory.value;
+      //total_sample_received,total_sample_analyzed,total_sample_preparation
+      TDJoLaboratoryActivityStages labStage = TDJoLaboratoryActivityStages(
+        totalSampleAnalyzed: sampleAnalyzed.text.toString(),
+        totalSamplePreparation: samplePreparation.text.toString(),
+        totalSampleReceived: sampleReceived.text.toString(),
+        dJoLaboratoryId: joLab.id,
+        tHJoId: joLab.tHJoId,
+        mStatuslaboratoryprogresId: activityLabStage+1,
+        transDate: DateFormat('yyyy-MM-dd').format(DateTime.now()),
+        remarks: '',
+        createdBy: createdBy,
+        //updatedBy: createdBy,
+        createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+        code: "JOLAS-${activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+        isActive: 1,
+        isUpload: 0,
+      );
+      int rsltLabStage = await db.insert("t_d_jo_laboratory_activity_stages", labStage.toInsert());
+      return 'success';
+    } catch (e) {
+      debugPrint("print error insert ${e}");
+      return 'failed';
+    }
+    // activity5LabListStages.value = [];
+    // var data = ActivityAct5Lab(
+    //   tHJoId: id,
+    //   tDJoLaboratoryId: labId,
+    //   mStatuslaboratoryprogresId: activityLabStage+1,
+    //   transDate: '2024-10-03',
+    //   startActivityTime: '02:30:00',
+    //   endActivityTime: '03:30:00',
+    //   totalSampleReceived: int.parse(sampleReceived.text),
+    //   totalSampleAnalyzed: int.parse(sampleAnalyzed.text),
+    //   totalSamplePreparation: int.parse(samplePreparation.text),
+    //   createdBy: userData.value?.id ?? 0,
+    // );
+    // activity5LabList.value.add(data);
+    // // postInsertActivity5Lab(activity5LabList.value);
+    // activity5LabListStages.value.add(data);
+    // activitySubmitted.value = true;
+    // update();
+    // countPrelimTat();
+     return 'success';
   }
 
   Future<void> postInsertActivity5Lab(data) async {
@@ -1727,8 +1748,6 @@ class LabActivityDetailController extends BaseController {
   }
 
   void drawerDailyActivity5Lab() {
-    debugPrint('stage lab now: $activityLabStage');
-    debugPrint('submit stage state: ${activitySubmitted.value}');
     Get.bottomSheet(
         GetBuilder(
             init: LabActivityDetailController(),
@@ -1755,7 +1774,7 @@ class LabActivityDetailController extends BaseController {
                                   height: 16,
                                 ),
                                 Text(
-                                  'Stage ${activityLabStage}: ${labStagesName[activityLabStage - 1]}',
+                                  'Stage ${activityLabStage+1}: ${labStagesName[activityLabStage]}',
                                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                                 ),
                                 const SizedBox(
@@ -1917,6 +1936,7 @@ class LabActivityDetailController extends BaseController {
               if (result == 'success') {
                 Get.back();
                 Get.back();
+                await getListActivity();
                 //openDialog("Success", "Activity Stage ${activityLabStage-1} berhasil ditambahkan");
               } else {
                 Get.back();
@@ -1936,7 +1956,7 @@ class LabActivityDetailController extends BaseController {
     var data = ActivityAct5Lab(
       tHJoId: id,
       tDJoLaboratoryId: labId,
-      mStatuslaboratoryprogresId: activityLabStage,
+      mStatuslaboratoryprogresId: activityLabStage+1,
       transDate: '2024-10-03',
       startActivityTime: '02:30:00',
       endActivityTime: '03:30:00',
@@ -1958,13 +1978,17 @@ class LabActivityDetailController extends BaseController {
   }
 
   void drawerDailyActivity5LabEdit() {
-    debugPrint('stage lab now: $activityLabStage');
-    debugPrint('submit stage state: $activitySubmitted');
-    if (activity5LabList.value.isEmpty) {
-      var labAct = activity5LabListStages.value.first;
-      sampleReceived.text = labAct.totalSampleReceived!.toString();
-      sampleAnalyzed.text = labAct.totalSampleAnalyzed!.toString();
-      samplePreparation.text = labAct.totalSamplePreparation!.toString();
+    List<TDJoLaboratoryActivityStages> joLabActStages = stageList.value
+        .map((stage) => stage.copyWith())
+        .toList();
+    debugPrint("print stageList ${stageListModal.value}");
+    List<TDJoLaboratoryActivityStages> filterLabActStage = joLabActStages.where((iLabActStage) => iLabActStage.mStatuslaboratoryprogresId == 5).toList();
+
+    if (filterLabActStage.isNotEmpty) {
+      var labAct = filterLabActStage.first;
+      sampleReceived.text = Helper.formatNumber(labAct.totalSampleReceived);
+      sampleAnalyzed.text = Helper.formatNumber(labAct.totalSampleAnalyzed);
+      samplePreparation.text = Helper.formatNumber(labAct.totalSamplePreparation);
     }
     Get.bottomSheet(
         GetBuilder(
@@ -1985,7 +2009,7 @@ class LabActivityDetailController extends BaseController {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Add Stage Laboratory',
+                                  'Edit Stage Laboratory',
                                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: primaryColor),
                                 ),
                                 const SizedBox(
@@ -2169,7 +2193,7 @@ class LabActivityDetailController extends BaseController {
     Get.dialog(
       AlertDialog(
         title: Text(
-          'Attention',
+          'Attention 5',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
         content: Text('Apakah anda ingin melanjutkan ke stage berikutnya? jika Ya, anda tidak bisa mengubah stage sebelumnya. Pastikan data yang anda input benar.'),
@@ -2184,10 +2208,8 @@ class LabActivityDetailController extends BaseController {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             onPressed: () async {
-              activityLabStage++;
-              activitySubmitted.value = false;
-              update();
               Get.back();
+              drawerDailyActivity5Lab();
             },
           ),
         ],

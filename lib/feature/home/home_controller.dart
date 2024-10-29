@@ -55,7 +55,7 @@ class HomeController extends BaseController{
 
   @override
   void onInit()async{
-    initializeService();
+    //initializeService();
     //userData.value = Data.fromJson(jsonDecode(await StorageCore().storage.read('login')));
     var data = await SqlHelper.getUserDetail('1234');
     userData.value = Data(
