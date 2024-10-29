@@ -375,6 +375,7 @@ class JoWaitingController extends BaseController {
       update();
     }
    // await getJoPIC();
+    await getJoPICLocal();
    //  await getJoDailyPhoto();
    //  await getJoDailyActivity();
    //  await getJoDailyActivity5();
@@ -411,6 +412,25 @@ class JoWaitingController extends BaseController {
     var response = await repository.getJoPIC(id) ?? JoPicModel();
     debugPrint('JO PIC: ${jsonEncode(response)}');
     dataJoPIC.value = response?.data ?? DataPIC();
+  }
+
+  Future<void> getJoPICLocal() async {
+    //var response = await repository.getJoPIC(id) ?? JoPicModel();
+    var response = await SqlHelper.getDetailJoPicHistory(id);
+    debugPrint('JO PIC: ${jsonEncode(response)}');
+    var lab = dataJoDetail.value.laboratory?.map((lab){return {'name': lab.name};}).toList();
+    dataJoPIC.value = DataPIC.fromJson({
+      'detail' : {
+        'etta_vessel' : dataJoDetail.value.detail?.ettaVessel ?? '-',
+        'start_date_of_attendance' : dataJoDetail.value.detail?.startDateOfAttendance ?? '-',
+        'end_date_of_attendance' : dataJoDetail.value.detail?.endDateOfAttendance ?? '-',
+        'lokasi_kerja' : dataJoDetail.value.detail?.lokasiKerja ?? '-',
+        'pic_laboratory' : dataJoDetail.value.detail?.picLaboratory ?? '-',
+        'pic_inspector' : dataJoDetail.value.detail?.picInspector ?? '-'
+      },
+      'lab' : lab ?? [],
+      'assign_history' : response,
+    });
   }
 
   Future<void> getJoDailyPhoto() async {
@@ -570,7 +590,7 @@ class JoWaitingController extends BaseController {
   }
 
   void detailLabActivity(int? lab) {
-    Get.to(LabActivityDetailScreen(), arguments: {'id': id, 'labId': lab});
+    Get.to(LabActivityDetailScreen(), arguments: {'id': id, 'labId': lab, 'statusJo': statusId});
   }
 
   // Activity Detail Functions

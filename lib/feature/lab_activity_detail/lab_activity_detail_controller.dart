@@ -30,6 +30,7 @@ class LabActivityDetailController extends BaseController{
 
   // Settings
   late int id;
+  RxInt statusId = 0.obs;
   late int labId;
   final picker = ImagePicker();
   bool isLoading = false;
@@ -90,11 +91,13 @@ class LabActivityDetailController extends BaseController{
 
   @override
   void onInit() async {
-    userData.value = Data.fromJson(jsonDecode(await StorageCore().storage.read('login')));
+    //userData.value = Data.fromJson(jsonDecode(await StorageCore().storage.read('login')));
     var argument = await Get.arguments;
     id = argument['id'];
     labId = argument['labId'];
-    debugPrint('arguments lab: id = $id, labId = $labId');
+    statusId.value = argument['statusJo'] ?? 3;
+    update();
+    debugPrint('arguments lab: id = $id, labId = $labId, statusJo = ${statusId.value}');
     isLoading == true;
     await getData();
     update();

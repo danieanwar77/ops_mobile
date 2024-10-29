@@ -50,8 +50,9 @@ abstract interface class Repository {
   FutureOr<ResponseJoInsertActivity> updateActivityInspection(dynamic data, int id);
   FutureOr<ResponseJoInsertActivity5> insertActivityInspection5(List<FormDataArray> data);
   FutureOr<ResponseJoInsertActivity5> updateActivityInspection5(List<FormDataArray> data, int id);
-  FutureOr<ResponseJoInsertActivity5> insertActivityInspection6(List<FormDataArray> data);
-  FutureOr<ResponseJoInsertActivity5> updateActivityInspection6(List<FormDataArray> data, int id);
+  FutureOr<ResponseJoInsertActivity5> insertActivityInspection6(List<FormDataArray6> data);
+  FutureOr<ResponseJoInsertActivity5> updateActivityInspection6(List<FormDataArray6> data, int id);
   FutureOr<ResponseJoInsertActivityLab> insertActivityLab(List<ActivityLab> data);
   FutureOr<ResponseJoInsertActivity5Lab> insertActivity5Lab(List<ActivityAct5Lab> data);
+  FutureOr<dynamic> insertActivity6Lab(List<FormDataArrayLab6> data);
 }

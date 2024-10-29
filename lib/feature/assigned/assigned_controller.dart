@@ -11,10 +11,12 @@ import 'package:ops_mobile/data/storage.dart';
 class AssignedController extends BaseController{
 
   RxList<DataJo> dataJoList = RxList();
+  RxList<DataJo> dataJoListTemp = RxList();
 
   final List<String> listStatus = ['New', 'Assigned', 'On Progress', 'Waiting Approval Client', 'Completed', 'Waiting for Cancellation', 'Canceled'];
   RxInt statusJo = 0.obs;
   RxInt employeeId = 0.obs;
+  TextEditingController searchText = TextEditingController();
 
   @override
   void onInit()async {
@@ -23,6 +25,7 @@ class AssignedController extends BaseController{
     debugPrint('arguments : ${argument['employeeId']}');
     statusJo.value = argument['status'];
     employeeId.value = argument['employeeId'];
+    searchText.addListener(searchJo);
     update();
 
     final data = await SqlHelper.getListJo(employeeId.value,statusJo.value);
@@ -38,6 +41,7 @@ class AssignedController extends BaseController{
     if(response.data!.data!.isNotEmpty){
       response.data!.data!.forEach((value){
         dataJoList.value.add(DataJo.fromJson(jsonDecode(jsonEncode(value))));
+        dataJoListTemp.value.add(DataJo.fromJson(jsonDecode(jsonEncode(value))));
       });
     }
     debugPrint("JO List: ${jsonEncode(dataJoList.value)}");
@@ -48,7 +52,23 @@ class AssignedController extends BaseController{
     final data = await SqlHelper.getListJo(employeeId.value,statusJo.value);
     data.forEach((value){
       dataJoList.value.add(DataJo.fromJson(jsonDecode(jsonEncode(value))));
+      dataJoListTemp.value.add(DataJo.fromJson(jsonDecode(jsonEncode(value))));
     });
+    update();
+  }
+
+  void searchJo() {
+    final String search = searchText.text;
+    var dataSearch = dataJoListTemp.value.where((value) => ( value.joId.toString() == search || value.joId.toString().contains(search) )
+        || ( value.sbuName?.toLowerCase() == search.toLowerCase() ||  (value.sbuName?.toLowerCase() ?? '').contains(search.toLowerCase()) )
+        || ( value.kosName?.toLowerCase() == search.toLowerCase() || (value.kosName?.toLowerCase() ?? '').contains(search.toLowerCase()) )
+        || ( value.companyName?.toLowerCase() == search.toLowerCase() || (value.companyName?.toLowerCase() ?? '').contains(search.toLowerCase()) )).toList();
+    debugPrint('hasil search: ${jsonEncode(dataSearch)}');
+    dataJoList.value = dataSearch;
+    if(search == ''){
+      dataJoList.value = dataJoListTemp.value;
+      update();
+    }
     update();
   }
 

@@ -4,12 +4,14 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/core/core/constant/app_constant.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
+import 'package:ops_mobile/core/core/services/background_service.dart';
 import 'package:ops_mobile/data/model/jo_daily_photo.dart';
 import 'package:ops_mobile/data/model/jo_detail_model.dart';
 import 'package:ops_mobile/data/model/jo_list_daily_activity.dart';
@@ -19,6 +21,7 @@ import 'package:ops_mobile/data/model/jo_list_daily_activity_lab.dart';
 import 'package:ops_mobile/data/model/jo_list_daily_activity_lab5.dart';
 import 'package:ops_mobile/data/model/jo_list_model.dart';
 import 'package:ops_mobile/data/model/jo_pic_model.dart';
+import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
@@ -28,6 +31,7 @@ import 'package:path_provider_ios/path_provider_ios.dart';
 
 class HomeController extends BaseController{
 
+  final backgroundServiceHandler = BackgroundService();
   final PathProviderAndroid providerAndroid = PathProviderAndroid();
   final PathProviderIOS providerIOS = PathProviderIOS();
   late var loginData;
@@ -51,6 +55,7 @@ class HomeController extends BaseController{
 
   @override
   void onInit()async{
+    initializeService();
     //userData.value = Data.fromJson(jsonDecode(await StorageCore().storage.read('login')));
     var data = await SqlHelper.getUserDetail('1234');
     userData.value = Data(
@@ -69,6 +74,28 @@ class HomeController extends BaseController{
     connectivityResult = await (Connectivity().checkConnectivity());
     //await getJO();
     super.onInit();
+  }
+
+  Future<void> initializeService() async {
+    final service = FlutterBackgroundService();
+
+    await service.configure(
+      androidConfiguration: AndroidConfiguration(
+        onStart: BackgroundService.startService,  // Ganti ke startService
+        isForegroundMode: true,
+      ),
+      iosConfiguration: IosConfiguration(
+        onForeground: BackgroundService.startService,  // Ganti ke startService
+        onBackground: onIosBackground,
+      ),
+    );
+
+    await service.startService();
+  }
+
+  // Fungsi tambahan untuk iOS
+  bool onIosBackground(ServiceInstance service) {
+    return true;
   }
 
   void changeSliderIndex(int i){
@@ -133,6 +160,60 @@ class HomeController extends BaseController{
         ],
       ),
     );
+  }
+
+  Future<void> sendJoActivityInspection(Activity data) async {
+    try{
+      var response = await repository.insertActivityInspection(data);
+      print('response send activity inspection : ${response.message}');
+    } catch(e){
+      print('response error send activity inspection : ${jsonEncode(e)}');
+    }
+  }
+
+  Future<void> sendJoActivity5Inspection(List<FormDataArray> data) async {
+    try{
+      var response = await repository.insertActivityInspection5(data);
+      print('response send activity 5 inspection : ${response.message}');
+    } catch(e){
+      print('response error send activity 5 inspection : ${jsonEncode(e)}');
+    }
+  }
+
+  Future<void> sendJoActivity6Inspection(List<FormDataArray6> data) async {
+    try{
+      var response = await repository.insertActivityInspection6(data);
+      print('response send activity 6 inspection : ${response.message}');
+    } catch(e){
+      print('response error send activity 6 inspection : ${jsonEncode(e)}');
+    }
+  }
+
+  Future<void> sendJoActivityLaboratory(List<ActivityLab> data) async {
+    try{
+      var response = await repository.insertActivityLab(data);
+      print('response send activity laboratory : ${response.message}');
+    } catch(e){
+      print('response error send activity laboratory : ${jsonEncode(e)}');
+    }
+  }
+
+  Future<void> sendJoActivity5Laboratory(List<ActivityAct5Lab> data) async {
+    try{
+      var response = await repository.insertActivity5Lab(data);
+      print('response send activity 5 laboratory : ${response.message}');
+    } catch(e){
+      print('response error send activity 5 laboratory : ${jsonEncode(e)}');
+    }
+  }
+
+  Future<void> sendJoActivity6Laboratory(List<FormDataArrayLab6> data) async {
+    try{
+      var response = await repository.insertActivity6Lab(data);
+      print('response send activity 6 laboratory : ${response.message}');
+    } catch(e){
+      print('response error send activity 6 laboratory : ${jsonEncode(e)}');
+    }
   }
 
   // Future<void> getJO() async {
