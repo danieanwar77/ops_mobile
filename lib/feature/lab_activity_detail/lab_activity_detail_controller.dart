@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -32,6 +33,7 @@ class LabActivityDetailController extends BaseController {
 
   // Settings
   late int id;
+  RxInt statusId = 0.obs;
   late int labId;
   final picker = ImagePicker();
   bool isLoading = false;
@@ -113,10 +115,13 @@ class LabActivityDetailController extends BaseController {
         superior: dataUser.first['superior_id'].toString());
     debugPrint('data user: ${jsonEncode(userData.value)}');
 
+    //userData.value = Data.fromJson(jsonDecode(await StorageCore().storage.read('login')));
     var argument = await Get.arguments;
     id = argument['id'];
     labId = argument['labId'];
-    debugPrint('print arguments idJO = $id, labId = $labId');
+    statusId.value = argument['statusJo'] ?? 3;
+    update();
+    debugPrint('arguments lab: id = $id, labId = $labId, statusJo = ${statusId.value}');
     isLoading == true;
     await getData();
     update();
@@ -210,7 +215,8 @@ class LabActivityDetailController extends BaseController {
           activity: item.activity,
           createdBy: 0,
           remarks: item.remarks,
-        ));
+        )
+        );
       });
     }
     activityLabStage = activityLabStage + int.parse(activityLabListStages.value.last.mStatuslaboratoryprogresId.toString());
@@ -3174,7 +3180,8 @@ class LabActivityDetailController extends BaseController {
                                         onPressed: () {
                                           selectDate6(Get.context!);
                                         },
-                                        icon: const Icon(Icons.calendar_today_rounded)),
+                                        icon: const Icon(
+                                            Icons.calendar_today_rounded)),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
@@ -3294,7 +3301,9 @@ class LabActivityDetailController extends BaseController {
                                   margin: EdgeInsets.only(right: 8),
                                   height: 42,
                                   width: 42,
-                                  decoration: BoxDecoration(color: primaryColor, borderRadius: BorderRadius.circular(8)),
+                                  decoration: BoxDecoration(
+                                      color: primaryColor,
+                                      borderRadius: BorderRadius.circular(8)),
                                   child: Center(
                                     child: Icon(
                                       editActivityMode.value == false ? Icons.add : Icons.check,

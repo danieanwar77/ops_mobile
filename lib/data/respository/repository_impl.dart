@@ -392,7 +392,7 @@ class RepositoryImpl implements Repository {
   FutureOr<ResponseJoInsertActivity> insertActivityInspection(dynamic data)async{
     Response? response;
     try{
-      response = await networkCore.postRequest('/transaksi/jo/progress_daily_activity/activity',
+      response = await networkCore.postRequest('/api/transaksi/jo/progress_daily_activity/activity',
           body: {
             'formDataArray' : data
           },
@@ -434,7 +434,7 @@ class RepositoryImpl implements Repository {
   FutureOr<ResponseJoInsertActivity5> insertActivityInspection5(List<FormDataArray> data)async{
     Response? response;
     try{
-      response = await networkCore.postRequest('/transaksi/jo/progress_daily_activity/inspection/activity_5',
+      response = await networkCore.postRequest('/api/transaksi/jo/progress_daily_activity/inspection/activity_5',
           body: {
             'formDataArray' : data
           },
@@ -473,10 +473,10 @@ class RepositoryImpl implements Repository {
     return response?.body;
   }
 
-  FutureOr<ResponseJoInsertActivity5> insertActivityInspection6(List<FormDataArray> data)async{
+  FutureOr<ResponseJoInsertActivity5> insertActivityInspection6(List<FormDataArray6> data)async{
     Response? response;
     try{
-      response = await networkCore.postRequest('/transaksi/jo/progress_daily_activity/inspection/activity_6',
+      response = await networkCore.postRequest('/api/transaksi/jo/progress_daily_activity/inspection/activity_6',
           body: {
             'formDataArray' : data
           },
@@ -494,7 +494,7 @@ class RepositoryImpl implements Repository {
     return response?.body;
   }
 
-  FutureOr<ResponseJoInsertActivity5> updateActivityInspection6(List<FormDataArray> data, int id)async{
+  FutureOr<ResponseJoInsertActivity5> updateActivityInspection6(List<FormDataArray6> data, int id)async{
     Response? response;
     try{
       response = await networkCore.put('/transaksi/jo/progress_daily_activity/inspection/activity_6/$id',
@@ -518,7 +518,7 @@ class RepositoryImpl implements Repository {
   FutureOr<ResponseJoInsertActivityLab> insertActivityLab(List<ActivityLab> data)async{
     Response? response;
     try{
-      response = await networkCore.postRequest('/transaksi/jo/progress_daily_laboratory/activity',
+      response = await networkCore.postRequest('/api/transaksi/jo/progress_daily_laboratory/activity',
           body: {
             'formDataArray' : data
           },
@@ -538,7 +538,7 @@ class RepositoryImpl implements Repository {
   FutureOr<ResponseJoInsertActivity5Lab> insertActivity5Lab(List<ActivityAct5Lab> data)async{
     Response? response;
     try{
-      response = await networkCore.postRequest('/transaksi/jo/progress_daily_laboratory/activity_5',
+      response = await networkCore.postRequest('/api/transaksi/jo/progress_daily_laboratory/activity_5',
           body: {
             'formDataArray' : data
           },
@@ -553,5 +553,25 @@ class RepositoryImpl implements Repository {
     }
 
     return response?.body;
+  }
+
+  FutureOr<dynamic> insertActivity6Lab(List<FormDataArrayLab6> data)async {
+    Response? response;
+    try {
+      response = await networkCore.postRequest(
+          '/api/transaksi/jo/progress_daily_laboratory/activity',
+          body: {
+            'formDataArray': data
+          },
+          decoder: (val) => ResponseJoInsertActivity5.fromJson(val),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+      );
+    } on Exception catch (e) {
+      debugPrint(e.toString());
+      rethrow;
+    }
   }
 }
