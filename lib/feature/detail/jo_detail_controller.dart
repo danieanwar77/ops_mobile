@@ -1592,10 +1592,10 @@ class JoDetailController extends BaseController {
       activityListTextController.value.add(TextEditingController());
     }
 
-    // activityDate.text = '';
-    // activityStartTime.text = '';
-    // activityEndTime.text = '';
-    // activityText.text = '';
+    activityDate.text = '';
+    activityStartTime.text = '';
+    activityEndTime.text = '';
+    activityText.text = '';
     update();
   }
 
@@ -1749,8 +1749,7 @@ class JoDetailController extends BaseController {
             startActivityTime: activity.startActivityTime,
             endActivityTime: activity.endActivityTime,
             activity: activity.activity,
-            code:
-                'JOIAS-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+            code: 'JOIAS-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
             isActive: 1,
             isUpload: 0,
             createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),

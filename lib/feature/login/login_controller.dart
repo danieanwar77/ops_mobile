@@ -39,7 +39,7 @@ class LoginController extends BaseController{
     connectivityResult = await (Connectivity().checkConnectivity());
     await readSettings();
     username.text = loginData['e_number'];
-    password.text = "87654321";
+    password.text = "oktober";
     final directory = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
     debugPrint('path directory: $directory');
     final data = await SqlHelper.getEmployeePassword(loginData['e_number']);

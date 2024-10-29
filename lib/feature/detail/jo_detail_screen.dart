@@ -1724,7 +1724,7 @@ class JoDetailScreen extends StatelessWidget {
                                                           color: primaryColor,
                                                           borderRadius: BorderRadius.circular(6),
                                                         ),
-                                                        child: Text('New', style: TextStyle(color: Colors.white)))
+                                                        child: Text(controller.stageList.isEmpty ? "None" : controller.activityStages[controller.activityStage], style: TextStyle(color: Colors.white)))
                                                     : const SizedBox(),
                                                 Spacer(),
                                                 controller.activity6ListStages.value.isEmpty
