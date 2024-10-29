@@ -49,6 +49,7 @@ class JoWaitingController extends BaseController {
   RxBool activitySubmitted = RxBool(false);
   final _formKey = GlobalKey<FormState>();
 
+
   // Detail Data
   late int id;
   late int statusId;
