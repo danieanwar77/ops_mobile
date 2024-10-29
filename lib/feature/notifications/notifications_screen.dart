@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/feature/notifications/notifications_controller.dart';
@@ -24,59 +25,77 @@ class NotificationsScreen extends StatelessWidget{
           body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black26,
-                            spreadRadius: 0.1,
-                            blurRadius: 7,
-                            offset: Offset(0,8)
-                          )
-                        ]
-                      ),
-                      child: const Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(Icons.notifications_none_sharp),
-                          SizedBox(width: 16,),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('JO',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14
+                child: Obx(() =>
+                    controller.notifications.value.isNotEmpty ? Column(
+                    children: [
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: controller.notifications.value.length,
+                        itemBuilder: (context,index){
+                          var notif = controller.notifications[index];
+                          return InkWell(
+                            onTap: (){
+                                controller.openNotification(notif.id!, notif.joId, notif.mStatusjoId);
+                            },
+                            child: Card(
+                              margin: const EdgeInsets.only(bottom: 16),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: Stack(children: [
+                                        Icon(Icons.notifications_none_sharp),
+                                        notif.flagRead == 0 ? Align(
+                                          alignment: AlignmentDirectional.topEnd,
+                                          child: SizedBox(
+                                            height: 12,
+                                            child: Icon(Icons.circle,
+                                                  size: 12,
+                                                  color: Colors.red,
+                                                )
+                                          ),
+                                        ) : const SizedBox(),
+                                      ]),
+                                    ),
+                                    SizedBox(width: 16,),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text('JO${notif.joId}',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14
+                                            ),
+                                          ),
+                                          Text(notif.message ?? '-',
+                                            style: TextStyle(
+                                                fontSize: 14
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8,),
+                                          Text(notif.createdAt ?? '-',
+                                            style: TextStyle(
+                                                fontSize: 12
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              Text('Status: Assigned',
-                                style: TextStyle(
-                                    fontSize: 14
-                                ),
-                              ),
-                              Text('KOS: Quality Research on PIT',
-                                style: TextStyle(
-                                    fontSize: 14
-                                ),
-                              ),
-                              SizedBox(height: 16,),
-                              Text('2022-05-12  18:08:19',
-                                style: TextStyle(
-                                    fontSize: 12
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+                            ),
+                          );
+                        },
+                      )
+                    ],
+                  ) : const SizedBox(),
                 ),
               )
           ),

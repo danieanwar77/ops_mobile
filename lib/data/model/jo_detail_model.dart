@@ -492,7 +492,9 @@ class DetailJo {
       num? idPicInspector,
       num? idPicLaboratory,
       String? picLaboratory, 
-      String? picInspector, 
+      String? picInspector,
+      String? picLabJob,
+      String? picInspectorJob,
       String? destinationCountry, 
       String? destinationCategoryName, 
       String? jobCategoryName, 
@@ -545,6 +547,8 @@ class DetailJo {
     _idPicLaboratory = idPicLaboratory;
     _picLaboratory = picLaboratory;
     _picInspector = picInspector;
+    _picLabJob = picLabJob;
+    _picInspectorJob = picInspectorJob;
     _destinationCountry = destinationCountry;
     _destinationCategoryName = destinationCategoryName;
     _jobCategoryName = jobCategoryName;
@@ -600,6 +604,8 @@ class DetailJo {
     _idPicLaboratory = json['id_pic_laboratory'];
     _picLaboratory = json['pic_laboratory'];
     _picInspector = json['pic_inspector'];
+    _picLabJob = json['pic_lab_job'];
+    _picInspectorJob = json['pic_inspector_job'];
     _destinationCountry = json['destination_country'];
     _destinationCategoryName = json['destination_category_name'];
     _jobCategoryName = json['job_category_name'];
@@ -653,6 +659,8 @@ class DetailJo {
   dynamic? _idPicLaboratory;
   String? _picLaboratory;
   String? _picInspector;
+  String? _picLabJob;
+  String? _picInspectorJob;
   String? _destinationCountry;
   String? _destinationCategoryName;
   String? _jobCategoryName;
@@ -757,6 +765,8 @@ class DetailJo {
   idPicLaboratory: idPicLaboratory ?? _idPicLaboratory,
   picLaboratory: picLaboratory ?? _picLaboratory,
   picInspector: picInspector ?? _picInspector,
+  picLabJob: picLabJob ?? _picLabJob,
+  picInspectorJob: picInspectorJob ?? _picInspectorJob,
   destinationCountry: destinationCountry ?? _destinationCountry,
   destinationCategoryName: destinationCategoryName ?? _destinationCategoryName,
   jobCategoryName: jobCategoryName ?? _jobCategoryName,
@@ -810,6 +820,8 @@ class DetailJo {
   dynamic? get idPicLaboratory => _idPicLaboratory;
   String? get picLaboratory => _picLaboratory;
   String? get picInspector => _picInspector;
+  String? get picLabJob => _picLabJob;
+  String? get picInspectorJob => _picInspectorJob;
   String? get destinationCountry => _destinationCountry;
   String? get destinationCategoryName => _destinationCategoryName;
   String? get jobCategoryName => _jobCategoryName;
@@ -865,6 +877,8 @@ class DetailJo {
     map['id_pic_inspector'] = _idPicInspector;
     map['pic_laboratory'] = _picLaboratory;
     map['pic_inspector'] = _picInspector;
+    map['pic_lab_job'] = _picLabJob;
+    map['pic_inspector_job'] = _picInspectorJob;
     map['destination_country'] = _destinationCountry;
     map['destination_category_name'] = _destinationCategoryName;
     map['job_category_name'] = _jobCategoryName;

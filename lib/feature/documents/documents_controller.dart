@@ -1352,4 +1352,8 @@ class DocumentsController extends BaseController {
     // Get.back();
     // Get.back();
   }
+
+  Future<void> sendDocuments() async {
+
+  }
 }

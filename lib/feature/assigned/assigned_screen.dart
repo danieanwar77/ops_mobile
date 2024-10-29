@@ -31,8 +31,12 @@ class AssignedScreen extends StatelessWidget{
                     child: Column(
                       children: [
                         TextFormField(
+                          controller: controller.searchText,
                           cursorColor: onFocusColor,
                           style: const TextStyle(color: onFocusColor),
+                          // onChanged: (value){
+                          //   controller.searchJo(value);
+                          // },
                           decoration: InputDecoration(
                               suffixIcon: const Icon(Icons.search_sharp,
                                 color: Colors.black26,

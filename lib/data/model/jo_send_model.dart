@@ -559,6 +559,112 @@ class Barge {
 
 }
 
+/// t_h_jo_id : 6
+/// m_statusinspectionstages_id : 6
+/// uom_id : 2
+/// trans_date : "2024-08-31"
+/// start_activity_time : "15:00:00"
+/// end_activity_time : "16:00:00"
+/// created_by : 0
+/// activity : "testingg alam stage 6"
+/// remarks : "testing alam Stage 6"
+/// images : ["66fb93f0995ee.jpg"]
+
+class FormDataArray6 {
+  FormDataArray6({
+    num? tHJoId,
+    num? mStatusinspectionstagesId,
+    num? uomId,
+    String? transDate,
+    String? startActivityTime,
+    String? endActivityTime,
+    num? createdBy,
+    String? activity,
+    String? remarks,
+    List<String>? images,}){
+    _tHJoId = tHJoId;
+    _mStatusinspectionstagesId = mStatusinspectionstagesId;
+    _uomId = uomId;
+    _transDate = transDate;
+    _startActivityTime = startActivityTime;
+    _endActivityTime = endActivityTime;
+    _createdBy = createdBy;
+    _activity = activity;
+    _remarks = remarks;
+    _images = images;
+  }
+
+  FormDataArray6.fromJson(dynamic json) {
+    _tHJoId = json['t_h_jo_id'];
+    _mStatusinspectionstagesId = json['m_statusinspectionstages_id'];
+    _uomId = json['uom_id'];
+    _transDate = json['trans_date'];
+    _startActivityTime = json['start_activity_time'];
+    _endActivityTime = json['end_activity_time'];
+    _createdBy = json['created_by'];
+    _activity = json['activity'];
+    _remarks = json['remarks'];
+    _images = json['images'] != null ? json['images'].cast<String>() : [];
+  }
+  num? _tHJoId;
+  num? _mStatusinspectionstagesId;
+  num? _uomId;
+  String? _transDate;
+  String? _startActivityTime;
+  String? _endActivityTime;
+  num? _createdBy;
+  String? _activity;
+  String? _remarks;
+  List<String>? _images;
+  FormDataArray6 copyWith({  num? tHJoId,
+    num? mStatusinspectionstagesId,
+    num? uomId,
+    String? transDate,
+    String? startActivityTime,
+    String? endActivityTime,
+    num? createdBy,
+    String? activity,
+    String? remarks,
+    List<String>? images,
+  }) => FormDataArray6(  tHJoId: tHJoId ?? _tHJoId,
+    mStatusinspectionstagesId: mStatusinspectionstagesId ?? _mStatusinspectionstagesId,
+    uomId: uomId ?? _uomId,
+    transDate: transDate ?? _transDate,
+    startActivityTime: startActivityTime ?? _startActivityTime,
+    endActivityTime: endActivityTime ?? _endActivityTime,
+    createdBy: createdBy ?? _createdBy,
+    activity: activity ?? _activity,
+    remarks: remarks ?? _remarks,
+    images: images ?? _images,
+  );
+  num? get tHJoId => _tHJoId;
+  num? get mStatusinspectionstagesId => _mStatusinspectionstagesId;
+  num? get uomId => _uomId;
+  String? get transDate => _transDate;
+  String? get startActivityTime => _startActivityTime;
+  String? get endActivityTime => _endActivityTime;
+  num? get createdBy => _createdBy;
+  String? get activity => _activity;
+  String? get remarks => _remarks;
+  List<String>? get images => _images;
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['t_h_jo_id'] = _tHJoId;
+    map['m_statusinspectionstages_id'] = _mStatusinspectionstagesId;
+    map['uom_id'] = _uomId;
+    map['trans_date'] = _transDate;
+    map['start_activity_time'] = _startActivityTime;
+    map['end_activity_time'] = _endActivityTime;
+    map['created_by'] = _createdBy;
+    map['activity'] = _activity;
+    map['remarks'] = _remarks;
+    map['images'] = _images;
+    return map;
+  }
+
+}
+
 class ActivityAct5Lab {
   ActivityAct5Lab({
     num? tHJoId,
@@ -649,6 +755,101 @@ class ActivityAct5Lab {
     map['total_sample_analyzed'] = _totalSampleAnalyzed;
     map['total_sample_preparation'] = _totalSamplePreparation;
     map['created_by'] = _createdBy;
+    return map;
+  }
+
+}
+
+class FormDataArrayLab6 {
+  FormDataArrayLab6({
+    num? tHJoId,
+    num? tDJoLaboratoryId,
+    num? mStatuslaboratoryprogresId,
+    String? transDate,
+    String? startActivityTime,
+    String? endActivityTime,
+    String? activity,
+    num? createdBy,
+    String? remarks,
+    String? code,}){
+    _tHJoId = tHJoId;
+    _tDJoLaboratoryId = tDJoLaboratoryId;
+    _mStatuslaboratoryprogresId = mStatuslaboratoryprogresId;
+    _transDate = transDate;
+    _startActivityTime = startActivityTime;
+    _endActivityTime = endActivityTime;
+    _activity = activity;
+    _createdBy = createdBy;
+    _remarks = remarks;
+    _code = code;
+  }
+
+  FormDataArrayLab6.fromJson(dynamic json) {
+    _tHJoId = json['t_h_jo_id'];
+    _tDJoLaboratoryId = json['t_d_jo_laboratory_id'];
+    _mStatuslaboratoryprogresId = json['m_statuslaboratoryprogres_id'];
+    _transDate = json['trans_date'];
+    _startActivityTime = json['start_activity_time'];
+    _endActivityTime = json['end_activity_time'];
+    _activity = json['activity'];
+    _createdBy = json['created_by'];
+    _remarks = json['remarks'];
+    _code = json['code'];
+  }
+  num? _tHJoId;
+  num? _tDJoLaboratoryId;
+  num? _mStatuslaboratoryprogresId;
+  String? _transDate;
+  String? _startActivityTime;
+  String? _endActivityTime;
+  String? _activity;
+  num? _createdBy;
+  String? _remarks;
+  String? _code;
+  FormDataArrayLab6 copyWith({  num? tHJoId,
+    num? tDJoLaboratoryId,
+    num? mStatuslaboratoryprogresId,
+    String? transDate,
+    String? startActivityTime,
+    String? endActivityTime,
+    String? activity,
+    num? createdBy,
+    String? remarks,
+    String? code,
+  }) => FormDataArrayLab6(  tHJoId: tHJoId ?? _tHJoId,
+    tDJoLaboratoryId: tDJoLaboratoryId ?? _tDJoLaboratoryId,
+    mStatuslaboratoryprogresId: mStatuslaboratoryprogresId ?? _mStatuslaboratoryprogresId,
+    transDate: transDate ?? _transDate,
+    startActivityTime: startActivityTime ?? _startActivityTime,
+    endActivityTime: endActivityTime ?? _endActivityTime,
+    activity: activity ?? _activity,
+    createdBy: createdBy ?? _createdBy,
+    remarks: remarks ?? _remarks,
+    code: code ?? _code,
+  );
+  num? get tHJoId => _tHJoId;
+  num? get tDJoLaboratoryId => _tDJoLaboratoryId;
+  num? get mStatuslaboratoryprogresId => _mStatuslaboratoryprogresId;
+  String? get transDate => _transDate;
+  String? get startActivityTime => _startActivityTime;
+  String? get endActivityTime => _endActivityTime;
+  String? get activity => _activity;
+  num? get createdBy => _createdBy;
+  String? get remarks => _remarks;
+  String? get code => _code;
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['t_h_jo_id'] = _tHJoId;
+    map['t_d_jo_laboratory_id'] = _tDJoLaboratoryId;
+    map['m_statuslaboratoryprogres_id'] = _mStatuslaboratoryprogresId;
+    map['trans_date'] = _transDate;
+    map['start_activity_time'] = _startActivityTime;
+    map['end_activity_time'] = _endActivityTime;
+    map['activity'] = _activity;
+    map['created_by'] = _createdBy;
+    map['remarks'] = _remarks;
+    map['code'] = _code;
     return map;
   }
 

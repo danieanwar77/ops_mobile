@@ -147,7 +147,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                   )
                                               ) : const SizedBox(),
                                               Spacer(),
-                                              controller.activity6ListStages.value.isEmpty ? IconButton(
+                                              controller.activity6ListStages.value.isEmpty && (controller.statusId.value == 2 || controller.statusId.value == 3) ? IconButton(
                                                   onPressed: (){
                                                     if(controller.activitySubmitted.value == true){
                                                       controller.activityLabStage == 1 ? controller.nextStageActivityConfirm() :
