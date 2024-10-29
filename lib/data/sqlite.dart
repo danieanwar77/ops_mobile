@@ -1,4 +1,5 @@
 import 'package:external_path/external_path.dart';
+import 'package:flutter/widgets.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_ios/path_provider_ios.dart';
@@ -213,7 +214,7 @@ class SqlHelper extends BaseController {
       SELECT
       a.id, b.so_code, a.code,
       a.canceled_date,
-      b.created_at AS so_created_at, a.created_at AS jo_created_at, c.`name` AS status_jo, f.company_name,
+      b.created_at AS so_created_at, a.created_at AS jo_created_at, c.id AS id_status_jo, c.`name` AS status_jo, f.company_name,
       g.name as m_client_category_name, b.project_tittle,
       i.region, j.branch, k.site_office,
       l.survey_location,
@@ -228,34 +229,58 @@ class SqlHelper extends BaseController {
       case when t.end_buyer is null then t.end_buyer_other else x.company_name end as end_buyer_name,
       t.notes,
       d.`name`as sbu_name,
-      e.`name` as commodity_name, DATE(a.etta_vessel, '%d-%m-%Y') as etta_vessel,
-      DATE(a.start_date_of_attendance, '%d-%m-%Y') as start_date_of_attendance, DATE(a.end_date_of_attendance, '%d-%m-%Y') as end_date_of_attendance, k.site_office as lokasi_kerja,
-      a.pic_inspector as id_pic_inspector, a.pic_laboratory as id_pic_laboratory, y.fullname as pic_laboratory, z.fullname as pic_inspector, u.country as destination_country,
+      e.`name` as commodity_name, a.etta_vessel,
+      a.start_date_of_attendance as start_date_of_attendance, a.end_date_of_attendance as end_date_of_attendance, k.site_office as lokasi_kerja,
+      a.pic_inspector as id_pic_inspector,
+      a.pic_laboratory as id_pic_laboratory, y.fullname as pic_laboratory, z.fullname as pic_inspector,
+      ja.jabatan as pic_lab_job, jb.jabatan as pic_inspector_job,
+      u.country as destination_country,
       v.name as destination_category_name, w.name as job_category_name, d1.`name`as kos_name,
       l1.vessel, l1.qty,
       c1.name as uom_name, a.created_at as jo_created_date,
       GROUP_CONCAT(c4.barge , '|') as barge, d11.`name`as market_segment_name,
       d12.`name`as sub_market_segment_name FROM
       `t_h_jo` AS a
-      left join m_kos as d1 on d1.id = a.m_kindofservice_id JOIN t_h_so AS b ON a.t_so_id = b.id
-      JOIN m_statusjo AS c ON a.m_statusjo_id = c.id join m_sbu as d on b.sbu_id = d.id
+      left join m_kos as d1 on d1.id = a.m_kindofservice_id 
+      JOIN t_h_so AS b ON a.t_so_id = b.id
+      JOIN m_statusjo AS c ON a.m_statusjo_id = c.id 
+      join m_sbu as d on b.sbu_id = d.id
       left join m_commodity as e on b.commodity_id = e.id
-      left join t_h_lead_account as f on f.id = b.company_acc_id left join m_client_category as g on g.id= b.client_category_id left join t_d_so_est_rev_ops as h on h.so_id = b.id
-      left join region as i on i.id = h.region_id left join branch as j on j.id = h.branch_id
+      left join t_h_lead_account as f on f.id = b.company_acc_id 
+      left join m_client_category as g on g.id= b.client_category_id 
+      left join t_d_so_est_rev_ops as h on h.so_id = b.id
+      left join region as i on i.id = h.region_id 
+      left join branch as j on j.id = h.branch_id
       left join site_office as k on k.id = h.site_office_id
-      left join t_d_so_survey_loc as l on l.so_id = b.id and l.flag_active = 1 left join country as m on m.id = l.country_id
-      left join province as n on l.province_id = n.id left join city as o on l.city_id = o.id
-      left join t_d_so_discharge_port as p on p.so_id = b.id and p.flag_active = 1 left join country as q on q.id = p.country_id
-      left join province as r on p.province_id = r.id left join city as s on p.city_id = s.id
-      left join t_d_so_others_ops as t on t.so_id = b.id and t.flag_active = 1 left join country as u on u.id = t.dest_country_id
-      left join m_destination_cat as v on v.id = t.dest_cat_id and v.flag_active = 1 left join m_job_cat as w on w.id = t.job_category_id and w.flag_active = 1 left join t_h_lead_account as x on x.id = t.end_buyer and x.flag_active = 1
-      left join t_h_lead_account as x1 on x1.id = t.trader1 and x1.flag_active = 1 left join t_h_lead_account as x2 on x2.id = t.trader2 and x2.flag_active = 1 left join t_h_lead_account as x3 on x3.id = t.trader3 and x3.flag_active = 1 left join t_d_so_load_port as a1 on a1.so_id = b.id and a1.flag_active = 1 left join country as a2 on a2.id = l.country_id
-      left join province as a3 on l.province_id = a3.id left join city as a4 on l.city_id = a4.id
+      left join t_d_so_survey_loc as l on l.so_id = b.id and l.flag_active = 1 
+      left join country as m on m.id = l.country_id
+      left join province as n on l.province_id = n.id 
+      left join city as o on l.city_id = o.id
+      left join t_d_so_discharge_port as p on p.so_id = b.id and p.flag_active = 1 
+      left join country as q on q.id = p.country_id
+      left join province as r on p.province_id = r.id 
+      left join city as s on p.city_id = s.id
+      left join t_d_so_others_ops as t on t.so_id = b.id and t.flag_active = 1 
+      left join country as u on u.id = t.dest_country_id
+      left join m_destination_cat as v on v.id = t.dest_cat_id and v.flag_active = 1 
+      left join m_job_cat as w on w.id = t.job_category_id and w.flag_active = 1 
+      left join t_h_lead_account as x on x.id = t.end_buyer and x.flag_active = 1
+      left join t_h_lead_account as x1 on x1.id = t.trader1 and x1.flag_active = 1 
+      left join t_h_lead_account as x2 on x2.id = t.trader2 and x2.flag_active = 1 
+      left join t_h_lead_account as x3 on x3.id = t.trader3 and x3.flag_active = 1 
+      left join t_d_so_load_port as a1 on a1.so_id = b.id and a1.flag_active = 1 
+      left join country as a2 on a2.id = l.country_id
+      left join province as a3 on l.province_id = a3.id 
+      left join city as a4 on l.city_id = a4.id
       left join t_d_so_kos l1 on a.t_so_id = l1.so_id and a.m_kindofservice_id = l1.kos_id
-      left join t_d_so_kos_barge as c4 on c4.so_kos_id = l1.id and c4.flag_active = 1 left join m_uom c1 on c1.id = a.uom_id
+      left join t_d_so_kos_barge as c4 on c4.so_kos_id = l1.id and c4.flag_active = 1 
+      left join m_uom c1 on c1.id = a.uom_id
       left join m_market_segment as d11 on d11.id = t.market_segment_id and d11.flag_active = 1
       left join m_submarket_segment as d12 on d12.id = t.submarket_segment_id and d12.flag_active = 1
-      left join employee as y on a.pic_laboratory = y.id left join employee as z on a.pic_inspector = z.id
+      left join employee as y on a.pic_laboratory = y.id 
+      left join employee as z on a.pic_inspector = z.id
+      LEFT JOIN jabatan AS ja ON ja.id = y.jabatan_id
+      LEFT JOIN jabatan AS jb ON jb.id = z.jabatan_id
       WHERE
       a.id = $idJo
     ''');
@@ -317,7 +342,7 @@ class SqlHelper extends BaseController {
         y.fullname as pic_laboratory,
         z.fullname as pic_inspector
         FROM `t_d_jo_pic_history` as a
-        join user_profile as b on a.created_by = b.id
+        join employee as b on a.created_by = b.id
         join site_office as k on k.id = a.lokasi_kerja
         join employee as y on a.pic_laboratory = y.id
         join employee as z on a.pic_inspector = z.id
@@ -372,7 +397,7 @@ class SqlHelper extends BaseController {
 
   static Future<List<Map<String, dynamic>>> getListActivity(int idJo) async {
     final db = await SqlHelper.db();
-    return db.rawQuery('''
+    String sql = '''
       SELECT
       a.id AS inspection_stages_id,
       b.code AS code,
@@ -381,7 +406,11 @@ class SqlHelper extends BaseController {
       FROM t_d_jo_inspection_activity_stages AS a
       JOIN t_d_jo_inspection_activity AS b ON a.id = b.t_d_jo_inspection_activity_stages_id JOIN m_statusinspectionstages AS c ON c.id = a.m_statusinspectionstages_id
       WHERE a.t_h_jo_id = $idJo
-    ''');
+      AND a.is_active = 1
+      AND b.is_active = 1
+    ''';
+    debugPrint("sql get jo activity ${sql}");
+    return db.rawQuery(sql);
   }
 
   static Future<List<Map<String, dynamic>>> insertActivityStage(int idJo,int status,String transDate, String remarks, String code, int createdBy, String createdAt) async {
@@ -393,6 +422,7 @@ class SqlHelper extends BaseController {
       trans_date, 
       remarks, 
       code, 
+      is_active,
       created_by, 
       created_at) 
       VALUES(
@@ -401,6 +431,7 @@ class SqlHelper extends BaseController {
       '$transDate',
       '$remarks',
       '$code',
+      '1',
       $createdBy,
       '$createdAt')
     ''');
@@ -422,7 +453,18 @@ class SqlHelper extends BaseController {
       SELECT 
       id, code 
       FROM t_d_jo_inspection_activity_stages 
-      WHERE id = $id AND trans_date = '$date' AND created_by = $employee
+      WHERE id = $id AND trans_date = '$date' AND created_by = $employee AND is_active = 1
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getActivityListStage(int id) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      SELECT 
+      id, code 
+      FROM t_d_jo_inspection_activity 
+      WHERE t_d_jo_inspection_activity_stages_id = $id
+      AND is_active = 1
     ''');
   }
 
@@ -437,6 +479,7 @@ class SqlHelper extends BaseController {
       end_activity_time, 
       activity, 
       code, 
+      is_active,
       created_by, 
       created_at) 
       VALUES(
@@ -446,6 +489,7 @@ class SqlHelper extends BaseController {
       '$endTime',
       '$activity',
       '$code',
+      1,
       $idEmployee,
       '$createdAt');
     ''');
@@ -457,16 +501,16 @@ class SqlHelper extends BaseController {
       SELECT 
       id, code 
       FROM t_d_jo_inspection_activity 
-      WHERE id = $id AND code = $code AND created_by = $employee
+      WHERE id = $id AND code = '$code' AND created_by = $employee
     ''');
   }
 
   static Future<List<Map<String, dynamic>>> updateActivityStage(int id, String remarks, int idEmployee, String updatedAt) async {
     final db = await SqlHelper.db();
     return db.rawQuery('''
-      UPDATE t_d_jo_inspection_activity_stage SET 
-      remarks = 'remarks',
-      updated_by = $idEmployee, 
+      UPDATE t_d_jo_inspection_activity_stages SET
+      remarks = '$remarks',
+      updated_by = $idEmployee,
       updated_at = '$updatedAt'
       WHERE
       id = $id
@@ -476,11 +520,11 @@ class SqlHelper extends BaseController {
   static Future<List<Map<String, dynamic>>> updateActivity(int id, int idActStage, String startTime, String endTime, String activity, String code, int idEmployee, String updatedAt) async {
     final db = await SqlHelper.db();
     return db.rawQuery('''
-      UPDATE t_d_jo_inspection_activity SET 
-      start_activity_time = '$startTime', 
-      end_activity_time = '$endTime', 
-      activity = '$activity', 
-      updated_by = $idEmployee, 
+      UPDATE t_d_jo_inspection_activity SET
+      start_activity_time = '$startTime',
+      end_activity_time = '$endTime',
+      activity = '$activity',
+      updated_by = $idEmployee,
       updated_at = '$updatedAt'
       WHERE
       id = $id AND
@@ -492,9 +536,9 @@ class SqlHelper extends BaseController {
     final db = await SqlHelper.db();
     return db.rawQuery('''
       UPDATE t_d_jo_inspection_activity SET 
-      is_active = 0,
+      is_active = 0
       WHERE
-      t_h_jo_id = $idJo AND
+      id = $idJo AND
       code = '$code'
     ''');
   }
@@ -510,4 +554,104 @@ class SqlHelper extends BaseController {
     ''');
   }
 
+  static Future<List<Map<String, dynamic>>> getInspectionDocument(int idJo) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      SELECT 
+      id,
+      t_h_jo_id,
+      no_report, 
+      date_report,
+      no_blanko_certificate,
+      lhv_number,
+      ls_number,
+      code,
+      is_active,
+      is_upload,
+      created_by,
+      updated_by,
+      created_at,
+      updated_at
+      FROM t_d_jo_finalize_inspection
+      WHERE t_h_jo_id = $idJo
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getLaboratoryDocument(int idJo) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      SELECT 
+      id,
+      t_d_jo_laboratory_id,
+      no_report, 
+      date_report,
+      no_blanko_certificate,
+      lhv_number,
+      ls_number,
+      code,
+      is_active,
+      is_upload,
+      created_by,
+      updated_by,
+      created_at,
+      updated_at
+      FROM t_d_jo_finalize_laboratory
+      WHERE t_d_jo_laboratory_id = $idJo
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getInspectionDocumentFiles(List<dynamic> id) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      SELECT 
+      id,
+      t_d_jo_finalize_inspection_id,
+      path_file, 
+      file_name,
+      code,
+      is_active,
+      is_upload,
+      created_by,
+      updated_by,
+      created_at,
+      updated_at
+      FROM t_d_jo_document_inspection
+      WHERE t_d_jo_finalize_inspection_id in (${id.join(',')})
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getLaboratoryDocumentFiles(List<dynamic> id) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+      SELECT 
+      id,
+      t_d_jo_finalize_laboratory_id,
+      path_file, 
+      file_name,
+      code,
+      is_active,
+      is_upload,
+      created_by,
+      updated_by,
+      created_at,
+      updated_at
+      FROM t_d_jo_document_laboratory
+      WHERE t_d_jo_finalize_laboratory_id in (${id.join(',')})
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getInspectionActivityData() async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+    SELECT a.id, a.code, a.t_h_jo_id AS , a.t_d_jo_inspection_activity_stages_id, b.code AS stage_code, b.m_statusinspectionstages_id, b.trans_date, a.start_activity_time, a.end_activity_time, a.activity, b.remarks, a.is_active, a.is_upload, a.created_by, a.created_at, a.updated_by, a.updated_at FROM t_d_jo_inspection_activity a 
+    INNER JOIN t_d_jo_inspection_activity_stages b ON a.t_h_jo_id = b.t_h_jo_id AND a.t_d_jo_inspection_activity_stages_id = b.id ;
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getInspectionActivity5Data() async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+    
+    ''');
+  }
 }

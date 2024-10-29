@@ -7,12 +7,12 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:ops_mobile/app.dart';
 import 'package:ops_mobile/core/core/bindings/global_bindings.dart';
+import 'package:ops_mobile/core/core/services/background_service.dart';
 import 'package:ops_mobile/utils/firebase_options.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
 
   /// FCM START
   // await Firebase.initializeApp();
@@ -24,6 +24,7 @@ void main() async {
 
 
   GlobalBindings().dependencies();
+
   ErrorWidget.builder = (FlutterErrorDetails details) {
     return Material(
       child: Container(
