@@ -120,4 +120,38 @@ TDJoLaboratoryAttachment copyWith({  num? id,
     return map;
   }
 
+  Map<String, dynamic> toInsert() {
+    final map = <String, dynamic>{};
+    //map['id'] = _id;
+    map['t_d_jo_laboratory_id'] = _tDJoLaboratoryId;
+    map['m_statuslaboratoryprogres_id'] = _mStatuslaboratoryprogresId;
+    map['path_name'] = _pathName;
+    map['file_name'] = _fileName;
+    map['code'] = _code;
+    map['is_active'] = _isActive;
+    map['is_upload'] = _isUpload;
+    map['created_by'] = _createdBy;
+    //map['updated_by'] = _updatedBy;
+    map['created_at'] = _createdAt;
+    //map['updated_at'] = _updatedAt;
+    return map;
+  }
+
+  Map<String, dynamic> toEdit() {
+    final map = <String, dynamic>{};
+    //map['id'] = _id;
+    //map['t_d_jo_laboratory_id'] = _tDJoLaboratoryId;
+    //map['m_statuslaboratoryprogres_id'] = _mStatuslaboratoryprogresId;
+    map['path_name'] = _pathName;
+    map['file_name'] = _fileName;
+    //map['code'] = _code;
+    map['is_active'] = _isActive;
+    map['is_upload'] = _isUpload;
+    //map['created_by'] = _createdBy;
+    map['updated_by'] = _updatedBy;
+    //map['created_at'] = _createdAt;
+    map['updated_at'] = _updatedAt;
+    return map;
+  }
+
 }
