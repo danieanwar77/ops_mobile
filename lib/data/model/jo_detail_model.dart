@@ -500,7 +500,8 @@ class DetailJo {
       String? jobCategoryName, 
       String? kosName, 
       String? vessel, 
-      num? qty, 
+      num? qty,
+      num? uomId,
       String? uomName, 
       String? joCreatedDate, 
       String? barge, 
@@ -555,6 +556,7 @@ class DetailJo {
     _kosName = kosName;
     _vessel = vessel;
     _qty = qty;
+    _uomId = uomId;
     _uomName = uomName;
     _joCreatedDate = joCreatedDate;
     _barge = barge;
@@ -612,6 +614,7 @@ class DetailJo {
     _kosName = json['kos_name'];
     _vessel = json['vessel'];
     _qty = json['qty'];
+    _uomId = json['uom_id'];
     _uomName = json['uom_name'];
     _joCreatedDate = json['jo_created_date'];
     _barge = json['barge'];
@@ -667,6 +670,7 @@ class DetailJo {
   String? _kosName;
   String? _vessel;
   num? _qty;
+  num? _uomId;
   String? _uomName;
   String? _joCreatedDate;
   String? _barge;
@@ -719,6 +723,7 @@ class DetailJo {
   String? kosName,
   String? vessel,
   num? qty,
+  num? uomId,
   String? uomName,
   String? joCreatedDate,
   String? barge,
@@ -773,6 +778,7 @@ class DetailJo {
   kosName: kosName ?? _kosName,
   vessel: vessel ?? _vessel,
   qty: qty ?? _qty,
+  uomId: uomId ?? _uomId,
   uomName: uomName ?? _uomName,
   joCreatedDate: joCreatedDate ?? _joCreatedDate,
   barge: barge ?? _barge,
@@ -828,6 +834,7 @@ class DetailJo {
   String? get kosName => _kosName;
   String? get vessel => _vessel;
   num? get qty => _qty;
+  num? get uomId => _uomId;
   String? get uomName => _uomName;
   String? get joCreatedDate => _joCreatedDate;
   String? get barge => _barge;
@@ -885,6 +892,7 @@ class DetailJo {
     map['kos_name'] = _kosName;
     map['vessel'] = _vessel;
     map['qty'] = _qty;
+    map['uom_id'] = _uomId;
     map['uom_name'] = _uomName;
     map['jo_created_date'] = _joCreatedDate;
     map['barge'] = _barge;

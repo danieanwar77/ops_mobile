@@ -237,6 +237,7 @@ class SqlHelper extends BaseController {
       u.country as destination_country,
       v.name as destination_category_name, w.name as job_category_name, d1.`name`as kos_name,
       l1.vessel, l1.qty,
+      c1.id AS uom_id,
       c1.name as uom_name, a.created_at as jo_created_date,
       GROUP_CONCAT(c4.barge , '|') as barge, d11.`name`as market_segment_name,
       d12.`name`as sub_market_segment_name FROM
@@ -353,10 +354,10 @@ class SqlHelper extends BaseController {
   static Future<List<Map<String, dynamic>>> getDetailJoLaboratoryList(int idJo) async {
     final db = await SqlHelper.db();
     return db.rawQuery(''' 
-    select a.id,b.laboratorium_id , c.name, max(d.m_statuslaboratoryprogres_id) as max_stage
+    select a.id,b.laboratorium_id , c.name, ifnull(max(d.m_statuslaboratoryprogres_id),0) as max_stage
     from t_h_jo a
     join t_d_jo_laboratory b on b.t_h_jo_id = a.id
-    join t_d_jo_laboratory_activity_stages d on d.d_jo_laboratory_id = b.laboratorium_id
+    LEFT join t_d_jo_laboratory_activity_stages d on d.d_jo_laboratory_id = b.laboratorium_id AND d.t_h_jo_id = a.id
     join m_laboratorium c on c.id = b.laboratorium_id
     where a.id = $idJo
     group by b.laboratorium_id

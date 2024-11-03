@@ -117,7 +117,7 @@ class LabActivityDetailScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(width: 8),
                                     Container(
-                                        // padding: EdgeInsets.symmetric(horizontal: 1, vertical: 1),
+                                        padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                                         decoration: BoxDecoration(
                                           color: primaryColor,
                                           borderRadius: BorderRadius.circular(6),

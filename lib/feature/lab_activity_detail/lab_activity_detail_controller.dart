@@ -401,10 +401,10 @@ class LabActivityDetailController extends BaseController {
   }
 
   void cleanFormDialog() {
-    // activityDate.text = '';
-    // activityStartTime.text = '';
-    // activityEndTime.text = '';
-    // activityText.text = '';
+    activityDate.text = '';
+    activityStartTime.text = '';
+    activityEndTime.text = '';
+    activityText.text = '';
   }
 
   void cleanModal(){
