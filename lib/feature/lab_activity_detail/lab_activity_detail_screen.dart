@@ -19,7 +19,7 @@ class LabActivityDetailScreen extends StatelessWidget {
         builder: (controller) => Scaffold(
               appBar: AppBar(
                 actions: [
-                  controller.activity6ListStages.value.isNotEmpty && controller.activityLabStage == 6
+                  controller.stageList.value.where((item) => item.mStatuslaboratoryprogresId == 6).isNotEmpty && controller.activityLabStage == 6
                       ? Padding(
                           padding: const EdgeInsets.only(right: 8.0),
                           child: CircleAvatar(backgroundColor: green, child: Image.asset('assets/icons/finishjo.png', width: 21, height: 21)),
@@ -68,7 +68,7 @@ class LabActivityDetailScreen extends StatelessWidget {
                                           const SizedBox(width: 16),
                                           Expanded(
                                             child: Text(
-                                              controller.joLaboratory.value.prelimDate ?? '-',
+                                              controller.prelim.value ?? '-',
                                               style: const TextStyle(
                                                 fontSize: 14,
                                               ),
@@ -89,7 +89,7 @@ class LabActivityDetailScreen extends StatelessWidget {
                                           const SizedBox(width: 16),
                                           Expanded(
                                             child: Text(
-                                              '${controller.joLaboratory.value.tat ?? '-'} Hours',
+                                              '${controller.tat.value ?? '-'} Hours',
                                               style: const TextStyle(
                                                 fontSize: 14,
                                               ),
@@ -107,7 +107,7 @@ class LabActivityDetailScreen extends StatelessWidget {
                               child: Card(
                             color: Colors.white,
                             child: Padding(
-                                padding: EdgeInsets.only(left: 4, right: 4, top: 16, bottom: 16),
+                                padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
                                 child: Column(children: [
                                   Row(children: [
                                     Text(
@@ -131,10 +131,13 @@ class LabActivityDetailScreen extends StatelessWidget {
                                     IconButton(
                                         onPressed: () {
                                           debugPrint("print activity stage ${controller.activityLabStage}");
-                                          if (controller.activityLabStage == 0) {
+                                          if (controller.activityLabStage == 1) {
                                             controller.drawerDailyActivityLab();
                                           }
-                                          if(controller.activityLabStage > 0 && controller.activityLabStage < 4){
+                                          if (controller.activitySubmitted.value == false && (controller.activityLabStage > 1 && controller.activityLabStage < 4)) {
+                                            controller.drawerDailyActivityLab();
+                                          }
+                                          if(controller.activitySubmitted.value == true && (controller.activityLabStage > 1 && controller.activityLabStage < 4)){
                                             controller.nextStageActivityConfirm();
                                           }
                                           if(controller.activityLabStage == 4){
@@ -723,6 +726,178 @@ class LabActivityDetailScreen extends StatelessWidget {
                                               ]),
                                           ])
                                               : const SizedBox(),
+                                    controller.stageList.value.where((item) => item.mStatuslaboratoryprogresId == 6).isNotEmpty
+                                        ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Stage 6: ${controller.labStagesName[5]}',
+                                            style: TextStyle(color: green, fontSize: 14, fontWeight: FontWeight.w700),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          controller.activityLabStage == 4
+                                              ? InkWell(
+                                              onTap: () {
+                                                controller.drawerDailyActivityLabEdit(4);
+                                              },
+                                              child: Icon(Icons.mode_edit_outlined, color: primaryColor, size: 18))
+                                              : const SizedBox(),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      for (var progressActivity in controller.stageList.value.where((item) => item.mStatuslaboratoryprogresId == 4))
+                                        Column(children: [
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  'Date',
+                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                ),
+                                              ),
+                                              VerticalDivider(width: 1),
+                                              SizedBox(width: 16),
+                                              Expanded(
+                                                child: Text(
+                                                  progressActivity.transDate ?? '-',
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          const Divider(thickness: 0.4),
+                                          ListView.builder(
+                                            shrinkWrap: true,
+                                            physics: NeverScrollableScrollPhysics(),
+                                            itemCount: progressActivity.listLabActivity?.length ?? 0,
+                                            itemBuilder: (context, index) {
+                                              final activity = progressActivity.listLabActivity?[index];
+                                              return Row(
+                                                children: [
+                                                  Expanded(
+                                                    flex: 1,
+                                                    child: Text(
+                                                      'Activities',
+                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                    ),
+                                                  ),
+                                                  VerticalDivider(width: 1),
+                                                  SizedBox(width: 8),
+                                                  Expanded(
+                                                    flex: 1,
+                                                    child: Text(
+                                                      '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
+                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                    ),
+                                                  ),
+                                                  VerticalDivider(width: 1),
+                                                  SizedBox(width: 8),
+                                                  Expanded(
+                                                    flex: 2,
+                                                    child: Text(
+                                                      activity?.activity ?? '-',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                      ),
+                                                    ),
+                                                  )
+                                                ],
+                                              );
+                                            },
+                                          ),
+                                          const Divider(thickness: 0.4),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  'Remarks',
+                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                ),
+                                              ),
+                                              VerticalDivider(width: 1),
+                                              SizedBox(width: 16),
+                                              Expanded(
+                                                child: Text(
+                                                  progressActivity.remarks ?? '-',
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          const Divider(thickness: 0.4),
+                                        ]),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        'Attachment',
+                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      controller.activity6Attachments.value.isNotEmpty
+                                          ? GridView.builder(
+                                          shrinkWrap: true,
+                                          physics: NeverScrollableScrollPhysics(),
+                                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 5,
+                                            mainAxisSpacing: 8,
+                                            crossAxisSpacing: 8,
+                                          ),
+                                          itemCount: controller.activity6Attachments.value.length,
+                                          itemBuilder: (content, index) {
+                                            final File attach = controller.activity6Attachments.value[index];
+                                            final String fileType = controller.checkFileType(attach.path);
+                                            var filenameArr = attach.path.split("/");
+                                            var filename = filenameArr.last;
+                                            return fileType == 'image'
+                                                ? SizedBox(
+                                              width: 54,
+                                              height: 66,
+                                              child: SizedBox(
+                                                width: 54,
+                                                height: 54,
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    controller.previewImageAct6(index, attach.path);
+                                                  },
+                                                  child: Image.file(
+                                                    File(attach.path),
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                                : fileType == 'doc'
+                                                ? SizedBox(
+                                              width: 54,
+                                              height: 66,
+                                              child: InkWell(
+                                                onTap: () {
+                                                  OpenFilex.open(attach.path);
+                                                },
+                                                child: SizedBox(
+                                                  width: 54,
+                                                  height: 54,
+                                                  child: Center(
+                                                      child: Column(
+                                                        children: [
+                                                          Image.asset(
+                                                            'assets/icons/pdfIcon.png',
+                                                            height: 42,
+                                                          ),
+                                                          Text(filename, style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
+                                                        ],
+                                                      )),
+                                                ),
+                                              ),
+                                            )
+                                                : SizedBox();
+                                          })
+                                          : const SizedBox()
+                                    ])
+                                        : const SizedBox(),
                                         ])
                                       : const SizedBox(),
                                   controller.activity5LabListStages.value.isNotEmpty

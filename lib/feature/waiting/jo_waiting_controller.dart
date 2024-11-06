@@ -176,8 +176,9 @@ class JoWaitingController extends BaseController {
 
   @override
   void onInit() async {
-    settingsData = jsonDecode(await readSettings());
-    var dataUser = await SqlHelper.getUserDetail(settingsData['e_number']);
+    // var user = jsonDecode(await StorageCore().storage.read('user'));
+    // debugPrint('data user: ${user}');
+    var dataUser = jsonDecode(await StorageCore().storage.read('user'));
     userData.value = Data(
         id : dataUser.first['id'],
         fullname: dataUser.first['fullname'],
@@ -200,20 +201,6 @@ class JoWaitingController extends BaseController {
     debugPrint('activity stage now: $activityStage');
 
     super.onInit();
-  }
-
-  Future<String> readSettings() async {
-    String text;
-    try {
-      final directory = await providerAndroid.getApplicationDocumentsPath();
-      final File file = File('${directory}/settings.txt');
-      text = await file.readAsString();
-      debugPrint('setting txt: ${jsonDecode(text)}');
-    } catch (e) {
-      print("Couldn't read file");
-      text = '';
-    }
-    return text;
   }
 
   // Get Data

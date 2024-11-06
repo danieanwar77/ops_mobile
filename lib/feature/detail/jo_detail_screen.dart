@@ -54,7 +54,9 @@ class JoDetailScreen extends StatelessWidget {
                       'JO Details',
                       style: TextStyle(fontWeight: FontWeight.w700, color: Colors.white, fontSize: 16),
                     ),
-                    bottom: PreferredSize(preferredSize: const Size.fromHeight(kToolbarHeight), child: Container(
+                    bottom: PreferredSize(
+                        preferredSize: const Size.fromHeight(kToolbarHeight),
+                        child: Container(
                       color: Colors.white,
                       child: TabBar(
                         padding: EdgeInsets.zero,
@@ -2694,7 +2696,8 @@ class JoDetailScreen extends StatelessWidget {
                                                               Expanded(
                                                                 child: Text(
                                                                   lab.name ?? '-',
-                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700,
+                                                                  color: lab.maxStage!.toInt() > 0 && lab.maxStage!.toInt() < 6 ? stepperColor : lab.maxStage!.toInt() == 6 ? green : Colors.black ),
                                                                 ),
                                                               ),
                                                               Icon(Icons.chevron_right)

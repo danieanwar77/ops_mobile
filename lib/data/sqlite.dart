@@ -357,7 +357,7 @@ class SqlHelper extends BaseController {
     select a.id,b.laboratorium_id , c.name, ifnull(max(d.m_statuslaboratoryprogres_id),0) as max_stage
     from t_h_jo a
     join t_d_jo_laboratory b on b.t_h_jo_id = a.id
-    LEFT join t_d_jo_laboratory_activity_stages d on d.d_jo_laboratory_id = b.laboratorium_id AND d.t_h_jo_id = a.id
+    LEFT join t_d_jo_laboratory_activity_stages d on d.d_jo_laboratory_id = b.id AND d.t_h_jo_id = a.id
     join m_laboratorium c on c.id = b.laboratorium_id
     where a.id = $idJo
     group by b.laboratorium_id

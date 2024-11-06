@@ -918,31 +918,40 @@ class Laboratory {
   // };
   Laboratory({
     num? laboratoriumId,
-    String? name,}){
+    String? name,
+    num? maxStage,
+  }){
     _laboratoriumId = laboratoriumId;
     _name = name;
+    _maxStage = maxStage;
   }
 
   Laboratory.fromJson(dynamic json) {
     _laboratoriumId = json['laboratorium_id'];
     _name = json['name'];
+    _maxStage = json['max_stage'];
   }
   num? _laboratoriumId;
   String? _name;
+  num? _maxStage;
   Laboratory copyWith({
     num? laboratoriumId,
     String? name,
+    num? maxStage,
   }) => Laboratory(
     laboratoriumId: laboratoriumId ?? _laboratoriumId,
     name: name ?? _name,
+    maxStage: maxStage ?? _maxStage,
   );
   num? get laboratoriumId => _laboratoriumId;
   String? get name => _name;
+  num? get maxStage => _maxStage;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['laboratorium_id'] = _laboratoriumId;
     map['name'] = _name;
+    map['max_stage'] = _maxStage;
     return map;
   }
 }

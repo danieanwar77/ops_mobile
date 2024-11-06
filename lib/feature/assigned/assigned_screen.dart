@@ -17,7 +17,7 @@ class AssignedScreen extends StatelessWidget{
             appBar: AppBar(
               backgroundColor: primaryColor,
               foregroundColor: Colors.white,
-              title: Text('JO ${controller.listStatus[controller.statusJo.value]}',
+              title: Text('JO ${controller.statusJo.value != 0 ? controller.listStatus[controller.statusJo.value - 1] : ''}',
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold

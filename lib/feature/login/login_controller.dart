@@ -71,12 +71,13 @@ class LoginController extends BaseController{
     return text;
   }
 
-  void logInDecrypt(){
+  void logInDecrypt()async{
     isLoading = true;
     update();
     if(decryptedPassword != '' && password.text == decryptedPassword ){
       isLoading = false;
       update();
+      await StorageCore().storage.write('login', jsonEncode(loginData));
       Get.to(() => HomeScreen());
     } else {
       isLoading = false;

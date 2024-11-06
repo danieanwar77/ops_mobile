@@ -179,7 +179,9 @@ class JoDetailController extends BaseController {
 
   @override
   void onInit() async {
-    var dataUser = await SqlHelper.getUserDetail('1234');
+    // var user = jsonDecode(await StorageCore().storage.read('user'));
+    // debugPrint('data user: ${user}');
+    var dataUser = jsonDecode(await StorageCore().storage.read('user'));
     userData.value = Data(
         id: dataUser.first['id'],
         fullname: dataUser.first['fullname'],
@@ -416,7 +418,7 @@ class JoDetailController extends BaseController {
         }).toList(),
         laboratory: labo.map((item) {
           return Laboratory(
-              laboratoriumId: item['laboratorium_id'], name: item['name']);
+              laboratoriumId: item['laboratorium_id'], name: item['name'], maxStage: item['max_stage']);
         }).toList());
     barges.value = dataJoDetail.value.detail?.barge?.split('|') ?? [];
     if (barges.value.length != 0) {
@@ -812,8 +814,7 @@ class JoDetailController extends BaseController {
     dailyActivityPhotosDescText[index] = desc;
   }
 
-  Future<String> updateActivityDailyPhoto(
-      File image, int id, String desc) async {
+  Future<String> updateActivityDailyPhoto(File image, int id, String desc) async {
     var response = await repository.updateActivityDailyPhoto(image, id, desc);
     if (response?.httpCode != 200) {
       return 'failed';
@@ -1112,8 +1113,7 @@ class JoDetailController extends BaseController {
     );
   }
 
-  void previewImage(
-      int index, String photo, String desc, TDJoInspectionPict pict) async {
+  void previewImage(int index, String photo, String desc, TDJoInspectionPict pict) async {
     dailyActivityPhotosDescEdit.value.text = desc;
     activityPreviewFoto.value = await File(photo);
     Get.dialog(
@@ -4354,8 +4354,7 @@ class JoDetailController extends BaseController {
     update();
   }
 
-  Future<void> removeActivityByDate(
-      String date, int indexDate, int stage) async {
+  Future<void> removeActivityByDate(String date, int indexDate, int stage) async {
     activityList.value.removeWhere((item) =>
         item.transDate == date && item.mStatusinspectionstagesId == stage);
     activityListTextController.value.removeAt(indexDate);
@@ -4406,8 +4405,7 @@ class JoDetailController extends BaseController {
     update();
   }
 
-  Future<void> removeActivityByDateLocal(
-      String date, int indexDate, int stage, int id, String code) async {
+  Future<void> removeActivityByDateLocal(String date, int indexDate, int stage, int id, String code) async {
     debugPrint('id: $id, code: $code');
     if (id != 0 && code != '') {
       try {
