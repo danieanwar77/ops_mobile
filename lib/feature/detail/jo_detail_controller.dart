@@ -418,7 +418,7 @@ class JoDetailController extends BaseController {
         }).toList(),
         laboratory: labo.map((item) {
           return Laboratory(
-              laboratoriumId: item['laboratorium_id'], name: item['name'], maxStage: item['max_stage']);
+              id: item['t_d_jo_laboratory_id'],laboratoriumId: item['laboratorium_id'], name: item['name'], maxStage: item['max_stage']);
         }).toList());
     barges.value = dataJoDetail.value.detail?.barge?.split('|') ?? [];
     if (barges.value.length != 0) {
@@ -4361,8 +4361,7 @@ class JoDetailController extends BaseController {
     update();
   }
 
-  Future<void> removeActivityLocal(int indexitem, int index, int stage, int id,
-      String code, int stageId) async {
+  Future<void> removeActivityLocal(int indexitem, int index, int stage, int id, String code, int stageId) async {
     debugPrint('id: $id, code: $code');
     if (id != 0 || code != '') {
       try {
@@ -5608,8 +5607,7 @@ class JoDetailController extends BaseController {
     );
   }
 
-  void removeActivityConfirm(
-      String date, int indexitem, int index, int stage, String activity) {
+  void removeActivityConfirm(String date, int indexitem, int index, int stage, String activity) {
     Get.dialog(
       AlertDialog(
         title: Text(
@@ -7710,6 +7708,7 @@ class JoDetailController extends BaseController {
             ),
             onPressed: () async {
               // activityStage++;
+              await finishJo();
               activitySubmitted.value = false;
               activityFinished.value = true;
               update();
@@ -7721,10 +7720,53 @@ class JoDetailController extends BaseController {
     );
   }
 
+  Future<void> finishJo() async {
+    if((dataJoDetail.value.detail?.picInspector != null && dataJoDetail.value.detail?.picLaboratory == null) && activityFinished.value == true ){
+      try{
+        final db = await SqlHelper.db();
+        db.execute('''
+          UPDATE t_h_jo
+          SET inspection_finished_date = '${DateTime.now}', m_statusjo_id = 4
+          WHERE id = ${dataJoDetail.value.detail!.id};
+        ''');
+      } catch(e){
+        debugPrint(e.toString());
+      } finally {
+        update();
+      }
+    } else if((dataJoDetail.value.detail?.picInspector == null && dataJoDetail.value.detail?.picLaboratory != null) && dataJoDetail.value.laboratory!.where((item) => item.maxStage == 6).isNotEmpty){
+      try{
+        final db = await SqlHelper.db();
+        db.execute('''
+          UPDATE t_h_jo
+          SET laboratory_finished_date = '${DateTime.now}', m_statusjo_id = 4
+          WHERE id = ${dataJoDetail.value.detail!.id};
+        ''');
+      } catch(e){
+        debugPrint(e.toString());
+      } finally {
+        update();
+      }
+    } else if((dataJoDetail.value.detail?.picInspector != null && dataJoDetail.value.detail?.picLaboratory != null) && activityFinished.value == true && dataJoDetail.value.laboratory!.where((item) => item.maxStage == 6).isNotEmpty){
+      try{
+      final db = await SqlHelper.db();
+      db.execute('''
+            UPDATE t_h_jo
+            SET inspection_finished_date = '${DateTime.now}', laboratory_finished_date = '${DateTime.now}', m_statusjo_id = 4
+            WHERE id = ${dataJoDetail.value.detail!.id};
+          ''');
+      } catch(e){
+      debugPrint(e.toString());
+      } finally {
+      update();
+      }
+    }
+  }
+
   // Activity Lab Functions
 
-  void detailLabActivity(int? lab) {
-    Get.to(LabActivityDetailScreen(), arguments: {'id': id, 'labId': lab});
+  void detailLabActivity(int? lab, String name, int joLabId) {
+    Get.to(LabActivityDetailScreen(), arguments: {'id': id, 'labId': lab, 'name': name, 'joLabId' : joLabId});
   }
 
   void openDialog(String type, String text) {

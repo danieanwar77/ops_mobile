@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
+import 'package:ops_mobile/data/model/send_manual_model.dart';
 import 'package:ops_mobile/feature/send_manual/send_manual_controller.dart';
 
 class SendManualScreen extends StatelessWidget{
@@ -23,9 +24,11 @@ class SendManualScreen extends StatelessWidget{
             actions: [
               IconButton(
                   onPressed: ()async{
-                    controller.loadingDialog(controller.dataJo);
+                    controller.dataJoList.value = controller.joSendManualList.value;
+                    controller.loadingDialog();
                     Future.delayed(const Duration(seconds: 3),(){
                       Get.back<void>();
+                      controller.makeAFile();
                       controller.openDialog('Attention', 'Data berhasil dikirim');
                     });
                   },
@@ -47,14 +50,14 @@ class SendManualScreen extends StatelessWidget{
                               final String listJo = controller.listStatus[index];
                               return Container(
                                 child:
-                                  controller.dataJoList.value.where((item) => item.mStatusjoId == index + 1).toList().length != 0 ?
+                                  controller.joSendManualList.value.where((item) => item.status == index + 1).isNotEmpty ?
                                       Column(
                                         children: [
-                                          for(var assigned in controller.dataJoList.value.where((item) => item.mStatusjoId == 2).toList())
+                                          for(var joItem in controller.joSendManualList.value.where((item) => item.status!.toInt() == index + 1).toList())
                                             Column(
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                Text('${assigned.code ?? ''} - ${listJo}',
+                                                Text('${joItem.jo ?? ''} - ${listJo}',
                                                   style: const TextStyle(
                                                       fontSize: 14,
                                                       fontWeight: FontWeight.bold
@@ -84,18 +87,20 @@ class SendManualScreen extends StatelessWidget{
                                                           height: 48,
                                                           child: Align(
                                                             alignment: Alignment.centerLeft,
-                                                            child: Text('-'),
+                                                            child: Text(joItem.transDate ?? '-'),
                                                           ),
                                                         ),
                                                       ),
                                                       IconButton(
                                                           onPressed: (){
                                                             // listData.add(data);
-                                                            // controller.loadingDialog(listData);
-                                                            // Future.delayed(const Duration(seconds: 3),(){
-                                                            //   Get.back<void>();
-                                                            //   controller.openDialog('Attention', 'Data berhasil dikirim');
-                                                            // });
+                                                            controller.dataJoList.value.add(joItem);
+                                                            controller.loadingDialog();
+                                                            Future.delayed(const Duration(seconds: 3),(){
+                                                              Get.back<void>();
+                                                              controller.makeAFile();
+                                                              controller.openDialog('Attention', 'Data berhasil dikirim');
+                                                            });
                                                           },
                                                           icon: Image.asset('assets/icons/send.png', height: 32,)
                                                       )
@@ -104,8 +109,8 @@ class SendManualScreen extends StatelessWidget{
                                                 ),
                                                 const SizedBox(height: 24,)
                                               ],
-                                            )
-                                        ]
+                                            ),
+                                      ],
                                       ) : const SizedBox(),
                               );
                             }

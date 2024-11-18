@@ -213,6 +213,7 @@ class SqlHelper extends BaseController {
     return db.rawQuery(''' 
       SELECT
       a.id, b.so_code, a.code,
+      inspection_finished_date, laboratory_finished_date,
       a.canceled_date,
       b.created_at AS so_created_at, a.created_at AS jo_created_at, c.id AS id_status_jo, c.`name` AS status_jo, f.company_name,
       g.name as m_client_category_name, b.project_tittle,
@@ -354,7 +355,7 @@ class SqlHelper extends BaseController {
   static Future<List<Map<String, dynamic>>> getDetailJoLaboratoryList(int idJo) async {
     final db = await SqlHelper.db();
     return db.rawQuery(''' 
-    select a.id,b.laboratorium_id , c.name, ifnull(max(d.m_statuslaboratoryprogres_id),0) as max_stage
+    select a.id, b.id as t_d_jo_laboratory_id, b.laboratorium_id , c.name, ifnull(max(d.m_statuslaboratoryprogres_id),0) as max_stage
     from t_h_jo a
     join t_d_jo_laboratory b on b.t_h_jo_id = a.id
     LEFT join t_d_jo_laboratory_activity_stages d on d.d_jo_laboratory_id = b.id AND d.t_h_jo_id = a.id
@@ -655,4 +656,523 @@ class SqlHelper extends BaseController {
     
     ''');
   }
+
+  static Future<List<Map<String, dynamic>>> getDataInspectionForSendManual(int idEmployee) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+    SELECT * FROM 
+(
+SELECT 
+a.id, 
+a.m_statusjo_id AS status_jo,
+'inspection' AS jo_type,
+'activity' AS status_type, 
+NULL AS jo_laboratory_id,
+NULL AS laboratorium_id, 
+b.id AS stage_id, 
+b.code as stage_code, 
+b.m_statusinspectionstages_id AS progress_id, 
+b.trans_date, 
+b.remarks , 
+b.is_active as stage_is_active, 
+b.is_upload as stage_is_upload,
+b.created_by as stage_created_by, 
+b.created_at as stage_created_at,
+b.updated_by as stage_updated_by, 
+b.updated_at as stage_updated_at,
+NULL AS total_sample_received , 
+NULL AS total_sample_preparation , 
+NULL AS total_sample_analyzed ,
+c.id AS activity_id,
+c.code as activity_code, 
+c.start_activity_time , 
+c.end_activity_time, 
+c.activity , 
+c.is_active as activity_is_active, 
+c.is_upload as activity_is_upload,
+c.created_by as activity_created_by, 
+c.created_at as activity_created_at, 
+c.updated_by as activity_updated_by,
+c.updated_at as activity_updated_at,
+d.t_d_jo_inspection_activity_stages_id AS vessel_stage_id, 
+d.code AS vessel_code, 
+d.vessel , 
+d.is_active as vessel_is_active, 
+d.is_upload as vessel_is_upload,
+d.created_by as vessel_created_by, 
+d.created_at as vessel_created_at, 
+d.updated_by as vessel_updated_by, 
+e.id AS barge_id, 
+e.t_d_jo_inspection_activity_stages_id AS barge_stage_id , 
+e.barge, 
+e.code AS barge_code, 
+e.is_active as barge_is_active, 
+e.is_upload as barge_is_upload,
+e.created_by as barge_created_by, 
+e.created_at as barge_created_at, 
+e.updated_by as barge_updated_by, 
+f.id AS transhipment_id, 
+f.t_d_inspection_stages_id AS transhipment_stage_id, 
+f.t_d_jo_inspection_activity_id AS transhipment_activity_id , 
+f.jetty , 
+f.date_arrive , 
+f.initial_date , 
+f.final_date , 
+f.delivery_qty,
+f.uom_id , 
+f.is_active as transhipment_is_active, 
+f.is_upload as transhipment_is_upload,
+f.created_by as transhipment_created_by, 
+f.created_at as transhipment_created_at, 
+f.updated_by as transhipment_updated_by,
+g.id AS attachment_id, 
+g.t_d_jo_inspection_activity_stages_id AS attachment_stage_id , 
+NULL AS attachment_laboratory_id,
+g.path_name , 
+g.file_name, 
+g.description, 
+g.code AS attachment_code, 
+g.is_active as attachment_is_active, 
+g.is_upload as attachment_is_upload,
+g.created_by as attachment_created_by, 
+g.created_at AS attachment_created_at, 
+g.updated_by as attachment_updated_by,
+NULL AS finalize_id, NULL AS finalize_jo_id, NULL AS finalize_code, 
+NULL AS no_report, NULL AS date_report, NULL AS no_blanko_certificate, 
+NULL AS lhv_number, NULL AS ls_number,
+NULL AS finalize_is_active, NULL AS finalize_is_upload,
+NULL AS finalize_created_by, NULL AS finalize_created_at,
+NULL AS finalize_updated_by,
+NULL AS document_id, NULL AS document_path_file, NULL AS document_file_name 
+from t_h_jo a
+  left join t_d_jo_inspection_activity_stages b on b.t_h_jo_id = a.id AND b.is_active = 1
+  left join t_d_jo_inspection_activity c on c.t_h_jo_id = a.id and c.t_d_jo_inspection_activity_stages_id = b.id AND c.is_active = 1
+  LEFT JOIN t_d_jo_inspection_activity_vessel d ON d.t_d_jo_inspection_activity_stages_id = b.id AND d.t_h_jo_id = a.id AND d.is_active = 1
+  LEFT JOIN t_d_jo_inspection_activity_barge e ON e.t_h_jo_id  = a.id AND e.t_d_jo_inspection_activity_stages_id = b.id AND e.is_active = 1
+  LEFT JOIN t_d_jo_inspection_activity_stages_transhipment f ON f.t_d_inspection_stages_id = b.id AND f.t_d_jo_inspection_activity_id = c.id AND f.is_active = 1
+  LEFT JOIN t_d_jo_inspection_attachment g ON g.t_h_jo_id = a.id AND g.t_d_jo_inspection_activity_stages_id = b.id AND g.is_active = 1
+  where b.is_active = 1 and c.is_active = 1 AND a.pic_inspector = $idEmployee
+UNION
+SELECT
+b.id, 
+b.m_statusjo_id AS status_jo,
+'inspection' AS jo_type,
+'finalize' AS status_type, 
+NULL AS jo_laboratory_id,
+NULL AS laboratorium_id, 
+NULL AS stage_id, 
+NULL AS stage_code, 
+NULL AS progress_id, 
+NULL AS trans_date, 
+NULL AS remarks , 
+NULL AS stage_is_active, 
+NULL AS stage_is_upload,
+NULL AS stage_created_by, 
+NULL AS stage_created_at,
+NULL AS stage_updated_by, 
+NULL AS stage_updated_at,
+NULL AS total_sample_received , 
+NULL AS total_sample_preparation , 
+NULL AS total_sample_analyzed ,
+NULL AS activity_id,
+NULL AS activity_code, 
+NULL AS start_activity_time , 
+NULL AS end_activity_time, 
+NULL AS activity , 
+NULL AS activity_is_active, 
+NULL AS activity_is_upload,
+NULL AS activity_created_by, 
+NULL AS activity_created_at, 
+NULL AS activity_updated_by,
+NULL AS activity_updated_at,
+NULL AS vessel_stage_id, 
+NULL AS vessel_code, 
+NULL AS vessel , 
+NULL AS vessel_is_active, 
+NULL AS vessel_is_upload,
+NULL AS vessel_created_by, 
+NULL AS vessel_created_at, 
+NULL AS vessel_updated_by, 
+NULL AS barge_id, 
+NULL AS barge_stage_id , 
+NULL AS barge, 
+NULL AS barge_code, 
+NULL AS barge_is_active, 
+NULL AS barge_is_upload,
+NULL AS barge_created_by, 
+NULL AS barge_created_at, 
+NULL AS barge_updated_by, 
+NULL AS transhipment_id, 
+NULL AS transhipment_stage_id, 
+NULL AS transhipment_activity_id , 
+NULL AS jetty , 
+NULL AS date_arrive , 
+NULL AS initial_date , 
+NULL AS final_date , 
+NULL AS delivery_qty,
+NULL AS uom_id , 
+NULL AS transhipment_is_active, 
+NULL AS transhipment_is_upload,
+NULL AS transhipment_created_by, 
+NULL AS transhipment_created_at, 
+NULL AS transhipment_updated_by,
+NULL AS attachment_id, 
+NULL AS attachment_stage_id , 
+NULL AS attachment_laboratory_id,
+NULL AS path_name , 
+NULL AS file_name, 
+NULL AS description, 
+NULL AS attachment_code, 
+NULL AS attachment_is_active, 
+NULL AS attachment_is_upload,
+NULL AS attachment_created_by, 
+NULL AS attachment_created_at, 
+NULL AS attachment_updated_by,
+a.id AS finalize_id, a.t_h_jo_id AS finalize_jo_id, a.code AS finalize_code, 
+a.no_report, a.date_report, a.no_blanko_certificate, a.lhv_number, a.ls_number,
+a.is_active as finalize_is_active, a.is_upload as finalize_is_upload,
+a.created_by as finalize_created_by, a.created_at AS finalize_created_at,
+a.updated_by AS finalize_updated_by, 
+c.id AS document_id, c.path_file AS document_path_file, c.file_name AS document_file_name
+FROM t_d_jo_finalize_inspection a
+LEFT JOIN t_h_jo b ON a.t_h_jo_id = b.id
+LEFT JOIN t_d_jo_document_inspection c ON c.t_d_jo_finalize_inspection_id = a.id AND c.is_active = 1
+WHERE a.is_active = 1 AND b.pic_inspector = $idEmployee
+UNION 
+SELECT 
+a.id, 
+a.m_statusjo_id AS status_jo,
+'laboratory' AS jo_type,
+'activity' AS status_type, 
+b.id AS laboratory_id,
+b.laboratorium_id , 
+c.id AS stage_id, 
+c.code as stage_code, 
+c.m_statuslaboratoryprogres_id AS progress_id, 
+c.trans_date, 
+c.remarks , 
+c.is_active as stage_is_active, 
+c.is_upload as stage_is_upload,
+c.created_by as stage_created_by, 
+c.created_at as stage_created_at,
+c.updated_by as stage_updated_by, 
+c.updated_at as stage_updated_at,
+c.total_sample_received , 
+c.total_sample_preparation , 
+c.total_sample_analyzed ,
+d.id AS activity_id,
+d.code as activity_code, 
+d.start_activity_time , 
+d.end_activity_time, 
+d.activity , 
+d.is_active as activity_is_active, 
+d.is_upload as activity_is_upload,
+d.created_by as activity_created_by, 
+d.created_at as activity_created_at, 
+d.updated_by as activity_updated_by,
+d.updated_at as activity_updated_at,
+NULL AS vessel_stage_id, 
+NULL AS vessel_code, 
+NULL AS vessel , 
+NULL as vessel_is_active, 
+NULL as vessel_is_upload,
+NULL as vessel_created_by, 
+NULL as vessel_created_at, 
+NULL as vessel_updated_by, 
+NULL AS barge_id, 
+NULL AS barge_stage_id , 
+NULL AS barge, 
+NULL AS barge_code, 
+NULL as barge_is_active, 
+NULL as barge_is_upload,
+NULL as barge_created_by, 
+NULL as barge_created_at, 
+NULL as barge_updated_by, 
+NULL AS transhipment_id, 
+NULL AS transhipment_stage_id, 
+NULL AS transhipment_activity_id , 
+NULL AS jetty , 
+NULL AS date_arrive , 
+NULL AS initial_date , 
+NULL AS final_date , 
+NULL AS delivery_qty,
+NULL AS uom_id , 
+NULL AS transhipment_is_active, 
+NULL AS transhipment_is_upload,
+NULL AS transhipment_created_by, 
+NULL AS transhipment_created_at, 
+NULL AS transhipment_updated_by,
+e.id AS attachment_id, 
+NULL AS attachment_stage_id , 
+e.t_d_jo_laboratory_id AS attachment_laboratory_id,
+e.path_name , 
+e.file_name, 
+NULL AS description, 
+e.code AS attachment_code, 
+e.is_active as attachment_is_active, 
+e.is_upload as attachment_is_upload,
+e.created_by as attachment_created_by, 
+e.created_at AS attachment_created_at, 
+e.updated_by as attachment_updated_by,
+NULL AS finalize_id, NULL AS finalize_jo_id, NULL AS finalize_code, 
+NULL AS no_report, NULL AS date_report, NULL AS no_blanko_certificate, 
+NULL AS lhv_number, NULL AS ls_number,
+NULL AS finalize_is_active, NULL AS finalize_is_upload,
+NULL AS finalize_created_by, NULL AS finalize_created_at,
+NULL AS finalize_updated_by,
+NULL AS document_id, NULL AS document_path_file, NULL AS document_file_name 
+FROM t_h_jo a
+LEFT JOIN t_d_jo_laboratory AS b ON b.t_h_jo_id = a.id AND b.is_active = 1
+LEFT JOIN t_d_jo_laboratory_activity_stages AS c ON c.t_h_jo_id = a.id AND c.d_jo_laboratory_id = b.id AND c.is_active = 1
+LEFT JOIN t_d_jo_laboratory_activity AS d ON d.t_d_jo_laboratory_activity_stages_id = c.id AND d.t_d_jo_laboratory_id = b.id AND d.is_active = 1
+LEFT JOIN t_d_jo_laboratory_attachment AS e ON e.t_d_jo_laboratory_id = b.id AND e.is_active = 1
+where b.is_active = 1 and c.is_active = 1 AND d.is_active = 1 AND a.pic_laboratory = $idEmployee
+UNION 
+SELECT 
+b.id, 
+b.m_statusjo_id AS status_jo,
+'laboratory' AS jo_type,
+'finalize' AS status_type, 
+NULL AS jo_laboratory_id,
+NULL AS laboratorium_id, 
+NULL AS stage_id, 
+NULL AS stage_code, 
+NULL AS progress_id, 
+NULL AS trans_date, 
+NULL AS remarks , 
+NULL AS stage_is_active, 
+NULL AS stage_is_upload,
+NULL AS stage_created_by, 
+NULL AS stage_created_at,
+NULL AS stage_updated_by, 
+NULL AS stage_updated_at,
+NULL AS total_sample_received , 
+NULL AS total_sample_preparation , 
+NULL AS total_sample_analyzed ,
+NULL AS activity_id,
+NULL AS activity_code, 
+NULL AS start_activity_time , 
+NULL AS end_activity_time, 
+NULL AS activity , 
+NULL AS activity_is_active, 
+NULL AS activity_is_upload,
+NULL AS activity_created_by, 
+NULL AS activity_created_at, 
+NULL AS activity_updated_by,
+NULL AS activity_updated_at,
+NULL AS vessel_stage_id, 
+NULL AS vessel_code, 
+NULL AS vessel , 
+NULL AS vessel_is_active, 
+NULL AS vessel_is_upload,
+NULL AS vessel_created_by, 
+NULL AS vessel_created_at, 
+NULL AS vessel_updated_by, 
+NULL AS barge_id, 
+NULL AS barge_stage_id , 
+NULL AS barge, 
+NULL AS barge_code, 
+NULL AS barge_is_active, 
+NULL AS barge_is_upload,
+NULL AS barge_created_by, 
+NULL AS barge_created_at, 
+NULL AS barge_updated_by, 
+NULL AS transhipment_id, 
+NULL AS transhipment_stage_id, 
+NULL AS transhipment_activity_id , 
+NULL AS jetty , 
+NULL AS date_arrive , 
+NULL AS initial_date , 
+NULL AS final_date , 
+NULL AS delivery_qty,
+NULL AS uom_id , 
+NULL AS transhipment_is_active, 
+NULL AS transhipment_is_upload,
+NULL AS transhipment_created_by, 
+NULL AS transhipment_created_at, 
+NULL AS transhipment_updated_by,
+NULL AS attachment_id, 
+NULL AS attachment_stage_id , 
+NULL AS attachment_laboratory_id,
+NULL AS path_name , 
+NULL AS file_name, 
+NULL AS description, 
+NULL AS attachment_code, 
+NULL AS attachment_is_active, 
+NULL AS attachment_is_upload,
+NULL AS attachment_created_by, 
+NULL AS attachment_created_at, 
+NULL AS attachment_updated_by,
+a.id AS finalize_id, b.id AS finalize_jo_id, a.code AS finalize_code, 
+a.no_report, a.date_report, a.no_blanko_certificate, a.lhv_number, a.ls_number,
+a.is_active as finalize_is_active, a.is_upload as finalize_is_upload,
+a.created_by as finalize_created_by, a.created_at AS finalize_created_at,
+a.updated_by AS finalize_updated_by, 
+c.id AS document_id, c.path_file AS document_path_file, c.file_name AS document_file_name
+FROM t_d_jo_finalize_laboratory a
+LEFT JOIN t_d_jo_laboratory d ON d.id = a.t_d_jo_laboratory_id 
+LEFT JOIN t_h_jo b ON b.id = d.t_h_jo_id
+LEFT JOIN t_d_jo_document_inspection c ON c.t_d_jo_finalize_inspection_id = a.id AND c.is_active = 1
+WHERE a.is_active = 1 AND b.pic_laboratory = $idEmployee
+) ORDER BY id
+    ''');
+  }
+
+  static Future<List<Map<String, dynamic>>> getDetailActivityLaboratory(int id, int employeeId, int labId) async {
+    final db = await SqlHelper.db();
+    return db.rawQuery('''
+    SELECT
+a.id, 
+a.m_statusjo_id AS status_jo,
+'laboratory' AS jo_type,
+'activity' AS status_type, 
+b.id AS laboratory_id,
+b.laboratorium_id , 
+c.id AS stage_id, 
+c.code as stage_code, 
+c.m_statuslaboratoryprogres_id AS progress_id, 
+c.trans_date, 
+c.remarks , 
+c.is_active as stage_is_active, 
+c.is_upload as stage_is_upload,
+c.created_by as stage_created_by, 
+c.created_at as stage_created_at,
+c.updated_by as stage_updated_by, 
+c.updated_at as stage_updated_at,
+c.total_sample_received , 
+c.total_sample_preparation , 
+c.total_sample_analyzed ,
+d.id AS activity_id,
+d.code as activity_code, 
+d.start_activity_time , 
+d.end_activity_time, 
+d.activity , 
+d.is_active as activity_is_active, 
+d.is_upload as activity_is_upload,
+d.created_by as activity_created_by, 
+d.created_at as activity_created_at, 
+d.updated_by as activity_updated_by,
+d.updated_at as activity_updated_at,
+e.id AS attachment_id, 
+NULL AS attachment_stage_id , 
+e.t_d_jo_laboratory_id AS attachment_laboratory_id,
+e.path_name , 
+e.file_name, 
+NULL AS description, 
+e.code AS attachment_code, 
+e.is_active as attachment_is_active, 
+e.is_upload as attachment_is_upload,
+e.created_by as attachment_created_by, 
+e.created_at AS attachment_created_at, 
+e.updated_by as attachment_updated_by,
+NULL AS finalize_id, NULL AS finalize_jo_id, NULL AS finalize_code, 
+NULL AS no_report, NULL AS date_report, NULL AS no_blanko_certificate, 
+NULL AS lhv_number, NULL AS ls_number,
+NULL AS finalize_is_active, NULL AS finalize_is_upload,
+NULL AS finalize_created_by, NULL AS finalize_created_at,
+NULL AS finalize_updated_by,
+NULL AS document_id, NULL AS document_path_file, NULL AS document_file_name 
+FROM t_h_jo a
+LEFT JOIN t_d_jo_laboratory AS b ON b.t_h_jo_id = a.id AND b.is_active = 1
+LEFT JOIN t_d_jo_laboratory_activity_stages AS c ON c.t_h_jo_id = a.id AND c.d_jo_laboratory_id = b.id AND c.is_active = 1
+LEFT JOIN t_d_jo_laboratory_activity AS d ON d.t_d_jo_laboratory_activity_stages_id = c.id AND d.t_d_jo_laboratory_id = b.id AND d.is_active = 1
+LEFT JOIN t_d_jo_laboratory_attachment AS e ON e.t_d_jo_laboratory_id = b.id AND e.is_active = 1
+WHERE a.id = $id AND b.laboratorium_id = $labId AND a.pic_laboratory = $employeeId
+    ''');
+  }
+
+  static Future<void> insertLaboratoryActivity(String stage, String activity) async {
+    final db = await SqlHelper.db();
+    db.execute('''
+      INSERT INTO t_d_jo_laboratory_activity_stages (d_jo_laboratory_id, t_h_jo_id, m_statuslaboratoryprogres_id, trans_date, remarks, created_by, created_at, code, is_active, is_upload)
+     VALUES $stage
+    ''');
+    db.execute('''
+      INSERT INTO t_d_jo_laboratory_activity (t_d_jo_laboratory_activity_stages_id, t_d_jo_laboratory_id, start_activity_time, end_activity_time, activity, code, is_active, is_upload, created_by, created_at)
+         VALUES $activity
+    ''');
+  }
+
+  static Future<void> updateLaboratoryActivity(String stage, String activity) async {
+    final db = await SqlHelper.db();
+    db.execute('''
+      INSERT OR REPLACE INTO t_d_jo_laboratory_activity_stages (id, d_jo_laboratory_id, t_h_jo_id, m_statuslaboratoryprogres_id, trans_date, remarks, created_by, created_at, code, is_active, is_upload)
+     VALUES $stage
+    ''');
+    db.execute('''
+      INSERT OR REPLACE INTO t_d_jo_laboratory_activity (id, t_d_jo_laboratory_activity_stages_id, t_d_jo_laboratory_id, start_activity_time, end_activity_time, activity, code, is_active, is_upload, created_by, created_at)
+         VALUES $activity
+    ''');
+  }
+
+  static Future<void> insertLaboratoryActivity5(String stage, String activity) async {
+    final db = await SqlHelper.db();
+    db.execute('''
+      INSERT INTO t_d_jo_laboratory_activity_stages (d_jo_laboratory_id, t_h_jo_id, m_statuslaboratoryprogres_id, trans_date, remarks, created_by, created_at, code, is_active, is_upload)
+     VALUES $stage
+    ''');
+    db.execute('''
+      INSERT INTO t_d_jo_laboratory_activity (t_d_jo_laboratory_activity_stages_id, t_d_jo_laboratory_id, start_activity_time, end_activity_time, activity, code, is_active, is_upload, created_by, created_at)
+         VALUES $activity
+    ''');
+  }
+
+  static Future<void> updateLaboratoryActivity5(String stage, String activity) async {
+    final db = await SqlHelper.db();
+    db.execute('''
+      INSERT OR REPLACE INTO t_d_jo_laboratory_activity_stages (id, d_jo_laboratory_id, t_h_jo_id, m_statuslaboratoryprogres_id, trans_date, remarks, total_sample_received, total_sample_analyzed, total_sample_preparation, created_by, created_at, code, is_active, is_upload)
+     VALUES $stage
+    ''');
+    db.execute('''
+      INSERT OR REPLACE INTO t_d_jo_laboratory_activity (id, t_d_jo_laboratory_activity_stages_id, t_d_jo_laboratory_id, start_activity_time, end_activity_time, activity, code, is_active, is_upload, created_by, created_at)
+         VALUES $activity
+    ''');
+  }
+
+  static Future<void> insertLaboratoryActivity6(String stage, String activity, String? attachment) async {
+    final db = await SqlHelper.db();
+    db.execute('''
+      INSERT INTO t_d_jo_laboratory_activity_stages (d_jo_laboratory_id, t_h_jo_id, m_statuslaboratoryprogres_id, trans_date, remarks, total_sample_received, total_sample_analyzed, total_sample_preparation, created_by, created_at, code, is_active, is_upload)
+     VALUES $stage
+    ''');
+    db.execute('''
+      INSERT INTO t_d_jo_laboratory_activity (t_d_jo_laboratory_activity_stages_id, t_d_jo_laboratory_id, start_activity_time, end_activity_time, activity, code, is_active, is_upload, created_by, created_at)
+         VALUES $activity
+    ''');
+    if(attachment != null){
+      db.execute('''
+      INSERT INTO t_d_jo_laboratory_attachment (t_d_jo_laboratory_id, m_statuslaboratoryprogres_id, path_name, file_name, code, is_active, is_upload, created_by, created_at)
+        VALUES $attachment
+    ''');
+    }
+  }
+
+  static Future<void> updateLaboratoryActivity6(String stage, String activity, String? attachment) async {
+    final db = await SqlHelper.db();
+    db.execute('''
+      INSERT OR REPLACE INTO t_d_jo_laboratory_activity_stages (id, d_jo_laboratory_id, t_h_jo_id, m_statuslaboratoryprogres_id, trans_date, remarks, created_by, updated_by, created_at, updated_at, code, is_active, is_upload)
+     VALUES $stage
+    ''');
+    db.execute('''
+      INSERT OR REPLACE INTO t_d_jo_laboratory_activity (id, t_d_jo_laboratory_activity_stages_id, t_d_jo_laboratory_id, start_activity_time, end_activity_time, activity, code, is_active, is_upload, created_by, updated_by, created_at, updated_at)
+         VALUES $activity
+    ''');
+    if(attachment != null){
+      db.execute('''
+      INSERT INTO t_d_jo_laboratory_attachment (id, t_d_jo_laboratory_id, m_statuslaboratoryprogres_id, path_name, file_name, code, is_active, is_upload, created_by, updated_by, created_at, updated_at)
+        VALUES $attachment
+    ''');
+    }
+  }
+
+  static Future<void> finishProgressJo(String query) async {
+    final db = await SqlHelper.db();
+    db.execute('''
+      
+    ''');
+  }
+
 }
+
+
+

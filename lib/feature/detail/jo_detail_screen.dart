@@ -23,7 +23,9 @@ class JoDetailScreen extends StatelessWidget {
               child: Scaffold(
                   appBar: AppBar(
                     actions: [
-                      controller.activityFinished.value == true
+                      ((controller.dataJoDetail.value.detail?.picInspector != null && controller.dataJoDetail.value.detail?.picLaboratory == null) && controller.activityFinished.value == true ) ||
+                          ((controller.dataJoDetail.value.detail?.picInspector == null && controller.dataJoDetail.value.detail?.picLaboratory != null) && controller.dataJoDetail.value.laboratory!.where((item) => item.maxStage == 6).isNotEmpty) ||
+                          ((controller.dataJoDetail.value.detail?.picInspector != null && controller.dataJoDetail.value.detail?.picLaboratory != null) && controller.activityFinished.value == true && controller.dataJoDetail.value.laboratory!.where((item) => item.maxStage == 6).isNotEmpty)
                           ? IconButton(
                               onPressed: (){
                                 controller.finishStageActivityConfirm();
@@ -2682,7 +2684,7 @@ class JoDetailScreen extends StatelessWidget {
                                             SizedBox(
                                               child: InkWell(
                                                 onTap: () {
-                                                  controller.detailLabActivity(int.parse(lab.laboratoriumId.toString()));
+                                                  controller.detailLabActivity(lab.laboratoriumId!.toInt(), lab.name!, lab.id!.toInt());
                                                 },
                                                 child: Card(
                                                     color: Colors.white,
@@ -2715,7 +2717,7 @@ class JoDetailScreen extends StatelessWidget {
                                       : SizedBox(
                                     child: InkWell(
                                       onTap: () {
-                                        controller.detailLabActivity(0);
+                                        controller.detailLabActivity(0,'',0);
                                       },
                                       child: Card(
                                           color: Colors.white,

@@ -58,7 +58,9 @@ class DataDetail {
       List<Lap>? lap, 
       List<StdMethod>? stdMethod, 
       List<PicHist>? picHist,
-      List<Laboratory>? laboratory
+      List<Laboratory>? laboratory,
+      String? inspectionFinishedDate,
+      String? laboratoryFinishedDate,
   }){
     _detail = detail;
     _sow = sow;
@@ -67,6 +69,8 @@ class DataDetail {
     _stdMethod = stdMethod;
     _picHist = picHist;
     _laboratory = laboratory;
+    _inspectionFinishedDate = inspectionFinishedDate;
+    _laboratoryFinishedDate = laboratoryFinishedDate;
 }
 
   DataDetail.fromJson(dynamic json) {
@@ -107,6 +111,8 @@ class DataDetail {
         _laboratory?.add(Laboratory.fromJson(v));
       });
     }
+    _inspectionFinishedDate = json['inspection_finished_date'];
+    _laboratoryFinishedDate = json['laboratory_finished_date'];
   }
   DetailJo? _detail;
   List<Sow>? _sow;
@@ -115,6 +121,8 @@ class DataDetail {
   List<StdMethod>? _stdMethod;
   List<PicHist>? _picHist;
   List<Laboratory>? _laboratory;
+  String? _inspectionFinishedDate;
+  String? _laboratoryFinishedDate;
 DataDetail copyWith({  DetailJo? detail,
   List<Sow>? sow,
   List<Oos>? oos,
@@ -122,6 +130,8 @@ DataDetail copyWith({  DetailJo? detail,
   List<StdMethod>? stdMethod,
   List<PicHist>? picHist,
   List<Laboratory>? laboratory,
+  String? inspectionFinishedDate,
+  String? laboratoryFinishedDate,
 }) => DataDetail(  detail: detail ?? _detail,
   sow: sow ?? _sow,
   oos: oos ?? _oos,
@@ -129,6 +139,8 @@ DataDetail copyWith({  DetailJo? detail,
   stdMethod: stdMethod ?? _stdMethod,
   picHist: picHist ?? _picHist,
   laboratory: laboratory ?? _laboratory,
+  inspectionFinishedDate : inspectionFinishedDate ?? _inspectionFinishedDate,
+  laboratoryFinishedDate : laboratoryFinishedDate ?? _laboratoryFinishedDate,
 );
   DetailJo? get detail => _detail;
   List<Sow>? get sow => _sow;
@@ -137,6 +149,8 @@ DataDetail copyWith({  DetailJo? detail,
   List<StdMethod>? get stdMethod => _stdMethod;
   List<PicHist>? get picHist => _picHist;
   List<Laboratory>? get laboratory => _laboratory;
+  String? get inspectionFinishedDate => _inspectionFinishedDate;
+  String? get laboratoryFinishedDate => _laboratoryFinishedDate;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -161,6 +175,8 @@ DataDetail copyWith({  DetailJo? detail,
     if (_laboratory != null) {
       map['laboratory'] = _laboratory?.map((v) => v.toJson()).toList();
     }
+    map['inspection_finished_date'] = _inspectionFinishedDate;
+    map['laboratory_finished_date'] = _laboratoryFinishedDate;
     return map;
   }
 
@@ -917,38 +933,46 @@ class Laboratory {
   //   "name": name,
   // };
   Laboratory({
+    num? id,
     num? laboratoriumId,
     String? name,
     num? maxStage,
   }){
+    _id = id;
     _laboratoriumId = laboratoriumId;
     _name = name;
     _maxStage = maxStage;
   }
 
   Laboratory.fromJson(dynamic json) {
+    _id = json['t_d_jo_laboratory_id'];
     _laboratoriumId = json['laboratorium_id'];
     _name = json['name'];
     _maxStage = json['max_stage'];
   }
+  num? _id;
   num? _laboratoriumId;
   String? _name;
   num? _maxStage;
   Laboratory copyWith({
+    num? id,
     num? laboratoriumId,
     String? name,
     num? maxStage,
   }) => Laboratory(
+    id: id ?? _id,
     laboratoriumId: laboratoriumId ?? _laboratoriumId,
     name: name ?? _name,
     maxStage: maxStage ?? _maxStage,
   );
+  num? get id => _id;
   num? get laboratoriumId => _laboratoriumId;
   String? get name => _name;
   num? get maxStage => _maxStage;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
+    map['t_d_jo_laboratory_id'] = _id;
     map['laboratorium_id'] = _laboratoriumId;
     map['name'] = _name;
     map['max_stage'] = _maxStage;

@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -31,6 +32,8 @@ import 'package:ops_mobile/data/model/t_d_jo_document_laboratory.dart';
 import 'package:ops_mobile/data/model/t_d_jo_finalize_inspection_model.dart';
 import 'package:ops_mobile/data/model/t_d_jo_finalize_laboratory.dart';
 import 'package:ops_mobile/data/model/t_d_jo_finalize_laboratory_model.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_pict.dart';
 import 'package:ops_mobile/data/respository/repository.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
@@ -81,6 +84,8 @@ class JoWaitingController extends BaseController {
   Rx<Activity6Attachments> dataListActivity6Attachments =
   Rx(Activity6Attachments());
 
+  RxList<TDJoInspectionActivityStages> stageList = RxList();
+
   // Activity Lab Data
   Rx<DataListActivityLab> dataListActivityLab = Rx(DataListActivityLab());
   Rx<DataListActivityLab5> dataListActivityLab5 = Rx(DataListActivityLab5());
@@ -97,6 +102,8 @@ class JoWaitingController extends BaseController {
   Rx<TextEditingController> dailyActivityPhotosDescEdit =
       TextEditingController().obs;
   Rx<File> activityPreviewFoto = Rx(File(''));
+
+  RxList<TDJoInspectionPict> dailyActivityPhotosV2 = RxList();
 
   // Activity Inspection Variables & Temporary
   RxList<Activity> activityList = RxList();
@@ -363,9 +370,11 @@ class JoWaitingController extends BaseController {
       update();
     }
    // await getJoPIC();
-    await getJoPICLocal();
+   //  await getJoPICLocal();
+   await getJoDailyPhotoV2();
    //  await getJoDailyPhoto();
    //  await getJoDailyActivity();
+   await getJoDailyActivityLocalV2();
    //  await getJoDailyActivity5();
    //  await getJoDailyActivity6();
     // await getJoDailyActivityLab();
@@ -445,6 +454,53 @@ class JoWaitingController extends BaseController {
     }
   }
 
+  Future<void> getJoDailyPhotoV2() async {
+    final db = await SqlHelper.db();
+    List<Map<String, dynamic>> result = await db.query(
+      't_d_jo_inspection_pict',
+      where: 't_h_jo_id = ? and is_active = 1',
+      whereArgs: [id],
+    );
+    dailyActivityPhotos.value = [];
+    dailyActivityPhotosDesc.value = [];
+    dailyActivityPhotosDescText.value = [];
+    dailyActivityPhotosV2.value = [];
+
+    List<TDJoInspectionPict> pict =
+    result.map((json) => TDJoInspectionPict.fromJson(json)).toList();
+    dailyActivityPhotosV2.value = pict;
+    // TextEditingController tempPhotoDesc = TextEditingController();
+    // result.forEach((item) async{
+    //   //final File photo = await getImagesFromUrl(item['path_photo']);
+    //  // dailyActivityPhotos.value.add(item['path_photo']);
+    //   tempPhotoDesc.text = item['keterangan'] ?? '';
+    //   dailyActivityPhotosDesc.value.add(tempPhotoDesc);
+    //   dailyActivityPhotosDescText.value.add(item['keterangan'] ?? '');
+    // });
+
+    // var response = await repository.getJoDailyPhoto(id) ?? JoDailyPhoto();
+    // debugPrint('JO Daily Photo: ${jsonEncode(response)}');
+    // if (response.data!.isNotEmpty) {
+    //   dataJoDailyPhotos.value = response?.data ?? [];
+    //   if (dataJoDailyPhotos.value.isNotEmpty) {
+    //     isLoadingJOImage = true;
+    //     update();
+    //     dailyActivityPhotos.value = [];
+    //     TextEditingController tempPhotoDesc = TextEditingController();
+    //     dataJoDailyPhotos.value.forEach((data) async {
+    //       final File photo = await getImagesFromUrl(data.pathPhoto!);
+    //       dailyActivityPhotos.value.add(photo);
+    //       tempPhotoDesc.text = data.keterangan ?? '';
+    //       dailyActivityPhotosDesc.value.add(tempPhotoDesc);
+    //       dailyActivityPhotosDescText.value.add(data.keterangan ?? '');
+    //       update();
+    //     });
+    //     isLoadingJOImage = false;
+    //     update();
+    //   }
+    // }
+  }
+
   Future<File> getImagesFromUrl(String strURL) async {
     debugPrint('image path: ${AppConstant.CORE_URL}$strURL');
     final http.Response responseData =
@@ -487,6 +543,109 @@ class JoWaitingController extends BaseController {
         remarks: data.remarks,
       ));
     });
+  }
+
+  Future<void> getJoDailyActivityLocalV2() async {
+    stageList.value = [];
+    List<Map<String, dynamic>> result = [];
+    final db = await SqlHelper.db();
+
+    // Retrieve data from the database
+    try {
+      result = await db.rawQuery('''
+         SELECT
+         s.*, u.name as uom_name
+         FROM t_d_jo_inspection_activity_stages AS s
+          LEFT JOIN m_uom AS u ON s.uom_id = u.id
+          WHERE s.t_h_jo_id = $id AND s.is_active = 1
+        ''');
+
+      /// Buffer the query
+      debugPrint('data modifiable nya nih: ${jsonEncode(result)}');
+      await Future<dynamic>.delayed(const Duration(milliseconds: 500));
+
+      // Create a modifiable list of stages
+      List<Map<String, dynamic>> modifiableResult =
+      result.map((stage) => Map<String, dynamic>.from(stage)).toList();
+
+      for (var stage in modifiableResult) {
+        debugPrint('data modifiable update: ${jsonEncode(stage)}');
+        int tHJoId = stage['t_h_jo_id'];
+        int stageId = stage[
+        'id']; // use this or 't_d_jo_inspection_activity_stages_id' if it exists
+        int stageStatusId = stage['m_statusinspectionstages_id'];
+        debugPrint('params nya ini: $tHJoId, $stageId, $stageStatusId');
+
+        activityStage = stageStatusId;
+        activitySubmitted.value = true;
+        update();
+
+        // Query related data from t_d_jo_inspection_activity
+        List<Map<String, dynamic>> activityResult = await db.query(
+          't_d_jo_inspection_activity',
+          where:
+          't_h_jo_id = ? and t_d_jo_inspection_activity_stages_id = ? and is_active = ?',
+          // add additional criteria if necessary
+          whereArgs: [tHJoId, stageId, 1],
+        );
+        debugPrint("print activity result 1517  ${activityResult}");
+
+        List<Map<String, dynamic>> activityBarge = await db.query(
+          't_d_jo_inspection_activity_barge',
+          where:
+          't_h_jo_id = ? and t_d_jo_inspection_activity_stages_id = ? and is_active = ?',
+          // add additional criteria if necessary
+          whereArgs: [tHJoId, stageId, 1],
+        );
+
+        List<Map<String, dynamic>> activityVessel = await db.query(
+            't_d_jo_inspection_activity_vessel',
+            where:
+            't_h_jo_id = ? and t_d_jo_inspection_activity_stages_id = ? and is_active = ?',
+            // add additional criteria if necessary
+            whereArgs: [tHJoId, stageId, 1],
+            limit: 1);
+
+        List<Map<String, dynamic>> activityStageTranshipment =
+        await db.rawQuery('''
+          SELECT t.*, u.name as uom_name
+          FROM t_d_jo_inspection_activity_stages_transhipment AS t
+          LEFT JOIN m_uom AS u ON t.uom_id = u.id
+          WHERE t.t_d_inspection_stages_id = ? AND t.is_active = ?
+        ''', [stageId, 1]);
+
+        debugPrint(
+            "print stage Transhipment 1541 ${activityStageTranshipment}");
+        // Add activityResult to the current stage
+        stage['listactivity'] = activityResult;
+        stage['listactivitybarge'] = activityBarge;
+        stage['listactivitystagetranshipment'] = activityStageTranshipment;
+        if (activityVessel.length > 0) {
+          stage['activityvesel'] = activityVessel[0]; //first index
+        } else {
+          stage['activityvesel'] = null;
+        }
+      }
+
+      // Convert the modifiableResult list to List<TDJoInspectionActivityStages>
+      List<TDJoInspectionActivityStages> stagesList = modifiableResult
+          .map((json) => TDJoInspectionActivityStages.fromJson(json))
+          .toList();
+
+      stageList.value = stagesList;
+
+      if (stageList.value
+          .where((item) => item.mStatusinspectionstagesId == 6)
+          .isNotEmpty) {
+        await getJoDailyActivity6AttachmentLocal();
+      }
+
+      debugPrint("print stage list 1559  ${jsonEncode(stagesList)}");
+    } catch (e) {
+      debugPrint(e.toString());
+    } finally {
+      update();
+    }
   }
 
   Future<void> getJoDailyActivity5() async {
@@ -549,6 +708,30 @@ class JoWaitingController extends BaseController {
     });
   }
 
+  Future<void> getJoDailyActivity6AttachmentLocal() async {
+    final db = await SqlHelper.db();
+    List<Map<String, dynamic>> result = await db.query(
+      't_d_jo_inspection_attachment',
+      where: 't_h_jo_id = ? and is_active = 1',
+      whereArgs: [id],
+    );
+
+    debugPrint('activity stage 6 attachmentnya: ${jsonEncode(result)}');
+
+    // dailyActivityPhotos.value = [];
+    // dailyActivityPhotosDesc.value = [];
+    // dailyActivityPhotosDescText.value = [];
+    // dailyActivityPhotosV2.value = [];
+    var attachments = result.map((json) {
+      return File(json['path_name']);
+    }).toList();
+    update();
+
+    activity6AttachmentsStage.value = attachments;
+    activity6Attachments.value = attachments;
+    update();
+  }
+
   Future<void> getJoInspectionDocuments() async {
     final data = await SqlHelper.getInspectionDocument(id);
     inspectionDocuments.value = data.map((item){
@@ -577,13 +760,94 @@ class JoWaitingController extends BaseController {
     debugPrint('data document files : ${jsonEncode(laboratoryDocumentsFiles.value)}');
   }
 
-  void detailLabActivity(int? lab) {
-    Get.to(LabActivityDetailScreen(), arguments: {'id': id, 'labId': lab, 'statusJo': statusId});
+  void detailLabActivity(int? lab, String name, int joLabId) {
+    Get.to(LabActivityDetailScreen(), arguments: {'id': id, 'labId': lab, 'name': name, 'joLabId' : joLabId});
   }
 
   // Activity Detail Functions
 
-  void previewImage(int index, String photo, String desc) async {
+  void previewImage(int index, String photo, String desc, TDJoInspectionPict pict) async {
+    dailyActivityPhotosDescEdit.value.text = desc;
+    activityPreviewFoto.value = await File(photo);
+    Get.dialog(
+      StatefulBuilder(
+          builder: (context, state) {
+            return AlertDialog(
+              title: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Photo and Description ${index + 1}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.sp,
+                        color: primaryColor,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    icon: Icon(Icons.close),
+                  )
+                ],
+              ),
+              content: Obx(
+                    () => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Center(
+                      child: SizedBox(
+                        height: MediaQuery.of(context).viewInsets.bottom != 0 ? 66.h : 180.h,
+                        width: MediaQuery.sizeOf(context).width.w,
+                        child: Image.file(
+                          File(activityPreviewFoto.value.path),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 16.h,
+                    ),
+                    SizedBox(
+                      height: 16.h,
+                    ),
+                    dataJoDetail.value.detail?.statusJo == 'Assigned' ||
+                        dataJoDetail.value.detail?.statusJo == 'On Progres'
+                        ? SizedBox(
+                      child: TextFormField(
+                        controller: dailyActivityPhotosDescEdit.value,
+                        cursorColor: onFocusColor,
+                        style: const TextStyle(color: onFocusColor),
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide:
+                              const BorderSide(color: onFocusColor),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            labelText: 'Description',
+                            floatingLabelStyle:
+                            const TextStyle(color: onFocusColor),
+                            fillColor: onFocusColor),
+                      ),
+                    )
+                        : Text(desc),
+                  ],
+                ),
+              ),
+              actions: [],
+            );
+          }
+      ),
+    );
+  }
+
+  void previewImage6(int index, String photo, String desc) async {
     dailyActivityPhotosDescEdit.value.text = desc;
     activityPreviewFoto.value = await File(photo);
     Get.dialog(
@@ -774,6 +1038,50 @@ class JoWaitingController extends BaseController {
             onPressed: () => Get.back(),
           ),
         ],
+      ),
+    );
+  }
+
+  void previewImageAct6(int index, String photo) {
+    Get.dialog(
+      AlertDialog(
+        title: Row(
+          children: [
+            Text(
+              'Attachment ${index + 1}',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: primaryColor),
+            ),
+            InkWell(
+              onTap: () {},
+              child: Icon(
+                Icons.delete_forever,
+                color: Colors.red,
+              ),
+            ),
+            Spacer(),
+            IconButton(
+              onPressed: () {
+                Get.back();
+              },
+              icon: Icon(Icons.close),
+            )
+          ],
+        ),
+        content: SizedBox(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.file(
+                File(photo),
+                fit: BoxFit.cover,
+              ),
+            ],
+          ),
+        ),
+        actions: [],
       ),
     );
   }
@@ -995,7 +1303,7 @@ class JoWaitingController extends BaseController {
                                   height: 54,
                                   child: InkWell(
                                     onTap: () {
-                                      previewImage(
+                                      previewImage6(
                                           index, photo.path, '');
                                     },
                                     child: Image.file(
