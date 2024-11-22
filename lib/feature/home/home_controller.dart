@@ -55,9 +55,10 @@ class HomeController extends BaseController{
 
   @override
   void onInit()async{
-    //initializeService();
-    //userData.value = Data.fromJson(jsonDecode(await StorageCore().storage.read('login')));
-    var data = await SqlHelper.getUserDetail('1234');
+    // initializeService();
+    var user = jsonDecode(await StorageCore().storage.read('login'));
+    debugPrint('data user: ${user}');
+    var data = await SqlHelper.getUserDetail(user['e_number'].toString());
     userData.value = Data(
       id : data.first['id'],
       fullname: data.first['fullname'],
@@ -71,7 +72,7 @@ class HomeController extends BaseController{
     await StorageCore().storage.write('user', jsonEncode(data));
     debugPrint('data users: ${jsonEncode(userData.value)}');
     update();
-    connectivityResult = await (Connectivity().checkConnectivity());
+    // connectivityResult = await (Connectivity().checkConnectivity());
     //await getJO();
     super.onInit();
   }

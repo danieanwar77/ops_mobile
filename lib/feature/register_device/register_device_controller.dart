@@ -89,6 +89,8 @@ class RegisterDeviceController extends BaseController{
         await writeSettings(jsonEncode(setting));
         update();
         openDialog('Success', 'Berhasil register perangkat');
+      }else{
+        openDialog('Success', response.message ?? 'Register perangkat gagal');
       }
     } catch(e){
       openDialog('Failed', 'Register perangkat gagal: $e');
@@ -108,6 +110,11 @@ class RegisterDeviceController extends BaseController{
       final File file = File('${directory}/settings.txt');
       text = await file.readAsString();
       debugPrint('setting txt: ${jsonDecode(text)}');
+      var data = jsonDecode(text);
+      employeeIdText.text = data['e_number'];
+      internetUrlText.text = data['internet_url'];
+      localUrlText.text = data['local_url'];
+      update();
     } catch (e) {
       print("Couldn't read file");
       text = '';

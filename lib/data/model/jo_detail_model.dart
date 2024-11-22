@@ -58,7 +58,9 @@ class DataDetail {
       List<Lap>? lap, 
       List<StdMethod>? stdMethod, 
       List<PicHist>? picHist,
-      List<Laboratory>? laboratory
+      List<Laboratory>? laboratory,
+      String? inspectionFinishedDate,
+      String? laboratoryFinishedDate,
   }){
     _detail = detail;
     _sow = sow;
@@ -67,6 +69,8 @@ class DataDetail {
     _stdMethod = stdMethod;
     _picHist = picHist;
     _laboratory = laboratory;
+    _inspectionFinishedDate = inspectionFinishedDate;
+    _laboratoryFinishedDate = laboratoryFinishedDate;
 }
 
   DataDetail.fromJson(dynamic json) {
@@ -107,6 +111,8 @@ class DataDetail {
         _laboratory?.add(Laboratory.fromJson(v));
       });
     }
+    _inspectionFinishedDate = json['inspection_finished_date'];
+    _laboratoryFinishedDate = json['laboratory_finished_date'];
   }
   DetailJo? _detail;
   List<Sow>? _sow;
@@ -115,6 +121,8 @@ class DataDetail {
   List<StdMethod>? _stdMethod;
   List<PicHist>? _picHist;
   List<Laboratory>? _laboratory;
+  String? _inspectionFinishedDate;
+  String? _laboratoryFinishedDate;
 DataDetail copyWith({  DetailJo? detail,
   List<Sow>? sow,
   List<Oos>? oos,
@@ -122,6 +130,8 @@ DataDetail copyWith({  DetailJo? detail,
   List<StdMethod>? stdMethod,
   List<PicHist>? picHist,
   List<Laboratory>? laboratory,
+  String? inspectionFinishedDate,
+  String? laboratoryFinishedDate,
 }) => DataDetail(  detail: detail ?? _detail,
   sow: sow ?? _sow,
   oos: oos ?? _oos,
@@ -129,6 +139,8 @@ DataDetail copyWith({  DetailJo? detail,
   stdMethod: stdMethod ?? _stdMethod,
   picHist: picHist ?? _picHist,
   laboratory: laboratory ?? _laboratory,
+  inspectionFinishedDate : inspectionFinishedDate ?? _inspectionFinishedDate,
+  laboratoryFinishedDate : laboratoryFinishedDate ?? _laboratoryFinishedDate,
 );
   DetailJo? get detail => _detail;
   List<Sow>? get sow => _sow;
@@ -137,6 +149,8 @@ DataDetail copyWith({  DetailJo? detail,
   List<StdMethod>? get stdMethod => _stdMethod;
   List<PicHist>? get picHist => _picHist;
   List<Laboratory>? get laboratory => _laboratory;
+  String? get inspectionFinishedDate => _inspectionFinishedDate;
+  String? get laboratoryFinishedDate => _laboratoryFinishedDate;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -161,6 +175,8 @@ DataDetail copyWith({  DetailJo? detail,
     if (_laboratory != null) {
       map['laboratory'] = _laboratory?.map((v) => v.toJson()).toList();
     }
+    map['inspection_finished_date'] = _inspectionFinishedDate;
+    map['laboratory_finished_date'] = _laboratoryFinishedDate;
     return map;
   }
 
@@ -457,7 +473,8 @@ class DetailJo {
       String? code, 
       String? canceledDate, 
       String? soCreatedAt, 
-      String? joCreatedAt, 
+      String? joCreatedAt,
+      num? idStatusJo,
       String? statusJo, 
       String? companyName, 
       String? mClientCategoryName, 
@@ -500,7 +517,8 @@ class DetailJo {
       String? jobCategoryName, 
       String? kosName, 
       String? vessel, 
-      num? qty, 
+      num? qty,
+      num? uomId,
       String? uomName, 
       String? joCreatedDate, 
       String? barge, 
@@ -512,6 +530,7 @@ class DetailJo {
     _canceledDate = canceledDate;
     _soCreatedAt = soCreatedAt;
     _joCreatedAt = joCreatedAt;
+    _idStatusJo = idStatusJo;
     _statusJo = statusJo;
     _companyName = companyName;
     _mClientCategoryName = mClientCategoryName;
@@ -555,6 +574,7 @@ class DetailJo {
     _kosName = kosName;
     _vessel = vessel;
     _qty = qty;
+    _uomId = uomId;
     _uomName = uomName;
     _joCreatedDate = joCreatedDate;
     _barge = barge;
@@ -569,6 +589,7 @@ class DetailJo {
     _canceledDate = json['canceled_date'];
     _soCreatedAt = json['so_created_at'];
     _joCreatedAt = json['jo_created_at'];
+    _idStatusJo = json['id_status_jo'];
     _statusJo = json['status_jo'];
     _companyName = json['company_name'];
     _mClientCategoryName = json['m_client_category_name'];
@@ -612,6 +633,7 @@ class DetailJo {
     _kosName = json['kos_name'];
     _vessel = json['vessel'];
     _qty = json['qty'];
+    _uomId = json['uom_id'];
     _uomName = json['uom_name'];
     _joCreatedDate = json['jo_created_date'];
     _barge = json['barge'];
@@ -624,6 +646,7 @@ class DetailJo {
   String? _canceledDate;
   String? _soCreatedAt;
   String? _joCreatedAt;
+  num? _idStatusJo;
   String? _statusJo;
   String? _companyName;
   String? _mClientCategoryName;
@@ -667,6 +690,7 @@ class DetailJo {
   String? _kosName;
   String? _vessel;
   num? _qty;
+  num? _uomId;
   String? _uomName;
   String? _joCreatedDate;
   String? _barge;
@@ -678,6 +702,7 @@ class DetailJo {
   String? canceledDate,
   String? soCreatedAt,
   String? joCreatedAt,
+  num? idStatusJo,
   String? statusJo,
   String? companyName,
   String? mClientCategoryName,
@@ -719,6 +744,7 @@ class DetailJo {
   String? kosName,
   String? vessel,
   num? qty,
+  num? uomId,
   String? uomName,
   String? joCreatedDate,
   String? barge,
@@ -730,6 +756,7 @@ class DetailJo {
   canceledDate: canceledDate ?? _canceledDate,
   soCreatedAt: soCreatedAt ?? _soCreatedAt,
   joCreatedAt: joCreatedAt ?? _joCreatedAt,
+  idStatusJo: idStatusJo ?? _idStatusJo,
   statusJo: statusJo ?? _statusJo,
   companyName: companyName ?? _companyName,
   mClientCategoryName: mClientCategoryName ?? _mClientCategoryName,
@@ -773,6 +800,7 @@ class DetailJo {
   kosName: kosName ?? _kosName,
   vessel: vessel ?? _vessel,
   qty: qty ?? _qty,
+  uomId: uomId ?? _uomId,
   uomName: uomName ?? _uomName,
   joCreatedDate: joCreatedDate ?? _joCreatedDate,
   barge: barge ?? _barge,
@@ -785,6 +813,7 @@ class DetailJo {
   String? get canceledDate => _canceledDate;
   String? get soCreatedAt => _soCreatedAt;
   String? get joCreatedAt => _joCreatedAt;
+  num? get idStatusJo => _idStatusJo;
   String? get statusJo => _statusJo;
   String? get companyName => _companyName;
   String? get mClientCategoryName => _mClientCategoryName;
@@ -828,6 +857,7 @@ class DetailJo {
   String? get kosName => _kosName;
   String? get vessel => _vessel;
   num? get qty => _qty;
+  num? get uomId => _uomId;
   String? get uomName => _uomName;
   String? get joCreatedDate => _joCreatedDate;
   String? get barge => _barge;
@@ -842,6 +872,7 @@ class DetailJo {
     map['canceled_date'] = _canceledDate;
     map['so_created_at'] = _soCreatedAt;
     map['jo_created_at'] = _joCreatedAt;
+    map['id_status_jo'] = _idStatusJo;
     map['status_jo'] = _statusJo;
     map['company_name'] = _companyName;
     map['m_client_category_name'] = _mClientCategoryName;
@@ -885,6 +916,7 @@ class DetailJo {
     map['kos_name'] = _kosName;
     map['vessel'] = _vessel;
     map['qty'] = _qty;
+    map['uom_id'] = _uomId;
     map['uom_name'] = _uomName;
     map['jo_created_date'] = _joCreatedDate;
     map['barge'] = _barge;
@@ -909,32 +941,49 @@ class Laboratory {
   //   "name": name,
   // };
   Laboratory({
+    num? id,
     num? laboratoriumId,
-    String? name,}){
+    String? name,
+    num? maxStage,
+  }){
+    _id = id;
     _laboratoriumId = laboratoriumId;
     _name = name;
+    _maxStage = maxStage;
   }
 
   Laboratory.fromJson(dynamic json) {
+    _id = json['t_d_jo_laboratory_id'];
     _laboratoriumId = json['laboratorium_id'];
     _name = json['name'];
+    _maxStage = json['max_stage'];
   }
+  num? _id;
   num? _laboratoriumId;
   String? _name;
+  num? _maxStage;
   Laboratory copyWith({
+    num? id,
     num? laboratoriumId,
     String? name,
+    num? maxStage,
   }) => Laboratory(
+    id: id ?? _id,
     laboratoriumId: laboratoriumId ?? _laboratoriumId,
     name: name ?? _name,
+    maxStage: maxStage ?? _maxStage,
   );
+  num? get id => _id;
   num? get laboratoriumId => _laboratoriumId;
   String? get name => _name;
+  num? get maxStage => _maxStage;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
+    map['t_d_jo_laboratory_id'] = _id;
     map['laboratorium_id'] = _laboratoriumId;
     map['name'] = _name;
+    map['max_stage'] = _maxStage;
     return map;
   }
 }
