@@ -4417,44 +4417,80 @@ class JoWaitingScreen extends StatelessWidget {
                                 padding: const EdgeInsets.all(16),
                                 child: Obx(
                                       () => Column(children: [
-                                    for (var lab in controller.labs.value)
-                                      SizedBox(
-                                        child: InkWell(
-                                          onTap: () {
-                                            controller.detailLabActivity(lab.laboratoriumId!.toInt(), lab.name!, lab.id!.toInt());
-                                          },
-                                          child: Card(
-                                              color: Colors.white,
-                                              child: Padding(
-                                                padding:
-                                                const EdgeInsets.all(16),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                  CrossAxisAlignment
-                                                      .start,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child: Text(
-                                                            lab.name ?? '-',
-                                                            style: TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight:
-                                                                FontWeight
-                                                                    .w700),
-                                                          ),
-                                                        ),
-                                                        Icon(Icons
-                                                            .chevron_right)
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              )),
+                                        TextFormField(
+                                          controller: controller.searchLabText,
+                                          cursorColor: onFocusColor,
+                                          style: const TextStyle(color: onFocusColor),
+                                          decoration: InputDecoration(
+                                              suffixIcon: const Icon(Icons.search_sharp,
+                                                color: Colors.black26,
+                                              ),
+                                              filled: true,
+                                              fillColor: const Color(0xfff9fafb),
+                                              border: OutlineInputBorder(
+                                                borderSide: const BorderSide(color: Colors.black26),
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide: const BorderSide(color: Colors.black26),
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: const BorderSide(color: primaryColor),
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              labelText: 'Cari Laboratory',
+                                              labelStyle: const TextStyle(
+                                                  color: Colors.black26
+                                              ),
+                                              floatingLabelBehavior: FloatingLabelBehavior.never
+                                          ),
                                         ),
-                                      ),
-                                    const SizedBox(height: 16),
+                                        const SizedBox(height: 16,),
+                                        controller.labs.value.isNotEmpty
+                                            ? ListView.builder(
+                                            physics: NeverScrollableScrollPhysics(),
+                                            shrinkWrap: true,
+                                            itemCount: controller.labs.value.length,
+                                            itemBuilder: (context, index) {
+                                              var lab = controller.labs.value[index];
+                                              return Column(
+                                                children: [
+                                                  SizedBox(
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        controller.detailLabActivity(lab.laboratoriumId!.toInt(), lab.name!, lab.id!.toInt());
+                                                      },
+                                                      child: Card(
+                                                          color: Colors.white,
+                                                          child: Padding(
+                                                            padding: const EdgeInsets.all(16),
+                                                            child: Column(
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              children: [
+                                                                Row(
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child: Text(
+                                                                        lab.name ?? '-',
+                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700,
+                                                                            color: lab.maxStage!.toInt() > 0 && lab.maxStage!.toInt() < 6 ? stepperColor : lab.maxStage!.toInt() == 6 ? green : Colors.black ),
+                                                                      ),
+                                                                    ),
+                                                                    Icon(Icons.chevron_right)
+                                                                  ],
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          )),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 16),
+                                                ],
+                                              );
+                                            })
+                                            : const SizedBox(),
+                                        const SizedBox(height: 16),
                                   ]),
                                 ),
                               ),

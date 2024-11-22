@@ -246,34 +246,34 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                       physics: NeverScrollableScrollPhysics(),
                                                                       itemCount: progressActivity.listLabActivity?.length,
                                                                       itemBuilder: (context, indexItem){
-                                                                          var activityItem = progressActivity.listLabActivity![indexItem];
-                                                                          return Row(
-                                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                                            children: [
-                                                                              Expanded(
-                                                                                flex: 1,
-                                                                                child: Text(
-                                                                                  '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
-                                                                                  style: TextStyle(
-                                                                                      fontSize: 14,
-                                                                                      fontWeight:
-                                                                                      FontWeight
-                                                                                          .w700),
+                                                                        var activityItem = progressActivity.listLabActivity![indexItem];
+                                                                        return Row(
+                                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                                          children: [
+                                                                            Expanded(
+                                                                              flex: 1,
+                                                                              child: Text(
+                                                                                '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
+                                                                                style: TextStyle(
+                                                                                    fontSize: 14,
+                                                                                    fontWeight:
+                                                                                    FontWeight
+                                                                                        .w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 8),
+                                                                            Expanded(
+                                                                              flex: 2,
+                                                                              child: Text(
+                                                                                activityItem.activity ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 14,
                                                                                 ),
                                                                               ),
-                                                                              VerticalDivider(width: 1),
-                                                                              SizedBox(width: 8),
-                                                                              Expanded(
-                                                                                flex: 2,
-                                                                                child: Text(
-                                                                                  activityItem.activity ?? '-',
-                                                                                  style: TextStyle(
-                                                                                    fontSize: 14,
-                                                                                  ),
-                                                                                ),
-                                                                              )
-                                                                            ],
-                                                                          );
+                                                                            )
+                                                                          ],
+                                                                        );
                                                                       })
                                                                 ],
                                                               ),

@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:external_path/external_path.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
+import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity_stages.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_ios/path_provider_ios.dart';
 import 'package:sqflite/sqflite.dart' as sql;
+import 'package:sqflite/sqflite.dart';
 
 class SqlHelper extends BaseController {
   static Future<void> createTables(sql.Database database) async {
@@ -751,7 +755,7 @@ from t_h_jo a
   LEFT JOIN t_d_jo_inspection_activity_barge e ON e.t_h_jo_id  = a.id AND e.t_d_jo_inspection_activity_stages_id = b.id AND e.is_active = 1
   LEFT JOIN t_d_jo_inspection_activity_stages_transhipment f ON f.t_d_inspection_stages_id = b.id AND f.t_d_jo_inspection_activity_id = c.id AND f.is_active = 1
   LEFT JOIN t_d_jo_inspection_attachment g ON g.t_h_jo_id = a.id AND g.t_d_jo_inspection_activity_stages_id = b.id AND g.is_active = 1
-  where b.is_active = 1 and c.is_active = 1 AND a.pic_inspector = $idEmployee
+  where b.is_active = 1 AND a.pic_inspector = $idEmployee
 UNION
 SELECT
 b.id, 
@@ -926,7 +930,7 @@ LEFT JOIN t_d_jo_laboratory AS b ON b.t_h_jo_id = a.id AND b.is_active = 1
 LEFT JOIN t_d_jo_laboratory_activity_stages AS c ON c.t_h_jo_id = a.id AND c.d_jo_laboratory_id = b.id AND c.is_active = 1
 LEFT JOIN t_d_jo_laboratory_activity AS d ON d.t_d_jo_laboratory_activity_stages_id = c.id AND d.t_d_jo_laboratory_id = b.id AND d.is_active = 1
 LEFT JOIN t_d_jo_laboratory_attachment AS e ON e.t_d_jo_laboratory_id = b.id AND e.is_active = 1
-where b.is_active = 1 and c.is_active = 1 AND d.is_active = 1 AND a.pic_laboratory = $idEmployee
+where a.pic_laboratory = $idEmployee
 UNION 
 SELECT 
 b.id, 
@@ -1073,12 +1077,81 @@ NULL AS finalize_created_by, NULL AS finalize_created_at,
 NULL AS finalize_updated_by,
 NULL AS document_id, NULL AS document_path_file, NULL AS document_file_name 
 FROM t_h_jo a
-LEFT JOIN t_d_jo_laboratory AS b ON b.t_h_jo_id = a.id AND b.is_active = 1
+LEFT JOIN t_d_jo_laboratory AS b ON b.t_h_jo_id = a.id
 LEFT JOIN t_d_jo_laboratory_activity_stages AS c ON c.t_h_jo_id = a.id AND c.d_jo_laboratory_id = b.id AND c.is_active = 1
 LEFT JOIN t_d_jo_laboratory_activity AS d ON d.t_d_jo_laboratory_activity_stages_id = c.id AND d.t_d_jo_laboratory_id = b.id AND d.is_active = 1
 LEFT JOIN t_d_jo_laboratory_attachment AS e ON e.t_d_jo_laboratory_id = b.id AND e.is_active = 1
 WHERE a.id = $id AND b.laboratorium_id = $labId AND a.pic_laboratory = $employeeId
     ''');
+  }
+
+  static Future<void> insertInspectionActivity6(String stage, String activity, String? attachment) async {
+    final db = await SqlHelper.db();
+    db.execute('''
+      INSERT INTO t_d_jo_inspection_activity_stages (t_h_jo_id, m_statusinspectionstages_id, trans_date, remarks, created_by, created_at, code, is_active, is_upload)
+     VALUES $stage
+    ''');
+    db.execute('''
+      INSERT INTO t_d_jo_inspection_activity (t_h_jo_id, t_d_jo_inspection_activity_stages_id, start_activity_time, end_activity_time, activity, code, is_active, is_upload, created_by, created_at)
+         VALUES $activity
+    ''');
+    if(attachment != null){
+      db.execute('''
+      INSERT INTO t_d_jo_inspection_attachment (t_h_jo_id, path_name, file_name, code, is_active, is_upload, created_by, created_at)
+        VALUES $attachment
+    ''');
+    }
+  }
+
+  static Future<void> updateInspectionActivity6(String stage, String activity, List<Map<String,dynamic>> attachment, int idJo) async {
+    final db = await SqlHelper.db();
+    db.execute('''
+      INSERT OR REPLACE INTO t_d_jo_inspection_activity_stages (id, t_h_jo_id, m_statusinspectionstages_id, trans_date, remarks, created_by, updated_by, created_at, updated_at, code, is_active, is_upload)
+     VALUES $stage
+    ''');
+    db.execute('''
+      INSERT OR REPLACE INTO t_d_jo_inspection_activity (id, t_h_jo_id, t_d_jo_inspection_activity_stages_id, start_activity_time, end_activity_time, activity, code, is_active, is_upload, created_by, updated_by, created_at, updated_at)
+         VALUES $activity
+    ''');
+
+    Batch batch = db.batch();
+    attachment.forEach((item){
+      batch.insert('t_d_jo_inspection_attachment',item,conflictAlgorithm: ConflictAlgorithm.replace);
+    });
+    var id = await batch.commit();
+    debugPrint('hasil batch: ${id}');
+
+    db.execute('''
+      UPDATE t_d_jo_inspection_attachment SET is_active = 0 WHERE t_h_jo_id = $idJo AND id NOT IN (${id!.join(',')})
+      ''');
+  }
+
+  static Future<void> updateActivity5(String stage, String activity, String vessel, String barge, String transhipment) async {
+    final db = await SqlHelper.db();
+    db.execute('''
+      INSERT OR REPLACE INTO t_d_jo_inspection_activity_stages (t_h_jo_id, m_statusinspectionstages_id, trans_date, actual_qty, uom_id, remarks, code,  is_active, is_upload, created_by, created_at)
+     VALUES $stage
+    ''');
+    db.execute('''
+      INSERT OR REPLACE INTO t_d_jo_inspection_activity (t_h_jo_id, t_d_jo_inspection_activity_stages_id, start_activity_time, end_activity_time, activity, code, is_active, is_upload, created_by, created_at)
+         VALUES $activity
+    ''');
+    db.execute('''
+      INSERT OR REPLACE INTO t_d_jo_inspection_activity_vessel (t_h_jo_id, t_d_jo_inspection_activity_stages_id, vessel, code, is_active, is_upload, created_by, created_at)
+        VALUES $vessel
+    ''');
+    if(barge != null){
+      db.execute('''
+      INSERT OR REPLACE INTO t_d_jo_inspection_activity_barge (t_h_jo_id, t_d_jo_inspection_activity_stages_id, barge, code, is_active, is_upload, created_by, created_at)
+        VALUES $barge
+    ''');
+    }
+    if(transhipment != null){
+      db.execute('''
+      INSERT OR REPLACE INTO t_d_jo_inspection_activity_transhipment (t_d_jo_inspection_stages_id, t_d_jo_inspection_activity_id, initial_date, final_date, date_arrive, delivery_qty, uom_id, jetty, code, is_active, is_upload, created_by, created_at)
+        VALUES $transhipment
+    ''');
+    }
   }
 
   static Future<void> insertLaboratoryActivity(String stage, String activity) async {
@@ -1093,16 +1166,91 @@ WHERE a.id = $id AND b.laboratorium_id = $labId AND a.pic_laboratory = $employee
     ''');
   }
 
-  static Future<void> updateLaboratoryActivity(String stage, String activity) async {
+  static Future<void> updateLaboratoryActivity(List<Map<String,dynamic>> labStageActivity, String activity, int idJo, int idLab, int stageProgres) async {
     final db = await SqlHelper.db();
+    debugPrint('isi lab stage activity: ${jsonEncode(labStageActivity)}');
+
+    Batch batch = db.batch();
+    labStageActivity.forEach((item){
+      batch.insert('t_d_jo_laboratory_activity_stages',item,conflictAlgorithm: ConflictAlgorithm.replace);
+    });
+    var id = await batch.commit();
+    debugPrint('hasil batch: ${id}');
+
+    // labStageActivity.forEach((stage) async {
+    //   Map<String, dynamic> stageMap = {
+    //     'id': stage.id,
+    //     'd_jo_laboratory_id': stage.dJoLaboratoryId,
+    //     't_h_jo_id': stage.tHJoId,
+    //     'm_statuslaboratoryprogres_id': stage.mStatuslaboratoryprogresId,
+    //     'trans_date': stage.transDate,
+    //     'remarks': stage.remarks,
+    //     'created_by': stage.createdBy,
+    //     'updated_by': stage.updatedBy,
+    //     'created_at': stage.createdAt,
+    //     'updated_at': stage.updatedAt,
+    //     'total_sample_received': stage.totalSampleReceived,
+    //     'total_sample_analyzed': stage.totalSampleAnalyzed,
+    //     'total_sample_preparation': stage.totalSamplePreparation,
+    //     'code': stage.code,
+    //     'is_active': stage.isActive,
+    //     'is_upload': stage.isUpload,
+    //   };
+    //   var idStage = await db.insert('t_d_jo_laboratory_activity_stages',stageMap,conflictAlgorithm: ConflictAlgorithm.replace);
+    //   stage.listLabActivity!.forEach((activity) async {
+    //     Map<String, dynamic> activityMap = {
+    //       'id' : activity.id ?? null,
+    //       't_d_jo_laboratory_activity_stages_id' : activity.tDJoLaboratoryActivityStagesId ?? idStage,
+    //       't_d_jo_laboratory_id' : activity.tDJoLaboratoryId,
+    //       'start_activity_time' : activity.startActivityTime,
+    //       'end_activity_time' : activity.endActivityTime,
+    //       'activity' : activity.activity,
+    //       'code' : activity.code,
+    //       'is_active' : 1,
+    //       'is_upload' : 0,
+    //       'created_by' : activity.createdBy,
+    //       'updated_by' : activity.id != null ? activity.updatedBy : null,
+    //       'created_at' : activity.createdAt,
+    //       'updated_at' : activity.id != null ? activity.updatedAt : null,
+    //     };
+    //     var idActivity = await db.insert('t_d_jo_laboratory_activity',activityMap,conflictAlgorithm: ConflictAlgorithm.replace);
+    //     idActivities.add(idActivity);
+    //   });
+    //   idStages.add(idStage);
+    // });
+
+    // Batch batch = db.batch();
+    // stage.forEach((item){
+    //   batch.insert('t_d_jo_laboratory_activity_stages',item,conflictAlgorithm: ConflictAlgorithm.replace);
+    // });
+    // var id = await batch.commit();
+
     db.execute('''
-      INSERT OR REPLACE INTO t_d_jo_laboratory_activity_stages (id, d_jo_laboratory_id, t_h_jo_id, m_statuslaboratoryprogres_id, trans_date, remarks, created_by, created_at, code, is_active, is_upload)
-     VALUES $stage
+      UPDATE t_d_jo_laboratory_activity_stages SET is_active = 0 WHERE t_h_jo_id = $idJo AND m_statuslaboratoryprogres_id = $stageProgres AND id NOT IN (${id.join(',')})
     ''');
+
+    // db.execute('''
+    //   UPDATE t_d_jo_laboratory_activity SET is_active = 0 WHERE  WHERE t_d_jo_laboratory_id = $idLab AND id NOT IN (${idActivities.join(',')})
+    // ''');
+
     db.execute('''
-      INSERT OR REPLACE INTO t_d_jo_laboratory_activity (id, t_d_jo_laboratory_activity_stages_id, t_d_jo_laboratory_id, start_activity_time, end_activity_time, activity, code, is_active, is_upload, created_by, created_at)
+      INSERT OR REPLACE INTO t_d_jo_laboratory_activity (id, t_d_jo_laboratory_activity_stages_id, t_d_jo_laboratory_id, start_activity_time, end_activity_time, activity, code, is_active, is_upload, created_by, updated_by, created_at, updated_at)
          VALUES $activity
     ''');
+
+    // db.execute('''
+    //   UPDATE t_d_jo_laboratory_activity SET is_active = 0 WHERE t_d_jo_laboratory_id = $idLab AND t_d_jo_laboratory_activity_stages_id NOT IN (${id!.join(',')})
+    // ''');
+
+    // db.execute('''
+    //   INSERT OR REPLACE INTO t_d_jo_laboratory_activity_stages (id, d_jo_laboratory_id, t_h_jo_id, m_statuslaboratoryprogres_id, trans_date, remarks, created_by, created_at, code, is_active, is_upload)
+    //  VALUES $stage
+    // ''');
+
+    // db.execute('''
+    //   INSERT OR REPLACE INTO t_d_jo_laboratory_activity (id, t_d_jo_laboratory_activity_stages_id, t_d_jo_laboratory_id, start_activity_time, end_activity_time, activity, code, is_active, is_upload, created_by, created_at)
+    //      VALUES $activity
+    // ''');
   }
 
   static Future<void> insertLaboratoryActivity5(String stage, String activity) async {
@@ -1147,7 +1295,7 @@ WHERE a.id = $id AND b.laboratorium_id = $labId AND a.pic_laboratory = $employee
     }
   }
 
-  static Future<void> updateLaboratoryActivity6(String stage, String activity, String? attachment) async {
+  static Future<void> updateLaboratoryActivity6(String stage, String activity, List<Map<String,dynamic>> attachment) async {
     final db = await SqlHelper.db();
     db.execute('''
       INSERT OR REPLACE INTO t_d_jo_laboratory_activity_stages (id, d_jo_laboratory_id, t_h_jo_id, m_statuslaboratoryprogres_id, trans_date, remarks, created_by, updated_by, created_at, updated_at, code, is_active, is_upload)
@@ -1157,11 +1305,23 @@ WHERE a.id = $id AND b.laboratorium_id = $labId AND a.pic_laboratory = $employee
       INSERT OR REPLACE INTO t_d_jo_laboratory_activity (id, t_d_jo_laboratory_activity_stages_id, t_d_jo_laboratory_id, start_activity_time, end_activity_time, activity, code, is_active, is_upload, created_by, updated_by, created_at, updated_at)
          VALUES $activity
     ''');
+
     if(attachment != null){
+      Batch batch = db.batch();
+      attachment.forEach((item){
+        batch.insert('t_d_jo_laboratory_attachment',item,conflictAlgorithm: ConflictAlgorithm.replace);
+      });
+      var id = await batch.commit();
+      debugPrint('hasil batch: ${id}');
+
       db.execute('''
-      INSERT INTO t_d_jo_laboratory_attachment (id, t_d_jo_laboratory_id, m_statuslaboratoryprogres_id, path_name, file_name, code, is_active, is_upload, created_by, updated_by, created_at, updated_at)
-        VALUES $attachment
-    ''');
+      UPDATE t_d_jo_laboratory_attachment SET is_active = 0 WHERE id NOT IN (${id!.join(',')});
+      ''');
+
+      //   db.execute('''
+      //   INSERT INTO t_d_jo_laboratory_attachment (t_d_jo_laboratory_id, m_statuslaboratoryprogres_id, path_name, file_name, code, is_active, is_upload, created_by, created_at)
+      //     VALUES $attachment
+      // ''');
     }
   }
 

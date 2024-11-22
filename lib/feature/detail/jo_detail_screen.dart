@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/data/model/jo_send_model.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_attachment.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_pict.dart';
 import 'package:ops_mobile/feature/detail/jo_detail_controller.dart';
 import 'package:ops_mobile/utils/helper.dart';
@@ -1420,170 +1421,174 @@ class JoDetailScreen extends StatelessWidget {
                                                   childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
                                                   children: <Widget>[
                                                     controller.barges.value.isNotEmpty
-                                                        ? Column(
-                                                      children: [
-                                                        for (var i = controller.dataJoPIC.value.assignHistory!.length; i > 0; i--)
-                                                          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                            Text(
-                                                              'Assign ${i}',
-                                                              style: const TextStyle(color: green, fontSize: 14, fontWeight: FontWeight.w700),
-                                                            ),
-                                                            const SizedBox(height: 16),
-                                                            Row(children: [
-                                                              const Expanded(
-                                                                child: Text(
-                                                                  'Assign Date',
-                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                                                                ),
+                                                        ? ListView.builder(
+                                                          reverse: true,
+                                                          physics: NeverScrollableScrollPhysics(),
+                                                          shrinkWrap: true,
+                                                          itemCount: controller.dataJoPIC.value.assignHistory?.length ?? 0,
+                                                          itemBuilder: (context, index){
+                                                            var assignHistory = controller.dataJoPIC.value.assignHistory?[index];
+                                                            return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                              Text(
+                                                                'Assign ${index + 1}',
+                                                                style: const TextStyle(color: green, fontSize: 14, fontWeight: FontWeight.w700),
                                                               ),
-                                                              const VerticalDivider(width: 1),
-                                                              const SizedBox(width: 16),
-                                                              Expanded(
-                                                                child: Text(
-                                                                  controller.dataJoPIC.value.assignHistory![i - 1].assignedDate ?? '-',
-                                                                  style: const TextStyle(
-                                                                    fontSize: 14,
+                                                              const SizedBox(height: 16),
+                                                              Row(children: [
+                                                                const Expanded(
+                                                                  child: Text(
+                                                                    'Assign Date',
+                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
-                                                              ),
-                                                            ]),
-                                                            const Divider(thickness: 0.4),
-                                                            Row(children: [
-                                                              const Expanded(
-                                                                child: Text(
-                                                                  'Assign By',
-                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                                                                ),
-                                                              ),
-                                                              const VerticalDivider(width: 1),
-                                                              const SizedBox(width: 16),
-                                                              Expanded(
-                                                                child: Text(
-                                                                  controller.dataJoPIC.value.assignHistory![i - 1].assignBy ?? '-',
-                                                                  style: const TextStyle(
-                                                                    fontSize: 14,
+                                                                const VerticalDivider(width: 1),
+                                                                const SizedBox(width: 16),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    assignHistory?.assignedDate ?? '-',
+                                                                    style: const TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
                                                                   ),
                                                                 ),
-                                                              ),
-                                                            ]),
-                                                            const Divider(thickness: 0.4),
-                                                            Row(children: [
-                                                              const Expanded(
-                                                                child: Text(
-                                                                  'Remarks',
-                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                                                                ),
-                                                              ),
-                                                              const VerticalDivider(width: 1),
-                                                              const SizedBox(width: 16),
-                                                              Expanded(
-                                                                child: Text(
-                                                                  controller.dataJoPIC.value.assignHistory![i - 1].remarks ?? '-',
-                                                                  style: const TextStyle(
-                                                                    fontSize: 14,
+                                                              ]),
+                                                              const Divider(thickness: 0.4),
+                                                              Row(children: [
+                                                                const Expanded(
+                                                                  child: Text(
+                                                                    'Assign By',
+                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
-                                                              ),
-                                                            ]),
-                                                            const Divider(thickness: 0.4),
-                                                            Row(children: [
-                                                              const Expanded(
-                                                                child: Text(
-                                                                  'Previous ETA Vessel',
-                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                                                                ),
-                                                              ),
-                                                              const VerticalDivider(width: 1),
-                                                              const SizedBox(width: 16),
-                                                              Expanded(
-                                                                child: Text(
-                                                                  controller.dataJoPIC.value.assignHistory![i - 1].ettaVessel ?? '-',
-                                                                  style: const TextStyle(
-                                                                    fontSize: 14,
+                                                                const VerticalDivider(width: 1),
+                                                                const SizedBox(width: 16),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    assignHistory?.assignBy ?? '-',
+                                                                    style: const TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
                                                                   ),
                                                                 ),
-                                                              ),
-                                                            ]),
-                                                            const Divider(thickness: 0.4),
-                                                            Row(children: [
-                                                              const Expanded(
-                                                                child: Text(
-                                                                  'Previous Date of Attendance',
-                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                                                                ),
-                                                              ),
-                                                              const VerticalDivider(width: 1),
-                                                              const SizedBox(width: 16),
-                                                              Expanded(
-                                                                child: Text(
-                                                                  '${controller.dataJoPIC.value.assignHistory![i - 1].startDateOfAttendance ?? '-'} - ${controller.dataJoPIC.value.assignHistory![i - 1].endDateOfAttendance ?? '-'}',
-                                                                  style: const TextStyle(
-                                                                    fontSize: 14,
+                                                              ]),
+                                                              const Divider(thickness: 0.4),
+                                                              Row(children: [
+                                                                const Expanded(
+                                                                  child: Text(
+                                                                    'Remarks',
+                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
-                                                              ),
-                                                            ]),
-                                                            const Divider(thickness: 0.4),
-                                                            Row(children: [
-                                                              const Expanded(
-                                                                child: Text(
-                                                                  'Previous Lokasi Kerja',
-                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                                                                ),
-                                                              ),
-                                                              const VerticalDivider(width: 1),
-                                                              const SizedBox(width: 16),
-                                                              Expanded(
-                                                                child: Text(
-                                                                  controller.dataJoPIC.value.assignHistory![i - 1].lokasiKerja ?? '-',
-                                                                  style: const TextStyle(
-                                                                    fontSize: 14,
+                                                                const VerticalDivider(width: 1),
+                                                                const SizedBox(width: 16),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    assignHistory?.remarks ?? '-',
+                                                                    style: const TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
                                                                   ),
                                                                 ),
-                                                              ),
-                                                            ]),
-                                                            const Divider(thickness: 0.4),
-                                                            Row(children: [
-                                                              const Expanded(
-                                                                child: Text(
-                                                                  'Previous PIC Inspection',
-                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                                                                ),
-                                                              ),
-                                                              const VerticalDivider(width: 1),
-                                                              const SizedBox(width: 16),
-                                                              Expanded(
-                                                                child: Text(
-                                                                  controller.dataJoPIC.value.assignHistory![i - 1].picInspector ?? '-',
-                                                                  style: const TextStyle(
-                                                                    fontSize: 14,
+                                                              ]),
+                                                              const Divider(thickness: 0.4),
+                                                              Row(children: [
+                                                                const Expanded(
+                                                                  child: Text(
+                                                                    'Previous ETA Vessel',
+                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
-                                                              ),
-                                                            ]),
-                                                            const Divider(thickness: 0.4),
-                                                            Row(children: [
-                                                              const Expanded(
-                                                                child: Text(
-                                                                  'Previous PIC Laboratory',
-                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                                                                ),
-                                                              ),
-                                                              const VerticalDivider(width: 1),
-                                                              const SizedBox(width: 16),
-                                                              Expanded(
-                                                                child: Text(
-                                                                  controller.dataJoPIC.value.assignHistory![i - 1].picLaboratory ?? '-',
-                                                                  style: const TextStyle(
-                                                                    fontSize: 14,
+                                                                const VerticalDivider(width: 1),
+                                                                const SizedBox(width: 16),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    assignHistory?.ettaVessel ?? '-',
+                                                                    style: const TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
                                                                   ),
                                                                 ),
-                                                              ),
-                                                            ]),
-                                                            const Divider(thickness: 0.4),
-                                                          ])
-                                                      ],
-                                                    )
+                                                              ]),
+                                                              const Divider(thickness: 0.4),
+                                                              Row(children: [
+                                                                const Expanded(
+                                                                  child: Text(
+                                                                    'Previous Date of Attendance',
+                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                  ),
+                                                                ),
+                                                                const VerticalDivider(width: 1),
+                                                                const SizedBox(width: 16),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    '${assignHistory?.startDateOfAttendance ?? '-'} - ${assignHistory?.endDateOfAttendance ?? '-'}',
+                                                                    style: const TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ]),
+                                                              const Divider(thickness: 0.4),
+                                                              Row(children: [
+                                                                const Expanded(
+                                                                  child: Text(
+                                                                    'Previous Lokasi Kerja',
+                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                  ),
+                                                                ),
+                                                                const VerticalDivider(width: 1),
+                                                                const SizedBox(width: 16),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    assignHistory?.lokasiKerja ?? '-',
+                                                                    style: const TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ]),
+                                                              const Divider(thickness: 0.4),
+                                                              Row(children: [
+                                                                const Expanded(
+                                                                  child: Text(
+                                                                    'Previous PIC Inspection',
+                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                  ),
+                                                                ),
+                                                                const VerticalDivider(width: 1),
+                                                                const SizedBox(width: 16),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    assignHistory?.picInspector ?? '-',
+                                                                    style: const TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ]),
+                                                              const Divider(thickness: 0.4),
+                                                              Row(children: [
+                                                                const Expanded(
+                                                                  child: Text(
+                                                                    'Previous PIC Laboratory',
+                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                  ),
+                                                                ),
+                                                                const VerticalDivider(width: 1),
+                                                                const SizedBox(width: 16),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    assignHistory?.picLaboratory ?? '-',
+                                                                    style: const TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ]),
+                                                              const Divider(thickness: 0.4),
+                                                            ]);
+                                                          }
+                                                        )
                                                         : const SizedBox(),
                                                   ],
                                                 )),
@@ -1749,7 +1754,7 @@ class JoDetailScreen extends StatelessWidget {
                                                               ? controller.nextStageActivityConfirm()
                                                               : controller.activityStage == 5
                                                               ? controller.nextStageActivity5Confirm()
-                                                              : controller.finishStageActivityConfirm();
+                                                              : controller.activityStage == 6 ? controller.finishStageActivityConfirm() : controller.nextStageActivityConfirm();
                                                         } else {
                                                           controller.activityStage == 1
                                                               ? controller.drawerDailyActivity()
@@ -1757,7 +1762,7 @@ class JoDetailScreen extends StatelessWidget {
                                                               ? controller.drawerDailyActivity()
                                                               : controller.activityStage == 5
                                                               ? controller.drawerDailyActivity5()
-                                                              : controller.drawerDailyActivity6V2();
+                                                              : controller.activityStage == 6 ? controller.drawerDailyActivity6V2() : controller.drawerDailyActivity();
                                                         }
                                                       },
                                                       icon: Image.asset(
@@ -2600,7 +2605,7 @@ class JoDetailScreen extends StatelessWidget {
                                                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                                                   ),
                                                   const SizedBox(height: 16),
-                                                  controller.activity6Attachments.value.isNotEmpty
+                                                  controller.activity6AttachmentsStage.value.isNotEmpty
                                                       ? GridView.builder(
                                                       shrinkWrap: true,
                                                       physics: NeverScrollableScrollPhysics(),
@@ -2609,12 +2614,11 @@ class JoDetailScreen extends StatelessWidget {
                                                         mainAxisSpacing: 8,
                                                         crossAxisSpacing: 8,
                                                       ),
-                                                      itemCount: controller.activity6Attachments.value.length,
+                                                      itemCount: controller.activity6AttachmentsStage.value.length,
                                                       itemBuilder: (content, index) {
-                                                        final File attach = controller.activity6Attachments.value[index];
-                                                        final String fileType = controller.checkFileType(attach.path);
-                                                        var filenameArr = attach.path.split("/");
-                                                        var filename = filenameArr.last;
+                                                        final TDJoInspectionAttachment attach = controller.activity6AttachmentsStage.value[index];
+                                                        final String fileType = controller.checkFileType(attach.pathName!);
+                                                        var filename = attach.fileName!;
                                                         return fileType == 'image'
                                                             ? SizedBox(
                                                           width: 54,
@@ -2624,10 +2628,10 @@ class JoDetailScreen extends StatelessWidget {
                                                             height: 54,
                                                             child: InkWell(
                                                               onTap: () {
-                                                                controller.previewImageAct6(index, attach.path);
+                                                                controller.previewImageAct6(index, attach.pathName!);
                                                               },
                                                               child: Image.file(
-                                                                File(attach.path),
+                                                                File(attach.pathName!),
                                                                 fit: BoxFit.cover,
                                                               ),
                                                             ),
@@ -2639,7 +2643,7 @@ class JoDetailScreen extends StatelessWidget {
                                                           height: 66,
                                                           child: InkWell(
                                                             onTap: () {
-                                                              OpenFilex.open(attach.path);
+                                                              OpenFilex.open(attach.pathName!);
                                                             },
                                                             child: SizedBox(
                                                               width: 54,
@@ -2672,6 +2676,39 @@ class JoDetailScreen extends StatelessWidget {
                               padding: const EdgeInsets.all(16),
                               child: Obx(
                                     () => Column(children: [
+                                      TextFormField(
+                                        controller: controller.searchLabText,
+                                        cursorColor: onFocusColor,
+                                        style: const TextStyle(color: onFocusColor),
+                                        // onChanged: (value){
+                                        //   controller.searchJo(value);
+                                        // },
+                                        decoration: InputDecoration(
+                                            suffixIcon: const Icon(Icons.search_sharp,
+                                              color: Colors.black26,
+                                            ),
+                                            filled: true,
+                                            fillColor: const Color(0xfff9fafb),
+                                            border: OutlineInputBorder(
+                                              borderSide: const BorderSide(color: Colors.black26),
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: const BorderSide(color: Colors.black26),
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: const BorderSide(color: primaryColor),
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            labelText: 'Cari Laboratory',
+                                            labelStyle: const TextStyle(
+                                                color: Colors.black26
+                                            ),
+                                            floatingLabelBehavior: FloatingLabelBehavior.never
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16,),
                                   controller.labs.value.isNotEmpty
                                       ? ListView.builder(
                                       physics: NeverScrollableScrollPhysics(),
@@ -2714,34 +2751,7 @@ class JoDetailScreen extends StatelessWidget {
                                           ],
                                         );
                                       })
-                                      : SizedBox(
-                                    child: InkWell(
-                                      onTap: () {
-                                        controller.detailLabActivity(0,'',0);
-                                      },
-                                      child: Card(
-                                          color: Colors.white,
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(16),
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Text(
-                                                        'lab -',
-                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                                                      ),
-                                                    ),
-                                                    Icon(Icons.chevron_right)
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          )),
-                                    ),
-                                  ),
+                                      : const SizedBox(),
                                   const SizedBox(height: 16),
                                 ]),
                               ),

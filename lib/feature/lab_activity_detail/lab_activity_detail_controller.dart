@@ -15,7 +15,6 @@ import 'package:open_filex/open_filex.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/data/model/jo_list_daily_activity6.dart';
-import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/jo_list_daily_activity_lab.dart';
 import 'package:ops_mobile/data/model/jo_list_daily_activity_lab5.dart';
 import 'package:ops_mobile/data/model/response_jo_insert_activity5.dart';
@@ -101,7 +100,6 @@ class LabActivityDetailController extends BaseController{
 
   @override
   void onInit() async {
-    //userData.value = Data.fromJson(jsonDecode(await StorageCore().storage.read('login')));
     var dataUser = jsonDecode(await StorageCore().storage.read('user'));
     userData.value = Data(
         id: dataUser.first['id'],
@@ -118,7 +116,6 @@ class LabActivityDetailController extends BaseController{
     labId = argument['labId'];
     labName = argument['name'];
     joLabId = argument['joLabId'];
-    //statusId = argument['statusJo'];
     debugPrint('arguments lab: id = $id, labId = $labId, joLabId = $joLabId, statusJo = ${statusId}');
     isLoading = true;
     update();
@@ -129,11 +126,6 @@ class LabActivityDetailController extends BaseController{
   // Get Data
 
   Future<void> getData() async{
-    // await getJoDailyActivityLab();
-    // await getJoDailyActivityLab5();
-    // await getJoDailyActivityLab6();
-    // isLoading == false;
-    // update();
 
     debugPrint('params: $id,${userData.value!.id!.toInt()}, $labId');
     try{
@@ -371,10 +363,6 @@ class LabActivityDetailController extends BaseController{
                         activity6AttachmentsStage.value = attachments;
                         debugPrint('isian laboratory activity 6: ${jsonEncode(activity6ListStages.value.last)}');
                       }
-                      // debugPrint('isian laboratory activity5: ${jsonEncode(activity5LabListStages.value.last)}');
-                      // debugPrint('isian laboratory activity6: ${jsonEncode(activity6ListStages.value.last)}');
-                      // debugPrint('isian laboratory activity6 attachment: ${jsonEncode(activity6AttachmentsStage.value.last)}');
-
                     }
                   });
                 }
@@ -402,41 +390,8 @@ class LabActivityDetailController extends BaseController{
     debugPrint('first date : ${initial}, last date : ${finish}');
     DateTime first = DateTime.parse(initial!);
     DateTime last = DateTime.parse(finish!);
-    //debugPrint('first date : ${first}, last date : ${last}');
     prelim.value = initial.split(' ').first;
     tat.value = getDiffHours(first,last);
-
-    // prelim.value = activity5LabListStages.value.first.transDate ?? '';
-    // var dateFormat = DateFormat('yyyy-MM-dd');
-    // var format = DateFormat('HH:mm');
-    // var startDate = dateFormat.parse(activityLabListStages.value.first.transDate!);
-    // var endDate = dateFormat.parse(activity5LabListStages.value.first.transDate!);
-    //
-    // if(startDate == endDate){
-    //   var startDateTime = format.parse(activityLabListStages.value.first.createdAt!);
-    //   var endDateTime = format.parse(activity5LabListStages.value.first.createdAt!);
-    //   var countHours = getDiffHours(startDateTime, endDateTime);
-    //   debugPrint('check count hours $countHours');
-    //   tat.value = countHours;
-    // } else {
-    //   var startDateTime = format.parse(activityLabListStages.value.first.createdAt!);
-    //   var endDateTime = format.parse(activity5LabListStages.value.first.createdAt!);
-    //   var startHourDay = format.parse('24:00:00');
-    //   var endHourDay = format.parse('00:00:00');
-    //
-    //   var startEndHour = getDiffHours(startDateTime, startHourDay);
-    //   var endEndHour = getDiffHours(endHourDay, endDateTime);
-    //
-    //   var difference = daysBetween(startDate, endDate);
-    //   var countHours = 0;
-    //
-    //   countHours = ((difference - 2) * 24) + (startEndHour + endEndHour);
-    //
-    //   // debugPrint('check > start : $startEndHour, end: $endEndHour');
-    //   // debugPrint('check count hours $countHours');
-    //
-    //   tat.value = countHours;
-    // }
   }
 
   int getDiffHours(DateTime start, DateTime end) {
@@ -444,7 +399,6 @@ class LabActivityDetailController extends BaseController{
     Duration diff = end.difference(start);
     final hours = diff.inHours;
     final minutes = diff.inMinutes % 60;
-    //debugPrint('$hours hours $minutes minutes');
     return hours;
   }
 
@@ -522,8 +476,6 @@ class LabActivityDetailController extends BaseController{
       initialTime: TimeOfDay.now(),
     );
     if (picked != null) {
-      //DateTime date = DateTime.now();
-      //String second = date.second.toString().padLeft(2, '0');
       List timeSplit = picked.format(context).split(' ');
       String formattedTime = timeSplit[0];
       String time = '$formattedTime';
@@ -601,18 +553,6 @@ class LabActivityDetailController extends BaseController{
       }
     }
 
-    // activityLabList.value.add(ActivityLab(
-    //   tHJoId: id,
-    //   tDJoLaboratoryId: labId,
-    //   mStatuslaboratoryprogresId: activityLabStage,
-    //   transDate: activityDate.text,
-    //   startActivityTime: activityStartTime.text,
-    //   endActivityTime: activityEndTime.text,
-    //   activity: activityText.text,
-    //   createdBy: userData.value?.id ?? 0,
-    //   remarks: '',
-    // ));
-
     activityDate.text = '';
     activityStartTime.text = '';
     activityEndTime.text = '';
@@ -660,24 +600,24 @@ class LabActivityDetailController extends BaseController{
     TDJoLaboratoryActivityStages stage = activityLabList.value[stageIndex];
     //activityLabList.value[stageIndex].remarks = remarksController.text;
     activityLabList.value[stageIndex] = TDJoLaboratoryActivityStages(
-        id : stage.id,
-        dJoLaboratoryId : stage.dJoLaboratoryId,
-        tHJoId : stage.tHJoId,
-        mStatuslaboratoryprogresId : stage.mStatuslaboratoryprogresId,
-        transDate : stage.transDate,
-        remarks : remarksController.text,
-        createdBy : stage.createdBy,
-        updatedBy : stage.updatedBy,
-        createdAt : stage.createdAt,
-        updatedAt : stage.updatedAt,
-        totalSampleReceived : stage.totalSampleReceived,
-        totalSampleAnalyzed : stage.totalSampleAnalyzed,
-        totalSamplePreparation : stage.totalSamplePreparation,
-        code : stage.code,
-        isActive : 1,
-        isUpload : 0,
-        listLabActivity: stage.listLabActivity,
-        listLabAttachment: stage.listLabAttachment,
+      id : stage.id,
+      dJoLaboratoryId : stage.dJoLaboratoryId,
+      tHJoId : stage.tHJoId,
+      mStatuslaboratoryprogresId : stage.mStatuslaboratoryprogresId,
+      transDate : stage.transDate,
+      remarks : remarksController.text,
+      createdBy : stage.createdBy,
+      updatedBy : stage.updatedBy,
+      createdAt : stage.createdAt,
+      updatedAt : stage.updatedAt,
+      totalSampleReceived : stage.totalSampleReceived,
+      totalSampleAnalyzed : stage.totalSampleAnalyzed,
+      totalSamplePreparation : stage.totalSamplePreparation,
+      code : stage.code,
+      isActive : 1,
+      isUpload : 0,
+      listLabActivity: stage.listLabActivity,
+      listLabAttachment: stage.listLabAttachment,
     );
   }
 
@@ -1024,7 +964,7 @@ class LabActivityDetailController extends BaseController{
                               itemCount: activityLabList.value.map((item){return item.transDate;}).toSet().toList().length,
                               itemBuilder: (context, index)
                               { var date = activityLabList.value.map((item){return item.transDate;}).toSet().toList()[index];
-                                var activity = activityLabList.value[index];
+                              var activity = activityLabList.value[index];
                               return Column(
                                 children: [
                                   Card(
@@ -1403,11 +1343,6 @@ class LabActivityDetailController extends BaseController{
 
   Future<String?> editActivityStages() async {
     if(activityLabList.value.where((data) => data.mStatuslaboratoryprogresId == activityLabStage).toList().isNotEmpty){
-      //activityLabStage++;
-      //postInsertActivityLab(activityLabList.value);
-      // for(var item in activityLabList.value){
-      //   activityLabListStages.value.add(item);
-      // }
       activityLabListStages.value
           .removeWhere((act) => act.mStatuslaboratoryprogresId == activityLabStage);
       for (var item in activityLabList.value) {
@@ -1432,11 +1367,29 @@ class LabActivityDetailController extends BaseController{
       // Your logic here
       final createdBy = userData.value!.id;
 
-      List<String> stageValues = [];
+      List<Map<String,dynamic>> stageValues = [];
       List<String> activityValues = [];
 
       activityLabList.value.asMap().forEach((index,stage){
-        stageValues.add('''(${stage.id ?? null},${joLabId},${id},${activityLabStage == 0 ? 1 : activityLabStage},'${stage.transDate}','${activityLabListTextController.value[index].text}',$createdBy,'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','${stage.code ?? 'JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}'}',${stage.isActive},0)''');
+        //stageValues.add('''(${stage.id ?? null},${joLabId},${id},${activityLabStage == 0 ? 1 : activityLabStage},'${stage.transDate}','${activityLabListTextController.value[index].text}',$createdBy,'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','${stage.code ?? 'JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}'}',${stage.isActive},0)''');
+        stageValues.add({
+              'id': stage.id ?? null,
+              'd_jo_laboratory_id': stage.dJoLaboratoryId,
+              't_h_jo_id': id,
+              'm_statuslaboratoryprogres_id': stage.mStatuslaboratoryprogresId,
+              'trans_date': stage.transDate,
+              'remarks': stage.remarks,
+              'created_by': stage.createdBy,
+              'updated_by': stage.updatedBy,
+              'created_at': stage.createdAt,
+              'updated_at': stage.updatedAt,
+              'total_sample_received': stage.totalSampleReceived,
+              'total_sample_analyzed': stage.totalSampleAnalyzed,
+              'total_sample_preparation': stage.totalSamplePreparation,
+              'code': stage.code ?? 'JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+              'is_active': stage.isActive,
+              'is_upload': stage.isUpload,
+            });
         update();
         if(stage.listLabActivity!.isNotEmpty){
           var count = 0;
@@ -1451,7 +1404,7 @@ class LabActivityDetailController extends BaseController{
       debugPrint("stage join: ${stageValues.join(',')}");
       debugPrint("stage join: ${activityValues.join(',')}");
 
-      await SqlHelper.updateLaboratoryActivity(stageValues.join(','), activityValues.join(','));
+      await SqlHelper.updateLaboratoryActivity(stageValues, activityValues.join(','),id, joLabId, activityLabStage);
 
       debugPrint('activity lab saat ini : ${activityLabStage}');
       update();
@@ -1681,7 +1634,7 @@ class LabActivityDetailController extends BaseController{
                               itemCount: activityLabList.value.map((item){return item.transDate;}).toSet().toList().length,
                               itemBuilder: (context, index)
                               { var date = activityLabList.value.map((item){return item.transDate;}).toSet().toList()[index];
-                                var activity = activityLabList.value[index];
+                              var activity = activityLabList.value[index];
                               return Column(
                                 children: [
                                   Card(
@@ -1755,74 +1708,74 @@ class LabActivityDetailController extends BaseController{
                                               VerticalDivider(width: 1),
                                               SizedBox(width: 8),
                                               Expanded(
-                                                child: Column(
-                                                  children: [
-                                                    ListView.builder(
-                                                        shrinkWrap: true,
-                                                        physics: NeverScrollableScrollPhysics(),
-                                                        itemCount: activity.listLabActivity?.length,
-                                                        itemBuilder: (context, indexItem){
-                                                          var activityItem = activity.listLabActivity![indexItem];
-                                                          if(activityLabList.value[index].transDate == date){
-                                                            return Row(
-                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                              children: [
-                                                                Expanded(
-                                                                  flex: 1,
-                                                                  child: Text(
-                                                                    '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
-                                                                    style: TextStyle(
-                                                                        fontSize: 14,
-                                                                        fontWeight:
-                                                                        FontWeight
-                                                                            .w700),
+                                                  child: Column(
+                                                    children: [
+                                                      ListView.builder(
+                                                          shrinkWrap: true,
+                                                          physics: NeverScrollableScrollPhysics(),
+                                                          itemCount: activity.listLabActivity?.length,
+                                                          itemBuilder: (context, indexItem){
+                                                            var activityItem = activity.listLabActivity![indexItem];
+                                                            if(activityLabList.value[index].transDate == date){
+                                                              return Row(
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                children: [
+                                                                  Expanded(
+                                                                    flex: 1,
+                                                                    child: Text(
+                                                                      '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
+                                                                      style: TextStyle(
+                                                                          fontSize: 14,
+                                                                          fontWeight:
+                                                                          FontWeight
+                                                                              .w700),
+                                                                    ),
                                                                   ),
-                                                                ),
-                                                                VerticalDivider(width: 1),
-                                                                SizedBox(width: 8),
-                                                                Expanded(
-                                                                  flex: 2,
-                                                                  child: Row(
-                                                                    children: [
-                                                                      Expanded(
-                                                                        child: Text(
-                                                                          activityItem.activity ?? '-',
-                                                                          style: TextStyle(
-                                                                            fontSize: 14,
+                                                                  VerticalDivider(width: 1),
+                                                                  SizedBox(width: 8),
+                                                                  Expanded(
+                                                                    flex: 2,
+                                                                    child: Row(
+                                                                      children: [
+                                                                        Expanded(
+                                                                          child: Text(
+                                                                            activityItem.activity ?? '-',
+                                                                            style: TextStyle(
+                                                                              fontSize: 14,
+                                                                            ),
                                                                           ),
                                                                         ),
-                                                                      ),
-                                                                      InkWell(
-                                                                          onTap: () {
-                                                                            toggleEditActivity(index, indexItem);
-                                                                          },
-                                                                          child: Icon(
-                                                                            Icons
-                                                                                .mode_edit_outlined,
-                                                                            color:
-                                                                            primaryColor,
-                                                                          )),
-                                                                      InkWell(
-                                                                          onTap: () {
-                                                                            removeActivityConfirm(date!, indexItem, index, activityLabStage);
-                                                                          },
-                                                                          child: Icon(
-                                                                            Icons
-                                                                                .delete_forever,
-                                                                            color: Colors
-                                                                                .red,
-                                                                          ))
-                                                                    ],
-                                                                  ),
-                                                                )
-                                                              ],
-                                                            );
-                                                          } else {
-                                                            return const SizedBox();
-                                                          }
-                                                        })
-                                                  ],
-                                                )
+                                                                        InkWell(
+                                                                            onTap: () {
+                                                                              toggleEditActivity(index, indexItem);
+                                                                            },
+                                                                            child: Icon(
+                                                                              Icons
+                                                                                  .mode_edit_outlined,
+                                                                              color:
+                                                                              primaryColor,
+                                                                            )),
+                                                                        InkWell(
+                                                                            onTap: () {
+                                                                              removeActivityConfirm(date!, indexItem, index, activityLabStage);
+                                                                            },
+                                                                            child: Icon(
+                                                                              Icons
+                                                                                  .delete_forever,
+                                                                              color: Colors
+                                                                                  .red,
+                                                                            ))
+                                                                      ],
+                                                                    ),
+                                                                  )
+                                                                ],
+                                                              );
+                                                            } else {
+                                                              return const SizedBox();
+                                                            }
+                                                          })
+                                                    ],
+                                                  )
                                               )
                                             ],
                                           ),
@@ -1969,7 +1922,7 @@ class LabActivityDetailController extends BaseController{
                   fontWeight: FontWeight.bold),
             ),
             onPressed: () async {
-              var result = await editActivityStages();
+              var result = await updateInsertLocalActivityLab();
               if(result == 'success'){
                 Get.back();
                 Get.back();
@@ -2024,10 +1977,6 @@ class LabActivityDetailController extends BaseController{
 
   Future<String?> addActivity5LabStages() async {
 
-    // DateFormat('yyyy-MM-dd hh:mm:ss')
-    //     .format(DateTime.now())
-    //     .toString();
-
     activity5LabListStages.value = [];
     var data = TDJoLaboratoryActivityStages(
       tHJoId: id,
@@ -2060,19 +2009,6 @@ class LabActivityDetailController extends BaseController{
         )
       ],
     );
-
-    // ActivityAct5Lab(
-    //   tHJoId: id,
-    //   tDJoLaboratoryId: labId,
-    //   mStatuslaboratoryprogresId: activityLabStage,
-    //   transDate: '2024-10-03',
-    //   startActivityTime: '02:30:00',
-    //   endActivityTime: '03:30:00',
-    //   totalSampleReceived: int.parse(sampleReceived.text),
-    //   totalSampleAnalyzed: int.parse(sampleAnalyzed.text),
-    //   totalSamplePreparation: int.parse(samplePreparation.text),
-    //   createdBy: userData.value?.id ?? 0,
-    // );
     activity5LabList.value.add(data);
     insertLocalActivity5Lab();
     // postInsertActivity5Lab(activity5LabList.value);
@@ -2748,8 +2684,6 @@ class LabActivityDetailController extends BaseController{
       initialTime: TimeOfDay.now(),
     );
     if (picked != null) {
-      //DateTime date = DateTime.now();
-      //String second = date.second.toString().padLeft(2, '0');
       List timeSplit = picked.format(context).split(' ');
       String formattedTime = timeSplit[0];
       String time = '$formattedTime';
@@ -3041,8 +2975,6 @@ class LabActivityDetailController extends BaseController{
 
       activitySubmitted.value = true;
 
-      // await getJoDailyActivity6();
-      // activityStage--;
       update();
       return 'success';
     } else if (activity6List.value
@@ -3100,8 +3032,7 @@ class LabActivityDetailController extends BaseController{
   }
 
   Future<void> postInsertActivity6(data) async {
-    var response = await repository.insertActivityInspection6(data) ??
-        ResponseJoInsertActivity5();
+    var response = await repository.insertActivityInspection6(data) ?? ResponseJoInsertActivity5();
     debugPrint('insert activity response: ${jsonEncode(response.message)}');
   }
 
@@ -4305,91 +4236,91 @@ class LabActivityDetailController extends BaseController{
                                                         width: 8),
                                                     Expanded(
                                                       child: Column(
-                                                        children: [
-                                                          ListView.builder(
-                                                              shrinkWrap: true,
-                                                              physics:
-                                                              NeverScrollableScrollPhysics(),
-                                                              itemCount: activity.listLabActivity?.length,
-                                                              itemBuilder:
-                                                                  (context, indexItem) {
-                                                                var activityItem = activity.listLabActivity![indexItem];
-                                                                if (activity.transDate ==
-                                                                    date) {
-                                                                  return Row(
-                                                                    crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                    children: [
-                                                                      SizedBox(
-                                                                          width: 8),
-                                                                      Expanded(
-                                                                        flex: 1,
-                                                                        child: Text(
-                                                                          '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
-                                                                          style: TextStyle(
-                                                                              fontSize:
-                                                                              14,
-                                                                              fontWeight:
-                                                                              FontWeight
-                                                                                  .w700),
+                                                          children: [
+                                                            ListView.builder(
+                                                                shrinkWrap: true,
+                                                                physics:
+                                                                NeverScrollableScrollPhysics(),
+                                                                itemCount: activity.listLabActivity?.length,
+                                                                itemBuilder:
+                                                                    (context, indexItem) {
+                                                                  var activityItem = activity.listLabActivity![indexItem];
+                                                                  if (activity.transDate ==
+                                                                      date) {
+                                                                    return Row(
+                                                                      crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                      children: [
+                                                                        SizedBox(
+                                                                            width: 8),
+                                                                        Expanded(
+                                                                          flex: 1,
+                                                                          child: Text(
+                                                                            '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
+                                                                            style: TextStyle(
+                                                                                fontSize:
+                                                                                14,
+                                                                                fontWeight:
+                                                                                FontWeight
+                                                                                    .w700),
+                                                                          ),
                                                                         ),
-                                                                      ),
-                                                                      VerticalDivider(
-                                                                          width: 1),
-                                                                      SizedBox(
-                                                                          width: 8),
-                                                                      Expanded(
-                                                                        flex: 2,
-                                                                        child: Row(
-                                                                          children: [
-                                                                            Expanded(
-                                                                              child: Text(
-                                                                                activityItem.activity ??
-                                                                                    '-',
-                                                                                style:
-                                                                                TextStyle(
-                                                                                  fontSize:
-                                                                                  14,
+                                                                        VerticalDivider(
+                                                                            width: 1),
+                                                                        SizedBox(
+                                                                            width: 8),
+                                                                        Expanded(
+                                                                          flex: 2,
+                                                                          child: Row(
+                                                                            children: [
+                                                                              Expanded(
+                                                                                child: Text(
+                                                                                  activityItem.activity ??
+                                                                                      '-',
+                                                                                  style:
+                                                                                  TextStyle(
+                                                                                    fontSize:
+                                                                                    14,
+                                                                                  ),
                                                                                 ),
                                                                               ),
-                                                                            ),
-                                                                            InkWell(
-                                                                                onTap:
-                                                                                    () {
-                                                                                  toggleEditActivity6(
-                                                                                      index,
-                                                                                      indexItem);
-                                                                                },
-                                                                                child:
-                                                                                Icon(
-                                                                                  Icons
-                                                                                      .mode_edit_outlined,
-                                                                                  color:
-                                                                                  primaryColor,
-                                                                                )),
-                                                                            InkWell(
-                                                                                onTap:
-                                                                                    () {
-                                                                                  removeActivity6Confirm(date!, indexItem, index, 6);
-                                                                                },
-                                                                                child:
-                                                                                Icon(
-                                                                                  Icons
-                                                                                      .delete_forever,
-                                                                                  color:
-                                                                                  Colors.red,
-                                                                                ))
-                                                                          ],
-                                                                        ),
-                                                                      )
-                                                                    ],
-                                                                  );
-                                                                } else {
-                                                                  return const SizedBox();
-                                                                }
-                                                              })
-                                                        ]
+                                                                              InkWell(
+                                                                                  onTap:
+                                                                                      () {
+                                                                                    toggleEditActivity6(
+                                                                                        index,
+                                                                                        indexItem);
+                                                                                  },
+                                                                                  child:
+                                                                                  Icon(
+                                                                                    Icons
+                                                                                        .mode_edit_outlined,
+                                                                                    color:
+                                                                                    primaryColor,
+                                                                                  )),
+                                                                              InkWell(
+                                                                                  onTap:
+                                                                                      () {
+                                                                                    removeActivity6Confirm(date!, indexItem, index, 6);
+                                                                                  },
+                                                                                  child:
+                                                                                  Icon(
+                                                                                    Icons
+                                                                                        .delete_forever,
+                                                                                    color:
+                                                                                    Colors.red,
+                                                                                  ))
+                                                                            ],
+                                                                          ),
+                                                                        )
+                                                                      ],
+                                                                    );
+                                                                  } else {
+                                                                    return const SizedBox();
+                                                                  }
+                                                                })
+                                                          ]
                                                       ),
                                                     )
                                                   ],
@@ -4620,7 +4551,7 @@ class LabActivityDetailController extends BaseController{
                           Expanded(
                             child: ElevatedButton(
                                 onPressed: () {
-                                    editActivity6StageConfirm();
+                                  editActivity6StageConfirm();
                                 },
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: primaryColor,
@@ -4691,7 +4622,7 @@ class LabActivityDetailController extends BaseController{
 
       List<String> stageValues = [];
       List<String> activityValues = [];
-      List<String> attachmentValues = [];
+      List<Map<String,dynamic>> attachmentValues = [];
 
       activity6List.value.asMap().forEach((index,stage){
         stageValues.add('''(${stage.id ?? null},${joLabId},${id},${6},'${stage.transDate}','${activityLabListTextController.value[index].text}',${stage.id != null ? stage.createdBy : updatedBy}, ${stage.id != null ? updatedBy : 0}, ''${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}'', '${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','${stage.code ?? 'JOLAS-6-${updatedBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}'}',${stage.isActive},0)''');
@@ -4710,14 +4641,14 @@ class LabActivityDetailController extends BaseController{
         var count = 0;
         activity6Attachments.value.forEach((attachment){
           count++;
-          attachmentValues.add('''(${joLabId},'${activityLabStage}','${attachment.pathName}','${attachment.fileName}','JOLAT-${activityLabStage == 0 ? 1 : activityLabStage}-${updatedBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}$count',1,0,${updatedBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
+          //attachmentValues.add('''(${joLabId},'${activityLabStage}','${attachment.pathName}','${attachment.fileName}','JOLAT-${activityLabStage == 0 ? 1 : activityLabStage}-${updatedBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}$count',1,0,${updatedBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
         });
       }
 
       debugPrint("stage join: ${stageValues.join(',')}");
       debugPrint("stage join: ${activityValues.join(',')}");
 
-      await SqlHelper.updateLaboratoryActivity6(stageValues.join(','), activityValues.join(','), attachmentValues.join(','));
+      await SqlHelper.updateLaboratoryActivity6(stageValues.join(','), activityValues.join(','), attachmentValues);
 
       debugPrint('activity lab saat ini : ${activityLabStage}');
       update();

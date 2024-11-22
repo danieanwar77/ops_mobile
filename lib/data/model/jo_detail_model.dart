@@ -473,7 +473,8 @@ class DetailJo {
       String? code, 
       String? canceledDate, 
       String? soCreatedAt, 
-      String? joCreatedAt, 
+      String? joCreatedAt,
+      num? idStatusJo,
       String? statusJo, 
       String? companyName, 
       String? mClientCategoryName, 
@@ -529,6 +530,7 @@ class DetailJo {
     _canceledDate = canceledDate;
     _soCreatedAt = soCreatedAt;
     _joCreatedAt = joCreatedAt;
+    _idStatusJo = idStatusJo;
     _statusJo = statusJo;
     _companyName = companyName;
     _mClientCategoryName = mClientCategoryName;
@@ -587,6 +589,7 @@ class DetailJo {
     _canceledDate = json['canceled_date'];
     _soCreatedAt = json['so_created_at'];
     _joCreatedAt = json['jo_created_at'];
+    _idStatusJo = json['id_status_jo'];
     _statusJo = json['status_jo'];
     _companyName = json['company_name'];
     _mClientCategoryName = json['m_client_category_name'];
@@ -643,6 +646,7 @@ class DetailJo {
   String? _canceledDate;
   String? _soCreatedAt;
   String? _joCreatedAt;
+  num? _idStatusJo;
   String? _statusJo;
   String? _companyName;
   String? _mClientCategoryName;
@@ -698,6 +702,7 @@ class DetailJo {
   String? canceledDate,
   String? soCreatedAt,
   String? joCreatedAt,
+  num? idStatusJo,
   String? statusJo,
   String? companyName,
   String? mClientCategoryName,
@@ -751,6 +756,7 @@ class DetailJo {
   canceledDate: canceledDate ?? _canceledDate,
   soCreatedAt: soCreatedAt ?? _soCreatedAt,
   joCreatedAt: joCreatedAt ?? _joCreatedAt,
+  idStatusJo: idStatusJo ?? _idStatusJo,
   statusJo: statusJo ?? _statusJo,
   companyName: companyName ?? _companyName,
   mClientCategoryName: mClientCategoryName ?? _mClientCategoryName,
@@ -807,6 +813,7 @@ class DetailJo {
   String? get canceledDate => _canceledDate;
   String? get soCreatedAt => _soCreatedAt;
   String? get joCreatedAt => _joCreatedAt;
+  num? get idStatusJo => _idStatusJo;
   String? get statusJo => _statusJo;
   String? get companyName => _companyName;
   String? get mClientCategoryName => _mClientCategoryName;
@@ -865,6 +872,7 @@ class DetailJo {
     map['canceled_date'] = _canceledDate;
     map['so_created_at'] = _soCreatedAt;
     map['jo_created_at'] = _joCreatedAt;
+    map['id_status_jo'] = _idStatusJo;
     map['status_jo'] = _statusJo;
     map['company_name'] = _companyName;
     map['m_client_category_name'] = _mClientCategoryName;

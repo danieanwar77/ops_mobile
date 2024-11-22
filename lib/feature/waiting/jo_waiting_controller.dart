@@ -52,6 +52,7 @@ class JoWaitingController extends BaseController {
   RxBool activitySubmitted = RxBool(false);
   final _formKey = GlobalKey<FormState>();
 
+  TextEditingController searchLabText = TextEditingController();
 
   // Detail Data
   late int id;
@@ -90,6 +91,7 @@ class JoWaitingController extends BaseController {
   Rx<DataListActivityLab> dataListActivityLab = Rx(DataListActivityLab());
   Rx<DataListActivityLab5> dataListActivityLab5 = Rx(DataListActivityLab5());
   RxList<Laboratory> labs = RxList();
+  RxList<Laboratory> labsTemp = RxList();
 
   // Activity Inspection Photo Variables & Temporary
   RxList<File> dailyActivityPhotos = RxList();
@@ -202,6 +204,7 @@ class JoWaitingController extends BaseController {
     id = argument['id'];
     statusId = argument['status'];
     isLoadingJO == true;
+    searchLabText.addListener(searchLab);
     update();
     await getData();
     //await getJoDetailLocal();
@@ -543,6 +546,19 @@ class JoWaitingController extends BaseController {
         remarks: data.remarks,
       ));
     });
+  }
+
+  void searchLab(){
+    final String search = searchLabText.text;
+    debugPrint('hasil search text nya: $search');
+    var dataSearch = labsTemp.value.where((value) => ( value.name?.toLowerCase() == search.toLowerCase() || (value.name?.toLowerCase() ?? '').contains(search.toLowerCase()) ) ).toList();
+    debugPrint('hasil search: ${jsonEncode(dataSearch)}');
+    labs.value = dataSearch;
+    if(search == ''){
+      labs.value = labsTemp.value;
+      update();
+    }
+    update();
   }
 
   Future<void> getJoDailyActivityLocalV2() async {

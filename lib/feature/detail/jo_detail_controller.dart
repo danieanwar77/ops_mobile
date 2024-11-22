@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
 
+import 'package:external_path/external_path.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -73,6 +74,8 @@ class JoDetailController extends BaseController {
   bool isLoadingJO = false;
   bool isLoadingJOImage = false;
 
+  TextEditingController searchLabText = TextEditingController();
+
   //Rx<DataDetail> dataJoDetail = Rx(DataDetail());
   Rx<DataDetail> dataJoDetail = Rx(DataDetail());
   Rx<DataPIC> dataJoPIC = Rx(DataPIC());
@@ -97,6 +100,7 @@ class JoDetailController extends BaseController {
   Rx<DataListActivityLab> dataListActivityLab = Rx(DataListActivityLab());
   Rx<DataListActivityLab5> dataListActivityLab5 = Rx(DataListActivityLab5());
   RxList<Laboratory> labs = RxList();
+  RxList<Laboratory> labsTemp = RxList();
 
   // Activity Inspection Photo Variables & Temporary
   RxList<File> dailyActivityPhotos = RxList();
@@ -166,8 +170,8 @@ class JoDetailController extends BaseController {
   TextEditingController activity6EndTime = TextEditingController();
   TextEditingController activity6Text = TextEditingController();
   TextEditingController activity6Remarks = TextEditingController();
-  RxList<File> activity6Attachments = RxList();
-  RxList<File> activity6AttachmentsStage = RxList();
+  RxList<TDJoInspectionAttachment> activity6Attachments = RxList();
+  RxList<TDJoInspectionAttachment> activity6AttachmentsStage = RxList();
 
   // Activities Documents
   RxList<Map<String, dynamic>> documentInspection = RxList();
@@ -201,6 +205,7 @@ class JoDetailController extends BaseController {
     // debugPrint('data detail : ${jsonEncode(data)}');
     //await getJoDetailLocal();
     isLoadingJO == false;
+    searchLabText.addListener(searchLab);
     update();
     await getData();
     debugPrint('activity stage now: $activityStage');
@@ -369,6 +374,7 @@ class JoDetailController extends BaseController {
     });
     if (labo!.isNotEmpty) {
       labs.value = labo!;
+      labsTemp.value = labo!;
     }
     bargesCount = barges.value.length;
     activity5bargesCount = bargesCount;
@@ -429,6 +435,7 @@ class JoDetailController extends BaseController {
     if (labo != null) {
       labo.forEach((lab) {
         labs.value.add(Laboratory.fromJson(lab));
+        labsTemp.value.add(Laboratory.fromJson(lab));
       });
     }
     bargesCount = barges.value.length != 0 ? barges.value.length : 0;
@@ -537,6 +544,7 @@ class JoDetailController extends BaseController {
     } catch (e) {
       debugPrint(e.toString());
     } finally {
+      activity6Attachments.value = [];
       update();
     }
   }
@@ -722,7 +730,7 @@ class JoDetailController extends BaseController {
     dataAttach.attach?.forEach((attach) async {
       activity6Attachments.value = [];
       final File data = await getImagesFromUrl(attach.pathName!);
-      activity6Attachments.value.add(data);
+      // activity6Attachments.value.add(data);
     });
   }
 
@@ -741,12 +749,24 @@ class JoDetailController extends BaseController {
     // dailyActivityPhotosDescText.value = [];
     // dailyActivityPhotosV2.value = [];
     var attachments = result.map((json) {
-      return File(json['path_name']);
+      return TDJoInspectionAttachment.fromJson(json);
     }).toList();
     update();
 
     activity6AttachmentsStage.value = attachments;
-    activity6Attachments.value = attachments;
+    update();
+  }
+
+  void searchLab(){
+    final String search = searchLabText.text;
+    debugPrint('hasil search text nya: $search');
+    var dataSearch = labsTemp.value.where((value) => ( value.name?.toLowerCase() == search.toLowerCase() || (value.name?.toLowerCase() ?? '').contains(search.toLowerCase()) ) ).toList();
+    debugPrint('hasil search: ${jsonEncode(dataSearch)}');
+    labs.value = dataSearch;
+    if(search == ''){
+      labs.value = labsTemp.value;
+      update();
+    }
     update();
   }
 
@@ -760,6 +780,21 @@ class JoDetailController extends BaseController {
     } else {
       debugPrint('Gagal ubah status JO');
       //openDialog('Failed', 'Gagal ubah status JO');
+    }
+  }
+
+  Future<void> changeStatusJoLocal() async {
+    try{
+      final db = await SqlHelper.db();
+      db.execute('''
+          UPDATE t_h_jo
+          SET m_statusjo_id = 3
+          WHERE id = $id;
+        ''');
+    } catch(e){
+      debugPrint(e.toString());
+    } finally {
+      update();
     }
   }
 
@@ -895,25 +930,21 @@ class JoDetailController extends BaseController {
                                       index <
                                               dailyActivityPhotosTemp
                                                   .value.length
-                                          ? Column(
-                                              children: [
-                                                InkWell(
-                                                    onTap: () async {
-                                                      inspectionMediaPickerConfirmEdit(
-                                                          index);
-                                                    },
-                                                    child: Image.file(
-                                                      File(
-                                                          dailyActivityPhotosTemp
-                                                              .value[index]
-                                                              .path),
-                                                      fit: BoxFit.fitWidth,
-                                                    )),
-                                                const SizedBox(
-                                                  height: 8,
+                                          ? InkWell(
+                                              onTap: () async {
+                                                inspectionMediaPickerConfirmEdit(
+                                                    index);
+                                              },
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(8.0),
+                                                child: Image.file(
+                                                  height: 72,
+                                                  width: 72,
+                                                  dailyActivityPhotosTemp
+                                                      .value[index],
+                                                  fit: BoxFit.fill,
                                                 ),
-                                              ],
-                                            )
+                                              ))
                                           : InkWell(
                                               onTap: () async {
                                                 inspectionMediaPickerConfirm(
@@ -1029,6 +1060,9 @@ class JoDetailController extends BaseController {
                         child: ElevatedButton(
                             onPressed: () {
                               Get.back();
+                              dailyActivityPhotosTemp.value.clear();
+                              dailyActivityPhotosDescTemp.value.clear();
+                              adddailyActivityPhotosCount.value = 0;
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
@@ -1106,6 +1140,7 @@ class JoDetailController extends BaseController {
             onPressed: () {
               sendActivityDailyPhotoV2();
               Get.back();
+              Get.back();
             },
           ),
         ],
@@ -1114,11 +1149,14 @@ class JoDetailController extends BaseController {
   }
 
   void previewImage(int index, String photo, String desc, TDJoInspectionPict pict) async {
+    debugPrint('index image edit: $index');
     dailyActivityPhotosDescEdit.value.text = desc;
     activityPreviewFoto.value = await File(photo);
     Get.dialog(
-        StatefulBuilder(
-          builder: (context, state) {
+        GetBuilder(
+              init: JoDetailController(),
+          builder: (controller) {
+            var photoPreview = activityPreviewFoto.value;
             return AlertDialog(
               title: Row(
                 children: [
@@ -1136,9 +1174,6 @@ class JoDetailController extends BaseController {
                       dataJoDetail.value.detail?.statusJo == 'On Progres'
                       ? InkWell(
                     onTap: () {
-                      state(() {
-
-                      });
                       deleteActivityDailyPhotoConfirm(pict!.id!.toInt());
                     },
                     child: Icon(
@@ -1162,14 +1197,16 @@ class JoDetailController extends BaseController {
                   children: [
                     InkWell(
                       onTap: () async {
-                        inspectionMediaPreviewPickerConfirmEdit(index);
+                        await inspectionMediaPreviewPickerConfirmEdit(index);
+                        photoPreview = activityPreviewFoto.value;
+                        update();
                       },
                       child: Center(
                         child: SizedBox(
-                          height: MediaQuery.of(context).viewInsets.bottom != 0 ? 66.h : 180.h,
-                          width: MediaQuery.sizeOf(context).width.w,
+                          height: MediaQuery.of(Get.context!).viewInsets.bottom != 0 ? 66.h : 180.h,
+                          width: MediaQuery.sizeOf(Get.context!).width.w,
                           child: Image.file(
-                            File(activityPreviewFoto.value.path),
+                            photoPreview,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -1212,7 +1249,7 @@ class JoDetailController extends BaseController {
                     dataJoDetail.value.detail?.statusJo == 'On Progres'
                     ? ElevatedButton(
                     onPressed: () {
-                      editPhotoActivityDescV2(pict!.id!.toInt(),
+                      editPhotoActivityDescV2(index, pict!.id!.toInt(),
                           dailyActivityPhotosDescEdit.value.text);
                       Get.back();
                     },
@@ -1468,13 +1505,16 @@ class JoDetailController extends BaseController {
                         onPressed: () async {
                           Get.back();
                           var file = await cameraImage();
-                          dailyActivityPhotos.value[index] = file;
+                          debugPrint('update image path: ${file.path}');
                           activityPreviewFoto.value = file;
-                          updateActivityDailyPhoto(
-                              file,
-                              int.parse(dataJoDailyPhotos.value[index].id!
-                                  .toString()),
-                              dailyActivityPhotosDescEdit.value.text);
+
+                          // dailyActivityPhotos.value[index] = file;
+                          //
+                          // updateActivityDailyPhoto(
+                          //     file,
+                          //     int.parse(dataJoDailyPhotos.value[index].id!
+                          //         .toString()),
+                          //     dailyActivityPhotosDescEdit.value.text);
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
@@ -1561,10 +1601,13 @@ class JoDetailController extends BaseController {
 
   void addActivityV2() {
     TDJoInspectionActivity activity = new TDJoInspectionActivity(
-      id: DateTime.now().millisecondsSinceEpoch, //Date now to int
+      id: DateTime.now().millisecondsSinceEpoch,
+      tHJoId: id, //Date now to int
       activity: activityText.text,
       endActivityTime: activityEndTime.text,
       startActivityTime: activityStartTime.text,
+      isActive: 1,
+      isUpload: 0,
     );
 
     List<TDJoInspectionActivity> listActivity = [];
@@ -1674,7 +1717,7 @@ class JoDetailController extends BaseController {
         activityText.text = matchinAtivity.activity!;
         editActivityMode.value = true;
         enabledDate.value = false;
-        editActivityIndex.value = matchinAtivity!.id!.toInt();
+        editActivityIndex.value = matchinAtivity.id!.toInt();
         update();
       }
     }
@@ -1819,7 +1862,7 @@ class JoDetailController extends BaseController {
                   isActive: 1,
                   isUpload: 0,
                   updatedAt:
-                      DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+                  DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
                   updatedBy: createdBy.toString());
               update();
               debugPrint('data yang update nya : ${jsonEncode(detail)}');
@@ -1840,11 +1883,11 @@ class JoDetailController extends BaseController {
                   endActivityTime: activity.endActivityTime,
                   activity: activity.activity,
                   code:
-                      'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+                  'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
                   isActive: 1,
                   isUpload: 0,
                   createdAt:
-                      DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+                  DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
                   createdBy: createdBy);
               int raw = await db.insert(
                   "t_d_jo_inspection_activity", detail.toInsert());
@@ -1857,7 +1900,7 @@ class JoDetailController extends BaseController {
             mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
             transDate: stage.transDate,
             code:
-                "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+            "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
             isUpload: "0",
             isActive: "1",
             createdBy: userData.value!.id,
@@ -1875,16 +1918,204 @@ class JoDetailController extends BaseController {
                 endActivityTime: activity.endActivityTime,
                 activity: activity.activity,
                 code:
-                    'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+                'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
                 isActive: 1,
                 isUpload: 0,
                 createdAt:
-                    DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+                DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
                 createdBy: createdBy);
             await db.insert("t_d_jo_inspection_activity", detail.toInsert());
           });
         }
       });
+      stageListModal.value = [];
+      activityListTextController.value = [];
+      return true;
+    } catch (e) {
+      // Handle any parsing errors
+      return false; // Return the original time if parsing fails
+    }
+  }
+
+  Future<bool> editActivity6StagesV2() async {
+    try {
+      final db = await SqlHelper.db();
+      //List<TDJoInspectionActivityStages> stages = stageListModal.value;
+      final createdBy = userData.value!.id;
+
+      var stageCount = 0;
+      stageListModal.value.forEach((item){
+        debugPrint('nyang mau di update stagenya: ${jsonEncode(item)}');
+      });
+
+      activity6Attachments.value.forEach((item){
+        debugPrint('nyang mau di update attachnya: ${jsonEncode(item)}');
+      });
+
+      List<String> stageValues = [];
+      List<String> activityValues = [];
+      List<Map<String,dynamic>> attachmentValues = [];
+      List<int> attachmentUpdate = [];
+
+      stageListModal.value.asMap().forEach((index,stage){
+        stageCount++;
+        stageValues.add('''(${stage.id},${id},6,'${stage.transDate}','${activityListTextController.value[index].text}',$createdBy,${stage.id != null ? stage.createdBy : null},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','${stage.id != null ? DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()) : null}','JOIAST-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$stageCount',1,0)''');
+        update();
+        if(stage.listActivity!.isNotEmpty){
+          var count = 0;
+          stage.listActivity!.forEach((activity){
+            count++;
+            activityValues.add('''(${activity.id?.toInt() == DateTime.now().millisecondsSinceEpoch ? null : activity.id},$id,(SELECT id FROM t_d_jo_inspection_activity_stages WHERE trans_date = '${stage.transDate}' AND m_statusinspectionstages_id = 6 LIMIT 1),'${activity.startActivityTime}','${activity.endActivityTime}','${activity.activity}','JOIAS-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$count',1,0,${createdBy},${activity.id != null ? createdBy : null},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}', '${activity.id != null ? DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()) : null}')''');
+            update();
+          });
+        }
+      });
+
+      if(activity6Attachments.value.isNotEmpty){
+        var count = 0;
+        activity6Attachments.value.forEach((attachment){
+          count++;
+          attachmentValues.add({
+          'id': attachment.id ?? null,
+          't_h_jo_id' : id,
+          't_d_jo_inspection_activity_stages_id' : null,
+          'path_name' : attachment.pathName,
+          'file_name' : attachment.fileName,
+          'code' : attachment.code ?? 'JOIAF-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$count',
+          'is_active' : attachment.isActive,
+          'is_upload' : attachment.isUpload,
+          'created_by' : attachment.createdBy,
+          'updated_by' : attachment.id == null ? null : createdBy,
+          'created_at' : attachment.createdAt,
+          'updated_at' : attachment.id == null ? null : DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()).toString(),
+          });
+          // attachmentValues.add('''($id,'${attachment.pathName}','${attachment.fileName}','JOIAF-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$count',1,0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
+          // update();
+        });
+      }
+
+      debugPrint("stage join: ${stageValues.join(',')}");
+      debugPrint("activity join: ${activityValues.join(',')}");
+      debugPrint("attachment join: ${jsonEncode(attachmentValues)}");
+
+      await SqlHelper.updateInspectionActivity6(stageValues.join(','), activityValues.join(','), attachmentValues, id);
+
+      debugPrint('activity lab saat ini : ${activityStage}');
+      update();
+
+      //deactive semua aktifitas dan stagenya
+      // update table t_d_jo_inspection_activity_stages set is_active =0 berdasarkan thjoid dan transdate dan mStatusinspectionstagesId
+      // int result = await db.update(
+      //   't_d_jo_inspection_activity_stages',
+      //   {'is_active': 0}, // The new value for the is_active field
+      //   where: 't_h_jo_id = ?  AND m_statusinspectionstages_id = ?',
+      //   whereArgs: [id, activityStage],
+      // );
+      //
+      // //debugPrint("data input edit deactive ${result} ${id} ${statusId}");
+      // debugPrint("data input edit remarks ${activityListTextController.value}");
+      //
+      // stages.asMap().forEach((index, stage) async {
+      //   debugPrint("data input edit ${jsonEncode(stage.toJson())}");
+      //   if (stage.id != null) {
+      //     TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
+      //         isUpload: "0",
+      //         isActive: "1",
+      //         updatedBy: userData.value!.id.toString(),
+      //         updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+      //         remarks: activityListTextController.value[index].text);
+      //
+      //     int updated = await db.update(
+      //       't_d_jo_inspection_activity_stages',
+      //       data.toEdit(),
+      //       where: 'id = ? ',
+      //       whereArgs: [stage.id],
+      //     );
+      //
+      //     //inactive detail
+      //     int detail = await db.update(
+      //       't_d_jo_inspection_activity',
+      //       {'is_active': 0}, // The new value for the is_active field
+      //       where: 't_d_jo_inspection_activity_stages_id = ?',
+      //       whereArgs: [stage.id],
+      //     );
+      //     List<TDJoInspectionActivity> listActivity = stage.listActivity ?? [];
+      //     listActivity.forEach((activity) async {
+      //       if (activity.code != null) {
+      //         //Update
+      //         TDJoInspectionActivity detail = TDJoInspectionActivity(
+      //             startActivityTime: activity.startActivityTime,
+      //             endActivityTime: activity.endActivityTime,
+      //             activity: activity.activity,
+      //             isActive: 1,
+      //             isUpload: 0,
+      //             updatedAt:
+      //                 DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+      //             updatedBy: createdBy.toString());
+      //         update();
+      //         debugPrint('data yang update nya : ${jsonEncode(detail)}');
+      //
+      //         int updated = await db.update(
+      //           't_d_jo_inspection_activity',
+      //           detail.toEdit(),
+      //           where: 'id = ?',
+      //           whereArgs: [activity.id],
+      //         );
+      //         debugPrint("Print Edit ${activity.id} ${updated}");
+      //       } else {
+      //         //insert
+      //         TDJoInspectionActivity detail = TDJoInspectionActivity(
+      //             tHJoId: id,
+      //             tDJoInspectionActivityStagesId: stage.id,
+      //             startActivityTime: activity.startActivityTime,
+      //             endActivityTime: activity.endActivityTime,
+      //             activity: activity.activity,
+      //             code:
+      //                 'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+      //             isActive: 1,
+      //             isUpload: 0,
+      //             createdAt:
+      //                 DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+      //             createdBy: createdBy);
+      //         int raw = await db.insert(
+      //             "t_d_jo_inspection_activity", detail.toInsert());
+      //         debugPrint("Print Edit ${activity.id} ${raw}");
+      //       }
+      //     });
+      //   } else {
+      //     TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
+      //       tHJoId: id,
+      //       mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
+      //       transDate: stage.transDate,
+      //       code:
+      //           "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+      //       isUpload: "0",
+      //       isActive: "1",
+      //       createdBy: userData.value!.id,
+      //       remarks: activityListTextController.value[index].text,
+      //       createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+      //     );
+      //     int result = await db.insert(
+      //         "t_d_jo_inspection_activity_stages", data.toInsert());
+      //     List<TDJoInspectionActivity> details = stage.listActivity ?? [];
+      //     details.forEach((activity) async {
+      //       TDJoInspectionActivity detail = TDJoInspectionActivity(
+      //           tHJoId: id,
+      //           tDJoInspectionActivityStagesId: result,
+      //           startActivityTime: activity.startActivityTime,
+      //           endActivityTime: activity.endActivityTime,
+      //           activity: activity.activity,
+      //           code:
+      //               'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+      //           isActive: 1,
+      //           isUpload: 0,
+      //           createdAt:
+      //               DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+      //           createdBy: createdBy);
+      //       await db.insert("t_d_jo_inspection_activity", detail.toInsert());
+      //     });
+      //   }
+      // });
       stageListModal.value = [];
       activityListTextController.value = [];
       return true;
@@ -1931,8 +2162,8 @@ class JoDetailController extends BaseController {
     debugPrint("count input ui ${dailyActivityPhotos.value.length}");
     if (success == dailyActivityPhotosTemp.value.length) {
       openDialog('Success', 'Foto berhasil dikirm');
-      if (activityList.value.isEmpty) {
-        //changeStatusJo();
+      if (dataJoDetail.value.detail?.idStatusJo == 2 && activityList.value.isEmpty) {
+        changeStatusJoLocal();
       }
       // changeStatusJo();
       getJoDailyPhotoV2();
@@ -2005,10 +2236,11 @@ class JoDetailController extends BaseController {
     }
   }
 
-  void editPhotoActivityDescV2(int idEdit, String desc) async {
+  void editPhotoActivityDescV2(int index, int idEdit, String desc) async {
+
     final db = await SqlHelper.db();
 
-    int result = await db.update('t_d_jo_inspection_pict', {"keterangan": desc},
+    int result = await db.update('t_d_jo_inspection_pict', {"path_photo": activityPreviewFoto.value.path,"keterangan": desc},
         where: "id = ?", whereArgs: [idEdit]);
     if (result > 0) {
       await getJoDailyPhotoV2();
@@ -2022,6 +2254,9 @@ class JoDetailController extends BaseController {
     try {
       final db = await SqlHelper.db();
       final createdBy = userData.value!.id;
+      // for (var item in activity5List.value) {
+      //   debugPrint('item activity 5 ${jsonEncode(item)}');
+      // }
       for (var item in activity5List.value) {
         debugPrint("form item ${item.toJson()}");
         TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
@@ -2066,7 +2301,9 @@ class JoDetailController extends BaseController {
         int rawVesel = await db.insert(
             "t_d_jo_inspection_activity_vessel", dVesel.toInsert());
 
+        var bargeCount = 0;
         for (var barge in item!.barge!) {
+          bargeCount++;
           debugPrint('barge nya yang mau diinsert : ${barge.barge}');
           if (barge.barge != null || barge.barge != '') {
             TDJoInspectionActivityBarge dBarge = TDJoInspectionActivityBarge(
@@ -2074,7 +2311,7 @@ class JoDetailController extends BaseController {
               tDJoInspectionActivityStagesId: rawStage,
               barge: barge.barge,
               code:
-                  "JOIAB-${item.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+                  "JOIAB-${item.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${bargeCount}",
               isUpload: 0,
               isActive: 1,
               createdBy: createdBy,
@@ -2086,7 +2323,9 @@ class JoDetailController extends BaseController {
           }
         }
 
+        var transhipmentCount = 0;
         for (var transhipment in item!.transhipment!) {
+          transhipmentCount++;
           TDJoInspectionActivityStagesTranshipment dTranshipment =
               TDJoInspectionActivityStagesTranshipment(
             tDInspectionStagesId: rawStage,
@@ -2095,6 +2334,7 @@ class JoDetailController extends BaseController {
             finalDate: transhipment.finalDate,
             jetty: transhipment.jetty,
             deliveryQty: int.parse(transhipment!.deliveryQty!),
+            code: "JOIAT-${item.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${transhipmentCount}",
             isUpload: 0,
             isActive: 1,
             createdBy: createdBy,
@@ -2866,7 +3106,9 @@ class JoDetailController extends BaseController {
       await db.update("t_d_jo_inspection_activity_stages_transhipment",
           {"is_active": 0, "is_upload": 0},
           where: "t_d_inspection_stages_id = ?", whereArgs: [idJoActStage]);
+      var transhipmentCount = 0;
       for (var transhipment in item!.transhipment!) {
+        transhipmentCount++;
         TDJoInspectionActivityStagesTranshipment dTranshipment =
             TDJoInspectionActivityStagesTranshipment(
           tDInspectionStagesId: idJoActStage,
@@ -2875,6 +3117,7 @@ class JoDetailController extends BaseController {
           finalDate: transhipment.finalDate,
           jetty: transhipment.jetty,
           deliveryQty: double.parse(transhipment!.deliveryQty!).toInt(),
+              code: "JOIAT-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${transhipmentCount}",
           isUpload: 0,
           isActive: 1,
           createdBy: createdBy,
@@ -3291,7 +3534,7 @@ class JoDetailController extends BaseController {
                                                                 250),
                                                           ],
                                                           controller:
-                                                              activity6ListTextController[
+                                                          activityListTextController[
                                                                   index],
                                                           onChanged: (value) {},
                                                           cursorColor:
@@ -3362,12 +3605,11 @@ class JoDetailController extends BaseController {
                                       itemCount:
                                           activity6Attachments.value.length,
                                       itemBuilder: (content, index) {
-                                        final File photo =
+                                        final TDJoInspectionAttachment photo =
                                             activity6Attachments.value[index];
                                         final String fileType =
-                                            checkFileType(photo.path);
-                                        var filenameArr = photo.path.split("/");
-                                        var filename = filenameArr.last;
+                                            checkFileType(photo.pathName!);
+                                        var filename = photo.fileName!;
                                         return fileType == 'image'
                                             ? SizedBox(
                                                 width: 54,
@@ -3382,10 +3624,10 @@ class JoDetailController extends BaseController {
                                                           controller
                                                               .previewImageAct6(
                                                                   index,
-                                                                  photo.path);
+                                                                  photo.pathName!);
                                                         },
                                                         child: Image.file(
-                                                          File(photo.path),
+                                                          File(photo.pathName!),
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),
@@ -3422,7 +3664,7 @@ class JoDetailController extends BaseController {
                                                         InkWell(
                                                           onTap: () {
                                                             OpenFilex.open(
-                                                                photo.path);
+                                                                photo.pathName!);
                                                           },
                                                           child: SizedBox(
                                                             width: 54,
@@ -3632,10 +3874,10 @@ class JoDetailController extends BaseController {
               orElse: TDJoInspectionActivity.new);
 
       if (matchinAtivity != null && matchinAtivity.activity.toString() != "") {
-        activity6Date.text = matchingStage!.transDate!;
-        activity6StartTime.text = matchinAtivity.startActivityTime!;
-        activity6EndTime.text = matchinAtivity.endActivityTime!;
-        activity6Text.text = matchinAtivity.activity!;
+        activityDate.text = matchingStage!.transDate!;
+        activityStartTime.text = matchinAtivity.startActivityTime!;
+        activityEndTime.text = matchinAtivity.endActivityTime!;
+        activityText.text = matchinAtivity.activity!;
         editActivityMode.value = true;
         enabledDate.value = false;
         editActivityIndex.value = matchinAtivity!.id!.toInt();
@@ -3695,67 +3937,114 @@ class JoDetailController extends BaseController {
   Future<bool> saveActivity6Stages() async {
     try {
       final db = await SqlHelper.db();
-      List<TDJoInspectionActivityStages> stages = stageListModal.value;
+      // List<TDJoInspectionActivityStages> stages = stageListModal.value;
       final createdBy = userData.value!.id;
-      stages.asMap().forEach((index, stage) async {
-        debugPrint("data input ${jsonEncode(stage.toJson())}");
-        TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
-          tHJoId: id,
-          mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
-          transDate: stage.transDate,
-          code:
-              "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
-          isUpload: "0",
-          isActive: "1",
-          createdBy: userData.value!.id,
-          createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-          remarks: activity6ListTextController.value[index].text,
-        );
+      var stageCount = 0;
+      stageListModal.value.forEach((item){
+        debugPrint('nyang mau di input stagenya: ${jsonEncode(item)}');
+      });
 
-        int result = await db.insert(
-            "t_d_jo_inspection_activity_stages", data.toInsert());
+      activity6Attachments.value.forEach((item){
+        debugPrint('nyang mau di input attachnya: ${jsonEncode(item)}');
+      });
 
-        //dapatkan id yang baru insert
-        List<TDJoInspectionActivity> details = stage.listActivity ?? [];
-        details.forEach((activity) async {
-          TDJoInspectionActivity detail = TDJoInspectionActivity(
-              tHJoId: id,
-              tDJoInspectionActivityStagesId: result,
-              startActivityTime: activity.startActivityTime,
-              endActivityTime: activity.endActivityTime,
-              activity: activity.activity,
-              code:
-                  'JOIAS-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
-              isActive: 1,
-              isUpload: 0,
-              createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-              createdBy: createdBy);
-          await db.insert("t_d_jo_inspection_activity", detail.toInsert());
-        });
+      List<String> stageValues = [];
+      List<String> activityValues = [];
+      List<String> attachmentValues = [];
 
-        //save file attachment
-        List<File> listFile = activity6Attachments.value ?? [];
-        debugPrint("print list file attachment ${listFile}");
-        for (File file in listFile) {
-          var filenameArr = file.path.split("/");
-          var filename = filenameArr.last;
-          TDJoInspectionAttachment attach = TDJoInspectionAttachment(
-              tHJoId: id,
-              tDJoInspectionActivityStagesId: result,
-              fileName: filename,
-              pathName: file.path,
-              code:
-                  'JOIAF-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
-              isActive: 1,
-              isUpload: 0,
-              createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-              createdBy: createdBy);
-          await db.insert('t_d_jo_inspection_attachment', attach.toJson());
+      stageListModal.value.asMap().forEach((index,stage){
+        stageCount++;
+        stageValues.add('''(${id},6,'${stage.transDate}','${activityListTextController.value[index].text}',$createdBy,'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','JOIAST-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$stageCount',1,0)''');
+        update();
+        if(stage.listActivity!.isNotEmpty){
+          var count = 0;
+          stage.listActivity!.forEach((activity){
+            count++;
+            activityValues.add('''($id,(SELECT id FROM t_d_jo_inspection_activity_stages WHERE trans_date = '${stage.transDate}' AND m_statusinspectionstages_id = 6 LIMIT 1),'${activity.startActivityTime}','${activity.endActivityTime}','${activity.activity}','JOIAS-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$count',1,0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
+            update();
+          });
         }
       });
 
-      stageListModal.value = [];
-      activityListTextController.value = [];
+      if(activity6Attachments.value.isNotEmpty){
+        var count = 0;
+        activity6Attachments.value.forEach((attachment){
+          count++;
+          attachmentValues.add('''($id,'${attachment.pathName}','${attachment.fileName}','JOIAF-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$count',1,0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
+          update();
+        });
+      }
+
+      debugPrint("stage join: ${stageValues.join(',')}");
+      debugPrint("activity join: ${activityValues.join(',')}");
+      debugPrint("attachment join: ${attachmentValues.join(',')}");
+
+      await SqlHelper.insertInspectionActivity6(stageValues.join(','), activityValues.join(','), attachmentValues.join(','));
+
+      debugPrint('activity lab saat ini : ${activityStage}');
+      update();
+      activitySubmitted.value = true;
+      // stageListModal.value.asMap().forEach((index, stage) async {
+      //   stageCount++;
+      //   debugPrint("data input ${jsonEncode(stage.toJson())}");
+      //   TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
+      //     tHJoId: id,
+      //     mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
+      //     transDate: stage.transDate,
+      //     code:
+      //         "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${stageCount}",
+      //     isUpload: "0",
+      //     isActive: "1",
+      //     createdBy: userData.value!.id,
+      //     createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+      //     remarks: activityListTextController.value[index].text,
+      //   );
+      //
+      //   int result = await db.insert(
+      //       "t_d_jo_inspection_activity_stages", data.toInsert());
+      //
+      //   //dapatkan id yang baru insert
+      //   List<TDJoInspectionActivity> details = stage.listActivity ?? [];
+      //   var activityCount = 0;
+      //   details.forEach((activity) async {
+      //     activityCount++;
+      //     TDJoInspectionActivity detail = TDJoInspectionActivity(
+      //         tHJoId: id,
+      //         tDJoInspectionActivityStagesId: result,
+      //         startActivityTime: activity.startActivityTime,
+      //         endActivityTime: activity.endActivityTime,
+      //         activity: activity.activity,
+      //         code:
+      //             'JOIAS-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${activityCount}',
+      //         isActive: 1,
+      //         isUpload: 0,
+      //         createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+      //         createdBy: createdBy);
+      //     await db.insert("t_d_jo_inspection_activity", detail.toInsert());
+      //   });
+      //
+      //   //save file attachment
+      //   //List<TDJoInspectionAttachment> listFile = activity6Attachments.value ?? [];
+      //   debugPrint("print list file attachment ${activity6Attachments.value}");
+      //   var attachmentCount = 0;
+      //   for (var file in activity6Attachments.value) {
+      //     debugPrint('nyang mau di input attachnya: ${jsonEncode(file)}');
+      //     attachmentCount++;
+      //     var filename = file.fileName!;
+      //     TDJoInspectionAttachment attach = TDJoInspectionAttachment(
+      //         tHJoId: id,
+      //         tDJoInspectionActivityStagesId: result,
+      //         fileName: filename,
+      //         pathName: file.pathName,
+      //         code:
+      //             'JOIAF-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${attachmentCount}',
+      //         isActive: 1,
+      //         isUpload: 0,
+      //         createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+      //         createdBy: createdBy);
+      //     await db.insert('t_d_jo_inspection_attachment', attach.toJson());
+      //   }
+      // });
       return true;
     } catch (e) {
       debugPrint("print error save activity 6 ${e}");
@@ -5703,11 +5992,15 @@ class JoDetailController extends BaseController {
   }
 
   void addBargeForm() {
+    activity5Barges.value = [];
+    barges.value = [];
     bargesController.value.add(TextEditingController());
-    activity5bargesCount++;
-    activity5Barges.value.add('');
-    barges.value.add('');
+    activity5bargesCount = bargesController.value.length;
     update();
+    for(var item in bargesController.value){
+      activity5Barges.value.add(item.text);
+      barges.value.add(item.text);
+    }
     debugPrint(
         'jumlah barges controller saat ini: controller count ${bargesController.value.length}, barges count ${barges.value.length}, form barges count ${activity5Barges.value.length}');
   }
@@ -5753,8 +6046,8 @@ class JoDetailController extends BaseController {
   }
 
   Future addActivity5() async {
-    var barge = activity5Barges.value.map((barge) {
-      return Barge(barge: barge);
+    var barge = bargesController.value.map((item){
+      return Barge(barge: item.text);
     }).toList();
     activity5List.value.add(FormDataArray(
         tHJoId: id,
@@ -6617,12 +6910,36 @@ class JoDetailController extends BaseController {
     debugPrint('activities now: ${jsonEncode(activity6List.value)}');
   }
 
-  void addActivity6Files(File attach) {
-    activity6Attachments.value.add(attach);
+  void addActivity6Files(String path) {
+    activity6Attachments.value.add(TDJoInspectionAttachment(
+      tHJoId: id,
+      pathName: path,
+      fileName: path.split('/').last,
+      isActive: 1,
+      isUpload: 0,
+      createdBy: userData.value?.id ?? 0,
+      createdAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(
+          DateTime.now()).toString(),
+    ));
+    debugPrint('file yangdi add: ${jsonEncode(activity6Attachments.value.last)}');
   }
 
   void removeActivity6Files(int index) {
     activity6Attachments.value.removeAt(index);
+    // var file = activity6Attachments.value[index];
+    // activity6Attachments.value[index] = TDJoInspectionAttachment(
+    //   id: file.id ?? null,
+    //   tHJoId: file.tHJoId,
+    //   pathName: file.pathName,
+    //   fileName: file.fileName,
+    //   isActive: 0,
+    //   isUpload: 0,
+    //   createdBy: file.createdBy,
+    //   updatedBy: userData.value?.id ?? 0,
+    //   createdAt: file.createdAt,
+    //   updatedAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(
+    //       DateTime.now()).toString(),
+    // );
     update();
   }
 
@@ -6637,8 +6954,17 @@ class JoDetailController extends BaseController {
       if (pic != null) {
         final imageTemp = File(pic!.path);
         image = imageTemp;
+        final imageName = image.path.split('/').last;
+        final dir = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
+        bool exists = await Directory('$dir/ops/files/').exists();
+
+        if(exists == false){
+          Directory('$dir/ops/files/').create();
+        }
+
+        image.rename('$dir/ops/files/$imageName');
         update();
-        addActivity6Files(image);
+        addActivity6Files(image.path);
       }
     } on PlatformException catch (e) {
       openDialog('Failed', e.message ?? 'Gagal menambahkan file');
@@ -6658,7 +6984,7 @@ class JoDetailController extends BaseController {
           final fileTemp = File(data!.path);
           final File file = fileTemp;
           update();
-          addActivity6Files(file);
+          addActivity6Files(file.path);
         });
         openDialog('Success', 'Berhasil menambahkan file.');
       }
@@ -6690,13 +7016,15 @@ class JoDetailController extends BaseController {
                   fontSize: 16,
                   color: primaryColor),
             ),
-            InkWell(
-              onTap: () {},
-              child: Icon(
-                Icons.delete_forever,
-                color: Colors.red,
-              ),
-            ),
+            // InkWell(
+            //   onTap: () {
+            //     removeActivity6Files(index);
+            //   },
+            //   child: Icon(
+            //     Icons.delete_forever,
+            //     color: Colors.red,
+            //   ),
+            // ),
             Spacer(),
             IconButton(
               onPressed: () {
@@ -6802,7 +7130,8 @@ class JoDetailController extends BaseController {
           .add(TextEditingController(text: item.remarks));
     });
     stageListModal.value = filteredStages;
-    await getJoDailyActivity6AttachmentLocal();
+    activity6Attachments.value = activity6AttachmentsStage.value;
+    // await getJoDailyActivity6AttachmentLocal();
 
     update();
     debugPrint('data yang mau di edit: ${filteredStages}');
@@ -7270,12 +7599,11 @@ class JoDetailController extends BaseController {
                                       itemCount:
                                           activity6Attachments.value.length,
                                       itemBuilder: (content, index) {
-                                        final File photo =
+                                        final TDJoInspectionAttachment photo =
                                             activity6Attachments.value[index];
                                         final String fileType =
-                                            checkFileType(photo.path);
-                                        var filenameArr = photo.path.split("/");
-                                        var filename = filenameArr.last;
+                                            checkFileType(photo.pathName!);
+                                        var filename = photo.fileName!;
                                         return fileType == 'image'
                                             ? SizedBox(
                                                 width: 54,
@@ -7290,10 +7618,10 @@ class JoDetailController extends BaseController {
                                                           controller
                                                               .previewImageAct6(
                                                                   index,
-                                                                  photo.path);
+                                                                  photo.pathName!);
                                                         },
                                                         child: Image.file(
-                                                          File(photo.path),
+                                                          File(photo.pathName!),
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),
@@ -7330,7 +7658,7 @@ class JoDetailController extends BaseController {
                                                         InkWell(
                                                           onTap: () {
                                                             OpenFilex.open(
-                                                                photo.path);
+                                                                photo.pathName!);
                                                           },
                                                           child: SizedBox(
                                                             width: 54,
@@ -7380,7 +7708,7 @@ class JoDetailController extends BaseController {
                                                       ],
                                                     ),
                                                   )
-                                                : SizedBox();
+                                                : const SizedBox();
                                       })
                                   : const SizedBox(),
                               const SizedBox(
@@ -7419,8 +7747,8 @@ class JoDetailController extends BaseController {
                             child: ElevatedButton(
                                 onPressed: () async {
                                   Get.back();
-                                  checkActivity6List();
-                                  await getJoDailyActivity6AttachmentLocal();
+                                  // checkActivity6List();
+                                  // await getJoDailyActivity6AttachmentLocal();
                                 },
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
@@ -7480,132 +7808,132 @@ class JoDetailController extends BaseController {
         isScrollControlled: true);
   }
 
-  Future<bool> editActivity6StagesV2() async {
-    try {
-      final db = await SqlHelper.db();
-      List<TDJoInspectionActivityStages> stages = stageListModal.value;
-      final createdBy = userData.value!.id;
-      //deactive semua aktifitas dan stagenya
-      // update table t_d_jo_inspection_activity_stages set is_active =0 berdasarkan thjoid dan transdate dan mStatusinspectionstagesId
-      int result = await db.update(
-        't_d_jo_inspection_activity_stages',
-        {'is_active': 0}, // The new value for the is_active field
-        where: 't_h_jo_id = ?  AND m_statusinspectionstages_id = ?',
-        whereArgs: [id, activityStage],
-      );
-
-      //debugPrint("data input edit deactive ${result} ${id} ${statusId}");
-      debugPrint("data input edit remarks ${activityListTextController.value}");
-
-      stages.asMap().forEach((index, stage) async {
-        debugPrint("data input edit ${jsonEncode(stage.toJson())}");
-        if (stage.id != null) {
-          TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
-              isUpload: "0",
-              isActive: "1",
-              updatedBy: userData.value!.id.toString(),
-              updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-              remarks: activityListTextController.value[index].text);
-
-          int updated = await db.update(
-            't_d_jo_inspection_activity_stages',
-            data.toEdit(),
-            where: 'id = ? ',
-            whereArgs: [stage.id],
-          );
-
-          //inactive detail
-          int detail = await db.update(
-            't_d_jo_inspection_activity',
-            {'is_active': 0}, // The new value for the is_active field
-            where: 't_d_jo_inspection_activity_stages_id = ?',
-            whereArgs: [stage.id],
-          );
-          List<TDJoInspectionActivity> listActivity = stage.listActivity ?? [];
-          listActivity.forEach((activity) async {
-            if (activity.code != null) {
-              //Update
-              TDJoInspectionActivity detail = TDJoInspectionActivity(
-                  startActivityTime: activity.startActivityTime,
-                  endActivityTime: activity.endActivityTime,
-                  activity: activity.activity,
-                  isActive: 1,
-                  isUpload: 0,
-                  updatedAt:
-                      DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-                  updatedBy: createdBy.toString());
-              update();
-              debugPrint('data yang update nya : ${jsonEncode(detail)}');
-
-              int updated = await db.update(
-                't_d_jo_inspection_activity',
-                detail.toEdit(),
-                where: 'id = ?',
-                whereArgs: [activity.id],
-              );
-              debugPrint("Print Edit ${activity.id} ${updated}");
-            } else {
-              //insert
-              TDJoInspectionActivity detail = TDJoInspectionActivity(
-                  tHJoId: id,
-                  tDJoInspectionActivityStagesId: stage.id,
-                  startActivityTime: activity.startActivityTime,
-                  endActivityTime: activity.endActivityTime,
-                  activity: activity.activity,
-                  code:
-                      'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
-                  isActive: 1,
-                  isUpload: 0,
-                  createdAt:
-                      DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-                  createdBy: createdBy);
-              int raw = await db.insert(
-                  "t_d_jo_inspection_activity", detail.toInsert());
-              debugPrint("Print Edit ${activity.id} ${raw}");
-            }
-          });
-        } else {
-          TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
-            tHJoId: id,
-            mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
-            transDate: stage.transDate,
-            code:
-                "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
-            isUpload: "0",
-            isActive: "1",
-            createdBy: userData.value!.id,
-            remarks: activityListTextController.value[index].text,
-            createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-          );
-          int result = await db.insert(
-              "t_d_jo_inspection_activity_stages", data.toInsert());
-          List<TDJoInspectionActivity> details = stage.listActivity ?? [];
-          details.forEach((activity) async {
-            TDJoInspectionActivity detail = TDJoInspectionActivity(
-                tHJoId: id,
-                tDJoInspectionActivityStagesId: result,
-                startActivityTime: activity.startActivityTime,
-                endActivityTime: activity.endActivityTime,
-                activity: activity.activity,
-                code:
-                    'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
-                isActive: 1,
-                isUpload: 0,
-                createdAt:
-                    DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-                createdBy: createdBy);
-            await db.insert("t_d_jo_inspection_activity", detail.toInsert());
-          });
-        }
-      });
-      stageListModal.value = [];
-      activityListTextController.value = [];
-      return true;
-    } catch (e) {
-      // Handle any parsing errors
-      return false; // Return the original time if parsing fails
-    }
-  }
+  // Future<bool> editActivity6StagesV2() async {
+  //   try {
+  //     final db = await SqlHelper.db();
+  //     List<TDJoInspectionActivityStages> stages = stageListModal.value;
+  //     final createdBy = userData.value!.id;
+  //     //deactive semua aktifitas dan stagenya
+  //     // update table t_d_jo_inspection_activity_stages set is_active =0 berdasarkan thjoid dan transdate dan mStatusinspectionstagesId
+  //     int result = await db.update(
+  //       't_d_jo_inspection_activity_stages',
+  //       {'is_active': 0}, // The new value for the is_active field
+  //       where: 't_h_jo_id = ?  AND m_statusinspectionstages_id = ?',
+  //       whereArgs: [id, activityStage],
+  //     );
+  //
+  //     //debugPrint("data input edit deactive ${result} ${id} ${statusId}");
+  //     debugPrint("data input edit remarks ${activityListTextController.value}");
+  //
+  //     stages.asMap().forEach((index, stage) async {
+  //       debugPrint("data input edit ${jsonEncode(stage.toJson())}");
+  //       if (stage.id != null) {
+  //         TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
+  //             isUpload: "0",
+  //             isActive: "1",
+  //             updatedBy: userData.value!.id.toString(),
+  //             updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+  //             remarks: activityListTextController.value[index].text);
+  //
+  //         int updated = await db.update(
+  //           't_d_jo_inspection_activity_stages',
+  //           data.toEdit(),
+  //           where: 'id = ? ',
+  //           whereArgs: [stage.id],
+  //         );
+  //
+  //         //inactive detail
+  //         int detail = await db.update(
+  //           't_d_jo_inspection_activity',
+  //           {'is_active': 0}, // The new value for the is_active field
+  //           where: 't_d_jo_inspection_activity_stages_id = ?',
+  //           whereArgs: [stage.id],
+  //         );
+  //         List<TDJoInspectionActivity> listActivity = stage.listActivity ?? [];
+  //         listActivity.forEach((activity) async {
+  //           if (activity.code != null) {
+  //             //Update
+  //             TDJoInspectionActivity detail = TDJoInspectionActivity(
+  //                 startActivityTime: activity.startActivityTime,
+  //                 endActivityTime: activity.endActivityTime,
+  //                 activity: activity.activity,
+  //                 isActive: 1,
+  //                 isUpload: 0,
+  //                 updatedAt:
+  //                     DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+  //                 updatedBy: createdBy.toString());
+  //             update();
+  //             debugPrint('data yang update nya : ${jsonEncode(detail)}');
+  //
+  //             int updated = await db.update(
+  //               't_d_jo_inspection_activity',
+  //               detail.toEdit(),
+  //               where: 'id = ?',
+  //               whereArgs: [activity.id],
+  //             );
+  //             debugPrint("Print Edit ${activity.id} ${updated}");
+  //           } else {
+  //             //insert
+  //             TDJoInspectionActivity detail = TDJoInspectionActivity(
+  //                 tHJoId: id,
+  //                 tDJoInspectionActivityStagesId: stage.id,
+  //                 startActivityTime: activity.startActivityTime,
+  //                 endActivityTime: activity.endActivityTime,
+  //                 activity: activity.activity,
+  //                 code:
+  //                     'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+  //                 isActive: 1,
+  //                 isUpload: 0,
+  //                 createdAt:
+  //                     DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+  //                 createdBy: createdBy);
+  //             int raw = await db.insert(
+  //                 "t_d_jo_inspection_activity", detail.toInsert());
+  //             debugPrint("Print Edit ${activity.id} ${raw}");
+  //           }
+  //         });
+  //       } else {
+  //         TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
+  //           tHJoId: id,
+  //           mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
+  //           transDate: stage.transDate,
+  //           code:
+  //               "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+  //           isUpload: "0",
+  //           isActive: "1",
+  //           createdBy: userData.value!.id,
+  //           remarks: activityListTextController.value[index].text,
+  //           createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+  //         );
+  //         int result = await db.insert(
+  //             "t_d_jo_inspection_activity_stages", data.toInsert());
+  //         List<TDJoInspectionActivity> details = stage.listActivity ?? [];
+  //         details.forEach((activity) async {
+  //           TDJoInspectionActivity detail = TDJoInspectionActivity(
+  //               tHJoId: id,
+  //               tDJoInspectionActivityStagesId: result,
+  //               startActivityTime: activity.startActivityTime,
+  //               endActivityTime: activity.endActivityTime,
+  //               activity: activity.activity,
+  //               code:
+  //                   'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+  //               isActive: 1,
+  //               isUpload: 0,
+  //               createdAt:
+  //                   DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+  //               createdBy: createdBy);
+  //           await db.insert("t_d_jo_inspection_activity", detail.toInsert());
+  //         });
+  //       }
+  //     });
+  //     stageListModal.value = [];
+  //     activityListTextController.value = [];
+  //     return true;
+  //   } catch (e) {
+  //     // Handle any parsing errors
+  //     return false; // Return the original time if parsing fails
+  //   }
+  // }
 
   void addActivity6StageConfirm() {
     Get.dialog(
@@ -7633,6 +7961,9 @@ class JoDetailController extends BaseController {
               if (result == true) {
                 Get.back();
                 Get.back();
+                activity6Attachments.value = [];
+                stageListModal.value = [];
+                activityListTextController.value = [];
                 await getJoDailyActivityLocalV2();
                 await getJoDailyActivity6AttachmentLocal();
               } else {
@@ -7668,7 +7999,7 @@ class JoDetailController extends BaseController {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             onPressed: () async {
-              final bool result = await editActivityStagesV2();
+              final bool result = await editActivity6StagesV2();
               if (result == true) {
                 Get.back();
                 Get.back();
@@ -7726,7 +8057,7 @@ class JoDetailController extends BaseController {
         final db = await SqlHelper.db();
         db.execute('''
           UPDATE t_h_jo
-          SET inspection_finished_date = '${DateTime.now}', m_statusjo_id = 4
+          SET inspection_finished_date = '${DateTime.now().toString()}', m_statusjo_id = 4
           WHERE id = ${dataJoDetail.value.detail!.id};
         ''');
       } catch(e){
@@ -7739,7 +8070,7 @@ class JoDetailController extends BaseController {
         final db = await SqlHelper.db();
         db.execute('''
           UPDATE t_h_jo
-          SET laboratory_finished_date = '${DateTime.now}', m_statusjo_id = 4
+          SET laboratory_finished_date = '${DateTime.now().toString()}', m_statusjo_id = 4
           WHERE id = ${dataJoDetail.value.detail!.id};
         ''');
       } catch(e){
@@ -7752,7 +8083,7 @@ class JoDetailController extends BaseController {
       final db = await SqlHelper.db();
       db.execute('''
             UPDATE t_h_jo
-            SET inspection_finished_date = '${DateTime.now}', laboratory_finished_date = '${DateTime.now}', m_statusjo_id = 4
+            SET inspection_finished_date = '${().toString()}', laboratory_finished_date = '${DateTime.now().toString()}', m_statusjo_id = 4
             WHERE id = ${dataJoDetail.value.detail!.id};
           ''');
       } catch(e){
@@ -7857,320 +8188,320 @@ class JoDetailController extends BaseController {
     }
   }
 
-  void drawerAddDocument(String type) {
-    Get.bottomSheet(
-      GetBuilder(
-        init: JoDetailController(),
-        builder: (controller) => Container(
-            margin: EdgeInsets.only(top: 48),
-            padding: EdgeInsets.all(24),
-            width: double.infinity,
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(24),
-                    topLeft: Radius.circular(24))),
-            child: Obx(
-              () => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Add Stage Inspection',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: primaryColor),
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          TextFormField(
-                            controller: activity6Text,
-                            cursorColor: onFocusColor,
-                            style: const TextStyle(color: onFocusColor),
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide:
-                                      const BorderSide(color: onFocusColor),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                labelText: 'No Certificate/Report*',
-                                floatingLabelStyle:
-                                    const TextStyle(color: onFocusColor),
-                                fillColor: onFocusColor),
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          TextFormField(
-                            showCursor: true,
-                            readOnly: true,
-                            controller: activity6Date,
-                            cursorColor: onFocusColor,
-                            onTap: () {
-                              selectDate6(Get.context!);
-                            },
-                            style: const TextStyle(color: onFocusColor),
-                            decoration: InputDecoration(
-                                suffixIcon: IconButton(
-                                    onPressed: () {
-                                      selectDate6(Get.context!);
-                                    },
-                                    icon: const Icon(
-                                        Icons.calendar_today_rounded)),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide:
-                                      const BorderSide(color: onFocusColor),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                labelText: 'Date Certificate/Report*',
-                                floatingLabelStyle:
-                                    const TextStyle(color: onFocusColor),
-                                fillColor: onFocusColor),
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          TextFormField(
-                            controller: activity6Text,
-                            cursorColor: onFocusColor,
-                            style: const TextStyle(color: onFocusColor),
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide:
-                                      const BorderSide(color: onFocusColor),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                labelText: 'No Blanko Certificate*',
-                                floatingLabelStyle:
-                                    const TextStyle(color: onFocusColor),
-                                fillColor: onFocusColor),
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          TextFormField(
-                            controller: activity6Text,
-                            cursorColor: onFocusColor,
-                            style: const TextStyle(color: onFocusColor),
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide:
-                                      const BorderSide(color: onFocusColor),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                labelText: 'LHV Number*',
-                                floatingLabelStyle:
-                                    const TextStyle(color: onFocusColor),
-                                fillColor: onFocusColor),
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          TextFormField(
-                            controller: activity6Text,
-                            cursorColor: onFocusColor,
-                            style: const TextStyle(color: onFocusColor),
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide:
-                                      const BorderSide(color: onFocusColor),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                labelText: 'LS Number*',
-                                floatingLabelStyle:
-                                    const TextStyle(color: onFocusColor),
-                                fillColor: onFocusColor),
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          const Text(
-                            'Upload Attachment Certificate',
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w700),
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          Text(
-                            'Note: PDF Only. Max 1 file. Max 2 MB',
-                            style: TextStyle(fontSize: 10, color: Colors.green),
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          activity6Attachments.value.isNotEmpty
-                              ? GridView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 5,
-                                    mainAxisSpacing: 8,
-                                    crossAxisSpacing: 8,
-                                  ),
-                                  itemCount: activity6Attachments.value.length,
-                                  itemBuilder: (content, index) {
-                                    final File photo =
-                                        activity6Attachments.value[index];
-                                    final String fileType =
-                                        checkFileType(photo.path);
-                                    var filenameArr = photo.path.split("/");
-                                    var filename = filenameArr.last;
-                                    return fileType == 'image'
-                                        ? SizedBox(
-                                            width: 54,
-                                            height: 54,
-                                            child: InkWell(
-                                              onTap: () {
-                                                previewImageAct6(
-                                                    index, photo.path);
-                                              },
-                                              child: Image.file(
-                                                File(photo.path),
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                          )
-                                        : fileType == 'doc'
-                                            ? InkWell(
-                                                onTap: () {
-                                                  OpenFilex.open(photo.path);
-                                                },
-                                                child: SizedBox(
-                                                  width: 54,
-                                                  height: 54,
-                                                  child: Center(
-                                                      child: Column(
-                                                    children: [
-                                                      Image.asset(
-                                                        'assets/icons/pdfIcon.png',
-                                                        height: 42,
-                                                      ),
-                                                      Text(filename,
-                                                          style: TextStyle(
-                                                              fontSize: 8),
-                                                          overflow: TextOverflow
-                                                              .ellipsis)
-                                                    ],
-                                                  )),
-                                                ),
-                                              )
-                                            : SizedBox();
-                                  })
-                              : const SizedBox(),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          SizedBox(
-                            width: 68,
-                            height: 68,
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  mediaPickerConfirm();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                        side: BorderSide(color: primaryColor),
-                                        borderRadius:
-                                            BorderRadius.circular(12))),
-                                child: Center(
-                                    child: Icon(
-                                  Icons.folder_rounded,
-                                  color: primaryColor,
-                                ))),
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                            onPressed: () {
-                              checkActivity6List();
-                            },
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                    side: BorderSide(color: primaryColor),
-                                    borderRadius: BorderRadius.circular(12))),
-                            child: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                                width: double.infinity,
-                                child: Center(
-                                    child: Text(
-                                  'Cancel',
-                                  style: TextStyle(
-                                      color: primaryColor,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
-                                )))),
-                      ),
-                      const SizedBox(
-                        width: 16,
-                      ),
-                      Expanded(
-                        child: ElevatedButton(
-                            onPressed: () {
-                              addDocumentConfirm(type);
-                            },
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: primaryColor,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12))),
-                            child: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                                width: double.infinity,
-                                child: Center(
-                                    child: Text(
-                                  'Submit',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
-                                )))),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                ],
-              ),
-            )),
-      ),
-      isScrollControlled: true,
-    );
-  }
+  // void drawerAddDocument(String type) {
+  //   Get.bottomSheet(
+  //     GetBuilder(
+  //       init: JoDetailController(),
+  //       builder: (controller) => Container(
+  //           margin: EdgeInsets.only(top: 48),
+  //           padding: EdgeInsets.all(24),
+  //           width: double.infinity,
+  //           decoration: BoxDecoration(
+  //               color: Colors.white,
+  //               borderRadius: BorderRadius.only(
+  //                   topRight: Radius.circular(24),
+  //                   topLeft: Radius.circular(24))),
+  //           child: Obx(
+  //             () => Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 Expanded(
+  //                   child: SingleChildScrollView(
+  //                     child: Column(
+  //                       crossAxisAlignment: CrossAxisAlignment.start,
+  //                       children: [
+  //                         Text(
+  //                           'Add Stage Inspection',
+  //                           style: TextStyle(
+  //                               fontSize: 16,
+  //                               fontWeight: FontWeight.w700,
+  //                               color: primaryColor),
+  //                         ),
+  //                         const SizedBox(
+  //                           height: 16,
+  //                         ),
+  //                         TextFormField(
+  //                           controller: activity6Text,
+  //                           cursorColor: onFocusColor,
+  //                           style: const TextStyle(color: onFocusColor),
+  //                           decoration: InputDecoration(
+  //                               border: OutlineInputBorder(
+  //                                 borderRadius: BorderRadius.circular(12),
+  //                               ),
+  //                               focusedBorder: OutlineInputBorder(
+  //                                 borderSide:
+  //                                     const BorderSide(color: onFocusColor),
+  //                                 borderRadius: BorderRadius.circular(12),
+  //                               ),
+  //                               labelText: 'No Certificate/Report*',
+  //                               floatingLabelStyle:
+  //                                   const TextStyle(color: onFocusColor),
+  //                               fillColor: onFocusColor),
+  //                         ),
+  //                         const SizedBox(
+  //                           height: 16,
+  //                         ),
+  //                         TextFormField(
+  //                           showCursor: true,
+  //                           readOnly: true,
+  //                           controller: activity6Date,
+  //                           cursorColor: onFocusColor,
+  //                           onTap: () {
+  //                             selectDate6(Get.context!);
+  //                           },
+  //                           style: const TextStyle(color: onFocusColor),
+  //                           decoration: InputDecoration(
+  //                               suffixIcon: IconButton(
+  //                                   onPressed: () {
+  //                                     selectDate6(Get.context!);
+  //                                   },
+  //                                   icon: const Icon(
+  //                                       Icons.calendar_today_rounded)),
+  //                               border: OutlineInputBorder(
+  //                                 borderRadius: BorderRadius.circular(12),
+  //                               ),
+  //                               focusedBorder: OutlineInputBorder(
+  //                                 borderSide:
+  //                                     const BorderSide(color: onFocusColor),
+  //                                 borderRadius: BorderRadius.circular(12),
+  //                               ),
+  //                               labelText: 'Date Certificate/Report*',
+  //                               floatingLabelStyle:
+  //                                   const TextStyle(color: onFocusColor),
+  //                               fillColor: onFocusColor),
+  //                         ),
+  //                         const SizedBox(
+  //                           height: 16,
+  //                         ),
+  //                         TextFormField(
+  //                           controller: activity6Text,
+  //                           cursorColor: onFocusColor,
+  //                           style: const TextStyle(color: onFocusColor),
+  //                           decoration: InputDecoration(
+  //                               border: OutlineInputBorder(
+  //                                 borderRadius: BorderRadius.circular(12),
+  //                               ),
+  //                               focusedBorder: OutlineInputBorder(
+  //                                 borderSide:
+  //                                     const BorderSide(color: onFocusColor),
+  //                                 borderRadius: BorderRadius.circular(12),
+  //                               ),
+  //                               labelText: 'No Blanko Certificate*',
+  //                               floatingLabelStyle:
+  //                                   const TextStyle(color: onFocusColor),
+  //                               fillColor: onFocusColor),
+  //                         ),
+  //                         const SizedBox(
+  //                           height: 16,
+  //                         ),
+  //                         TextFormField(
+  //                           controller: activity6Text,
+  //                           cursorColor: onFocusColor,
+  //                           style: const TextStyle(color: onFocusColor),
+  //                           decoration: InputDecoration(
+  //                               border: OutlineInputBorder(
+  //                                 borderRadius: BorderRadius.circular(12),
+  //                               ),
+  //                               focusedBorder: OutlineInputBorder(
+  //                                 borderSide:
+  //                                     const BorderSide(color: onFocusColor),
+  //                                 borderRadius: BorderRadius.circular(12),
+  //                               ),
+  //                               labelText: 'LHV Number*',
+  //                               floatingLabelStyle:
+  //                                   const TextStyle(color: onFocusColor),
+  //                               fillColor: onFocusColor),
+  //                         ),
+  //                         const SizedBox(
+  //                           height: 16,
+  //                         ),
+  //                         TextFormField(
+  //                           controller: activity6Text,
+  //                           cursorColor: onFocusColor,
+  //                           style: const TextStyle(color: onFocusColor),
+  //                           decoration: InputDecoration(
+  //                               border: OutlineInputBorder(
+  //                                 borderRadius: BorderRadius.circular(12),
+  //                               ),
+  //                               focusedBorder: OutlineInputBorder(
+  //                                 borderSide:
+  //                                     const BorderSide(color: onFocusColor),
+  //                                 borderRadius: BorderRadius.circular(12),
+  //                               ),
+  //                               labelText: 'LS Number*',
+  //                               floatingLabelStyle:
+  //                                   const TextStyle(color: onFocusColor),
+  //                               fillColor: onFocusColor),
+  //                         ),
+  //                         const SizedBox(
+  //                           height: 16,
+  //                         ),
+  //                         const Text(
+  //                           'Upload Attachment Certificate',
+  //                           style: TextStyle(
+  //                               fontSize: 14, fontWeight: FontWeight.w700),
+  //                         ),
+  //                         const SizedBox(
+  //                           height: 16,
+  //                         ),
+  //                         Text(
+  //                           'Note: PDF Only. Max 1 file. Max 2 MB',
+  //                           style: TextStyle(fontSize: 10, color: Colors.green),
+  //                         ),
+  //                         const SizedBox(
+  //                           height: 16,
+  //                         ),
+  //                         activity6Attachments.value.isNotEmpty
+  //                             ? GridView.builder(
+  //                                 shrinkWrap: true,
+  //                                 physics: NeverScrollableScrollPhysics(),
+  //                                 gridDelegate:
+  //                                     SliverGridDelegateWithFixedCrossAxisCount(
+  //                                   crossAxisCount: 5,
+  //                                   mainAxisSpacing: 8,
+  //                                   crossAxisSpacing: 8,
+  //                                 ),
+  //                                 itemCount: activity6Attachments.value.length,
+  //                                 itemBuilder: (content, index) {
+  //                                   final File photo =
+  //                                       activity6Attachments.value[index];
+  //                                   final String fileType =
+  //                                       checkFileType(photo.path);
+  //                                   var filenameArr = photo.path.split("/");
+  //                                   var filename = filenameArr.last;
+  //                                   return fileType == 'image'
+  //                                       ? SizedBox(
+  //                                           width: 54,
+  //                                           height: 54,
+  //                                           child: InkWell(
+  //                                             onTap: () {
+  //                                               previewImageAct6(
+  //                                                   index, photo.path);
+  //                                             },
+  //                                             child: Image.file(
+  //                                               File(photo.path),
+  //                                               fit: BoxFit.cover,
+  //                                             ),
+  //                                           ),
+  //                                         )
+  //                                       : fileType == 'doc'
+  //                                           ? InkWell(
+  //                                               onTap: () {
+  //                                                 OpenFilex.open(photo.path);
+  //                                               },
+  //                                               child: SizedBox(
+  //                                                 width: 54,
+  //                                                 height: 54,
+  //                                                 child: Center(
+  //                                                     child: Column(
+  //                                                   children: [
+  //                                                     Image.asset(
+  //                                                       'assets/icons/pdfIcon.png',
+  //                                                       height: 42,
+  //                                                     ),
+  //                                                     Text(filename,
+  //                                                         style: TextStyle(
+  //                                                             fontSize: 8),
+  //                                                         overflow: TextOverflow
+  //                                                             .ellipsis)
+  //                                                   ],
+  //                                                 )),
+  //                                               ),
+  //                                             )
+  //                                           : SizedBox();
+  //                                 })
+  //                             : const SizedBox(),
+  //                         const SizedBox(
+  //                           height: 16,
+  //                         ),
+  //                         SizedBox(
+  //                           width: 68,
+  //                           height: 68,
+  //                           child: ElevatedButton(
+  //                               onPressed: () {
+  //                                 mediaPickerConfirm();
+  //                               },
+  //                               style: ElevatedButton.styleFrom(
+  //                                   backgroundColor: Colors.white,
+  //                                   shape: RoundedRectangleBorder(
+  //                                       side: BorderSide(color: primaryColor),
+  //                                       borderRadius:
+  //                                           BorderRadius.circular(12))),
+  //                               child: Center(
+  //                                   child: Icon(
+  //                                 Icons.folder_rounded,
+  //                                 color: primaryColor,
+  //                               ))),
+  //                         ),
+  //                         const SizedBox(
+  //                           height: 16,
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 Row(
+  //                   children: [
+  //                     Expanded(
+  //                       child: ElevatedButton(
+  //                           onPressed: () {
+  //                             checkActivity6List();
+  //                           },
+  //                           style: ElevatedButton.styleFrom(
+  //                               backgroundColor: Colors.white,
+  //                               shape: RoundedRectangleBorder(
+  //                                   side: BorderSide(color: primaryColor),
+  //                                   borderRadius: BorderRadius.circular(12))),
+  //                           child: Container(
+  //                               padding:
+  //                                   const EdgeInsets.symmetric(vertical: 12),
+  //                               width: double.infinity,
+  //                               child: Center(
+  //                                   child: Text(
+  //                                 'Cancel',
+  //                                 style: TextStyle(
+  //                                     color: primaryColor,
+  //                                     fontSize: 16,
+  //                                     fontWeight: FontWeight.bold),
+  //                               )))),
+  //                     ),
+  //                     const SizedBox(
+  //                       width: 16,
+  //                     ),
+  //                     Expanded(
+  //                       child: ElevatedButton(
+  //                           onPressed: () {
+  //                             addDocumentConfirm(type);
+  //                           },
+  //                           style: ElevatedButton.styleFrom(
+  //                               backgroundColor: primaryColor,
+  //                               shape: RoundedRectangleBorder(
+  //                                   borderRadius: BorderRadius.circular(12))),
+  //                           child: Container(
+  //                               padding:
+  //                                   const EdgeInsets.symmetric(vertical: 12),
+  //                               width: double.infinity,
+  //                               child: Center(
+  //                                   child: Text(
+  //                                 'Submit',
+  //                                 style: TextStyle(
+  //                                     color: Colors.white,
+  //                                     fontSize: 16,
+  //                                     fontWeight: FontWeight.bold),
+  //                               )))),
+  //                     ),
+  //                   ],
+  //                 ),
+  //                 const SizedBox(
+  //                   height: 16,
+  //                 ),
+  //               ],
+  //             ),
+  //           )),
+  //     ),
+  //     isScrollControlled: true,
+  //   );
+  // }
 
   void checkDocumentList(String type) {
     debugPrint(
