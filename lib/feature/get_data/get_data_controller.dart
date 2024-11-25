@@ -137,7 +137,7 @@ class GetDataController extends BaseController{
     }
 
     File file = File("$dir/ops/application.zip");
-    await file.writeAsBytes(bytes);
+    await file.writeAsBytes(bytes, mode: FileMode.writeOnly);
     return file.path;
   }
 

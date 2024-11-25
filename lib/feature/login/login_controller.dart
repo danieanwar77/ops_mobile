@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
+import 'package:ops_mobile/core/core/constant/app_constant.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
 import 'package:ops_mobile/data/model/login_model.dart';
@@ -39,7 +40,7 @@ class LoginController extends BaseController{
     connectivityResult = await (Connectivity().checkConnectivity());
     await readSettings();
     username.text = loginData['e_number'];
-    password.text = "oktober";
+    //password.text = "oktober";
     final directory = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
     debugPrint('path directory: $directory');
     final data = await SqlHelper.getEmployeePassword(loginData['e_number']);
@@ -62,6 +63,9 @@ class LoginController extends BaseController{
       final File file = File('${directory}/settings.txt');
       text = await file.readAsString();
       loginData = jsonDecode(text);
+      AppConstant.BASE_URL = loginData['internet_url'];
+      network.setBaseUrl(AppConstant.BASE_URL);
+      debugPrint('base url:${AppConstant.BASE_URL}');
       update();
       debugPrint('setting txt: ${jsonDecode(text)}');
     } catch (e) {
@@ -71,12 +75,13 @@ class LoginController extends BaseController{
     return text;
   }
 
-  void logInDecrypt(){
+  void logInDecrypt()async{
     isLoading = true;
     update();
     if(decryptedPassword != '' && password.text == decryptedPassword ){
       isLoading = false;
       update();
+      await StorageCore().storage.write('login', jsonEncode(loginData));
       Get.to(() => HomeScreen());
     } else {
       isLoading = false;
@@ -189,7 +194,7 @@ class LoginController extends BaseController{
     // Dekripsi
     try {
       final decrypted = encrypter.decrypt(encryptedBytes, iv: iv);
-
+      password.text = decrypted;
       // Tampilkan hasil dekripsi
       debugPrint('Hasil dekripsi: $decrypted');
       return decrypted;

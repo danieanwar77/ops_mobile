@@ -135,7 +135,6 @@ TDJoLaboratoryActivity copyWith({  num? id,
 
   Map<String, dynamic> toInsert() {
     final map = <String, dynamic>{};
-    //map['id'] = _id;
     map['t_d_jo_laboratory_activity_stages_id'] = _tDJoLaboratoryActivityStagesId;
     map['t_d_jo_laboratory_id'] = _tDJoLaboratoryId;
     map['start_activity_time'] = _startActivityTime;
@@ -145,27 +144,19 @@ TDJoLaboratoryActivity copyWith({  num? id,
     map['is_active'] = _isActive;
     map['is_upload'] = _isUpload;
     map['created_by'] = _createdBy;
-    //map['updated_by'] = _updatedBy;
     map['created_at'] = _createdAt;
-    //map['updated_at'] = _updatedAt;
     return map;
   }
 
 
   Map<String, dynamic> toEdit() {
     final map = <String, dynamic>{};
-    //map['id'] = _id;
-    //map['t_d_jo_laboratory_activity_stages_id'] = _tDJoLaboratoryActivityStagesId;
-    //map['t_d_jo_laboratory_id'] = _tDJoLaboratoryId;
     map['start_activity_time'] = _startActivityTime;
     map['end_activity_time'] = _endActivityTime;
     map['activity'] = _activity;
-    //map['code'] = _code;
     map['is_active'] = _isActive;
     map['is_upload'] = _isUpload;
-    //map['created_by'] = _createdBy;
     map['updated_by'] = _updatedBy;
-    //map['created_at'] = _createdAt;
     map['updated_at'] = _updatedAt;
     return map;
   }
