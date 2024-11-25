@@ -175,6 +175,7 @@ class TDJoLaboratoryActivityStages {
 
   set listLabActivity(List<TDJoLaboratoryActivity>? value) => _listLabActivity = value ?? [];
   set listLabAttachment(List<TDJoLaboratoryAttachment>? value) => _listLabAttachment = value ?? [];
+  set createdBy(num? value) => _createdBy = value;
 
 
   Map<String, dynamic> toJson() {
@@ -206,7 +207,6 @@ class TDJoLaboratoryActivityStages {
 
   Map<String, dynamic> toInsert() {
     final map = <String, dynamic>{};
-    //map['id'] = _id;
     map['d_jo_laboratory_id'] = _dJoLaboratoryId;
     map['t_h_jo_id'] = _tHJoId;
     map['m_statuslaboratoryprogres_id'] = _mStatuslaboratoryprogresId;
@@ -227,28 +227,14 @@ class TDJoLaboratoryActivityStages {
 
   Map<String, dynamic> toEdit() {
     final map = <String, dynamic>{};
-    //map['id'] = _id;
-    //map['d_jo_laboratory_id'] = _dJoLaboratoryId;
-    //map['t_h_jo_id'] = _tHJoId;
-    //map['m_statuslaboratoryprogres_id'] = _mStatuslaboratoryprogresId;
-    //map['trans_date'] = _transDate;
     map['remarks'] = _remarks;
-    //map['created_by'] = _createdBy;
     map['updated_by'] = _updatedBy;
-    //map['created_at'] = _createdAt;
     map['updated_at'] = _updatedAt;
     map['total_sample_received'] = _totalSampleReceived;
     map['total_sample_analyzed'] = _totalSampleAnalyzed;
     map['total_sample_preparation'] = _totalSamplePreparation;
-    //map['code'] = _code;
     map['is_active'] = _isActive;
     map['is_upload'] = _isUpload;
-    // if (_listLabActivity != null) {
-    //   map['list_lab_activity'] = _listLabActivity?.map((v) => v.toJson()).toList();
-    // }
-    // if (_listLabAttachment != null) {
-    //   map['list_lab_attachment'] = _listLabAttachment?.map((v) => v.toJson()).toList();
-    // }
     return map;
   }
 }

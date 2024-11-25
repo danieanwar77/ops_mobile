@@ -28,6 +28,7 @@ import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/utils/helper.dart';
 
 import 'package:ops_mobile/data/model/login_data_model.dart';
+import 'package:sqflite/sqflite.dart';
 
 
 class LabActivityDetailController extends BaseController{
@@ -129,6 +130,7 @@ class LabActivityDetailController extends BaseController{
 
     debugPrint('params: $id,${userData.value!.id!.toInt()}, $labId');
     try{
+      activityLabListStages.value.clear();
       var response = await SqlHelper.getDetailActivityLaboratory(id,userData.value!.id!.toInt(), labId);
       var text = '';
       var joGroup = groupBy(response, (item) => item['id']);
@@ -574,17 +576,17 @@ class LabActivityDetailController extends BaseController{
 
   void editActivity(int itemIndex){
     var stageIndex = activityLabList.value.indexWhere((item) => item.transDate == activityDate.text);
+    TDJoLaboratoryActivity oldData = activityLabList.value[stageIndex].listLabActivity![itemIndex];
 
-    activityLabList.value[stageIndex].listLabActivity![itemIndex] = TDJoLaboratoryActivity(
-      startActivityTime: activityStartTime.text,
-      endActivityTime: activityEndTime.text,
-      activity: activityText.text,
-      isActive: 1,
-      createdBy: userData.value?.id ?? 0,
-      createdAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(
-          DateTime.now()).toString(),
+    activityLabList.value[stageIndex].listLabActivity![itemIndex] = oldData.copyWith(
+        startActivityTime: activityStartTime.text,
+        endActivityTime: activityEndTime.text,
+        activity: activityText.text,
+        isActive: 1,
+        updatedBy: userData.value?.id ?? 0,
+        updatedAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(
+            DateTime.now()).toString(),
     );
-
     editActivityMode.value = false;
     activityDate.text = '';
     activityStartTime.text = '';
@@ -597,7 +599,7 @@ class LabActivityDetailController extends BaseController{
     final TextEditingController remarksController = activityLabListTextController[index];
     debugPrint('text controller value : ${remarksController.text}');
     var stageIndex = activityLabList.value.indexWhere((item) => item.transDate == date);
-    TDJoLaboratoryActivityStages stage = activityLabList.value[stageIndex];
+    TDJoLaboratoryActivityStages stage = activityLabList.value[stageIndex]; // ambil data lama
     //activityLabList.value[stageIndex].remarks = remarksController.text;
     activityLabList.value[stageIndex] = TDJoLaboratoryActivityStages(
       id : stage.id,
@@ -628,26 +630,26 @@ class LabActivityDetailController extends BaseController{
   Future<void> removeActivity(int index, int indexitem, int stage)async{
 
     var stageItem = activityLabList.value[index].listLabActivity![indexitem];
-
-    if(stageItem.id != null){
-      activityLabList.value[index].listLabActivity![indexitem] = TDJoLaboratoryActivity(
-        id: stageItem.id,
-        tDJoLaboratoryActivityStagesId: stageItem.tDJoLaboratoryActivityStagesId,
-        tDJoLaboratoryId: stageItem.tDJoLaboratoryId,
-        startActivityTime: stageItem.startActivityTime,
-        endActivityTime: stageItem.endActivityTime,
-        activity: stageItem.activity,
-        code: stageItem.code,
-        isActive: 0,
-        isUpload: stageItem.isUpload,
-        createdBy: stageItem.createdBy,
-        updatedBy: stageItem.updatedBy,
-        createdAt: stageItem.createdAt,
-        updatedAt: stageItem.updatedAt,
-      );
-    } else {
-      activityLabList.value[index].listLabActivity!.removeAt(indexitem);
-    }
+    activityLabList.value[index].listLabActivity!.removeAt(indexitem);
+    // if(stageItem.id != null){
+    //   activityLabList.value[index].listLabActivity![indexitem] = TDJoLaboratoryActivity(
+    //     id: stageItem.id,
+    //     tDJoLaboratoryActivityStagesId: stageItem.tDJoLaboratoryActivityStagesId,
+    //     tDJoLaboratoryId: stageItem.tDJoLaboratoryId,
+    //     startActivityTime: stageItem.startActivityTime,
+    //     endActivityTime: stageItem.endActivityTime,
+    //     activity: stageItem.activity,
+    //     code: stageItem.code,
+    //     isActive: 0,
+    //     isUpload: stageItem.isUpload,
+    //     createdBy: stageItem.createdBy,
+    //     updatedBy: stageItem.updatedBy,
+    //     createdAt: stageItem.createdAt,
+    //     updatedAt: stageItem.updatedAt,
+    //   );
+    // } else {
+    //   activityLabList.value[index].listLabActivity!.removeAt(indexitem);
+    // }
 
     if(activityLabList.value[index].listLabActivity!.isEmpty){
       activityLabListTextController.value.removeAt(index);
@@ -661,99 +663,69 @@ class LabActivityDetailController extends BaseController{
   Future<void> removeActivityByDate(String date, int indexDate, int stageProgress)async{
     var stage = activityLabList.value.where((item) => item.transDate == date && item.mStatuslaboratoryprogresId == activityLabStage).first;
     var indexStage = activityLabList.value.indexWhere((item) => item.transDate == date && item.mStatuslaboratoryprogresId == activityLabStage);
-    if(stage.id != null){
-      activityLabList.value[indexStage] = TDJoLaboratoryActivityStages(
-        id : stage.id,
-        dJoLaboratoryId : stage.dJoLaboratoryId,
-        tHJoId : stage.tHJoId,
-        mStatuslaboratoryprogresId : stage.mStatuslaboratoryprogresId,
-        transDate : stage.transDate,
-        remarks : stage.remarks,
-        createdBy : stage.createdBy,
-        updatedBy : stage.updatedBy,
-        createdAt : stage.createdAt,
-        updatedAt : stage.updatedAt,
-        totalSampleReceived : stage.totalSampleReceived,
-        totalSampleAnalyzed : stage.totalSampleAnalyzed,
-        totalSamplePreparation : stage.totalSamplePreparation,
-        code : stage.code,
-        isActive : 0,
-        isUpload : 0,
-        listLabActivity: stage.listLabActivity,
-        listLabAttachment: stage.listLabAttachment,
-      );
-    } else {
-      activityLabList.value.removeAt(indexStage);
-    }
+    activityLabList.value.removeAt(indexStage);
+    // if(stage.id != null){
+    //   activityLabList.value[indexStage] = TDJoLaboratoryActivityStages(
+    //     id : stage.id,
+    //     dJoLaboratoryId : stage.dJoLaboratoryId, //check lagi value masih null
+    //     tHJoId : stage.tHJoId,
+    //     mStatuslaboratoryprogresId : stage.mStatuslaboratoryprogresId,
+    //     transDate : stage.transDate,
+    //     remarks : stage.remarks,
+    //     createdBy : stage.createdBy,
+    //     updatedBy : stage.updatedBy,
+    //     createdAt : stage.createdAt,
+    //     updatedAt : stage.updatedAt,
+    //     totalSampleReceived : stage.totalSampleReceived,
+    //     totalSampleAnalyzed : stage.totalSampleAnalyzed,
+    //     totalSamplePreparation : stage.totalSamplePreparation,
+    //     code : stage.code,
+    //     isActive : 0,
+    //     isUpload : 0,
+    //     listLabActivity: stage.listLabActivity,
+    //     listLabAttachment: stage.listLabAttachment,
+    //   );
+    // } else {
+    //   activityLabList.value.removeAt(indexStage);
+    // }
     //activityLabList.value.removeWhere((item) => item.transDate == date && item.mStatuslaboratoryprogresId == stageProgress);
     activityLabListTextController.value.removeAt(indexStage);
     update();
   }
 
-  Future<String?> addActivityStages() async {
-    if(activityLabList.value.where((data) => data.mStatuslaboratoryprogresId == activityLabStage).toList().isNotEmpty){
-      //activityLabStage++;
-      //postInsertActivityLab(activityLabList.value);
-      insertLocalActivityLab();
-      for(var item in activityLabList.value){
-        activityLabListStages.value.add(item);
-      }
-      activityLabList.value = [];
-      activityLabListTextController.value = [];
-      editActivityMode.value = false;
-      activityDate.text = '';
-      activityStartTime.text = '';
-      activityEndTime.text = '';
-      activityText.text = '';
-
-      activitySubmitted.value = true;
-      update();
-      return 'success';
-    } else if(activityLabList.value.where((data) => data.mStatuslaboratoryprogresId == activityLabStage).toList().isEmpty) {
-      return 'failed';
-    }
-  }
-
-  Future<String> insertLocalActivityLab() async {
+  //Function untuk menyimpan stage dan activity ke sqlite
+  Future<String?> saveActivityStage() async {
     try {
-      // Your logic here
+      final db =  await SqlHelper.db();
       final createdBy = userData.value!.id;
-      //TDJoLaboratory joLab = joLaboratory.value;
 
-      List<String> stageValues = [];
-      List<String> activityValues = [];
+      List<TDJoLaboratoryActivityStages> copiedList = List.from(activityLabList.value);
+      List<TDJoLaboratoryActivityStages> dataActStage = copiedList.where((data) => data.mStatuslaboratoryprogresId == activityLabStage).toList();
 
-      activityLabList.value.asMap().forEach((index,stage){
-        stageValues.add('''(${joLabId},${id},${activityLabStage == 0 ? 1 : activityLabStage},'${stage.transDate}','${activityLabListTextController.value[index].text}',$createdBy,'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',1,0)''');
-        update();
-        if(stage.listLabActivity!.isNotEmpty){
-          var count = 0;
-          stage.listLabActivity!.forEach((activity){
-            count++;
-            activityValues.add('''((SELECT id FROM t_d_jo_laboratory_activity_stages WHERE trans_date = '${stage.transDate}' AND m_statuslaboratoryprogres_id = ${activityLabStage == 0 ? 1 : activityLabStage} LIMIT 1),${joLabId},'${activity.startActivityTime}','${activity.endActivityTime}','${activity.activity}','JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}$count',1,0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
-            update();
-          });
+      for(int i = 0 ; i < dataActStage.length; i++){
+        TDJoLaboratoryActivityStages dataStage = dataActStage[i].copyWith(
+            createdBy: createdBy,
+            code: "JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+        );
+        int result = await db.insert("t_d_jo_laboratory_activity_stages",dataStage.toInsert());
+        List<TDJoLaboratoryActivity> actStage = dataStage.listLabActivity ?? [];
+        for(int j = 0; j < actStage.length; j++){
+          TDJoLaboratoryActivity dataAct = actStage[j].copyWith(
+              tDJoLaboratoryActivityStagesId: result,
+              tDJoLaboratoryId: dataStage.dJoLaboratoryId,
+              createdBy: createdBy,
+              isUpload: 0,
+              code: "JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+          );
+          int rsltAct = await db.insert("t_d_jo_laboratory_activity",dataAct.toInsert());
         }
-      });
-
-      debugPrint("stage join: ${stageValues.join(',')}");
-      debugPrint("stage join: ${activityValues.join(',')}");
-
-      await SqlHelper.insertLaboratoryActivity(stageValues.join(','), activityValues.join(','));
-
-      debugPrint('activity lab saat ini : ${activityLabStage}');
-      update();
-      activitySubmitted.value = true;
+      }
+      clearActivityLabForm();
       return 'success';
-    } catch (e) {
-      debugPrint("print error insert ${e}");
+    }catch(e){
+      debugPrint("error insert activity lab ${e}");
       return 'failed';
     }
-  }
-
-  Future<void> postInsertActivityLab(data) async {
-    var response = await repository.insertActivityLab(data) ?? ResponseJoInsertActivityLab();
-    debugPrint('insert activity Lab response: ${jsonEncode(response.message)}');
   }
 
   void drawerDailyActivityLab(){
@@ -1087,7 +1059,7 @@ class LabActivityDetailController extends BaseController{
                                                                             )),
                                                                         InkWell(
                                                                             onTap: () {
-                                                                              removeActivityConfirm(date!, indexItem, index, activityLabStage);
+                                                                              removeActivityConfirm(date!, indexItem, index, activityLabStage); //check tambahkan activity yang mau dihapus
                                                                             },
                                                                             child: Icon(
                                                                               Icons
@@ -1238,6 +1210,8 @@ class LabActivityDetailController extends BaseController{
     activityStartTime.text = '';
     activityEndTime.text = '';
     activityText.text = '';
+    activitySubmitted.value = true;
+    update();
   }
 
   void addActivityLabStageConfirm() {
@@ -1262,14 +1236,11 @@ class LabActivityDetailController extends BaseController{
                   fontWeight: FontWeight.bold),
             ),
             onPressed: () async {
-              var result = await addActivityStages();
+              var result = await saveActivityStage();
               if(result == 'success'){
                 Get.back();
-                // if (activityLabStage == 1) {
-                //   changeStatusJo();
-                // }
                 Get.back();
-                //openDialog("Success", "Activity Stage ${activityLabStage-1} berhasil ditambahkan");
+                await getData();
               } else {
                 Get.back();
                 openDialog("Failed", "Activity Stage $activityLabStage masih kosong atau belum diinput");
@@ -1301,7 +1272,7 @@ class LabActivityDetailController extends BaseController{
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             onPressed: () async {
-              await removeActivity(index, indexitem, stage);
+              await removeActivity(index, indexitem, stage);//check tambahkan activity yang dihapus
               Get.back();
             },
           ),
@@ -1340,75 +1311,79 @@ class LabActivityDetailController extends BaseController{
   }
 
   // > Update Functions
-
-  Future<String?> editActivityStages() async {
-    if(activityLabList.value.where((data) => data.mStatuslaboratoryprogresId == activityLabStage).toList().isNotEmpty){
-      activityLabListStages.value
-          .removeWhere((act) => act.mStatuslaboratoryprogresId == activityLabStage);
-      for (var item in activityLabList.value) {
-        activityLabListStages.value.add(item);
-      }
-      activityLabList.value = [];
-      activityLabListTextController.value = [];
-      editActivityMode.value = false;
-      activityDate.text = '';
-      activityStartTime.text = '';
-      activityEndTime.text = '';
-      activityText.text = '';
-      update();
-      return 'success';
-    } else if(activityLabList.value.where((data) => data.mStatuslaboratoryprogresId == activityLabStage).toList().isEmpty) {
-      return 'failed';
-    }
-  }
-
-  Future<String> updateInsertLocalActivityLab() async {
+  Future<String> updateActivityLab() async {
     try {
       // Your logic here
       final createdBy = userData.value!.id;
+      final db = await SqlHelper.db();
 
-      List<Map<String,dynamic>> stageValues = [];
-      List<String> activityValues = [];
+      List<TDJoLaboratoryActivityStages> copiedList = List.from(activityLabList.value);
+      List<TDJoLaboratoryActivityStages> dataActStage = copiedList.where((data) => data.mStatuslaboratoryprogresId == activityLabStage).toList();
 
-      activityLabList.value.asMap().forEach((index,stage){
-        //stageValues.add('''(${stage.id ?? null},${joLabId},${id},${activityLabStage == 0 ? 1 : activityLabStage},'${stage.transDate}','${activityLabListTextController.value[index].text}',$createdBy,'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','${stage.code ?? 'JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}'}',${stage.isActive},0)''');
-        stageValues.add({
-              'id': stage.id ?? null,
-              'd_jo_laboratory_id': stage.dJoLaboratoryId,
-              't_h_jo_id': id,
-              'm_statuslaboratoryprogres_id': stage.mStatuslaboratoryprogresId,
-              'trans_date': stage.transDate,
-              'remarks': stage.remarks,
-              'created_by': stage.createdBy,
-              'updated_by': stage.updatedBy,
-              'created_at': stage.createdAt,
-              'updated_at': stage.updatedAt,
-              'total_sample_received': stage.totalSampleReceived,
-              'total_sample_analyzed': stage.totalSampleAnalyzed,
-              'total_sample_preparation': stage.totalSamplePreparation,
-              'code': stage.code ?? 'JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
-              'is_active': stage.isActive,
-              'is_upload': stage.isUpload,
-            });
-        update();
-        if(stage.listLabActivity!.isNotEmpty){
-          var count = 0;
-          stage.listLabActivity!.forEach((activity){
-            count++;
-            activityValues.add('''(${activity.id ?? null},${activity.tDJoLaboratoryActivityStagesId ?? '''(SELECT id FROM t_d_jo_laboratory_activity_stages WHERE trans_date = '${stage.transDate}' AND m_statuslaboratoryprogres_id = ${activityLabStage == 0 ? 1 : activityLabStage} LIMIT 1)'''},${joLabId},'${activity.startActivityTime}','${activity.endActivityTime}','${activity.activity}','${activity.code ?? 'JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}$count'}',${activity.isActive == 1 ? 1 : 0},0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
-            update();
-          });
+      for(int i = 0; i < dataActStage.length; i++){
+        TDJoLaboratoryActivityStages dataStage = dataActStage[i];
+        //is_active diubah menjadi null berdasarkan dJoLaboratoryId dan mStatuslaboratoryprogresId
+        await db.update("t_d_jo_laboratory_activity_stages",{"is_active" : 0},where: "d_jo_laboratory_id = ? and m_statuslaboratoryprogres_id=?", whereArgs: [joLabId,activityLabStage]);
+        debugPrint("data update ${jsonEncode(dataStage)}");
+        if(dataStage.id == null){
+          TDJoLaboratoryActivityStages dataStage = dataActStage[i].copyWith(
+              createdBy: createdBy,
+              code: "JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+          );
+
+          int result = await db.insert("t_d_jo_laboratory_activity_stages",dataStage.toInsert());
+
+          List<TDJoLaboratoryActivity> actStage = dataStage.listLabActivity ?? [];
+          for(int j = 0; j < actStage.length; j++) {
+            TDJoLaboratoryActivity dataAct = actStage[j].copyWith(
+                tDJoLaboratoryActivityStagesId: result,
+                tDJoLaboratoryId: dataStage.dJoLaboratoryId,
+                createdBy: createdBy,
+                isUpload: 0,
+                code: "JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+            );
+            int rsltAct = await db.insert("t_d_jo_laboratory_activity", dataAct.toInsert());
+          }
+        }else{
+          TDJoLaboratoryActivityStages dataStage = dataActStage[i].copyWith(
+            dJoLaboratoryId: joLabId,
+            updatedBy: createdBy,
+            updatedAt: DateTime.now().toString(),
+            isUpload: 0,
+            isActive: 1, //check lagi perlu gak
+          );
+
+          //update t_d_jo_laboratory_activity_stages menjadi is_active  = 0 berdasarkan tDJoLaboratoryActivityStagesId
+
+          await db.update("t_d_jo_laboratory_activity_stages",dataStage.toEdit(),where: "id=?",whereArgs: [dataStage.id]);
+          await db.update("t_d_jo_laboratory_activity",{"is_active" : 0},where: "t_d_jo_laboratory_activity_stages_id = ?", whereArgs: [dataStage.id]);
+          List<TDJoLaboratoryActivity> actStage = dataStage.listLabActivity ?? [];
+          for(int j = 0; j < actStage.length; j++) {
+            debugPrint("data print actiivty stage ${jsonEncode(actStage[j])}");
+            if(actStage[j].id ==null){
+              TDJoLaboratoryActivity dataAct = actStage[j].copyWith(
+                  tDJoLaboratoryActivityStagesId: dataStage.id,
+                  tDJoLaboratoryId: dataStage.dJoLaboratoryId,
+                  createdBy: createdBy,
+                  isUpload: 0,
+                  code: "JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+              );
+              int rsltAct = await db.insert("t_d_jo_laboratory_activity", dataAct.toInsert());
+            }else{
+              TDJoLaboratoryActivity dataAct = actStage[j].copyWith(
+                tDJoLaboratoryActivityStagesId: dataStage.id,
+                tDJoLaboratoryId: dataStage.dJoLaboratoryId,
+                updatedBy: createdBy,
+                updatedAt: DateTime.now().toString(),
+                isUpload: 0,
+              );
+              int rsltAct = await db.update("t_d_jo_laboratory_activity", dataAct.toEdit(),whereArgs: [dataAct.id],where: "id=?");
+            }
+          }
         }
-      });
-
-      debugPrint("stage join: ${stageValues.join(',')}");
-      debugPrint("stage join: ${activityValues.join(',')}");
-
-      await SqlHelper.updateLaboratoryActivity(stageValues, activityValues.join(','),id, joLabId, activityLabStage);
-
+      }
       debugPrint('activity lab saat ini : ${activityLabStage}');
-      update();
-      activitySubmitted.value = true;
+      clearActivityLabForm();
       return 'success';
     } catch (e) {
       debugPrint("print error insert ${e}");
@@ -1422,11 +1397,15 @@ class LabActivityDetailController extends BaseController{
   }
 
   void drawerDailyActivityLabEdit(){
+    //ambil list activity stage yang mau diedit
     activityLabList.value = activityLabListStages.value.where((item) => item.mStatuslaboratoryprogresId == activityLabStage).toList();
-    //var activityEditTemp = activityLabList.value.map((item){return item.transDate;}).toSet().toList();
     activityLabList.value.forEach((item){
       activityLabListTextController.value.add(TextEditingController(text: item.remarks));
     });
+    activityLabList.forEach((item){
+      debugPrint('Print item ${jsonEncode(item)}');
+    });
+
     Get.bottomSheet(
         GetBuilder(
           init: LabActivityDetailController(),
@@ -1632,9 +1611,9 @@ class LabActivityDetailController extends BaseController{
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
                               itemCount: activityLabList.value.map((item){return item.transDate;}).toSet().toList().length,
-                              itemBuilder: (context, index)
-                              { var date = activityLabList.value.map((item){return item.transDate;}).toSet().toList()[index];
-                              var activity = activityLabList.value[index];
+                              itemBuilder: (context, index) {
+                                var date = activityLabList.value.map((item){return item.transDate;}).toSet().toList()[index];
+                                var activity = activityLabList.value[index];
                               return Column(
                                 children: [
                                   Card(
@@ -1773,7 +1752,8 @@ class LabActivityDetailController extends BaseController{
                                                             } else {
                                                               return const SizedBox();
                                                             }
-                                                          })
+                                                          }
+                                                          )
                                                     ],
                                                   )
                                               )
@@ -1876,7 +1856,7 @@ class LabActivityDetailController extends BaseController{
                                 padding:
                                 const EdgeInsets.symmetric(vertical: 12),
                                 width: double.infinity,
-                                child: Center(
+                                child: const Center(
                                     child: Text(
                                       'Submit',
                                       style: TextStyle(
@@ -1922,10 +1902,11 @@ class LabActivityDetailController extends BaseController{
                   fontWeight: FontWeight.bold),
             ),
             onPressed: () async {
-              var result = await updateInsertLocalActivityLab();
+              var result = await updateActivityLab();
               if(result == 'success'){
                 Get.back();
                 Get.back();
+                await getData();
                 //openDialog("Success", "Activity Stage ${activityLabStage-1} berhasil ditambahkan");
               } else {
                 Get.back();

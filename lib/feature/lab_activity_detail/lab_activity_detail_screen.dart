@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
-import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory_attachment.dart';
 import 'package:ops_mobile/feature/lab_activity_detail/lab_activity_detail_controller.dart';
 
@@ -187,7 +186,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                           onTap: () {
                                                             controller.drawerDailyActivityLabEdit();
                                                           },
-                                                          child: Icon(
+                                                          child: const Icon(
                                                               Icons
                                                                   .mode_edit_outlined,
                                                               color:
