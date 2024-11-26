@@ -508,8 +508,7 @@ class JoDetailController extends BaseController {
           WHERE t.t_d_inspection_stages_id = ? AND t.is_active = ?
         ''', [stageId, 1]);
 
-        debugPrint(
-            "print stage Transhipment 1541 ${activityStageTranshipment}");
+        debugPrint("print stage Transhipment 1541 ${activityStageTranshipment} stage ${stageId}");
         // Add activityResult to the current stage
         stage['listactivity'] = activityResult;
         stage['listactivitybarge'] = activityBarge;
@@ -528,9 +527,7 @@ class JoDetailController extends BaseController {
 
       stageList.value = stagesList;
 
-      if (stageList.value
-          .where((item) => item.mStatusinspectionstagesId == 6)
-          .isNotEmpty) {
+      if (stageList.value.where((item) => item.mStatusinspectionstagesId == 6).isNotEmpty) {
         await getJoDailyActivity6AttachmentLocal();
       }
 
@@ -917,17 +914,17 @@ class JoDetailController extends BaseController {
                         () => Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ListView.builder(
-                                padding: EdgeInsets.zero,
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: adddailyActivityPhotosCount.value,
-                                itemBuilder: (context, index) {
-                                  return Form(
-                                    key: _formKey,
-                                    child: Column(
+                            Form(
+                              key: _formKey,
+                              child: ListView.builder(
+                                  padding: EdgeInsets.zero,
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: adddailyActivityPhotosCount.value,
+                                  itemBuilder: (context, index) {
+                                    return Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      CrossAxisAlignment.start,
                                       children: [
                                         Row(
                                           children: [
@@ -936,7 +933,7 @@ class JoDetailController extends BaseController {
                                             index > 0 ? InkWell(
                                               onTap:
                                                   () {
-                                                    removePhotoActivityByIndex(index);
+                                                removePhotoActivityByIndex(index);
                                                 debugPrint('Delete index');
                                               },
                                               child: const ImageIcon(
@@ -952,42 +949,42 @@ class JoDetailController extends BaseController {
                                         ),
                                         dailyActivityPhotosTemp.value[index] != ''
                                             ? InkWell(
-                                              onTap: () async {
-                                                inspectionMediaPickerConfirm(
-                                                    index);
-                                              },
-                                              child: ClipRRect(
-                                                borderRadius: BorderRadius.circular(8.0),
-                                                child: Image.file(
-                                                  height: 72,
-                                                  width: 72,
-                                                  File(dailyActivityPhotosTemp
-                                                      .value[index]),
-                                                  fit: BoxFit.fill,
-                                                ),
-                                              ))
-                                            : InkWell(
-                                                onTap: () async {
-                                                  inspectionMediaPickerConfirm(
-                                                      index);
-                                                },
-                                                child: Container(
-                                                  height: 54,
-                                                  width: 54,
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: primaryColor),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8)),
-                                                  child: const Center(
-                                                    child: Icon(
-                                                      Icons.camera_alt_sharp,
-                                                      color: primaryColor,
-                                                    ),
-                                                  ),
-                                                ),
+                                            onTap: () async {
+                                              inspectionMediaPickerConfirm(
+                                                  index);
+                                            },
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(8.0),
+                                              child: Image.file(
+                                                height: 72,
+                                                width: 72,
+                                                File(dailyActivityPhotosTemp
+                                                    .value[index]),
+                                                fit: BoxFit.fill,
                                               ),
+                                            ))
+                                            : InkWell(
+                                          onTap: () async {
+                                            inspectionMediaPickerConfirm(
+                                                index);
+                                          },
+                                          child: Container(
+                                            height: 54,
+                                            width: 54,
+                                            decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: primaryColor),
+                                                borderRadius:
+                                                BorderRadius.circular(
+                                                    8)),
+                                            child: const Center(
+                                              child: Icon(
+                                                Icons.camera_alt_sharp,
+                                                color: primaryColor,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
                                         const SizedBox(
                                           height: 16,
                                         ),
@@ -997,8 +994,9 @@ class JoDetailController extends BaseController {
                                           onChanged: (value) {
                                             editPhotoActivityDesc(index, value);
                                           },
+                                          enabled: (dailyActivityPhotosTemp.value[index] != ""),
                                           validator: (value) {
-                                            if (value == null || value.isEmpty) {
+                                            if (dailyActivityPhotosTemp.value[index] != "" && (value == null || value.isEmpty)) {
                                               return 'Deskripsi wajib diisi!';
                                             }
                                             return null;
@@ -1012,13 +1010,13 @@ class JoDetailController extends BaseController {
                                           decoration: InputDecoration(
                                               border: OutlineInputBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(12),
+                                                BorderRadius.circular(12),
                                               ),
                                               focusedBorder: OutlineInputBorder(
                                                 borderSide: const BorderSide(
                                                     color: onFocusColor),
                                                 borderRadius:
-                                                    BorderRadius.circular(12),
+                                                BorderRadius.circular(12),
                                               ),
                                               labelText: 'Description',
                                               floatingLabelStyle: const TextStyle(
@@ -1029,14 +1027,13 @@ class JoDetailController extends BaseController {
                                           height: 16,
                                         ),
                                       ],
-                                    ),
-                                  );
-                                }),
+                                    );
+                                  }),
+                            ),
                             Row(
                               children: [
                                 InkWell(
                                   onTap: () {
-
                                     adddailyActivityPhotoForm();
                                     update();
                                   },
@@ -1090,11 +1087,12 @@ class JoDetailController extends BaseController {
                     children: [
                       Expanded(
                         child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: ()  async {
                               Get.back();
                               dailyActivityPhotosTemp.value.clear();
                               dailyActivityPhotosDescTemp.value.clear();
                               adddailyActivityPhotosCount.value = 0;
+                              await getJoDailyActivityLocalV2();
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
@@ -1125,7 +1123,6 @@ class JoDetailController extends BaseController {
                                   addActivityDailyPhotoConfirm();
                                 }
                               }
-
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: primaryColor,
@@ -1156,33 +1153,47 @@ class JoDetailController extends BaseController {
   }
 
   void addActivityDailyPhotoConfirm() {
-    Get.dialog(
-      AlertDialog(
-        title: const Text(
-          'Attention',
-          style: TextStyle(
-              fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
-        ),
-        content: const Text('Apakah benar anda ingin menambahkan foto JO ini?'),
-        actions: [
-          TextButton(
-            child: const Text("Cancel"),
-            onPressed: () => Get.back(),
+    List<String> dailyPhoto =  dailyActivityPhotosTemp.value;
+    bool isValid = true;
+    for(int i = 0; i < dailyPhoto.length; i++){
+      if(dailyPhoto[i].length == 0){
+        isValid = false;
+        break;
+      }
+    }
+
+    if(isValid){
+      Get.dialog(
+        AlertDialog(
+          title: const Text(
+            'Attention',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
           ),
-          TextButton(
-            child: const Text(
-              "OK",
-              style: TextStyle(fontWeight: FontWeight.bold),
+          content: const Text('Apakah benar anda ingin menambahkan foto JO ini?'),
+          actions: [
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () => Get.back(),
             ),
-            onPressed: () {
-              sendActivityDailyPhotoV2();
-              Get.back();
-              Get.back();
-            },
-          ),
-        ],
-      ),
-    );
+            TextButton(
+              child: const Text(
+                "OK",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onPressed: () {
+                sendActivityDailyPhotoV2();
+                Get.back();
+                Get.back();
+              },
+            ),
+          ],
+        ),
+      );
+    }else{
+      openDialog("Attenction", "Photo belum diambil"); // modified attention
+    }
+
   }
 
   void previewImage(int index, String photo, String desc, TDJoInspectionPict pict) async {
@@ -2204,9 +2215,9 @@ class JoDetailController extends BaseController {
     debugPrint("count input db ${success}");
     debugPrint("count input ui ${dailyActivityPhotos.value.length}");
     if (success == dailyActivityPhotosTemp.value.length) {
-      openDialog('Success', 'Foto berhasil dikirm');
+      //openDialog('Success', 'Foto berhasil dikirm');
       if (dataJoDetail.value.detail?.idStatusJo == 2 && activityList.value.isEmpty) {
-        changeStatusJoLocal();
+        await changeStatusJoLocal();
       }
       // changeStatusJo();
       getJoDailyPhotoV2();
@@ -2430,30 +2441,29 @@ class JoDetailController extends BaseController {
 
   void drawerDailyActivity5EditV2() {
     //ambil state 5
+    stageList.forEach((item) => {
+      debugPrint("data json ${item.toJson()}")
+    });
     TDJoInspectionActivityStages? filteredStage = stageList.value.firstWhere(
       (itemStage) => itemStage.mStatusinspectionstagesId == 5,
       orElse: () => TDJoInspectionActivityStages
           .new(), // Mengembalikan null jika tidak ditemukan
     );
-    debugPrint("print data stage 5 edit ${filteredStage.toJson()}");
+    debugPrint("print data stage 5 edit ${jsonEncode(filteredStage.toJson())}");
     if (filteredStage!.id! > 0) {
       idJoActStage = filteredStage!.id!;
       activity5List.value = activity5ListStages.value;
-      qtyController.text = filteredStage.actualQty ??
-          ''; //activity5List.value.first.actualQty ?? '';
-      uomController.text = filteredStage.uomName ??
-          ''; //dataJoDetail.value.detail!.uomName ?? '';
+      qtyController.text = filteredStage.actualQty ?? ''; //activity5List.value.first.actualQty ?? '';
+      uomController.text = filteredStage.uomName ?? ''; //dataJoDetail.value.detail!.uomName ?? '';
       if (filteredStage.activityVesel != null) {
-        vesselController.text = filteredStage.activityVesel?.vessel ??
-            ''; //activity5List.value.first.vessel ?? '';
+        vesselController.text = filteredStage.activityVesel?.vessel ?? ''; //activity5List.value.first.vessel ?? '';
       }
       List<TDJoInspectionActivity> listActivity =
           filteredStage.listActivity ?? [];
       if (listActivity.isNotEmpty) {
         idJoAct = listActivity!.first!.id!;
       }
-      List<TDJoInspectionActivityBarge> listbarge =
-          filteredStage.listActivityBarge ?? [];
+      List<TDJoInspectionActivityBarge> listbarge = filteredStage.listActivityBarge ?? [];
       if (listbarge.isNotEmpty) {
         barges.value = [];
         bargesCount = 0;
@@ -2478,6 +2488,7 @@ class JoDetailController extends BaseController {
       activity5TranshipmentList.value = [];
       List<TDJoInspectionActivityStagesTranshipment> listTranshipment =
           filteredStage.listActivityStageTranshipment ?? [];
+      debugPrint("json encode ${jsonEncode(filteredStage.listActivityStageTranshipment)}");
       if (listTranshipment.isNotEmpty) {
         activity5FormCount.value = 0;
         listTranshipment.forEach((iTranshipment) {
@@ -2554,6 +2565,7 @@ class JoDetailController extends BaseController {
                                   height: 16,
                                 ),
                                 TextFormField(
+                                  keyboardType: TextInputType.number,
                                   inputFormatters: [
                                     LengthLimitingTextInputFormatter(12),
                                     FilteringTextInputFormatter.allow(
@@ -2737,7 +2749,7 @@ class JoDetailController extends BaseController {
                                                     width: double.infinity,
                                                     child: Center(
                                                         child: Text(
-                                                      'Remove Barge',
+                                                      'Delete',
                                                       style: TextStyle(
                                                           color: Colors.white,
                                                           fontWeight:
@@ -2779,9 +2791,7 @@ class JoDetailController extends BaseController {
                                                 ),
                                               ),
                                               index ==
-                                                      (activity5FormCount
-                                                              .value -
-                                                          1)
+                                                      (activity5FormCount.value - 1)
                                                   ? Row(
                                                       children: [
                                                         InkWell(
@@ -3032,9 +3042,10 @@ class JoDetailController extends BaseController {
                           children: [
                             Expanded(
                               child: ElevatedButton(
-                                  onPressed: () {
+                                  onPressed: () async {
                                     checkActivity5List();
                                     Get.back();
+                                    await getJoDailyActivityLocalV2();
                                   },
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.white,
@@ -3360,12 +3371,12 @@ class JoDetailController extends BaseController {
                                         activityEndTime.text =
                                             await selectTime6(Get.context!);
                                       },
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Field wajib diisi!';
-                                        }
-                                        return null;
-                                      },
+                                      // validator: (value) {
+                                      //   if (value == null || value.isEmpty) {
+                                      //     return 'Field wajib diisi!';
+                                      //   }
+                                      //   return null;
+                                      // },
                                       style:
                                           const TextStyle(color: onFocusColor),
                                       decoration: InputDecoration(
@@ -3379,7 +3390,7 @@ class JoDetailController extends BaseController {
                                             borderRadius:
                                                 BorderRadius.circular(12),
                                           ),
-                                          labelText: 'End Time*',
+                                          labelText: 'End Time',
                                           floatingLabelStyle: const TextStyle(
                                               color: onFocusColor),
                                           fillColor: onFocusColor),
@@ -3838,9 +3849,11 @@ class JoDetailController extends BaseController {
                         children: [
                           Expanded(
                             child: ElevatedButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   checkActivity6List();
                                   Get.back();
+                                  await getJoDailyActivityLocalV2();
+
                                 },
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
@@ -4348,13 +4361,13 @@ class JoDetailController extends BaseController {
                                                   await selectTime(
                                                       Get.context!);
                                             },
-                                            validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty) {
-                                                return 'Field wajib diisi!';
-                                              }
-                                              return null;
-                                            },
+                                            // validator: (value) {
+                                            //   if (value == null ||
+                                            //       value.isEmpty) {
+                                            //     return 'Field wajib diisi!';
+                                            //   }
+                                            //   return null;
+                                            // },
                                             style: const TextStyle(
                                                 color: onFocusColor),
                                             decoration: InputDecoration(
@@ -4369,7 +4382,7 @@ class JoDetailController extends BaseController {
                                                   borderRadius:
                                                       BorderRadius.circular(12),
                                                 ),
-                                                labelText: 'End Time*',
+                                                labelText: 'End Time',
                                                 floatingLabelStyle:
                                                     const TextStyle(
                                                         color: onFocusColor),
@@ -4981,7 +4994,7 @@ class JoDetailController extends BaseController {
                                                   borderRadius:
                                                       BorderRadius.circular(12),
                                                 ),
-                                                labelText: 'End Time*',
+                                                labelText: 'End Time',
                                                 floatingLabelStyle:
                                                     const TextStyle(
                                                         color: onFocusColor),
@@ -5373,26 +5386,20 @@ class JoDetailController extends BaseController {
             onPressed: () => Get.back(),
           ),
           TextButton(
-            child: const Text(
-              "OK",
+            child: const Text("OK",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             onPressed: () async {
-              //var result = await addActivityStages();
               bool result = await saveActivityStageV2();
-
               if (result) {
                 Get.back();
                 Get.back();
                 await getJoDailyActivityLocalV2();
-                //openDialog("Success", "Activity Stage ${activityStage-1} berhasil ditambahkan");
                 if (activityStage == 1) {
-                  // changeStatusJo();
+                 await  changeStatusJoLocal();
                 }
               } else {
                 Get.back();
-                openDialog("Failed",
-                    "Activity Stage $activityStage masih kosong atau belum diinput");
               }
             },
           ),
@@ -5603,7 +5610,7 @@ class JoDetailController extends BaseController {
                                                   borderRadius:
                                                       BorderRadius.circular(12),
                                                 ),
-                                                labelText: 'End Time*',
+                                                labelText: 'End Time',
                                                 floatingLabelStyle:
                                                     const TextStyle(
                                                         color: onFocusColor),
@@ -5734,11 +5741,7 @@ class JoDetailController extends BaseController {
                                                                   ),
                                                                   InkWell(
                                                                     onTap: () {
-                                                                      debugPrint(
-                                                                          'Delete header');
-                                                                      deleteActivityHeaderV2(
-                                                                          stage!
-                                                                              .transDate!);
+                                                                      removeActivityByDateConfirm(stage!.transDate!, index, stage.mStatusinspectionstagesId!.toInt());
                                                                     },
                                                                     child: const ImageIcon(
                                                                         AssetImage("assets/icons/deleteStage.png"),
@@ -5840,10 +5843,9 @@ class JoDetailController extends BaseController {
                                                                                   )
                                                                               ),
                                                                               child: InkWell(
-                                                                                onTap:
-                                                                                    () {
-                                                                                  debugPrint('Hapus detail');
-                                                                                  deleteActivityDetailV2(stage!.transDate!, activity!.activity!);
+                                                                                onTap: () {debugPrint('Hapus detail');
+                                                                                  //deleteActivityDetailV2(stage!.transDate!, activity!.activity!);
+                                                                                  removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(), activity.activity ?? '');
                                                                                 },
                                                                                 child: const Icon(
                                                                                     Icons.remove,
@@ -6000,13 +6002,9 @@ class JoDetailController extends BaseController {
               bool result = await editActivityStagesV2();
               if (result) {
                 Get.back();
-                openDialog("Success",
-                    "Activity Stage ${activityStage} berhasil ditambahkan");
                 await getJoDailyActivityLocalV2();
               } else {
                 Get.back();
-                openDialog("Failed",
-                    "Activity Stage $activityStage masih kosong atau belum diinput");
               }
             },
           ),
@@ -6074,14 +6072,14 @@ class JoDetailController extends BaseController {
   }
 
   void cleanActivity() {
-    // activityList.value = [];
-    // activityListTextController.value = [];
-    // editActivityMode.value = false;
+    activityList.value = [];
+    activityListTextController.value = [];
+    editActivityMode.value = false;
     activityDate.text = '';
     activityStartTime.text = '';
     activityEndTime.text = '';
     activityText.text = '';
-    //stageListModal.value = [];
+    stageListModal.value = [];
   }
 
   // Activity 5 Inspection Functions
@@ -6219,11 +6217,8 @@ class JoDetailController extends BaseController {
   }
 
   void drawerDailyActivity5() {
-    debugPrint(
-        'jumlah barges controller saat ini: controller count ${bargesController.value.length}, barges count ${barges.value.length}, form barges count ${activity5Barges.value.length}');
-    qtyController.text = dataJoDetail.value.detail!.qty != null
-        ? dataJoDetail.value.detail!.qty.toString()
-        : '0';
+    debugPrint('jumlah barges controller saat ini: controller count ${bargesController.value.length}, barges count ${barges.value.length}, form barges count ${activity5Barges.value.length}');
+    qtyController.text = dataJoDetail.value.detail!.qty != null ? dataJoDetail.value.detail!.qty.toString() : '0';
     uomController.text = dataJoDetail.value.detail!.uomName ?? '';
     vesselController.text = dataJoDetail.value.detail!.vessel ?? '';
     if (activity5TranshipmentList.value.isEmpty) {
@@ -6279,6 +6274,7 @@ class JoDetailController extends BaseController {
                                   height: 16,
                                 ),
                                 TextFormField(
+                                  keyboardType: TextInputType.number,
                                   inputFormatters: [
                                     LengthLimitingTextInputFormatter(12),
                                     FilteringTextInputFormatter.allow(
@@ -6578,14 +6574,13 @@ class JoDetailController extends BaseController {
                                           jettyListTextController.value.length >
                                                   0
                                               ? TextFormField(
-                                                  controller:
-                                                      jettyListTextController
-                                                          .value[index],
+                                                  controller: jettyListTextController.value[index],
                                                   cursorColor: onFocusColor,
                                                   onChanged: (value) {
                                                     editActivity5Transhipment(
                                                         index);
                                                   },
+
                                                   style: const TextStyle(
                                                       color: onFocusColor),
                                                   decoration: InputDecoration(
@@ -6869,12 +6864,9 @@ class JoDetailController extends BaseController {
                 Get.back();
                 cleanActivity5();
                 Get.back();
-                getJoDailyActivityLocalV2();
-                //openDialog("Success", "Activity Stage ${activityStage-1} berhasil ditambahkan");
+                await getJoDailyActivityLocalV2();
               } else {
                 Get.back();
-                openDialog("Failed",
-                    "Activity Stage $activityStage masih kosong atau belum diinput");
               }
             },
           ),
@@ -6981,11 +6973,8 @@ class JoDetailController extends BaseController {
                 cleanActivity5();
                 Get.back();
                 await getJoDailyActivityLocalV2();
-                //openDialog("Success", "Activity Stage ${activityStage-1} berhasil ditambahkan");
               } else {
                 Get.back();
-                openDialog("Failed",
-                    "Activity Stage $activityStage masih kosong atau belum diinput");
               }
             },
           ),
@@ -7404,12 +7393,12 @@ class JoDetailController extends BaseController {
                                         activityEndTime.text =
                                             await selectTime6(Get.context!);
                                       },
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Form wajib diisi!';
-                                        }
-                                        return null;
-                                      },
+                                      // validator: (value) {
+                                      //   if (value == null || value.isEmpty) {
+                                      //     return 'Form wajib diisi!';
+                                      //   }
+                                      //   return null;
+                                      // },
                                       style:
                                           const TextStyle(color: onFocusColor),
                                       decoration: InputDecoration(
@@ -7423,7 +7412,7 @@ class JoDetailController extends BaseController {
                                             borderRadius:
                                                 BorderRadius.circular(12),
                                           ),
-                                          labelText: 'End Time*',
+                                          labelText: 'End Time',
                                           floatingLabelStyle: const TextStyle(
                                               color: onFocusColor),
                                           fillColor: onFocusColor),
@@ -8176,8 +8165,6 @@ class JoDetailController extends BaseController {
                 await getJoDailyActivity6AttachmentLocal();
               } else {
                 Get.back();
-                openDialog("Failed",
-                    "Activity Stage $activityStage masih kosong atau belum diinput");
               }
             },
           ),
@@ -8215,8 +8202,6 @@ class JoDetailController extends BaseController {
                 await getJoDailyActivity6AttachmentLocal();
               } else {
                 Get.back();
-                openDialog("Failed",
-                    "Activity Stage $activityStage masih kosong atau belum diinput");
               }
             },
           ),
