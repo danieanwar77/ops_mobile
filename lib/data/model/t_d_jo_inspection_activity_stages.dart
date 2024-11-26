@@ -235,6 +235,7 @@ class TDJoInspectionActivityStages {
     map['is_active'] = _isActive;
     map['is_upload'] = _isUpload;
     map['remarks'] = _remarks;
+    map['actual_qty'] = _actualQty;
    // map['created_by'] = _createdBy;
     map['updated_by'] = _updatedBy;
     //map['created_at'] = _createdAt;
