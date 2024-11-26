@@ -49,6 +49,7 @@ class DocumentsController extends BaseController {
     statusJo.value = arguments['status'] ?? 0;
     update();
     debugPrint('document type : ${documentType.value}');
+    debugPrint('id jo: ${idJo.value}');
     drawerAddDocument(documentType.value);
   }
 
@@ -266,6 +267,9 @@ class DocumentsController extends BaseController {
                             controller: documentCertificateNumber,
                             cursorColor: onFocusColor,
                             style: const TextStyle(color: onFocusColor),
+                            inputFormatters: [
+                              new LengthLimitingTextInputFormatter(50),
+                            ],
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Field wajib diisi!';
@@ -298,6 +302,9 @@ class DocumentsController extends BaseController {
                               selectDate(Get.context!);
                             },
                             style: const TextStyle(color: onFocusColor),
+                            inputFormatters: [
+                              new LengthLimitingTextInputFormatter(42),
+                            ],
                             decoration: InputDecoration(
                                 suffixIcon: IconButton(
                                     onPressed: () {
@@ -331,6 +338,9 @@ class DocumentsController extends BaseController {
                             controller: documentCertificateBlanko,
                             cursorColor: onFocusColor,
                             style: const TextStyle(color: onFocusColor),
+                            inputFormatters: [
+                              new LengthLimitingTextInputFormatter(50),
+                            ],
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -358,6 +368,9 @@ class DocumentsController extends BaseController {
                             controller: documentCertificateLhv,
                             cursorColor: onFocusColor,
                             style: const TextStyle(color: onFocusColor),
+                            inputFormatters: [
+                              new LengthLimitingTextInputFormatter(50),
+                            ],
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -695,6 +708,9 @@ class DocumentsController extends BaseController {
                               selectDate(Get.context!);
                             },
                             style: const TextStyle(color: onFocusColor),
+                            inputFormatters: [
+                              new LengthLimitingTextInputFormatter(50),
+                            ],
                             decoration: InputDecoration(
                                 suffixIcon: IconButton(
                                     onPressed: () {
@@ -728,6 +744,9 @@ class DocumentsController extends BaseController {
                             controller: documentCertificateBlanko,
                             cursorColor: onFocusColor,
                             style: const TextStyle(color: onFocusColor),
+                            inputFormatters: [
+                              new LengthLimitingTextInputFormatter(50),
+                            ],
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -755,6 +774,9 @@ class DocumentsController extends BaseController {
                             controller: documentCertificateLhv,
                             cursorColor: onFocusColor,
                             style: const TextStyle(color: onFocusColor),
+                            inputFormatters: [
+                              new LengthLimitingTextInputFormatter(50),
+                            ],
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -782,6 +804,9 @@ class DocumentsController extends BaseController {
                             controller: documentCertificateLs,
                             cursorColor: onFocusColor,
                             style: const TextStyle(color: onFocusColor),
+                            inputFormatters: [
+                              new LengthLimitingTextInputFormatter(50),
+                            ],
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -1347,6 +1372,49 @@ class DocumentsController extends BaseController {
             't_d_jo_finalize_laboratory',  // Nama tabel
             tdJoDocumentLab.toJson()
         );
+      }
+    }
+
+    var checkFinalize = await db.rawQuery('''
+      SELECT pic_inspector, pic_laboratory, inspection_finished_date, laboratory_finished_date FROM t_h_jo where id = ${idJo.value}
+    ''');
+    Future.delayed(Duration(milliseconds: 200));
+
+    if((checkFinalize.first['pic_inspector'] != null && checkFinalize.first['pic_laboratory'] == null) && (checkFinalize.first['inspection_finished_date'] == null && checkFinalize.first['laboratory_finished_date'] == null) ){
+      try{
+        await db.execute('''
+            UPDATE t_h_jo
+            SET inspection_completed_date = '${'${DateTime.now().toString()}'}', m_statusjo_id = 5
+            WHERE id = ${idJo.value};
+          ''');
+      } catch(e){
+        debugPrint(e.toString());
+      } finally {
+        update();
+      }
+    } else if((checkFinalize.first['pic_inspector'] == null && checkFinalize.first['pic_laboratory'] != null) && (checkFinalize.first['inspection_finished_date'] == null && checkFinalize.first['laboratory_finished_date'] == null)){
+      try{
+        await db.execute('''
+            UPDATE t_h_jo
+            SET laboratory_completed_date = '${DateTime.now().toString()}', m_statusjo_id = 5
+            WHERE id = ${idJo.value};
+          ''');
+      } catch(e){
+        debugPrint(e.toString());
+      } finally {
+        update();
+      }
+    } else if((checkFinalize.first['pic_inspector'] == null && checkFinalize.first['pic_laboratory'] == null) && (checkFinalize.first['inspection_finished_date'] == null && checkFinalize.first['laboratory_finished_date'] == null)){
+      try{
+        await db.execute('''
+            UPDATE t_h_jo
+            SET inspection_completed_date = '${'${DateTime.now().toString()}'}', laboratory_completed_date = '${DateTime.now().toString()}', m_statusjo_id = 5
+            WHERE id = ${idJo.value};
+          ''');
+      } catch(e){
+        debugPrint(e.toString());
+      } finally {
+        update();
       }
     }
     // Get.back();

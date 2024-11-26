@@ -4881,15 +4881,13 @@ class JoWaitingScreen extends StatelessWidget {
                                       child: Padding(
                                         padding:
                                         const EdgeInsets.all(18),
-                                        child: Expanded(
-                                          child: Text(
-                                            'Inspection Certificate',
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight:
-                                                FontWeight.w700,
-                                                color: primaryColor),
-                                          ),
+                                        child: Text(
+                                          'Inspection Certificate',
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight:
+                                              FontWeight.w700,
+                                              color: primaryColor),
                                         ),
                                       ),
                                     ),
@@ -5283,15 +5281,13 @@ class JoWaitingScreen extends StatelessWidget {
                                       child: Padding(
                                         padding:
                                         const EdgeInsets.all(18),
-                                        child: Expanded(
-                                          child: Text(
-                                            'Laboratory Certificate',
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight:
-                                                FontWeight.w700,
-                                                color: primaryColor),
-                                          ),
+                                        child: Text(
+                                          'Laboratory Certificate',
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight:
+                                              FontWeight.w700,
+                                              color: primaryColor),
                                         ),
                                       ),
                                     ),
