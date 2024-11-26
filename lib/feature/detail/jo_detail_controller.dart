@@ -1,12 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:isolate';
-import 'dart:typed_data';
 
 import 'package:external_path/external_path.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,8 +26,6 @@ import 'package:ops_mobile/data/model/jo_list_daily_activity_lab5.dart';
 import 'package:ops_mobile/data/model/jo_pic_model.dart';
 import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
-import 'package:ops_mobile/data/model/response_jo_insert_activity.dart';
-import 'package:ops_mobile/data/model/response_jo_insert_activity5.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_barge.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages.dart';
@@ -38,7 +33,6 @@ import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages_tranship
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_vessel.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_attachment.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_pict.dart';
-import 'package:ops_mobile/data/respository/repository.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/lab_activity_detail/lab_activity_detail_screen.dart';
@@ -105,7 +99,7 @@ class JoDetailController extends BaseController {
   // Activity Inspection Photo Variables & Temporary
   RxList<File> dailyActivityPhotos = RxList();
   RxList<TDJoInspectionPict> dailyActivityPhotosV2 = RxList();
-  RxList<File> dailyActivityPhotosTemp = RxList();
+  RxList<String> dailyActivityPhotosTemp = RxList();
   RxList<String> dailyActivityPhotosDescText = RxList();
   RxList<String> dailyActivityPhotosDescTextTemp = RxList();
   RxList<TextEditingController> dailyActivityPhotosDesc = RxList();
@@ -182,10 +176,10 @@ class JoDetailController extends BaseController {
   //Rx<File> activityPreviewFoto = Rx(File(''));
 
   @override
-  void onInit() async {
+  Future<void> onInit() async {
     // var user = jsonDecode(await StorageCore().storage.read('user'));
     // debugPrint('data user: ${user}');
-    var dataUser = jsonDecode(await StorageCore().storage.read('user'));
+    final dataUser = jsonDecode(await StorageCore().storage.read('user'));
     userData.value = Data(
         id: dataUser.first['id'],
         fullname: dataUser.first['fullname'],
@@ -197,14 +191,14 @@ class JoDetailController extends BaseController {
         superior: dataUser.first['superior_id'].toString());
     debugPrint('data user: ${jsonEncode(userData.value)}');
 
-    var argument = await Get.arguments;
+    final argument = await Get.arguments;
     id = argument['id'];
     statusId = argument['status'];
-    isLoadingJO == true;
+    isLoadingJO = true;
     // final data = await SqlHelper.getDetailJo(id);
     // debugPrint('data detail : ${jsonEncode(data)}');
     //await getJoDetailLocal();
-    isLoadingJO == false;
+    isLoadingJO = false;
     searchLabText.addListener(searchLab);
     update();
     await getData();
@@ -237,34 +231,34 @@ class JoDetailController extends BaseController {
       if(Get.context?.mounted ?? false){
 
         joDetailTab = [
-          Tab(
+          const Tab(
             text: 'Detail',
           ),
-          Tab(
+          const Tab(
             text: 'KOS',
           ),
-          Tab(
+          const Tab(
             text: 'PIC',
           ),
-          Tab(
+          const Tab(
             text: 'Progress & Daily Activity',
           ),
         ];
 
         joWaitingTab = [
-          Tab(
+          const Tab(
             text: 'Detail',
           ),
-          Tab(
+          const Tab(
             text: 'KOS',
           ),
-          Tab(
+          const Tab(
             text: 'PIC',
           ),
-          Tab(
+          const Tab(
             text: 'Progress & Daily Activity',
           ),
-          Tab(
+          const Tab(
             text: 'Document - Inspection',
           ),
         ];
@@ -272,77 +266,77 @@ class JoDetailController extends BaseController {
       update();
     } else if (picInspector == 0 && picLaboratory != '0') {
       joDetailTab = [
-        Tab(
+        const Tab(
           text: 'Detail',
         ),
-        Tab(
+        const Tab(
           text: 'KOS',
         ),
-        Tab(
+        const Tab(
           text: 'PIC',
         ),
-        Tab(
+        const Tab(
           text: 'Laboratory Progress',
         ),
       ];
 
       joWaitingTab = [
-        Tab(
+        const Tab(
           text: 'Detail',
         ),
-        Tab(
+        const Tab(
           text: 'KOS',
         ),
-        Tab(
+        const Tab(
           text: 'PIC',
         ),
-        Tab(
+        const Tab(
           text: 'Laboratory Progress',
         ),
-        Tab(
+        const Tab(
           text: 'Document - Laboratory',
         ),
       ];
       update();
     } else if (picInspector != '0' && picLaboratory != '0') {
       joDetailTab = [
-        Tab(
+        const Tab(
           text: 'Detail',
         ),
-        Tab(
+        const Tab(
           text: 'KOS',
         ),
-        Tab(
+        const Tab(
           text: 'PIC',
         ),
-        Tab(
+        const Tab(
           text: 'Progress & Daily Activity',
         ),
-        Tab(
+        const Tab(
           text: 'Laboratory Progress',
         ),
       ];
 
       joWaitingTab = [
-        Tab(
+        const Tab(
           text: 'Detail',
         ),
-        Tab(
+        const Tab(
           text: 'KOS',
         ),
-        Tab(
+        const Tab(
           text: 'PIC',
         ),
-        Tab(
+        const Tab(
           text: 'Progress & Daily Activity',
         ),
-        Tab(
+        const Tab(
           text: 'Laboratory Progress',
         ),
-        Tab(
+        const Tab(
           text: 'Document - Inspection',
         ),
-        Tab(
+        const Tab(
           text: 'Document - Laboratory',
         ),
       ];
@@ -358,7 +352,7 @@ class JoDetailController extends BaseController {
     // await getJoDailyActivity6();
     // await getJoDailyActivityLab();
     // await getJoDailyActivityLab5();
-    isLoadingJO == false;
+    isLoadingJO = false;
     update();
   }
 
@@ -826,15 +820,23 @@ class JoDetailController extends BaseController {
     }
   }
 
-  void adddailyActivityPhotos(File foto, String desc) {
-    dailyActivityPhotosTemp.value.add(foto);
-    dailyActivityPhotosDescTextTemp.value.add(desc);
+  void adddailyActivityPhotos(int index, File foto, String desc) {
+    dailyActivityPhotosTemp.value[index] = foto.path;
+    dailyActivityPhotosDescTextTemp.value[index] = desc;
   }
 
   void adddailyActivityPhotoForm() {
     adddailyActivityPhotosCount.value++;
+    dailyActivityPhotosTemp.value.add('');
     dailyActivityPhotosDescTemp.value.add(TextEditingController());
     dailyActivityPhotosDescTextTemp.value.add('');
+  }
+
+  void removePhotoActivityByIndex(int index) {
+    dailyActivityPhotosTemp.value.removeAt(index);
+    dailyActivityPhotosDescTemp.value.removeAt(index);
+    dailyActivityPhotosDescTextTemp.value.removeAt(index);
+    adddailyActivityPhotosCount.value--;
   }
 
   void removePhotoActivity() {
@@ -842,7 +844,6 @@ class JoDetailController extends BaseController {
     dailyActivityPhotosDescTemp.value.removeLast();
     dailyActivityPhotosDescTextTemp.value.removeLast();
     adddailyActivityPhotosCount.value--;
-    update();
   }
 
   void editPhotoActivityDesc(int index, String desc) {
@@ -877,19 +878,22 @@ class JoDetailController extends BaseController {
   }
 
   void drawerDailyActivityImage() {
-    if (dailyActivityPhotosDescTemp.value.isEmpty) {
+
+      dailyActivityPhotosTemp.value.add('');
       adddailyActivityPhotosCount.value++;
       dailyActivityPhotosDescTemp.value.add(TextEditingController());
       dailyActivityPhotosDescTextTemp.value.add('');
-    }
+
+      debugPrint('count photo form: ${adddailyActivityPhotosCount.value} ');
+
     Get.bottomSheet(
         GetBuilder(
           init: JoDetailController(),
           builder: (controller) => Container(
-              margin: EdgeInsets.only(top: 48),
-              padding: EdgeInsets.all(24),
+              margin: const EdgeInsets.only(top: 48),
+              padding: const EdgeInsets.all(24),
               width: double.infinity,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                       topRight: Radius.circular(24),
@@ -897,7 +901,7 @@ class JoDetailController extends BaseController {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Add JO Photos',
                     style: TextStyle(
                         fontSize: 16,
@@ -916,23 +920,40 @@ class JoDetailController extends BaseController {
                             ListView.builder(
                                 padding: EdgeInsets.zero,
                                 shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
+                                physics: const NeverScrollableScrollPhysics(),
                                 itemCount: adddailyActivityPhotosCount.value,
                                 itemBuilder: (context, index) {
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text('Photo ${index + 1}'),
-                                      const SizedBox(
-                                        height: 8,
-                                      ),
-                                      index <
-                                              dailyActivityPhotosTemp
-                                                  .value.length
-                                          ? InkWell(
+                                  return Form(
+                                    key: _formKey,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text('Photo ${index + 1}'),
+                                            SizedBox(width:8),
+                                            index > 0 ? InkWell(
+                                              onTap:
+                                                  () {
+                                                    removePhotoActivityByIndex(index);
+                                                debugPrint('Delete index');
+                                              },
+                                              child: const ImageIcon(
+                                                  AssetImage("assets/icons/deleteStage.png"),
+                                                  color: Colors.red,
+                                                  size: 16
+                                              ),
+                                            ) : const SizedBox(),
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 8,
+                                        ),
+                                        dailyActivityPhotosTemp.value[index] != ''
+                                            ? InkWell(
                                               onTap: () async {
-                                                inspectionMediaPickerConfirmEdit(
+                                                inspectionMediaPickerConfirm(
                                                     index);
                                               },
                                               child: ClipRRect(
@@ -940,82 +961,93 @@ class JoDetailController extends BaseController {
                                                 child: Image.file(
                                                   height: 72,
                                                   width: 72,
-                                                  dailyActivityPhotosTemp
-                                                      .value[index],
+                                                  File(dailyActivityPhotosTemp
+                                                      .value[index]),
                                                   fit: BoxFit.fill,
                                                 ),
                                               ))
-                                          : InkWell(
-                                              onTap: () async {
-                                                inspectionMediaPickerConfirm(
-                                                    index);
-                                              },
-                                              child: Container(
-                                                height: 54,
-                                                width: 54,
-                                                decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                        color: primaryColor),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8)),
-                                                child: Center(
-                                                  child: Icon(
-                                                    Icons.camera_alt_sharp,
-                                                    color: primaryColor,
+                                            : InkWell(
+                                                onTap: () async {
+                                                  inspectionMediaPickerConfirm(
+                                                      index);
+                                                },
+                                                child: Container(
+                                                  height: 54,
+                                                  width: 54,
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          color: primaryColor),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8)),
+                                                  child: const Center(
+                                                    child: Icon(
+                                                      Icons.camera_alt_sharp,
+                                                      color: primaryColor,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                      const SizedBox(
-                                        height: 16,
-                                      ),
-                                      TextFormField(
-                                        controller: dailyActivityPhotosDescTemp
-                                            .value[index],
-                                        onChanged: (value) {
-                                          editPhotoActivityDesc(index, value);
-                                        },
-                                        cursorColor: onFocusColor,
-                                        style: const TextStyle(
-                                            color: onFocusColor),
-                                        decoration: InputDecoration(
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide: const BorderSide(
+                                        const SizedBox(
+                                          height: 16,
+                                        ),
+                                        TextFormField(
+                                          controller: dailyActivityPhotosDescTemp
+                                              .value[index],
+                                          onChanged: (value) {
+                                            editPhotoActivityDesc(index, value);
+                                          },
+                                          validator: (value) {
+                                            if (value == null || value.isEmpty) {
+                                              return 'Deskripsi wajib diisi!';
+                                            }
+                                            return null;
+                                          },
+                                          cursorColor: onFocusColor,
+                                          style: const TextStyle(
+                                              color: onFocusColor),
+                                          inputFormatters: [
+                                            new LengthLimitingTextInputFormatter(150),
+                                          ],
+                                          decoration: InputDecoration(
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: const BorderSide(
+                                                    color: onFocusColor),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              labelText: 'Description',
+                                              floatingLabelStyle: const TextStyle(
                                                   color: onFocusColor),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            labelText: 'Description',
-                                            floatingLabelStyle: const TextStyle(
-                                                color: onFocusColor),
-                                            fillColor: onFocusColor),
-                                      ),
-                                      const SizedBox(
-                                        height: 16,
-                                      ),
-                                    ],
+                                              fillColor: onFocusColor),
+                                        ),
+                                        const SizedBox(
+                                          height: 16,
+                                        ),
+                                      ],
+                                    ),
                                   );
                                 }),
                             Row(
                               children: [
                                 InkWell(
                                   onTap: () {
+
                                     adddailyActivityPhotoForm();
                                     update();
                                   },
                                   child: Container(
-                                    margin: EdgeInsets.only(right: 8),
+                                    margin: const EdgeInsets.only(right: 8),
                                     height: 42,
                                     width: 42,
                                     decoration: BoxDecoration(
                                         color: primaryColor,
                                         borderRadius: BorderRadius.circular(8)),
-                                    child: Center(
+                                    child: const Center(
                                       child: Icon(
                                         Icons.add,
                                         color: Colors.white,
@@ -1035,7 +1067,7 @@ class JoDetailController extends BaseController {
                                               color: Colors.red,
                                               borderRadius:
                                                   BorderRadius.circular(8)),
-                                          child: Center(
+                                          child: const Center(
                                             child: Icon(
                                               Icons.remove,
                                               color: Colors.white,
@@ -1067,13 +1099,13 @@ class JoDetailController extends BaseController {
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
-                                    side: BorderSide(color: primaryColor),
+                                    side: const BorderSide(color: primaryColor),
                                     borderRadius: BorderRadius.circular(12))),
                             child: Container(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 12),
                                 width: double.infinity,
-                                child: Center(
+                                child: const Center(
                                     child: Text(
                                   'Cancel',
                                   style: TextStyle(
@@ -1088,7 +1120,12 @@ class JoDetailController extends BaseController {
                       Expanded(
                         child: ElevatedButton(
                             onPressed: () {
-                              addActivityDailyPhotoConfirm();
+                              if (_formKey.currentState!.validate()) {
+                                if (editActivityMode.value == false) {
+                                  addActivityDailyPhotoConfirm();
+                                }
+                              }
+
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: primaryColor,
@@ -1098,7 +1135,7 @@ class JoDetailController extends BaseController {
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 12),
                                 width: double.infinity,
-                                child: Center(
+                                child: const Center(
                                     child: Text(
                                   'Submit',
                                   style: TextStyle(
@@ -1121,12 +1158,12 @@ class JoDetailController extends BaseController {
   void addActivityDailyPhotoConfirm() {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Attention',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Apakah benar anda ingin menambahkan foto JO ini?'),
+        content: const Text('Apakah benar anda ingin menambahkan foto JO ini?'),
         actions: [
           TextButton(
             child: const Text("Cancel"),
@@ -1176,7 +1213,7 @@ class JoDetailController extends BaseController {
                     onTap: () {
                       deleteActivityDailyPhotoConfirm(pict!.id!.toInt());
                     },
-                    child: Icon(
+                    child: const Icon(
                       Icons.delete_forever,
                       color: Colors.red,
                     ),
@@ -1186,7 +1223,7 @@ class JoDetailController extends BaseController {
                     onPressed: () {
                       Get.back();
                     },
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                   )
                 ],
               ),
@@ -1225,6 +1262,9 @@ class JoDetailController extends BaseController {
                                             controller: dailyActivityPhotosDescEdit.value,
                                             cursorColor: onFocusColor,
                                             style: const TextStyle(color: onFocusColor),
+                            inputFormatters: [
+                              new LengthLimitingTextInputFormatter(150),
+                            ],
                                             decoration: InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -1249,9 +1289,11 @@ class JoDetailController extends BaseController {
                     dataJoDetail.value.detail?.statusJo == 'On Progres'
                     ? ElevatedButton(
                     onPressed: () {
-                      editPhotoActivityDescV2(index, pict!.id!.toInt(),
+                      updateActivityDailyPhotoConfirm(index, pict!.id!.toInt(),
                           dailyActivityPhotosDescEdit.value.text);
-                      Get.back();
+                      // editPhotoActivityDescV2(index, pict!.id!.toInt(),
+                      //     dailyActivityPhotosDescEdit.value.text);
+
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: primaryColor,
@@ -1260,7 +1302,7 @@ class JoDetailController extends BaseController {
                     child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         width: double.infinity,
-                        child: Center(
+                        child: const Center(
                             child: Text(
                               'Save',
                               style: TextStyle(
@@ -1279,13 +1321,13 @@ class JoDetailController extends BaseController {
   void updateActivityConfirm(File foto, int index, String desc) {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Attention',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
         content:
-            Text('Apakah benar anda ingin menyimpan perubahan foto JO ini?'),
+            const Text('Apakah benar anda ingin menyimpan perubahan foto JO ini?'),
         actions: [
           TextButton(
             child: const Text("Close"),
@@ -1316,12 +1358,12 @@ class JoDetailController extends BaseController {
   void deleteActivityDailyPhotoConfirm(int id) {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Attention',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Apakah benar anda ingin menghapus foto JO ini?'),
+        content: const Text('Apakah benar anda ingin menghapus foto JO ini?'),
         actions: [
           TextButton(
             child: const Text("Cancel"),
@@ -1353,12 +1395,12 @@ class JoDetailController extends BaseController {
   Future inspectionMediaPickerConfirm(int index) async {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Photo Attachment',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Pilih sumber foto yang ingin dilampirkan.'),
+        content: const Text('Pilih sumber foto yang ingin dilampirkan.'),
         actions: [
           Row(
             children: [
@@ -1371,14 +1413,14 @@ class JoDetailController extends BaseController {
                         onPressed: () async {
                           Get.back();
                           var file = await cameraImage();
-                          adddailyActivityPhotos(file, '');
+                          adddailyActivityPhotos(index, file, '');
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                                side: BorderSide(color: primaryColor),
+                                side: const BorderSide(color: primaryColor),
                                 borderRadius: BorderRadius.circular(12))),
-                        child: Center(
+                        child: const Center(
                             child: Icon(
                           Icons.camera_alt,
                           color: primaryColor,
@@ -1395,14 +1437,15 @@ class JoDetailController extends BaseController {
                         onPressed: () async {
                           Get.back();
                           var file = await pickImage();
-                          adddailyActivityPhotos(file, '');
+                          debugPrint('file yang mau diinput: ${file.path}');
+                          adddailyActivityPhotos(index, file, '');
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                                side: BorderSide(color: primaryColor),
+                                side: const BorderSide(color: primaryColor),
                                 borderRadius: BorderRadius.circular(12))),
-                        child: Center(
+                        child: const Center(
                             child: Icon(
                           Icons.folder_rounded,
                           color: primaryColor,
@@ -1420,12 +1463,12 @@ class JoDetailController extends BaseController {
   Future inspectionMediaPickerConfirmEdit(int index) async {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Photo Attachment',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Pilih sumber foto yang ingin dilampirkan.'),
+        content: const Text('Pilih sumber foto yang ingin dilampirkan.'),
         actions: [
           Row(
             children: [
@@ -1443,9 +1486,9 @@ class JoDetailController extends BaseController {
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                                side: BorderSide(color: primaryColor),
+                                side: const BorderSide(color: primaryColor),
                                 borderRadius: BorderRadius.circular(12))),
-                        child: Center(
+                        child: const Center(
                             child: Icon(
                           Icons.camera_alt,
                           color: primaryColor,
@@ -1467,9 +1510,9 @@ class JoDetailController extends BaseController {
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                                side: BorderSide(color: primaryColor),
+                                side: const BorderSide(color: primaryColor),
                                 borderRadius: BorderRadius.circular(12))),
-                        child: Center(
+                        child: const Center(
                             child: Icon(
                           Icons.folder_rounded,
                           color: primaryColor,
@@ -1487,12 +1530,12 @@ class JoDetailController extends BaseController {
   Future inspectionMediaPreviewPickerConfirmEdit(int index) async {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Photo Attachment',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Pilih sumber foto yang ingin dilampirkan.'),
+        content: const Text('Pilih sumber foto yang ingin dilampirkan.'),
         actions: [
           Row(
             children: [
@@ -1519,9 +1562,9 @@ class JoDetailController extends BaseController {
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                                side: BorderSide(color: primaryColor),
+                                side: const BorderSide(color: primaryColor),
                                 borderRadius: BorderRadius.circular(12))),
-                        child: Center(
+                        child: const Center(
                             child: Icon(
                           Icons.camera_alt,
                           color: primaryColor,
@@ -1549,9 +1592,9 @@ class JoDetailController extends BaseController {
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                                side: BorderSide(color: primaryColor),
+                                side: const BorderSide(color: primaryColor),
                                 borderRadius: BorderRadius.circular(12))),
-                        child: Center(
+                        child: const Center(
                             child: Icon(
                           Icons.folder_rounded,
                           color: primaryColor,
@@ -1571,7 +1614,7 @@ class JoDetailController extends BaseController {
   Future<void> selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
-        firstDate: DateTime.now().subtract(Duration(days: 1)),
+        firstDate: DateTime.now().subtract(const Duration(days: 1)),
         lastDate: DateTime(
             DateTime.now().year, DateTime.now().month, DateTime.now().day + 1));
     if (picked != null) {
@@ -1937,193 +1980,193 @@ class JoDetailController extends BaseController {
     }
   }
 
-  Future<bool> editActivity6StagesV2() async {
-    try {
-      final db = await SqlHelper.db();
-      //List<TDJoInspectionActivityStages> stages = stageListModal.value;
-      final createdBy = userData.value!.id;
-
-      var stageCount = 0;
-      stageListModal.value.forEach((item){
-        debugPrint('nyang mau di update stagenya: ${jsonEncode(item)}');
-      });
-
-      activity6Attachments.value.forEach((item){
-        debugPrint('nyang mau di update attachnya: ${jsonEncode(item)}');
-      });
-
-      List<String> stageValues = [];
-      List<String> activityValues = [];
-      List<Map<String,dynamic>> attachmentValues = [];
-      List<int> attachmentUpdate = [];
-
-      stageListModal.value.asMap().forEach((index,stage){
-        stageCount++;
-        stageValues.add('''(${stage.id},${id},6,'${stage.transDate}','${activityListTextController.value[index].text}',$createdBy,${stage.id != null ? stage.createdBy : null},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','${stage.id != null ? DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()) : null}','JOIAST-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$stageCount',1,0)''');
-        update();
-        if(stage.listActivity!.isNotEmpty){
-          var count = 0;
-          stage.listActivity!.forEach((activity){
-            count++;
-            activityValues.add('''(${activity.id?.toInt() == DateTime.now().millisecondsSinceEpoch ? null : activity.id},$id,(SELECT id FROM t_d_jo_inspection_activity_stages WHERE trans_date = '${stage.transDate}' AND m_statusinspectionstages_id = 6 LIMIT 1),'${activity.startActivityTime}','${activity.endActivityTime}','${activity.activity}','JOIAS-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$count',1,0,${createdBy},${activity.id != null ? createdBy : null},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}', '${activity.id != null ? DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()) : null}')''');
-            update();
-          });
-        }
-      });
-
-      if(activity6Attachments.value.isNotEmpty){
-        var count = 0;
-        activity6Attachments.value.forEach((attachment){
-          count++;
-          attachmentValues.add({
-          'id': attachment.id ?? null,
-          't_h_jo_id' : id,
-          't_d_jo_inspection_activity_stages_id' : null,
-          'path_name' : attachment.pathName,
-          'file_name' : attachment.fileName,
-          'code' : attachment.code ?? 'JOIAF-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$count',
-          'is_active' : attachment.isActive,
-          'is_upload' : attachment.isUpload,
-          'created_by' : attachment.createdBy,
-          'updated_by' : attachment.id == null ? null : createdBy,
-          'created_at' : attachment.createdAt,
-          'updated_at' : attachment.id == null ? null : DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()).toString(),
-          });
-          // attachmentValues.add('''($id,'${attachment.pathName}','${attachment.fileName}','JOIAF-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$count',1,0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
-          // update();
-        });
-      }
-
-      debugPrint("stage join: ${stageValues.join(',')}");
-      debugPrint("activity join: ${activityValues.join(',')}");
-      debugPrint("attachment join: ${jsonEncode(attachmentValues)}");
-
-      await SqlHelper.updateInspectionActivity6(stageValues.join(','), activityValues.join(','), attachmentValues, id);
-
-      debugPrint('activity lab saat ini : ${activityStage}');
-      update();
-
-      //deactive semua aktifitas dan stagenya
-      // update table t_d_jo_inspection_activity_stages set is_active =0 berdasarkan thjoid dan transdate dan mStatusinspectionstagesId
-      // int result = await db.update(
-      //   't_d_jo_inspection_activity_stages',
-      //   {'is_active': 0}, // The new value for the is_active field
-      //   where: 't_h_jo_id = ?  AND m_statusinspectionstages_id = ?',
-      //   whereArgs: [id, activityStage],
-      // );
-      //
-      // //debugPrint("data input edit deactive ${result} ${id} ${statusId}");
-      // debugPrint("data input edit remarks ${activityListTextController.value}");
-      //
-      // stages.asMap().forEach((index, stage) async {
-      //   debugPrint("data input edit ${jsonEncode(stage.toJson())}");
-      //   if (stage.id != null) {
-      //     TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
-      //         isUpload: "0",
-      //         isActive: "1",
-      //         updatedBy: userData.value!.id.toString(),
-      //         updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-      //         remarks: activityListTextController.value[index].text);
-      //
-      //     int updated = await db.update(
-      //       't_d_jo_inspection_activity_stages',
-      //       data.toEdit(),
-      //       where: 'id = ? ',
-      //       whereArgs: [stage.id],
-      //     );
-      //
-      //     //inactive detail
-      //     int detail = await db.update(
-      //       't_d_jo_inspection_activity',
-      //       {'is_active': 0}, // The new value for the is_active field
-      //       where: 't_d_jo_inspection_activity_stages_id = ?',
-      //       whereArgs: [stage.id],
-      //     );
-      //     List<TDJoInspectionActivity> listActivity = stage.listActivity ?? [];
-      //     listActivity.forEach((activity) async {
-      //       if (activity.code != null) {
-      //         //Update
-      //         TDJoInspectionActivity detail = TDJoInspectionActivity(
-      //             startActivityTime: activity.startActivityTime,
-      //             endActivityTime: activity.endActivityTime,
-      //             activity: activity.activity,
-      //             isActive: 1,
-      //             isUpload: 0,
-      //             updatedAt:
-      //                 DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-      //             updatedBy: createdBy.toString());
-      //         update();
-      //         debugPrint('data yang update nya : ${jsonEncode(detail)}');
-      //
-      //         int updated = await db.update(
-      //           't_d_jo_inspection_activity',
-      //           detail.toEdit(),
-      //           where: 'id = ?',
-      //           whereArgs: [activity.id],
-      //         );
-      //         debugPrint("Print Edit ${activity.id} ${updated}");
-      //       } else {
-      //         //insert
-      //         TDJoInspectionActivity detail = TDJoInspectionActivity(
-      //             tHJoId: id,
-      //             tDJoInspectionActivityStagesId: stage.id,
-      //             startActivityTime: activity.startActivityTime,
-      //             endActivityTime: activity.endActivityTime,
-      //             activity: activity.activity,
-      //             code:
-      //                 'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
-      //             isActive: 1,
-      //             isUpload: 0,
-      //             createdAt:
-      //                 DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-      //             createdBy: createdBy);
-      //         int raw = await db.insert(
-      //             "t_d_jo_inspection_activity", detail.toInsert());
-      //         debugPrint("Print Edit ${activity.id} ${raw}");
-      //       }
-      //     });
-      //   } else {
-      //     TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
-      //       tHJoId: id,
-      //       mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
-      //       transDate: stage.transDate,
-      //       code:
-      //           "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
-      //       isUpload: "0",
-      //       isActive: "1",
-      //       createdBy: userData.value!.id,
-      //       remarks: activityListTextController.value[index].text,
-      //       createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-      //     );
-      //     int result = await db.insert(
-      //         "t_d_jo_inspection_activity_stages", data.toInsert());
-      //     List<TDJoInspectionActivity> details = stage.listActivity ?? [];
-      //     details.forEach((activity) async {
-      //       TDJoInspectionActivity detail = TDJoInspectionActivity(
-      //           tHJoId: id,
-      //           tDJoInspectionActivityStagesId: result,
-      //           startActivityTime: activity.startActivityTime,
-      //           endActivityTime: activity.endActivityTime,
-      //           activity: activity.activity,
-      //           code:
-      //               'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
-      //           isActive: 1,
-      //           isUpload: 0,
-      //           createdAt:
-      //               DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-      //           createdBy: createdBy);
-      //       await db.insert("t_d_jo_inspection_activity", detail.toInsert());
-      //     });
-      //   }
-      // });
-      stageListModal.value = [];
-      activityListTextController.value = [];
-      return true;
-    } catch (e) {
-      // Handle any parsing errors
-      return false; // Return the original time if parsing fails
-    }
-  }
+  // Future<bool> editActivity6StagesV2() async {
+  //   try {
+  //     final db = await SqlHelper.db();
+  //     //List<TDJoInspectionActivityStages> stages = stageListModal.value;
+  //     final createdBy = userData.value!.id;
+  //
+  //     var stageCount = 0;
+  //     stageListModal.value.forEach((item){
+  //       debugPrint('nyang mau di update stagenya: ${jsonEncode(item)}');
+  //     });
+  //
+  //     activity6Attachments.value.forEach((item){
+  //       debugPrint('nyang mau di update attachnya: ${jsonEncode(item)}');
+  //     });
+  //
+  //     List<String> stageValues = [];
+  //     List<String> activityValues = [];
+  //     List<Map<String,dynamic>> attachmentValues = [];
+  //     List<int> attachmentUpdate = [];
+  //
+  //     stageListModal.value.asMap().forEach((index,stage){
+  //       stageCount++;
+  //       stageValues.add('''(${stage.id},${id},6,'${stage.transDate}','${activityListTextController.value[index].text}',$createdBy,${stage.id != null ? stage.createdBy : null},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','${stage.id != null ? DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()) : null}','JOIAST-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$stageCount',1,0)''');
+  //       update();
+  //       if(stage.listActivity!.isNotEmpty){
+  //         var count = 0;
+  //         stage.listActivity!.forEach((activity){
+  //           count++;
+  //           activityValues.add('''(${activity.id?.toInt() == DateTime.now().millisecondsSinceEpoch ? null : activity.id},$id,(SELECT id FROM t_d_jo_inspection_activity_stages WHERE trans_date = '${stage.transDate}' AND m_statusinspectionstages_id = 6 LIMIT 1),'${activity.startActivityTime}','${activity.endActivityTime}','${activity.activity}','JOIAS-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$count',1,0,${createdBy},${activity.id != null ? createdBy : null},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}', '${activity.id != null ? DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()) : null}')''');
+  //           update();
+  //         });
+  //       }
+  //     });
+  //
+  //     if(activity6Attachments.value.isNotEmpty){
+  //       var count = 0;
+  //       activity6Attachments.value.forEach((attachment){
+  //         count++;
+  //         attachmentValues.add({
+  //         'id': attachment.id ?? null,
+  //         't_h_jo_id' : id,
+  //         't_d_jo_inspection_activity_stages_id' : null,
+  //         'path_name' : attachment.pathName,
+  //         'file_name' : attachment.fileName,
+  //         'code' : attachment.code ?? 'JOIAF-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$count',
+  //         'is_active' : attachment.isActive,
+  //         'is_upload' : attachment.isUpload,
+  //         'created_by' : attachment.createdBy,
+  //         'updated_by' : attachment.id == null ? null : createdBy,
+  //         'created_at' : attachment.createdAt,
+  //         'updated_at' : attachment.id == null ? null : DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()).toString(),
+  //         });
+  //         // attachmentValues.add('''($id,'${attachment.pathName}','${attachment.fileName}','JOIAF-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$count',1,0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
+  //         // update();
+  //       });
+  //     }
+  //
+  //     debugPrint("stage join: ${stageValues.join(',')}");
+  //     debugPrint("activity join: ${activityValues.join(',')}");
+  //     debugPrint("attachment join: ${jsonEncode(attachmentValues)}");
+  //
+  //     await SqlHelper.updateInspectionActivity6(stageValues.join(','), activityValues.join(','), attachmentValues, id);
+  //
+  //     debugPrint('activity lab saat ini : ${activityStage}');
+  //     update();
+  //
+  //     //deactive semua aktifitas dan stagenya
+  //     // update table t_d_jo_inspection_activity_stages set is_active =0 berdasarkan thjoid dan transdate dan mStatusinspectionstagesId
+  //     // int result = await db.update(
+  //     //   't_d_jo_inspection_activity_stages',
+  //     //   {'is_active': 0}, // The new value for the is_active field
+  //     //   where: 't_h_jo_id = ?  AND m_statusinspectionstages_id = ?',
+  //     //   whereArgs: [id, activityStage],
+  //     // );
+  //     //
+  //     // //debugPrint("data input edit deactive ${result} ${id} ${statusId}");
+  //     // debugPrint("data input edit remarks ${activityListTextController.value}");
+  //     //
+  //     // stages.asMap().forEach((index, stage) async {
+  //     //   debugPrint("data input edit ${jsonEncode(stage.toJson())}");
+  //     //   if (stage.id != null) {
+  //     //     TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
+  //     //         isUpload: "0",
+  //     //         isActive: "1",
+  //     //         updatedBy: userData.value!.id.toString(),
+  //     //         updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+  //     //         remarks: activityListTextController.value[index].text);
+  //     //
+  //     //     int updated = await db.update(
+  //     //       't_d_jo_inspection_activity_stages',
+  //     //       data.toEdit(),
+  //     //       where: 'id = ? ',
+  //     //       whereArgs: [stage.id],
+  //     //     );
+  //     //
+  //     //     //inactive detail
+  //     //     int detail = await db.update(
+  //     //       't_d_jo_inspection_activity',
+  //     //       {'is_active': 0}, // The new value for the is_active field
+  //     //       where: 't_d_jo_inspection_activity_stages_id = ?',
+  //     //       whereArgs: [stage.id],
+  //     //     );
+  //     //     List<TDJoInspectionActivity> listActivity = stage.listActivity ?? [];
+  //     //     listActivity.forEach((activity) async {
+  //     //       if (activity.code != null) {
+  //     //         //Update
+  //     //         TDJoInspectionActivity detail = TDJoInspectionActivity(
+  //     //             startActivityTime: activity.startActivityTime,
+  //     //             endActivityTime: activity.endActivityTime,
+  //     //             activity: activity.activity,
+  //     //             isActive: 1,
+  //     //             isUpload: 0,
+  //     //             updatedAt:
+  //     //                 DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+  //     //             updatedBy: createdBy.toString());
+  //     //         update();
+  //     //         debugPrint('data yang update nya : ${jsonEncode(detail)}');
+  //     //
+  //     //         int updated = await db.update(
+  //     //           't_d_jo_inspection_activity',
+  //     //           detail.toEdit(),
+  //     //           where: 'id = ?',
+  //     //           whereArgs: [activity.id],
+  //     //         );
+  //     //         debugPrint("Print Edit ${activity.id} ${updated}");
+  //     //       } else {
+  //     //         //insert
+  //     //         TDJoInspectionActivity detail = TDJoInspectionActivity(
+  //     //             tHJoId: id,
+  //     //             tDJoInspectionActivityStagesId: stage.id,
+  //     //             startActivityTime: activity.startActivityTime,
+  //     //             endActivityTime: activity.endActivityTime,
+  //     //             activity: activity.activity,
+  //     //             code:
+  //     //                 'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+  //     //             isActive: 1,
+  //     //             isUpload: 0,
+  //     //             createdAt:
+  //     //                 DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+  //     //             createdBy: createdBy);
+  //     //         int raw = await db.insert(
+  //     //             "t_d_jo_inspection_activity", detail.toInsert());
+  //     //         debugPrint("Print Edit ${activity.id} ${raw}");
+  //     //       }
+  //     //     });
+  //     //   } else {
+  //     //     TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
+  //     //       tHJoId: id,
+  //     //       mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
+  //     //       transDate: stage.transDate,
+  //     //       code:
+  //     //           "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+  //     //       isUpload: "0",
+  //     //       isActive: "1",
+  //     //       createdBy: userData.value!.id,
+  //     //       remarks: activityListTextController.value[index].text,
+  //     //       createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+  //     //     );
+  //     //     int result = await db.insert(
+  //     //         "t_d_jo_inspection_activity_stages", data.toInsert());
+  //     //     List<TDJoInspectionActivity> details = stage.listActivity ?? [];
+  //     //     details.forEach((activity) async {
+  //     //       TDJoInspectionActivity detail = TDJoInspectionActivity(
+  //     //           tHJoId: id,
+  //     //           tDJoInspectionActivityStagesId: result,
+  //     //           startActivityTime: activity.startActivityTime,
+  //     //           endActivityTime: activity.endActivityTime,
+  //     //           activity: activity.activity,
+  //     //           code:
+  //     //               'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+  //     //           isActive: 1,
+  //     //           isUpload: 0,
+  //     //           createdAt:
+  //     //               DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+  //     //           createdBy: createdBy);
+  //     //       await db.insert("t_d_jo_inspection_activity", detail.toInsert());
+  //     //     });
+  //     //   }
+  //     // });
+  //     stageListModal.value = [];
+  //     activityListTextController.value = [];
+  //     return true;
+  //   } catch (e) {
+  //     // Handle any parsing errors
+  //     return false; // Return the original time if parsing fails
+  //   }
+  // }
 
   void sendActivityDailyPhotoV2() async {
     int success = 0;
@@ -2135,7 +2178,7 @@ class JoDetailController extends BaseController {
     if (dailyActivityPhotosTemp.value.isNotEmpty &&
         dailyActivityPhotosDescTemp.value.isNotEmpty) {
       for (var i = 0; i < dailyActivityPhotosTemp.value.length; i++) {
-        final File photo = dailyActivityPhotosTemp.value[i];
+        final File photo = File(dailyActivityPhotosTemp.value[i]);
         final TextEditingController desc = dailyActivityPhotosDescTemp.value[i];
         TDJoInspectionPict pict = TDJoInspectionPict(
             tHJoId: id,
@@ -2234,6 +2277,37 @@ class JoDetailController extends BaseController {
     } else {
       return 'success';
     }
+  }
+
+  void updateActivityDailyPhotoConfirm(int index, int idEdit, String desc) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text(
+          'Attention',
+          style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
+        ),
+        content: const Text('Apakah benar anda ingin menyimpan perubahan foto JO ini?'),
+        actions: [
+          TextButton(
+            child: const Text("Cancel"),
+            onPressed: () => Get.back(),
+          ),
+          TextButton(
+            child: const Text(
+              "OK",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            onPressed: () async {
+              editPhotoActivityDescV2(index, idEdit, desc);
+              Get.back();
+              Get.back();
+              //sendActivityDailyPhoto();
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   void editPhotoActivityDescV2(int index, int idEdit, String desc) async {
@@ -2439,10 +2513,10 @@ class JoDetailController extends BaseController {
           init: JoDetailController(),
           builder: (controller) => SizedBox(
             child: Container(
-                margin: EdgeInsets.only(top: 48),
-                padding: EdgeInsets.all(24),
+                margin: const EdgeInsets.only(top: 48),
+                padding: const EdgeInsets.all(24),
                 width: double.infinity,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
                         topRight: Radius.circular(24),
@@ -2453,7 +2527,7 @@ class JoDetailController extends BaseController {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Edit Stage Inspection',
                           style: TextStyle(
                               fontSize: 16,
@@ -2560,7 +2634,7 @@ class JoDetailController extends BaseController {
                                     ? Column(children: [
                                         ListView.builder(
                                             physics:
-                                                NeverScrollableScrollPhysics(),
+                                                const NeverScrollableScrollPhysics(),
                                             shrinkWrap: true,
                                             itemCount: activity5bargesCount,
                                             itemBuilder: (context, i) {
@@ -2620,14 +2694,14 @@ class JoDetailController extends BaseController {
                                             addBargeForm();
                                           },
                                           style: ElevatedButton.styleFrom(
-                                              padding: EdgeInsets.symmetric(
+                                              padding: const EdgeInsets.symmetric(
                                                   vertical: 12),
                                               backgroundColor: Colors.green,
                                               shape: RoundedRectangleBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           12))),
-                                          child: SizedBox(
+                                          child: const SizedBox(
                                               width: double.infinity,
                                               child: Center(
                                                   child: Text(
@@ -2650,7 +2724,7 @@ class JoDetailController extends BaseController {
                                                 },
                                                 style: ElevatedButton.styleFrom(
                                                     padding:
-                                                        EdgeInsets.symmetric(
+                                                        const EdgeInsets.symmetric(
                                                             vertical: 12),
                                                     backgroundColor: Colors.red,
                                                     shape:
@@ -2659,7 +2733,7 @@ class JoDetailController extends BaseController {
                                                                 BorderRadius
                                                                     .circular(
                                                                         12))),
-                                                child: SizedBox(
+                                                child: const SizedBox(
                                                     width: double.infinity,
                                                     child: Center(
                                                         child: Text(
@@ -2686,7 +2760,7 @@ class JoDetailController extends BaseController {
                                   height: 16,
                                 ),
                                 ListView.builder(
-                                    physics: NeverScrollableScrollPhysics(),
+                                    physics: const NeverScrollableScrollPhysics(),
                                     shrinkWrap: true,
                                     itemCount: activity5FormCount.value,
                                     itemBuilder: (context, index) {
@@ -2697,7 +2771,7 @@ class JoDetailController extends BaseController {
                                               Expanded(
                                                 child: Text(
                                                   'KOS Transhipment Form ${index + 1}',
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                       fontSize: 16,
                                                       fontWeight:
                                                           FontWeight.w700,
@@ -2716,7 +2790,7 @@ class JoDetailController extends BaseController {
                                                           },
                                                           child: Container(
                                                             margin:
-                                                                EdgeInsets.only(
+                                                                const EdgeInsets.only(
                                                                     right: 8),
                                                             height: 42,
                                                             width: 42,
@@ -2727,7 +2801,7 @@ class JoDetailController extends BaseController {
                                                                     BorderRadius
                                                                         .circular(
                                                                             8)),
-                                                            child: Center(
+                                                            child: const Center(
                                                               child: Icon(
                                                                 Icons.add,
                                                                 color: Colors
@@ -2745,7 +2819,7 @@ class JoDetailController extends BaseController {
                                                                 },
                                                                 child:
                                                                     Container(
-                                                                  margin: EdgeInsets
+                                                                  margin: const EdgeInsets
                                                                       .only(
                                                                           right:
                                                                               8),
@@ -2757,7 +2831,7 @@ class JoDetailController extends BaseController {
                                                                       borderRadius:
                                                                           BorderRadius.circular(
                                                                               8)),
-                                                                  child: Center(
+                                                                  child: const Center(
                                                                     child: Icon(
                                                                       Icons
                                                                           .remove,
@@ -2965,14 +3039,14 @@ class JoDetailController extends BaseController {
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.white,
                                       shape: RoundedRectangleBorder(
-                                          side: BorderSide(color: primaryColor),
+                                          side: const BorderSide(color: primaryColor),
                                           borderRadius:
                                               BorderRadius.circular(12))),
                                   child: Container(
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 12),
                                       width: double.infinity,
-                                      child: Center(
+                                      child: const Center(
                                           child: Text(
                                         'Cancel',
                                         style: TextStyle(
@@ -3000,7 +3074,7 @@ class JoDetailController extends BaseController {
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 12),
                                       width: double.infinity,
-                                      child: Center(
+                                      child: const Center(
                                           child: Text(
                                         'Submit',
                                         style: TextStyle(
@@ -3160,10 +3234,10 @@ class JoDetailController extends BaseController {
         GetBuilder(
           init: JoDetailController(),
           builder: (controller) => Container(
-              margin: EdgeInsets.only(top: 48),
-              padding: EdgeInsets.all(24),
+              margin: const EdgeInsets.only(top: 48),
+              padding: const EdgeInsets.all(24),
               width: double.infinity,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                       topRight: Radius.circular(24),
@@ -3179,7 +3253,7 @@ class JoDetailController extends BaseController {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              const Text(
                                 'Add Stage Inspection',
                                 style: TextStyle(
                                     fontSize: 16,
@@ -3236,7 +3310,7 @@ class JoDetailController extends BaseController {
                               const SizedBox(
                                 height: 16,
                               ),
-                              Text('Detail Activities'),
+                              const Text('Detail Activities'),
                               const SizedBox(
                                 height: 16,
                               ),
@@ -3354,7 +3428,7 @@ class JoDetailController extends BaseController {
                                   }
                                 },
                                 child: Container(
-                                  margin: EdgeInsets.only(right: 8),
+                                  margin: const EdgeInsets.only(right: 8),
                                   height: 42,
                                   width: 42,
                                   decoration: BoxDecoration(
@@ -3377,7 +3451,7 @@ class JoDetailController extends BaseController {
                                   ? ListView.builder(
                                       itemCount: stageListModal.value.length,
                                       shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
+                                      physics: const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
                                         TDJoInspectionActivityStages stage =
                                             stageListModal.value[index];
@@ -3415,17 +3489,13 @@ class JoDetailController extends BaseController {
                                                                 flex: 2,
                                                                 child: Row(
                                                                   children: [
-                                                                    Expanded(
-                                                                      flex: 1,
-                                                                      child:
-                                                                          Text(
+                                                                     Text(
                                                                         stage.transDate ??
                                                                             '-',
                                                                         style: const TextStyle(
                                                                             fontSize:
                                                                                 14),
                                                                       ),
-                                                                    ),
                                                                     InkWell(
                                                                       onTap:
                                                                           () {
@@ -3434,11 +3504,11 @@ class JoDetailController extends BaseController {
                                                                         deleteActivityHeaderV2(
                                                                             stage!.transDate!);
                                                                       },
-                                                                      child: const Icon(
-                                                                          Icons
-                                                                              .delete_forever,
-                                                                          color:
-                                                                              Colors.red),
+                                                                      child: const ImageIcon(
+                                                                          AssetImage("assets/icons/deleteStage.png"),
+                                                                          color: Colors.red,
+                                                                          size: 16
+                                                                      ),
                                                                     )
                                                                   ],
                                                                 )),
@@ -3450,7 +3520,7 @@ class JoDetailController extends BaseController {
                                                         ListView.builder(
                                                             shrinkWrap: true,
                                                             physics:
-                                                                NeverScrollableScrollPhysics(),
+                                                                const NeverScrollableScrollPhysics(),
                                                             itemCount: stage
                                                                     .listActivity!
                                                                     .length ??
@@ -3466,7 +3536,7 @@ class JoDetailController extends BaseController {
                                                                       CrossAxisAlignment
                                                                           .start,
                                                                   children: [
-                                                                    Expanded(
+                                                                    const Expanded(
                                                                         flex: 1,
                                                                         child:
                                                                             Text(
@@ -3475,10 +3545,10 @@ class JoDetailController extends BaseController {
                                                                               fontSize: 14,
                                                                               fontWeight: FontWeight.w700),
                                                                         )),
-                                                                    VerticalDivider(
+                                                                    const VerticalDivider(
                                                                       width: 1,
                                                                     ),
-                                                                    SizedBox(
+                                                                    const SizedBox(
                                                                       width: 8,
                                                                     ),
                                                                     Expanded(
@@ -3486,11 +3556,11 @@ class JoDetailController extends BaseController {
                                                                         child: Text(
                                                                             '${activity.startActivityTime} - ${activity.endActivityTime}',
                                                                             style:
-                                                                                TextStyle(fontSize: 14, fontWeight: FontWeight.w700))),
-                                                                    VerticalDivider(
+                                                                                const TextStyle(fontSize: 14, fontWeight: FontWeight.w700))),
+                                                                    const VerticalDivider(
                                                                       width: 1,
                                                                     ),
-                                                                    SizedBox(
+                                                                    const SizedBox(
                                                                       width: 8,
                                                                     ),
                                                                     Expanded(
@@ -3501,7 +3571,7 @@ class JoDetailController extends BaseController {
                                                                             Expanded(
                                                                               child: Text(
                                                                                 activity.activity ?? '-',
-                                                                                style: TextStyle(fontSize: 14),
+                                                                                style: const TextStyle(fontSize: 14),
                                                                               ),
                                                                             ),
                                                                             InkWell(
@@ -3509,19 +3579,36 @@ class JoDetailController extends BaseController {
                                                                                 debugPrint('Edit activity 6 ');
                                                                                 editActivity6DetailV2(stage!.transDate!, activity!.activity!);
                                                                               },
-                                                                              child: Icon(
-                                                                                Icons.mode_edit_outlined,
-                                                                                color: primaryColor,
+                                                                              child: const ImageIcon(
+                                                                                  AssetImage("assets/icons/editActivity.png"),
+                                                                                  color: primaryColor,
+                                                                                  size: 16
                                                                               ),
                                                                             ),
-                                                                            InkWell(
-                                                                              onTap: () {
-                                                                                debugPrint('Hapus detail');
-                                                                                deleteActivityDetailV2(stage!.transDate!, activity!.activity!);
-                                                                              },
-                                                                              child: Icon(
-                                                                                Icons.delete_forever,
-                                                                                color: Colors.red,
+                                                                            const SizedBox(
+                                                                              width: 6,
+                                                                            ),
+                                                                            SizedBox(
+                                                                              height: 18,
+                                                                              width: 18,
+                                                                              child: Ink(
+                                                                                decoration: ShapeDecoration(
+                                                                                    color: Colors.red,
+                                                                                    shape: RoundedRectangleBorder(
+                                                                                        borderRadius: BorderRadius.circular(6)
+                                                                                    )
+                                                                                ),
+                                                                                child: InkWell(
+                                                                                  onTap: () {
+                                                                                    debugPrint('Hapus detail');
+                                                                                    deleteActivityDetailV2(stage!.transDate!, activity!.activity!);
+                                                                                  },
+                                                                                  child: const Icon(
+                                                                                      Icons.remove,
+                                                                                      color: Colors.white,
+                                                                                      size:12
+                                                                                  ),
+                                                                                ),
                                                                               ),
                                                                             ),
                                                                           ],
@@ -3575,7 +3662,7 @@ class JoDetailController extends BaseController {
                                         );
                                       },
                                     )
-                                  : SizedBox(),
+                                  : const SizedBox(),
                               const SizedBox(
                                 height: 16,
                               ),
@@ -3587,7 +3674,7 @@ class JoDetailController extends BaseController {
                               const SizedBox(
                                 height: 16,
                               ),
-                              Text(
+                              const Text(
                                   'File lampiran maksimal 5 file dengan ukuran total file maksimal 10 MB. Jenis file yang diperbolehkan hanya PDF/JPG/PNG/JPEG.'),
                               const SizedBox(
                                 height: 16,
@@ -3595,9 +3682,9 @@ class JoDetailController extends BaseController {
                               activity6Attachments.value.isNotEmpty
                                   ? GridView.builder(
                                       shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
+                                      physics: const NeverScrollableScrollPhysics(),
                                       gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
                                         crossAxisCount: 5,
                                         mainAxisSpacing: 8,
                                         crossAxisSpacing: 8,
@@ -3644,9 +3731,9 @@ class JoDetailController extends BaseController {
                                                                   .removeActivity6Files(
                                                                       index);
                                                             },
-                                                            icon: Icon(
+                                                            icon: const Icon(
                                                               Icons
-                                                                  .remove_circle,
+                                                                  .close,
                                                               size: 12,
                                                               color: Colors.red,
                                                             )),
@@ -3677,7 +3764,7 @@ class JoDetailController extends BaseController {
                                                                   height: 42,
                                                                 ),
                                                                 Text(filename,
-                                                                    style: TextStyle(
+                                                                    style: const TextStyle(
                                                                         fontSize:
                                                                             8),
                                                                     overflow:
@@ -3702,9 +3789,9 @@ class JoDetailController extends BaseController {
                                                                       .removeActivity6Files(
                                                                           index);
                                                                 },
-                                                                icon: Icon(
+                                                                icon: const Icon(
                                                                   Icons
-                                                                      .remove_circle,
+                                                                      .close,
                                                                   size: 12,
                                                                   color: Colors
                                                                       .red,
@@ -3714,7 +3801,7 @@ class JoDetailController extends BaseController {
                                                       ],
                                                     ),
                                                   )
-                                                : SizedBox();
+                                                : const SizedBox();
                                       })
                                   : const SizedBox(),
                               const SizedBox(
@@ -3731,10 +3818,10 @@ class JoDetailController extends BaseController {
                                         backgroundColor: Colors.white,
                                         shape: RoundedRectangleBorder(
                                             side:
-                                                BorderSide(color: primaryColor),
+                                                const BorderSide(color: primaryColor),
                                             borderRadius:
                                                 BorderRadius.circular(12))),
-                                    child: Center(
+                                    child: const Center(
                                         child: Icon(
                                       Icons.folder_rounded,
                                       color: primaryColor,
@@ -3758,14 +3845,14 @@ class JoDetailController extends BaseController {
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
-                                        side: BorderSide(color: primaryColor),
+                                        side: const BorderSide(color: primaryColor),
                                         borderRadius:
                                             BorderRadius.circular(12))),
                                 child: Container(
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 12),
                                     width: double.infinity,
-                                    child: Center(
+                                    child: const Center(
                                         child: Text(
                                       'Cancel',
                                       style: TextStyle(
@@ -3791,7 +3878,7 @@ class JoDetailController extends BaseController {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 12),
                                     width: double.infinity,
-                                    child: Center(
+                                    child: const Center(
                                         child: Text(
                                       'Submit',
                                       style: TextStyle(
@@ -3937,53 +4024,66 @@ class JoDetailController extends BaseController {
   Future<bool> saveActivity6Stages() async {
     try {
       final db = await SqlHelper.db();
-      // List<TDJoInspectionActivityStages> stages = stageListModal.value;
+      List<TDJoInspectionActivityStages> stages = stageListModal.value;
       final createdBy = userData.value!.id;
-      var stageCount = 0;
-      stageListModal.value.forEach((item){
-        debugPrint('nyang mau di input stagenya: ${jsonEncode(item)}');
-      });
 
-      activity6Attachments.value.forEach((item){
-        debugPrint('nyang mau di input attachnya: ${jsonEncode(item)}');
-      });
-
-      List<String> stageValues = [];
-      List<String> activityValues = [];
-      List<String> attachmentValues = [];
-
-      stageListModal.value.asMap().forEach((index,stage){
-        stageCount++;
-        stageValues.add('''(${id},6,'${stage.transDate}','${activityListTextController.value[index].text}',$createdBy,'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','JOIAST-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$stageCount',1,0)''');
-        update();
-        if(stage.listActivity!.isNotEmpty){
-          var count = 0;
-          stage.listActivity!.forEach((activity){
-            count++;
-            activityValues.add('''($id,(SELECT id FROM t_d_jo_inspection_activity_stages WHERE trans_date = '${stage.transDate}' AND m_statusinspectionstages_id = 6 LIMIT 1),'${activity.startActivityTime}','${activity.endActivityTime}','${activity.activity}','JOIAS-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$count',1,0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
-            update();
-          });
-        }
-      });
-
-      if(activity6Attachments.value.isNotEmpty){
-        var count = 0;
-        activity6Attachments.value.forEach((attachment){
-          count++;
-          attachmentValues.add('''($id,'${attachment.pathName}','${attachment.fileName}','JOIAF-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$count',1,0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
-          update();
+      stages.asMap().forEach((index, stage) async {
+        debugPrint("data input ${jsonEncode(stage.toJson())}");
+        TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
+          tHJoId: id,
+          mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
+          transDate: stage.transDate,
+          code:
+          "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+          isUpload: "0",
+          isActive: "1",
+          createdBy: userData.value!.id,
+          createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+          remarks: activityListTextController.value[index].text,
+        );
+        int result =  await db.insert("t_d_jo_inspection_activity_stages", data.toInsert());
+        //dapatkan id yang baru insert
+        List<TDJoInspectionActivity> details = stage.listActivity ?? [];
+        details.forEach((activity) async {
+          TDJoInspectionActivity detail = TDJoInspectionActivity(
+              tHJoId: id,
+              tDJoInspectionActivityStagesId: result,
+              startActivityTime: activity.startActivityTime,
+              endActivityTime: activity.endActivityTime,
+              activity: activity.activity,
+              code:
+              'JOIAS-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+              isActive: 1,
+              isUpload: 0,
+              createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+              createdBy: createdBy);
+          await db.insert("t_d_jo_inspection_activity", detail.toInsert());
         });
+
+      });
+
+      //save file attachment
+      //List<TDJoInspectionAttachment> listFile = activity6Attachments.value ?? [];
+      debugPrint("print list file attachment ${activity6Attachments.value}");
+      var attachmentCount = 0;
+      for (var file in activity6Attachments.value) {
+        debugPrint('nyang mau di input attachnya: ${jsonEncode(file)}');
+        attachmentCount++;
+        var filename = file.fileName!;
+        TDJoInspectionAttachment attach = TDJoInspectionAttachment(
+            tHJoId: id,
+            tDJoInspectionActivityStagesId: stages.first.id,
+            fileName: filename,
+            pathName: file.pathName,
+            code:
+            'JOIAF-${activityStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${attachmentCount}',
+            isActive: 1,
+            isUpload: 0,
+            createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+            createdBy: createdBy);
+        await db.insert('t_d_jo_inspection_attachment', attach.toJson());
       }
 
-      debugPrint("stage join: ${stageValues.join(',')}");
-      debugPrint("activity join: ${activityValues.join(',')}");
-      debugPrint("attachment join: ${attachmentValues.join(',')}");
-
-      await SqlHelper.insertInspectionActivity6(stageValues.join(','), activityValues.join(','), attachmentValues.join(','));
-
-      debugPrint('activity lab saat ini : ${activityStage}');
-      update();
-      activitySubmitted.value = true;
       // stageListModal.value.asMap().forEach((index, stage) async {
       //   stageCount++;
       //   debugPrint("data input ${jsonEncode(stage.toJson())}");
@@ -4045,6 +4145,9 @@ class JoDetailController extends BaseController {
       //     await db.insert('t_d_jo_inspection_attachment', attach.toJson());
       //   }
       // });
+      stageListModal.value = [];
+      activityListTextController.value = [];
+      activitySubmitted.value = true;
       return true;
     } catch (e) {
       debugPrint("print error save activity 6 ${e}");
@@ -4100,11 +4203,11 @@ class JoDetailController extends BaseController {
         GetBuilder(
           init: JoDetailController(),
           builder: (controller) => Container(
-              margin: EdgeInsets.only(top: 48),
-              padding: EdgeInsets.all(24),
+              margin: const EdgeInsets.only(top: 48),
+              padding: const EdgeInsets.all(24),
               width: double.infinity,
               height: 800,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                       topRight: Radius.circular(24),
@@ -4118,7 +4221,7 @@ class JoDetailController extends BaseController {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'Add Stage Inspection',
                               style: TextStyle(
                                   fontSize: 16,
@@ -4130,7 +4233,7 @@ class JoDetailController extends BaseController {
                             ),
                             Text(
                               'Stage ${activityStage}: ${activityStages[activityStage - 1]}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w700),
                             ),
                             const SizedBox(
@@ -4163,7 +4266,7 @@ class JoDetailController extends BaseController {
                                               onPressed: () {
                                                 selectDate(Get.context!);
                                               },
-                                              icon: Icon(Icons
+                                              icon: const Icon(Icons
                                                   .calendar_today_rounded)),
                                           border: OutlineInputBorder(
                                             borderRadius:
@@ -4186,7 +4289,7 @@ class JoDetailController extends BaseController {
                                     const SizedBox(
                                       height: 16,
                                     ),
-                                    Text('Detail Activities'),
+                                    const Text('Detail Activities'),
                                     const SizedBox(
                                       height: 16,
                                     ),
@@ -4324,7 +4427,7 @@ class JoDetailController extends BaseController {
                                 }
                               },
                               child: Container(
-                                margin: EdgeInsets.only(right: 8),
+                                margin: const EdgeInsets.only(right: 8),
                                 height: 42,
                                 width: 42,
                                 decoration: BoxDecoration(
@@ -4347,7 +4450,7 @@ class JoDetailController extends BaseController {
                                 ? ListView.builder(
                                     itemCount: stageListModal.value.length,
                                     shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
+                                    physics: const NeverScrollableScrollPhysics(),
                                     itemBuilder: (context, index) {
                                       TDJoInspectionActivityStages stage =
                                           stageListModal.value[index];
@@ -4419,7 +4522,7 @@ class JoDetailController extends BaseController {
                                                       ListView.builder(
                                                           shrinkWrap: true,
                                                           physics:
-                                                              NeverScrollableScrollPhysics(),
+                                                              const NeverScrollableScrollPhysics(),
                                                           itemCount: stage
                                                                   .listActivity!
                                                                   .length ??
@@ -4435,7 +4538,7 @@ class JoDetailController extends BaseController {
                                                                     CrossAxisAlignment
                                                                         .start,
                                                                 children: [
-                                                                  Expanded(
+                                                                  const Expanded(
                                                                       flex: 1,
                                                                       child:
                                                                           Text(
@@ -4446,23 +4549,23 @@ class JoDetailController extends BaseController {
                                                                             fontWeight:
                                                                                 FontWeight.w700),
                                                                       )),
-                                                                  VerticalDivider(
+                                                                  const VerticalDivider(
                                                                     width: 1,
                                                                   ),
-                                                                  SizedBox(
+                                                                  const SizedBox(
                                                                     width: 8,
                                                                   ),
                                                                   Expanded(
                                                                       flex: 1,
                                                                       child: Text(
                                                                           '${activity.startActivityTime} - ${activity.endActivityTime}',
-                                                                          style: TextStyle(
+                                                                          style: const TextStyle(
                                                                               fontSize: 14,
                                                                               fontWeight: FontWeight.w700))),
-                                                                  VerticalDivider(
+                                                                  const VerticalDivider(
                                                                     width: 1,
                                                                   ),
-                                                                  SizedBox(
+                                                                  const SizedBox(
                                                                     width: 8,
                                                                   ),
                                                                   Expanded(
@@ -4474,7 +4577,7 @@ class JoDetailController extends BaseController {
                                                                             child:
                                                                                 Text(
                                                                               activity.activity ?? '-',
-                                                                              style: TextStyle(fontSize: 14),
+                                                                              style: const TextStyle(fontSize: 14),
                                                                             ),
                                                                           ),
                                                                           InkWell(
@@ -4484,7 +4587,7 @@ class JoDetailController extends BaseController {
                                                                               editActivity6DetailV2(stage!.transDate!, activity!.activity!);
                                                                             },
                                                                             child:
-                                                                                Icon(
+                                                                                const Icon(
                                                                               Icons.mode_edit_outlined,
                                                                               color: primaryColor,
                                                                             ),
@@ -4496,7 +4599,7 @@ class JoDetailController extends BaseController {
                                                                               deleteActivityDetailV2(stage!.transDate!, activity!.activity!);
                                                                             },
                                                                             child:
-                                                                                Icon(
+                                                                                const Icon(
                                                                               Icons.delete_forever,
                                                                               color: Colors.red,
                                                                             ),
@@ -4554,7 +4657,7 @@ class JoDetailController extends BaseController {
                                       );
                                     },
                                   )
-                                : SizedBox()
+                                : const SizedBox()
                           ],
                         ),
                       ),
@@ -4571,13 +4674,13 @@ class JoDetailController extends BaseController {
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
-                                      side: BorderSide(color: primaryColor),
+                                      side: const BorderSide(color: primaryColor),
                                       borderRadius: BorderRadius.circular(12))),
                               child: Container(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 12),
                                   width: double.infinity,
-                                  child: Center(
+                                  child: const Center(
                                       child: Text(
                                     'Cancel',
                                     style: TextStyle(
@@ -4603,7 +4706,7 @@ class JoDetailController extends BaseController {
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 12),
                                   width: double.infinity,
-                                  child: Center(
+                                  child: const Center(
                                       child: Text(
                                     'Submit',
                                     style: TextStyle(
@@ -4719,11 +4822,11 @@ class JoDetailController extends BaseController {
         GetBuilder(
           init: JoDetailController(),
           builder: (controller) => Container(
-              margin: EdgeInsets.only(top: 48),
-              padding: EdgeInsets.all(24),
+              margin: const EdgeInsets.only(top: 48),
+              padding: const EdgeInsets.all(24),
               width: double.infinity,
               height: 800,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                       topRight: Radius.circular(24),
@@ -4737,7 +4840,7 @@ class JoDetailController extends BaseController {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'Add Stage Inspection',
                               style: TextStyle(
                                   fontSize: 16,
@@ -4749,7 +4852,7 @@ class JoDetailController extends BaseController {
                             ),
                             Text(
                               'Stage ${activityStage}: ${activityStages[activityStage - 1]}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w700),
                             ),
                             const SizedBox(
@@ -4782,7 +4885,7 @@ class JoDetailController extends BaseController {
                                               onPressed: () {
                                                 selectDate(Get.context!);
                                               },
-                                              icon: Icon(Icons
+                                              icon: const Icon(Icons
                                                   .calendar_today_rounded)),
                                           border: OutlineInputBorder(
                                             borderRadius:
@@ -4805,7 +4908,7 @@ class JoDetailController extends BaseController {
                                     const SizedBox(
                                       height: 16,
                                     ),
-                                    Text('Detail Activities'),
+                                    const Text('Detail Activities'),
                                     const SizedBox(
                                       height: 16,
                                     ),
@@ -4863,13 +4966,6 @@ class JoDetailController extends BaseController {
                                               activityEndTime.text =
                                                   await selectTime(
                                                       Get.context!);
-                                            },
-                                            validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty) {
-                                                return 'Field wajib diisi!';
-                                              }
-                                              return null;
                                             },
                                             style: const TextStyle(
                                                 color: onFocusColor),
@@ -4943,7 +5039,7 @@ class JoDetailController extends BaseController {
                                 }
                               },
                               child: Container(
-                                margin: EdgeInsets.only(right: 8),
+                                margin: const EdgeInsets.only(right: 8),
                                 height: 42,
                                 width: 42,
                                 decoration: BoxDecoration(
@@ -4966,7 +5062,7 @@ class JoDetailController extends BaseController {
                                 ? ListView.builder(
                                     itemCount: stageListModal.value.length,
                                     shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
+                                    physics: const NeverScrollableScrollPhysics(),
                                     itemBuilder: (context, index) {
                                       TDJoInspectionActivityStages stage =
                                           stageListModal.value[index];
@@ -5026,11 +5122,11 @@ class JoDetailController extends BaseController {
                                                                               .mStatusinspectionstagesId!
                                                                               .toInt());
                                                                     },
-                                                                    child: const Icon(
-                                                                        Icons
-                                                                            .delete_forever,
-                                                                        color: Colors
-                                                                            .red),
+                                                                    child: const ImageIcon(
+                                                                        AssetImage("assets/icons/deleteStage.png"),
+                                                                        color: Colors.red,
+                                                                        size: 16
+                                                                    ),
                                                                   )
                                                                 ],
                                                               )),
@@ -5042,7 +5138,7 @@ class JoDetailController extends BaseController {
                                                       ListView.builder(
                                                           shrinkWrap: true,
                                                           physics:
-                                                              NeverScrollableScrollPhysics(),
+                                                              const NeverScrollableScrollPhysics(),
                                                           itemCount: stage
                                                                   .listActivity!
                                                                   .length ??
@@ -5058,7 +5154,7 @@ class JoDetailController extends BaseController {
                                                                     CrossAxisAlignment
                                                                         .start,
                                                                 children: [
-                                                                  Expanded(
+                                                                  const Expanded(
                                                                       flex: 1,
                                                                       child:
                                                                           Text(
@@ -5069,23 +5165,23 @@ class JoDetailController extends BaseController {
                                                                             fontWeight:
                                                                                 FontWeight.w700),
                                                                       )),
-                                                                  VerticalDivider(
+                                                                  const VerticalDivider(
                                                                     width: 1,
                                                                   ),
-                                                                  SizedBox(
+                                                                  const SizedBox(
                                                                     width: 8,
                                                                   ),
                                                                   Expanded(
                                                                       flex: 1,
                                                                       child: Text(
                                                                           '${activity.startActivityTime} - ${activity.endActivityTime}',
-                                                                          style: TextStyle(
+                                                                          style: const TextStyle(
                                                                               fontSize: 14,
                                                                               fontWeight: FontWeight.w700))),
-                                                                  VerticalDivider(
+                                                                  const VerticalDivider(
                                                                     width: 1,
                                                                   ),
-                                                                  SizedBox(
+                                                                  const SizedBox(
                                                                     width: 8,
                                                                   ),
                                                                   Expanded(
@@ -5097,7 +5193,7 @@ class JoDetailController extends BaseController {
                                                                             child:
                                                                                 Text(
                                                                               activity.activity ?? '-',
-                                                                              style: TextStyle(fontSize: 14),
+                                                                              style: const TextStyle(fontSize: 14),
                                                                             ),
                                                                           ),
                                                                           InkWell(
@@ -5106,22 +5202,37 @@ class JoDetailController extends BaseController {
                                                                               debugPrint('Edit');
                                                                               editActivityDetailV2(stage!.transDate!, activity!.activity!);
                                                                             },
-                                                                            child:
-                                                                                Icon(
-                                                                              Icons.mode_edit_outlined,
-                                                                              color: primaryColor,
+                                                                            child: const ImageIcon(
+                                                                                AssetImage("assets/icons/editActivity.png"),
+                                                                                color: primaryColor,
+                                                                                size: 16
                                                                             ),
                                                                           ),
-                                                                          InkWell(
-                                                                            onTap:
-                                                                                () {
-                                                                              debugPrint('Hapus detail');
-                                                                              removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(), activity.activity ?? '');
-                                                                            },
-                                                                            child:
-                                                                                Icon(
-                                                                              Icons.delete_forever,
-                                                                              color: Colors.red,
+                                                                          const SizedBox(
+                                                                            width: 6,
+                                                                          ),
+                                                                          SizedBox(
+                                                                            height: 18,
+                                                                            width: 18,
+                                                                            child: Ink(
+                                                                              decoration: ShapeDecoration(
+                                                                                  color: Colors.red,
+                                                                                  shape: RoundedRectangleBorder(
+                                                                                      borderRadius: BorderRadius.circular(6)
+                                                                                  )
+                                                                              ),
+                                                                              child: InkWell(
+                                                                                onTap:
+                                                                                    () {
+                                                                                  debugPrint('Hapus detail');
+                                                                                  removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(), activity.activity ?? '');
+                                                                                },
+                                                                                child: const Icon(
+                                                                                    Icons.remove,
+                                                                                    color: Colors.white,
+                                                                                    size:12
+                                                                                ),
+                                                                              ),
                                                                             ),
                                                                           ),
                                                                         ],
@@ -5177,7 +5288,7 @@ class JoDetailController extends BaseController {
                                       );
                                     },
                                   )
-                                : SizedBox()
+                                : const SizedBox()
                           ],
                         ),
                       ),
@@ -5194,13 +5305,13 @@ class JoDetailController extends BaseController {
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
-                                      side: BorderSide(color: primaryColor),
+                                      side: const BorderSide(color: primaryColor),
                                       borderRadius: BorderRadius.circular(12))),
                               child: Container(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 12),
                                   width: double.infinity,
-                                  child: Center(
+                                  child: const Center(
                                       child: Text(
                                     'Cancel',
                                     style: TextStyle(
@@ -5225,7 +5336,7 @@ class JoDetailController extends BaseController {
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 12),
                                   width: double.infinity,
-                                  child: Center(
+                                  child: const Center(
                                       child: Text(
                                     'Submit',
                                     style: TextStyle(
@@ -5249,7 +5360,7 @@ class JoDetailController extends BaseController {
   void addActivityStageConfirm() {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Attention',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
@@ -5293,12 +5404,12 @@ class JoDetailController extends BaseController {
   void nextStageActivityConfirm() {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Attention',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text(
+        content: const Text(
             'Apakah anda ingin melanjutkan ke stage berikutnya? jika Ya, anda tidak bisa mengubah stage sebelumnya. Pastikan data yang anda input benar.'),
         actions: [
           TextButton(
@@ -5340,11 +5451,11 @@ class JoDetailController extends BaseController {
         GetBuilder(
           init: JoDetailController(),
           builder: (controller) => Container(
-              margin: EdgeInsets.only(top: 48),
-              padding: EdgeInsets.all(24),
+              margin: const EdgeInsets.only(top: 48),
+              padding: const EdgeInsets.all(24),
               width: double.infinity,
               height: 800,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                       topRight: Radius.circular(24),
@@ -5358,7 +5469,7 @@ class JoDetailController extends BaseController {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'Edit Stage Inspection',
                               style: TextStyle(
                                   fontSize: 16,
@@ -5370,7 +5481,7 @@ class JoDetailController extends BaseController {
                             ),
                             Text(
                               'Stage ${activityStage}: ${activityStages[activityStage - 1]}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w700),
                             ),
                             const SizedBox(
@@ -5423,7 +5534,7 @@ class JoDetailController extends BaseController {
                                     const SizedBox(
                                       height: 16,
                                     ),
-                                    Text('Detail Activities'),
+                                    const Text('Detail Activities'),
                                     const SizedBox(
                                       height: 16,
                                     ),
@@ -5477,13 +5588,6 @@ class JoDetailController extends BaseController {
                                               activityEndTime.text =
                                                   await selectTime(
                                                       Get.context!);
-                                            },
-                                            validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty) {
-                                                return 'Field wajib diisi!';
-                                              }
-                                              return null;
                                             },
                                             style: const TextStyle(
                                                 color: onFocusColor),
@@ -5557,7 +5661,7 @@ class JoDetailController extends BaseController {
                                 }
                               },
                               child: Container(
-                                margin: EdgeInsets.only(right: 8),
+                                margin: const EdgeInsets.only(right: 8),
                                 height: 42,
                                 width: 42,
                                 decoration: BoxDecoration(
@@ -5580,7 +5684,7 @@ class JoDetailController extends BaseController {
                                 ? ListView.builder(
                                     itemCount: stageListModal.value.length,
                                     shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
+                                    physics: const NeverScrollableScrollPhysics(),
                                     itemBuilder: (context, index) {
                                       TDJoInspectionActivityStages stage =
                                           stageListModal.value[index];
@@ -5636,11 +5740,11 @@ class JoDetailController extends BaseController {
                                                                           stage!
                                                                               .transDate!);
                                                                     },
-                                                                    child: const Icon(
-                                                                        Icons
-                                                                            .delete_forever,
-                                                                        color: Colors
-                                                                            .red),
+                                                                    child: const ImageIcon(
+                                                                        AssetImage("assets/icons/deleteStage.png"),
+                                                                        color: Colors.red,
+                                                                        size: 16
+                                                                    ),
                                                                   )
                                                                 ],
                                                               )),
@@ -5652,7 +5756,7 @@ class JoDetailController extends BaseController {
                                                       ListView.builder(
                                                           shrinkWrap: true,
                                                           physics:
-                                                              NeverScrollableScrollPhysics(),
+                                                              const NeverScrollableScrollPhysics(),
                                                           itemCount: stage
                                                                   .listActivity!
                                                                   .length ??
@@ -5668,7 +5772,7 @@ class JoDetailController extends BaseController {
                                                                     CrossAxisAlignment
                                                                         .start,
                                                                 children: [
-                                                                  Expanded(
+                                                                  const Expanded(
                                                                       flex: 1,
                                                                       child:
                                                                           Text(
@@ -5679,23 +5783,23 @@ class JoDetailController extends BaseController {
                                                                             fontWeight:
                                                                                 FontWeight.w700),
                                                                       )),
-                                                                  VerticalDivider(
+                                                                  const VerticalDivider(
                                                                     width: 1,
                                                                   ),
-                                                                  SizedBox(
+                                                                  const SizedBox(
                                                                     width: 8,
                                                                   ),
                                                                   Expanded(
                                                                       flex: 1,
                                                                       child: Text(
                                                                           '${Helper.formatToHourMinute(activity!.startActivityTime!)} - ${Helper.formatToHourMinute(activity!.endActivityTime!)}',
-                                                                          style: TextStyle(
+                                                                          style: const TextStyle(
                                                                               fontSize: 14,
                                                                               fontWeight: FontWeight.w700))),
-                                                                  VerticalDivider(
+                                                                  const VerticalDivider(
                                                                     width: 1,
                                                                   ),
-                                                                  SizedBox(
+                                                                  const SizedBox(
                                                                     width: 8,
                                                                   ),
                                                                   Expanded(
@@ -5707,7 +5811,7 @@ class JoDetailController extends BaseController {
                                                                             child:
                                                                                 Text(
                                                                               activity.activity ?? '-',
-                                                                              style: TextStyle(fontSize: 14),
+                                                                              style: const TextStyle(fontSize: 14),
                                                                             ),
                                                                           ),
                                                                           InkWell(
@@ -5716,22 +5820,37 @@ class JoDetailController extends BaseController {
                                                                               debugPrint('Edit');
                                                                               editActivityDetailV2(stage!.transDate!, activity!.activity!);
                                                                             },
-                                                                            child:
-                                                                                Icon(
-                                                                              Icons.mode_edit_outlined,
-                                                                              color: primaryColor,
+                                                                            child: const ImageIcon(
+                                                                                AssetImage("assets/icons/editActivity.png"),
+                                                                                color: primaryColor,
+                                                                                size: 16
                                                                             ),
                                                                           ),
-                                                                          InkWell(
-                                                                            onTap:
-                                                                                () {
-                                                                              debugPrint('Hapus detail');
-                                                                              deleteActivityDetailV2(stage!.transDate!, activity!.activity!);
-                                                                            },
-                                                                            child:
-                                                                                Icon(
-                                                                              Icons.delete_forever,
-                                                                              color: Colors.red,
+                                                                          const SizedBox(
+                                                                            width: 6,
+                                                                          ),
+                                                                          SizedBox(
+                                                                            height: 18,
+                                                                            width: 18,
+                                                                            child: Ink(
+                                                                              decoration: ShapeDecoration(
+                                                                                  color: Colors.red,
+                                                                                  shape: RoundedRectangleBorder(
+                                                                                      borderRadius: BorderRadius.circular(6)
+                                                                                  )
+                                                                              ),
+                                                                              child: InkWell(
+                                                                                onTap:
+                                                                                    () {
+                                                                                  debugPrint('Hapus detail');
+                                                                                  deleteActivityDetailV2(stage!.transDate!, activity!.activity!);
+                                                                                },
+                                                                                child: const Icon(
+                                                                                    Icons.remove,
+                                                                                    color: Colors.white,
+                                                                                    size:12
+                                                                                ),
+                                                                              ),
                                                                             ),
                                                                           ),
                                                                         ],
@@ -5787,7 +5906,7 @@ class JoDetailController extends BaseController {
                                       );
                                     },
                                   )
-                                : SizedBox()
+                                : const SizedBox()
                           ],
                         ),
                       ),
@@ -5804,13 +5923,13 @@ class JoDetailController extends BaseController {
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
-                                      side: BorderSide(color: primaryColor),
+                                      side: const BorderSide(color: primaryColor),
                                       borderRadius: BorderRadius.circular(12))),
                               child: Container(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 12),
                                   width: double.infinity,
-                                  child: Center(
+                                  child: const Center(
                                       child: Text(
                                     'Cancel',
                                     style: TextStyle(
@@ -5836,7 +5955,7 @@ class JoDetailController extends BaseController {
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 12),
                                   width: double.infinity,
-                                  child: Center(
+                                  child: const Center(
                                       child: Text(
                                     'Submit',
                                     style: TextStyle(
@@ -5860,7 +5979,7 @@ class JoDetailController extends BaseController {
   void editActivityStageConfirm() {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Attention',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
@@ -5899,7 +6018,7 @@ class JoDetailController extends BaseController {
   void removeActivityConfirm(String date, int indexitem, int index, int stage, String activity) {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Attention',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
@@ -5928,7 +6047,7 @@ class JoDetailController extends BaseController {
   void removeActivityByDateConfirm(String date, int indexDate, int stage) {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Attention',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
@@ -5970,7 +6089,7 @@ class JoDetailController extends BaseController {
   Future<void> selectInitialDate5(BuildContext context, int index) async {
     final DateTime? picked = await showDatePicker(
         context: context,
-        firstDate: DateTime.now().subtract(Duration(days: 1)),
+        firstDate: DateTime.now().subtract(const Duration(days: 1)),
         lastDate: DateTime(
             DateTime.now().year, DateTime.now().month, DateTime.now().day + 1));
     if (picked != null) {
@@ -5982,7 +6101,7 @@ class JoDetailController extends BaseController {
   Future<void> selectFinalDate5(BuildContext context, int index) async {
     final DateTime? picked = await showDatePicker(
         context: context,
-        firstDate: DateTime.now().subtract(Duration(days: 1)),
+        firstDate: DateTime.now().subtract(const Duration(days: 1)),
         lastDate: DateTime(
             DateTime.now().year, DateTime.now().month, DateTime.now().day + 1));
     if (picked != null) {
@@ -6119,10 +6238,10 @@ class JoDetailController extends BaseController {
           init: JoDetailController(),
           builder: (controller) => SizedBox(
             child: Container(
-                margin: EdgeInsets.only(top: 48),
-                padding: EdgeInsets.all(24),
+                margin: const EdgeInsets.only(top: 48),
+                padding: const EdgeInsets.all(24),
                 width: double.infinity,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
                         topRight: Radius.circular(24),
@@ -6133,7 +6252,7 @@ class JoDetailController extends BaseController {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Add Stage Inspection',
                           style: TextStyle(
                               fontSize: 16,
@@ -6240,7 +6359,7 @@ class JoDetailController extends BaseController {
                                     ? Column(children: [
                                         ListView.builder(
                                             physics:
-                                                NeverScrollableScrollPhysics(),
+                                                const NeverScrollableScrollPhysics(),
                                             shrinkWrap: true,
                                             itemCount: activity5bargesCount,
                                             itemBuilder: (context, i) {
@@ -6300,14 +6419,14 @@ class JoDetailController extends BaseController {
                                             addBargeForm();
                                           },
                                           style: ElevatedButton.styleFrom(
-                                              padding: EdgeInsets.symmetric(
+                                              padding: const EdgeInsets.symmetric(
                                                   vertical: 12),
                                               backgroundColor: Colors.green,
                                               shape: RoundedRectangleBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           12))),
-                                          child: SizedBox(
+                                          child: const SizedBox(
                                               width: double.infinity,
                                               child: Center(
                                                   child: Text(
@@ -6330,7 +6449,7 @@ class JoDetailController extends BaseController {
                                                 },
                                                 style: ElevatedButton.styleFrom(
                                                     padding:
-                                                        EdgeInsets.symmetric(
+                                                        const EdgeInsets.symmetric(
                                                             vertical: 12),
                                                     backgroundColor: Colors.red,
                                                     shape:
@@ -6339,11 +6458,11 @@ class JoDetailController extends BaseController {
                                                                 BorderRadius
                                                                     .circular(
                                                                         12))),
-                                                child: SizedBox(
+                                                child: const SizedBox(
                                                     width: double.infinity,
                                                     child: Center(
                                                         child: Text(
-                                                      'Remove Barge',
+                                                      'Delete',
                                                       style: TextStyle(
                                                           color: Colors.white,
                                                           fontWeight:
@@ -6366,7 +6485,7 @@ class JoDetailController extends BaseController {
                                   height: 16,
                                 ),
                                 ListView.builder(
-                                    physics: NeverScrollableScrollPhysics(),
+                                    physics: const NeverScrollableScrollPhysics(),
                                     shrinkWrap: true,
                                     itemCount: activity5FormCount.value,
                                     itemBuilder: (context, index) {
@@ -6377,7 +6496,7 @@ class JoDetailController extends BaseController {
                                               Expanded(
                                                 child: Text(
                                                   'KOS Transhipment Form ${index + 1}',
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                       fontSize: 16,
                                                       fontWeight:
                                                           FontWeight.w700,
@@ -6396,7 +6515,7 @@ class JoDetailController extends BaseController {
                                                           },
                                                           child: Container(
                                                             margin:
-                                                                EdgeInsets.only(
+                                                                const EdgeInsets.only(
                                                                     right: 8),
                                                             height: 42,
                                                             width: 42,
@@ -6407,7 +6526,7 @@ class JoDetailController extends BaseController {
                                                                     BorderRadius
                                                                         .circular(
                                                                             8)),
-                                                            child: Center(
+                                                            child: const Center(
                                                               child: Icon(
                                                                 Icons.add,
                                                                 color: Colors
@@ -6425,7 +6544,7 @@ class JoDetailController extends BaseController {
                                                                 },
                                                                 child:
                                                                     Container(
-                                                                  margin: EdgeInsets
+                                                                  margin: const EdgeInsets
                                                                       .only(
                                                                           right:
                                                                               8),
@@ -6437,7 +6556,7 @@ class JoDetailController extends BaseController {
                                                                       borderRadius:
                                                                           BorderRadius.circular(
                                                                               8)),
-                                                                  child: Center(
+                                                                  child: const Center(
                                                                     child: Icon(
                                                                       Icons
                                                                           .remove,
@@ -6666,14 +6785,14 @@ class JoDetailController extends BaseController {
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.white,
                                       shape: RoundedRectangleBorder(
-                                          side: BorderSide(color: primaryColor),
+                                          side: const BorderSide(color: primaryColor),
                                           borderRadius:
                                               BorderRadius.circular(12))),
                                   child: Container(
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 12),
                                       width: double.infinity,
-                                      child: Center(
+                                      child: const Center(
                                           child: Text(
                                         'Cancel',
                                         style: TextStyle(
@@ -6701,7 +6820,7 @@ class JoDetailController extends BaseController {
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 12),
                                       width: double.infinity,
-                                      child: Center(
+                                      child: const Center(
                                           child: Text(
                                         'Submit',
                                         style: TextStyle(
@@ -6727,12 +6846,12 @@ class JoDetailController extends BaseController {
   void addActivityStage5Confirm() async {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Attention',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text(
+        content: const Text(
             'Apakah benar anda akan submit stage work complete ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
@@ -6767,12 +6886,12 @@ class JoDetailController extends BaseController {
   void nextStageActivity5Confirm() {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Attention',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text(
+        content: const Text(
             'Apakah anda ingin melanjutkan ke stage berikutnya? jika Ya, anda tidak bisa mengubah stage sebelumnya. Pastikan data yang anda input benar.'),
         actions: [
           TextButton(
@@ -6838,12 +6957,12 @@ class JoDetailController extends BaseController {
   void editActivityStage5Confirm() {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Attention',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text(
+        content: const Text(
             'Apakah benar anda akan menyimpan perubahan stage work complete ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
@@ -6880,7 +6999,7 @@ class JoDetailController extends BaseController {
   Future<void> selectDate6(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
-        firstDate: DateTime.now().subtract(Duration(days: 1)),
+        firstDate: DateTime.now().subtract(const Duration(days: 1)),
         lastDate: DateTime(
             DateTime.now().year, DateTime.now().month, DateTime.now().day + 1));
     if (picked != null) {
@@ -6926,21 +7045,28 @@ class JoDetailController extends BaseController {
 
   void removeActivity6Files(int index) {
     activity6Attachments.value.removeAt(index);
-    // var file = activity6Attachments.value[index];
-    // activity6Attachments.value[index] = TDJoInspectionAttachment(
-    //   id: file.id ?? null,
-    //   tHJoId: file.tHJoId,
-    //   pathName: file.pathName,
-    //   fileName: file.fileName,
-    //   isActive: 0,
-    //   isUpload: 0,
-    //   createdBy: file.createdBy,
-    //   updatedBy: userData.value?.id ?? 0,
-    //   createdAt: file.createdAt,
-    //   updatedAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(
-    //       DateTime.now()).toString(),
-    // );
     update();
+
+    // var file = activity6Attachments.value[index];
+    // if(file.id != null){
+    //   activity6Attachments.value[index] = TDJoInspectionAttachment(
+    //     id: file.id ?? null,
+    //     tHJoId: file.tHJoId,
+    //     pathName: file.pathName,
+    //     fileName: file.fileName,
+    //     isActive: 0,
+    //     isUpload: 0,
+    //     createdBy: file.createdBy,
+    //     updatedBy: userData.value?.id ?? 0,
+    //     createdAt: file.createdAt,
+    //     updatedAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(
+    //         DateTime.now()).toString(),
+    //   );
+    //   update();
+    // } else {
+    //   activity6Attachments.value.removeAt(index);
+    // }
+
   }
 
   void removeActivity6FilesConfirm(int index) {
@@ -7011,7 +7137,7 @@ class JoDetailController extends BaseController {
           children: [
             Text(
               'Attachment ${index + 1}',
-              style: TextStyle(
+              style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                   color: primaryColor),
@@ -7025,12 +7151,12 @@ class JoDetailController extends BaseController {
             //     color: Colors.red,
             //   ),
             // ),
-            Spacer(),
+            const Spacer(),
             IconButton(
               onPressed: () {
                 Get.back();
               },
-              icon: Icon(Icons.close),
+              icon: const Icon(Icons.close),
             )
           ],
         ),
@@ -7053,12 +7179,12 @@ class JoDetailController extends BaseController {
   void mediaPickerConfirm() {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'File Attachment',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Pilih sumber file yang ingin dilampirkan.'),
+        content: const Text('Pilih sumber file yang ingin dilampirkan.'),
         actions: [
           Row(
             children: [
@@ -7075,9 +7201,9 @@ class JoDetailController extends BaseController {
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                                side: BorderSide(color: primaryColor),
+                                side: const BorderSide(color: primaryColor),
                                 borderRadius: BorderRadius.circular(12))),
-                        child: Center(
+                        child: const Center(
                             child: Icon(
                           Icons.camera_alt,
                           color: primaryColor,
@@ -7098,9 +7224,9 @@ class JoDetailController extends BaseController {
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                                side: BorderSide(color: primaryColor),
+                                side: const BorderSide(color: primaryColor),
                                 borderRadius: BorderRadius.circular(12))),
-                        child: Center(
+                        child: const Center(
                             child: Icon(
                           Icons.folder_rounded,
                           color: primaryColor,
@@ -7153,10 +7279,10 @@ class JoDetailController extends BaseController {
         GetBuilder(
           init: JoDetailController(),
           builder: (controller) => Container(
-              margin: EdgeInsets.only(top: 48),
-              padding: EdgeInsets.all(24),
+              margin: const EdgeInsets.only(top: 48),
+              padding: const EdgeInsets.all(24),
               width: double.infinity,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                       topRight: Radius.circular(24),
@@ -7172,7 +7298,7 @@ class JoDetailController extends BaseController {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              const Text(
                                 'Add Stage Inspection',
                                 style: TextStyle(
                                     fontSize: 16,
@@ -7228,7 +7354,7 @@ class JoDetailController extends BaseController {
                               const SizedBox(
                                 height: 16,
                               ),
-                              Text('Detail Activities'),
+                              const Text('Detail Activities'),
                               const SizedBox(
                                 height: 16,
                               ),
@@ -7346,7 +7472,7 @@ class JoDetailController extends BaseController {
                                   }
                                 },
                                 child: Container(
-                                  margin: EdgeInsets.only(right: 8),
+                                  margin: const EdgeInsets.only(right: 8),
                                   height: 42,
                                   width: 42,
                                   decoration: BoxDecoration(
@@ -7369,7 +7495,7 @@ class JoDetailController extends BaseController {
                                   ? ListView.builder(
                                       itemCount: stageListModal.value.length,
                                       shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
+                                      physics: const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
                                         TDJoInspectionActivityStages stage =
                                             stageListModal.value[index];
@@ -7407,17 +7533,14 @@ class JoDetailController extends BaseController {
                                                                 flex: 2,
                                                                 child: Row(
                                                                   children: [
-                                                                    Expanded(
-                                                                      flex: 1,
-                                                                      child:
-                                                                          Text(
+                                                                    Text(
                                                                         stage.transDate ??
                                                                             '-',
                                                                         style: const TextStyle(
                                                                             fontSize:
                                                                                 14),
                                                                       ),
-                                                                    ),
+                                                                    const SizedBox(width: 6),
                                                                     InkWell(
                                                                       onTap:
                                                                           () {
@@ -7428,11 +7551,11 @@ class JoDetailController extends BaseController {
                                                                             index,
                                                                             stage.mStatusinspectionstagesId!.toInt());
                                                                       },
-                                                                      child: const Icon(
-                                                                          Icons
-                                                                              .delete_forever,
-                                                                          color:
-                                                                              Colors.red),
+                                                                      child: const ImageIcon(
+                                                                        AssetImage("assets/icons/deleteStage.png"),
+                                                                          color: Colors.red,
+                                                                          size: 16
+                                                                      ),
                                                                     )
                                                                   ],
                                                                 )),
@@ -7444,7 +7567,7 @@ class JoDetailController extends BaseController {
                                                         ListView.builder(
                                                             shrinkWrap: true,
                                                             physics:
-                                                                NeverScrollableScrollPhysics(),
+                                                                const NeverScrollableScrollPhysics(),
                                                             itemCount: stage
                                                                     .listActivity!
                                                                     .length ??
@@ -7460,7 +7583,7 @@ class JoDetailController extends BaseController {
                                                                       CrossAxisAlignment
                                                                           .start,
                                                                   children: [
-                                                                    Expanded(
+                                                                    const Expanded(
                                                                         flex: 1,
                                                                         child:
                                                                             Text(
@@ -7469,10 +7592,10 @@ class JoDetailController extends BaseController {
                                                                               fontSize: 14,
                                                                               fontWeight: FontWeight.w700),
                                                                         )),
-                                                                    VerticalDivider(
+                                                                    const VerticalDivider(
                                                                       width: 1,
                                                                     ),
-                                                                    SizedBox(
+                                                                    const SizedBox(
                                                                       width: 8,
                                                                     ),
                                                                     Expanded(
@@ -7480,11 +7603,11 @@ class JoDetailController extends BaseController {
                                                                         child: Text(
                                                                             '${Helper.formatToHourMinute(activity!.startActivityTime!)} - ${Helper.formatToHourMinute(activity!.endActivityTime!)}',
                                                                             style:
-                                                                                TextStyle(fontSize: 14, fontWeight: FontWeight.w700))),
-                                                                    VerticalDivider(
+                                                                                const TextStyle(fontSize: 14, fontWeight: FontWeight.w700))),
+                                                                    const VerticalDivider(
                                                                       width: 1,
                                                                     ),
-                                                                    SizedBox(
+                                                                    const SizedBox(
                                                                       width: 8,
                                                                     ),
                                                                     Expanded(
@@ -7495,7 +7618,7 @@ class JoDetailController extends BaseController {
                                                                             Expanded(
                                                                               child: Text(
                                                                                 activity.activity ?? '-',
-                                                                                style: TextStyle(fontSize: 14),
+                                                                                style: const TextStyle(fontSize: 14),
                                                                               ),
                                                                             ),
                                                                             InkWell(
@@ -7503,19 +7626,36 @@ class JoDetailController extends BaseController {
                                                                                 debugPrint('Edit');
                                                                                 editActivityDetailV2(stage!.transDate!, activity!.activity!);
                                                                               },
-                                                                              child: Icon(
-                                                                                Icons.mode_edit_outlined,
-                                                                                color: primaryColor,
+                                                                              child: const ImageIcon(
+                                                                                AssetImage("assets/icons/editActivity.png"),
+                                                                                  color: primaryColor,
+                                                                                  size: 16
                                                                               ),
                                                                             ),
-                                                                            InkWell(
-                                                                              onTap: () {
-                                                                                debugPrint('Hapus detail');
-                                                                                removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(), activity.activity ?? '');
-                                                                              },
-                                                                              child: Icon(
-                                                                                Icons.delete_forever,
-                                                                                color: Colors.red,
+                                                                            const SizedBox(
+                                                                                width: 6,
+                                                                            ),
+                                                                            SizedBox(
+                                                                                height: 18,
+                                                                              width: 18,
+                                                                              child: Ink(
+                                                                                decoration: ShapeDecoration(
+                                                                                  color: Colors.red,
+                                                                                  shape: RoundedRectangleBorder(
+                                                                                    borderRadius: BorderRadius.circular(6)
+                                                                                  )
+                                                                                ),
+                                                                                child: InkWell(
+                                                                                  onTap: () {
+                                                                                    debugPrint('Hapus detail');
+                                                                                    removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(), activity.activity ?? '');
+                                                                                  },
+                                                                                  child: const Icon(
+                                                                                    Icons.remove,
+                                                                                    color: Colors.white,
+                                                                                      size:12
+                                                                                  ),
+                                                                                ),
                                                                               ),
                                                                             ),
                                                                           ],
@@ -7569,7 +7709,7 @@ class JoDetailController extends BaseController {
                                         );
                                       },
                                     )
-                                  : SizedBox(),
+                                  : const SizedBox(),
                               const SizedBox(
                                 height: 16,
                               ),
@@ -7581,7 +7721,7 @@ class JoDetailController extends BaseController {
                               const SizedBox(
                                 height: 16,
                               ),
-                              Text(
+                              const Text(
                                   'File lampiran maksimal 5 file dengan ukuran total file maksimal 10 MB. Jenis file yang diperbolehkan hanya PDF/JPG/PNG/JPEG.'),
                               const SizedBox(
                                 height: 16,
@@ -7589,9 +7729,9 @@ class JoDetailController extends BaseController {
                               activity6Attachments.value.isNotEmpty
                                   ? GridView.builder(
                                       shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
+                                      physics: const NeverScrollableScrollPhysics(),
                                       gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
                                         crossAxisCount: 5,
                                         mainAxisSpacing: 8,
                                         crossAxisSpacing: 8,
@@ -7638,9 +7778,9 @@ class JoDetailController extends BaseController {
                                                                   .removeActivity6Files(
                                                                       index);
                                                             },
-                                                            icon: Icon(
+                                                            icon: const Icon(
                                                               Icons
-                                                                  .remove_circle,
+                                                                  .close,
                                                               size: 12,
                                                               color: Colors.red,
                                                             )),
@@ -7671,7 +7811,7 @@ class JoDetailController extends BaseController {
                                                                   height: 42,
                                                                 ),
                                                                 Text(filename,
-                                                                    style: TextStyle(
+                                                                    style: const TextStyle(
                                                                         fontSize:
                                                                             8),
                                                                     overflow:
@@ -7696,9 +7836,9 @@ class JoDetailController extends BaseController {
                                                                       .removeActivity6Files(
                                                                           index);
                                                                 },
-                                                                icon: Icon(
+                                                                icon: const Icon(
                                                                   Icons
-                                                                      .remove_circle,
+                                                                      .close,
                                                                   size: 12,
                                                                   color: Colors
                                                                       .red,
@@ -7725,10 +7865,10 @@ class JoDetailController extends BaseController {
                                         backgroundColor: Colors.white,
                                         shape: RoundedRectangleBorder(
                                             side:
-                                                BorderSide(color: primaryColor),
+                                                const BorderSide(color: primaryColor),
                                             borderRadius:
                                                 BorderRadius.circular(12))),
-                                    child: Center(
+                                    child: const Center(
                                         child: Icon(
                                       Icons.folder_rounded,
                                       color: primaryColor,
@@ -7753,14 +7893,14 @@ class JoDetailController extends BaseController {
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
-                                        side: BorderSide(color: primaryColor),
+                                        side: const BorderSide(color: primaryColor),
                                         borderRadius:
                                             BorderRadius.circular(12))),
                                 child: Container(
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 12),
                                     width: double.infinity,
-                                    child: Center(
+                                    child: const Center(
                                         child: Text(
                                       'Cancel',
                                       style: TextStyle(
@@ -7786,7 +7926,7 @@ class JoDetailController extends BaseController {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 12),
                                     width: double.infinity,
-                                    child: Center(
+                                    child: const Center(
                                         child: Text(
                                       'Submit',
                                       style: TextStyle(
@@ -7808,142 +7948,210 @@ class JoDetailController extends BaseController {
         isScrollControlled: true);
   }
 
-  // Future<bool> editActivity6StagesV2() async {
-  //   try {
-  //     final db = await SqlHelper.db();
-  //     List<TDJoInspectionActivityStages> stages = stageListModal.value;
-  //     final createdBy = userData.value!.id;
-  //     //deactive semua aktifitas dan stagenya
-  //     // update table t_d_jo_inspection_activity_stages set is_active =0 berdasarkan thjoid dan transdate dan mStatusinspectionstagesId
-  //     int result = await db.update(
-  //       't_d_jo_inspection_activity_stages',
-  //       {'is_active': 0}, // The new value for the is_active field
-  //       where: 't_h_jo_id = ?  AND m_statusinspectionstages_id = ?',
-  //       whereArgs: [id, activityStage],
-  //     );
-  //
-  //     //debugPrint("data input edit deactive ${result} ${id} ${statusId}");
-  //     debugPrint("data input edit remarks ${activityListTextController.value}");
-  //
-  //     stages.asMap().forEach((index, stage) async {
-  //       debugPrint("data input edit ${jsonEncode(stage.toJson())}");
-  //       if (stage.id != null) {
-  //         TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
-  //             isUpload: "0",
-  //             isActive: "1",
-  //             updatedBy: userData.value!.id.toString(),
-  //             updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-  //             remarks: activityListTextController.value[index].text);
-  //
-  //         int updated = await db.update(
-  //           't_d_jo_inspection_activity_stages',
-  //           data.toEdit(),
-  //           where: 'id = ? ',
-  //           whereArgs: [stage.id],
-  //         );
-  //
-  //         //inactive detail
-  //         int detail = await db.update(
-  //           't_d_jo_inspection_activity',
-  //           {'is_active': 0}, // The new value for the is_active field
-  //           where: 't_d_jo_inspection_activity_stages_id = ?',
-  //           whereArgs: [stage.id],
-  //         );
-  //         List<TDJoInspectionActivity> listActivity = stage.listActivity ?? [];
-  //         listActivity.forEach((activity) async {
-  //           if (activity.code != null) {
-  //             //Update
-  //             TDJoInspectionActivity detail = TDJoInspectionActivity(
-  //                 startActivityTime: activity.startActivityTime,
-  //                 endActivityTime: activity.endActivityTime,
-  //                 activity: activity.activity,
-  //                 isActive: 1,
-  //                 isUpload: 0,
-  //                 updatedAt:
-  //                     DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-  //                 updatedBy: createdBy.toString());
-  //             update();
-  //             debugPrint('data yang update nya : ${jsonEncode(detail)}');
-  //
-  //             int updated = await db.update(
-  //               't_d_jo_inspection_activity',
-  //               detail.toEdit(),
-  //               where: 'id = ?',
-  //               whereArgs: [activity.id],
-  //             );
-  //             debugPrint("Print Edit ${activity.id} ${updated}");
-  //           } else {
-  //             //insert
-  //             TDJoInspectionActivity detail = TDJoInspectionActivity(
-  //                 tHJoId: id,
-  //                 tDJoInspectionActivityStagesId: stage.id,
-  //                 startActivityTime: activity.startActivityTime,
-  //                 endActivityTime: activity.endActivityTime,
-  //                 activity: activity.activity,
-  //                 code:
-  //                     'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
-  //                 isActive: 1,
-  //                 isUpload: 0,
-  //                 createdAt:
-  //                     DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-  //                 createdBy: createdBy);
-  //             int raw = await db.insert(
-  //                 "t_d_jo_inspection_activity", detail.toInsert());
-  //             debugPrint("Print Edit ${activity.id} ${raw}");
-  //           }
-  //         });
-  //       } else {
-  //         TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
-  //           tHJoId: id,
-  //           mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
-  //           transDate: stage.transDate,
-  //           code:
-  //               "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
-  //           isUpload: "0",
-  //           isActive: "1",
-  //           createdBy: userData.value!.id,
-  //           remarks: activityListTextController.value[index].text,
-  //           createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-  //         );
-  //         int result = await db.insert(
-  //             "t_d_jo_inspection_activity_stages", data.toInsert());
-  //         List<TDJoInspectionActivity> details = stage.listActivity ?? [];
-  //         details.forEach((activity) async {
-  //           TDJoInspectionActivity detail = TDJoInspectionActivity(
-  //               tHJoId: id,
-  //               tDJoInspectionActivityStagesId: result,
-  //               startActivityTime: activity.startActivityTime,
-  //               endActivityTime: activity.endActivityTime,
-  //               activity: activity.activity,
-  //               code:
-  //                   'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
-  //               isActive: 1,
-  //               isUpload: 0,
-  //               createdAt:
-  //                   DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-  //               createdBy: createdBy);
-  //           await db.insert("t_d_jo_inspection_activity", detail.toInsert());
-  //         });
-  //       }
-  //     });
-  //     stageListModal.value = [];
-  //     activityListTextController.value = [];
-  //     return true;
-  //   } catch (e) {
-  //     // Handle any parsing errors
-  //     return false; // Return the original time if parsing fails
-  //   }
-  // }
+  Future<bool> editActivity6StagesV2() async {
+    try {
+      final db = await SqlHelper.db();
+      List<TDJoInspectionActivityStages> stages = stageListModal.value;
+      final createdBy = userData.value!.id;
+      //deactive semua aktifitas dan stagenya
+      // update table t_d_jo_inspection_activity_stages set is_active =0 berdasarkan thjoid dan transdate dan mStatusinspectionstagesId
+      int result = await db.update(
+        't_d_jo_inspection_activity_stages',
+        {'is_active': 0}, // The new value for the is_active field
+        where: 't_h_jo_id = ?  AND m_statusinspectionstages_id = ?',
+        whereArgs: [id, activityStage],
+      );
+
+      //debugPrint("data input edit deactive ${result} ${id} ${statusId}");
+      debugPrint("data input edit remarks ${activityListTextController.value}");
+
+      stages.asMap().forEach((index, stage) async {
+        debugPrint("data input edit ${jsonEncode(stage.toJson())}");
+        if (stage.id != null) {
+          TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
+              isUpload: "0",
+              isActive: "1",
+              updatedBy: userData.value!.id.toString(),
+              updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+              remarks: activityListTextController.value[index].text);
+
+          int updated = await db.update(
+            't_d_jo_inspection_activity_stages',
+            data.toEdit(),
+            where: 'id = ? ',
+            whereArgs: [stage.id],
+          );
+
+          //inactive detail
+          int detail = await db.update(
+            't_d_jo_inspection_activity',
+            {'is_active': 0}, // The new value for the is_active field
+            where: 't_d_jo_inspection_activity_stages_id = ?',
+            whereArgs: [stage.id],
+          );
+          List<TDJoInspectionActivity> listActivity = stage.listActivity ?? [];
+          listActivity.forEach((activity) async {
+            if (activity.code != null) {
+              //Update
+              TDJoInspectionActivity detail = TDJoInspectionActivity(
+                  startActivityTime: activity.startActivityTime,
+                  endActivityTime: activity.endActivityTime,
+                  activity: activity.activity,
+                  isActive: 1,
+                  isUpload: 0,
+                  updatedAt:
+                      DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+                  updatedBy: createdBy.toString());
+              update();
+              debugPrint('data yang update nya : ${jsonEncode(detail)}');
+
+              int updated = await db.update(
+                't_d_jo_inspection_activity',
+                detail.toEdit(),
+                where: 'id = ?',
+                whereArgs: [activity.id],
+              );
+              debugPrint("Print Edit ${activity.id} ${updated}");
+            } else {
+              //insert
+              TDJoInspectionActivity detail = TDJoInspectionActivity(
+                  tHJoId: id,
+                  tDJoInspectionActivityStagesId: stage.id,
+                  startActivityTime: activity.startActivityTime,
+                  endActivityTime: activity.endActivityTime,
+                  activity: activity.activity,
+                  code:
+                      'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+                  isActive: 1,
+                  isUpload: 0,
+                  createdAt:
+                      DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+                  createdBy: createdBy);
+              int raw = await db.insert(
+                  "t_d_jo_inspection_activity", detail.toInsert());
+              debugPrint("Print Edit ${activity.id} ${raw}");
+            }
+          });
+        } else {
+          TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
+            tHJoId: id,
+            mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
+            transDate: stage.transDate,
+            code:
+                "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+            isUpload: "0",
+            isActive: "1",
+            createdBy: userData.value!.id,
+            remarks: activityListTextController.value[index].text,
+            createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+          );
+          int result = await db.insert(
+              "t_d_jo_inspection_activity_stages", data.toInsert());
+          List<TDJoInspectionActivity> details = stage.listActivity ?? [];
+          details.forEach((activity) async {
+            TDJoInspectionActivity detail = TDJoInspectionActivity(
+                tHJoId: id,
+                tDJoInspectionActivityStagesId: result,
+                startActivityTime: activity.startActivityTime,
+                endActivityTime: activity.endActivityTime,
+                activity: activity.activity,
+                code:
+                    'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+                isActive: 1,
+                isUpload: 0,
+                createdAt:
+                    DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+                createdBy: createdBy);
+            await db.insert("t_d_jo_inspection_activity", detail.toInsert());
+          });
+        }
+      });
+
+      await db.update('t_d_jo_inspection_attachment',{'is_active' : 0}, where: 't_h_jo_id = ?',
+        whereArgs: [id]);
+      debugPrint("print list file attachment ${activity6Attachments.value}");
+      var attachmentCount = 0;
+      for (var file in activity6Attachments.value) {
+        debugPrint('nyang mau di update attachnya: ${jsonEncode(file)}');
+        attachmentCount++;
+        if(file.id != null){
+          // var filename = file.fileName!;
+          TDJoInspectionAttachment attach = file.copyWith(
+            tDJoInspectionActivityStagesId: stages.first.id,
+              updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+              updatedBy: createdBy
+          );
+          TDJoInspectionAttachment(
+              tHJoId: file.tHJoId,
+              tDJoInspectionActivityStagesId: stages.first.id,
+              fileName: file.fileName,
+              pathName: file.pathName,
+              code: file.code,
+              isActive: 1,
+              isUpload: 0,
+              updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+              updatedBy: createdBy);
+          debugPrint('debug attach nya: ${jsonEncode(attach.toEdit())}');
+          await db.update('t_d_jo_inspection_attachment', attach.toEdit(), where: 'id = ?', whereArgs: [file.id]);
+        } else {
+          var filename = file.fileName!;
+          TDJoInspectionAttachment attach = TDJoInspectionAttachment(
+              tHJoId: id,
+              tDJoInspectionActivityStagesId: stages.first.id,
+              fileName: filename,
+              pathName: file.pathName,
+              code:
+              'JOIAF-${activityStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${attachmentCount}',
+              isActive: 1,
+              isUpload: 0,
+              createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+              createdBy: createdBy);
+          await db.insert('t_d_jo_inspection_attachment', attach.toJson());
+        }
+
+      }
+
+        //  if(activity6Attachments.value.isNotEmpty){
+        //       var count = 0;
+        //       activity6Attachments.value.forEach((attachment){
+        //         count++;
+        //         attachmentValues.add({
+        //         'id': attachment.id ?? null,
+        //         't_h_jo_id' : id,
+        //         't_d_jo_inspection_activity_stages_id' : null,
+        //         'path_name' : attachment.pathName,
+        //         'file_name' : attachment.fileName,
+        //         'code' : attachment.code ?? 'JOIAF-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$count',
+        //         'is_active' : attachment.isActive,
+        //         'is_upload' : attachment.isUpload,
+        //         'created_by' : attachment.createdBy,
+        //         'updated_by' : attachment.id == null ? null : createdBy,
+        //         'created_at' : attachment.createdAt,
+        //         'updated_at' : attachment.id == null ? null : DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()).toString(),
+        //         });
+        //         // attachmentValues.add('''($id,'${attachment.pathName}','${attachment.fileName}','JOIAF-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$count',1,0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
+        //         // update();
+        //       });
+        //     }
+
+      stageListModal.value = [];
+      activityListTextController.value = [];
+      return true;
+    } catch (e) {
+      // Handle any parsing errors
+      return false; // Return the original time if parsing fails
+    }
+  }
 
   void addActivity6StageConfirm() {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Attention',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text(
+        content: const Text(
             'Apakah benar anda akan submit stage report to client ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
@@ -7981,12 +8189,12 @@ class JoDetailController extends BaseController {
   void editActivity6StageConfirm() {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Attention',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text(
+        content: const Text(
             'Apakah benar anda akan menyimpan perubahan stage report to client ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
@@ -8020,12 +8228,12 @@ class JoDetailController extends BaseController {
   void finishStageActivityConfirm() {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Attention',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text(
+        content: const Text(
             'Apakah benar anda ingin Finish JO Inspection ini? pastikan data yg anda input benar, karena anda tidak bisa mengubah data setelah Finish JO'),
         actions: [
           TextButton(
@@ -8097,7 +8305,7 @@ class JoDetailController extends BaseController {
   // Activity Lab Functions
 
   void detailLabActivity(int? lab, String name, int joLabId) {
-    Get.to(LabActivityDetailScreen(), arguments: {'id': id, 'labId': lab, 'name': name, 'joLabId' : joLabId});
+    Get.to(const LabActivityDetailScreen(), arguments: {'id': id, 'labId': lab, 'name': name, 'joLabId' : joLabId});
   }
 
   void openDialog(String type, String text) {
@@ -8105,7 +8313,7 @@ class JoDetailController extends BaseController {
       AlertDialog(
         title: Text(
           type,
-          style: TextStyle(
+          style: const TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
         content: Text(text),
@@ -8511,12 +8719,12 @@ class JoDetailController extends BaseController {
   void addDocumentConfirm(String type) {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Attention',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text(
+        content: const Text(
             'Apakah benar anda akan submit finalisasi JO Inspection ini? pastikan data yg anda input benar karena jika anda submit, JO akan dicomplete-kan.'),
         actions: [
           TextButton(
