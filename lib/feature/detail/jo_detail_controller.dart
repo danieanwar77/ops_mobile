@@ -1330,40 +1330,45 @@ class JoDetailController extends BaseController {
   }
 
   void updateActivityConfirm(File foto, int index, String desc) {
-    Get.dialog(
-      AlertDialog(
-        title: const Text(
-          'Attention',
-          style: TextStyle(
-              fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
-        ),
-        content:
-            const Text('Apakah benar anda ingin menyimpan perubahan foto JO ini?'),
-        actions: [
-          TextButton(
-            child: const Text("Close"),
-            onPressed: () => Get.back(),
+    if(desc.length == 0){
+      openDialog("Attention", "Photo descriksi tidak boleh kosong");
+    }else{
+      Get.dialog(
+        AlertDialog(
+          title: const Text(
+            'Attention',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
           ),
-          TextButton(
-            child: const Text(
-              "OK",
-              style: TextStyle(fontWeight: FontWeight.bold),
+          content:
+          const Text('Apakah benar anda ingin menyimpan perubahan foto JO ini?'),
+          actions: [
+            TextButton(
+              child: const Text("Close"),
+              onPressed: () => Get.back(),
             ),
-            onPressed: () async {
-              var result = await updateActivityDailyPhoto(foto, index, desc);
-              if (result == 'success') {
-                Get.back();
-                openDialog("Success", "Berhasil ubah foto.");
-                getJoDailyPhotoV2();
-              } else {
-                Get.back();
-                openDialog("Failed", "Gagal ubah foto.");
-              }
-            },
-          ),
-        ],
-      ),
-    );
+            TextButton(
+              child: const Text(
+                "OK",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onPressed: () async {
+                var result = await updateActivityDailyPhoto(foto, index, desc);
+                if (result == 'success') {
+                  Get.back();
+                  openDialog("Success", "Berhasil ubah foto.");
+                  getJoDailyPhotoV2();
+                } else {
+                  Get.back();
+                  openDialog("Failed", "Gagal ubah foto.");
+                }
+              },
+            ),
+          ],
+        ),
+      );
+    }
+
   }
 
   void deleteActivityDailyPhotoConfirm(int id) {
@@ -2287,34 +2292,38 @@ class JoDetailController extends BaseController {
   }
 
   void updateActivityDailyPhotoConfirm(int index, int idEdit, String desc) {
-    Get.dialog(
-      AlertDialog(
-        title: const Text(
-          'Attention',
-          style: TextStyle(
-              fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
-        ),
-        content: const Text('Apakah benar anda ingin menyimpan perubahan foto JO ini?'),
-        actions: [
-          TextButton(
-            child: const Text("Cancel"),
-            onPressed: () => Get.back(),
+    if(desc.length == 0){
+      openDialog("Attention","Photo deskripsi tidak boleh kosong");
+    }else{
+      Get.dialog(
+        AlertDialog(
+          title: const Text(
+            'Attention',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
           ),
-          TextButton(
-            child: const Text(
-              "OK",
-              style: TextStyle(fontWeight: FontWeight.bold),
+          content: const Text('Apakah benar anda ingin menyimpan perubahan foto JO ini?'),
+          actions: [
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () => Get.back(),
             ),
-            onPressed: () async {
-              editPhotoActivityDescV2(index, idEdit, desc);
-              Get.back();
-              Get.back();
-              //sendActivityDailyPhoto();
-            },
-          ),
-        ],
-      ),
-    );
+            TextButton(
+              child: const Text(
+                "OK",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onPressed: () async {
+                editPhotoActivityDescV2(index, idEdit, desc);
+                Get.back();
+                Get.back();
+                //sendActivityDailyPhoto();
+              },
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   void editPhotoActivityDescV2(int index, int idEdit, String desc) async {
