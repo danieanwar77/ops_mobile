@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -5,6 +6,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -23,13 +25,22 @@ import 'package:ops_mobile/data/model/jo_list_model.dart';
 import 'package:ops_mobile/data/model/jo_pic_model.dart';
 import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
+import 'package:ops_mobile/data/respository/repository.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/login/login_screen.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_ios/path_provider_ios.dart';
 
 class HomeController extends BaseController{
+
+  late PackageInfo packageInfo;
+
+  String appName = '';
+  String packageName = '';
+  String version = '';
+  String buildNumber = '';
 
   final backgroundServiceHandler = BackgroundService();
   final PathProviderAndroid providerAndroid = PathProviderAndroid();
@@ -55,7 +66,15 @@ class HomeController extends BaseController{
 
   @override
   void onInit()async{
-    // initializeService();
+    initializeService();
+
+    packageInfo = await PackageInfo.fromPlatform();
+
+    appName =  packageInfo.appName;
+    packageName =  packageInfo.packageName;
+    version =  packageInfo.version;
+    buildNumber =  packageInfo.buildNumber;
+
     var user = jsonDecode(await StorageCore().storage.read('login'));
     debugPrint('data user: ${user}');
     var data = await SqlHelper.getUserDetail(user['e_number'].toString());
@@ -82,11 +101,11 @@ class HomeController extends BaseController{
 
     await service.configure(
       androidConfiguration: AndroidConfiguration(
-        onStart: BackgroundService.startService,  // Ganti ke startService
+        onStart: onStartBG,  // Ganti ke startService
         isForegroundMode: true,
       ),
       iosConfiguration: IosConfiguration(
-        onForeground: BackgroundService.startService,  // Ganti ke startService
+        onForeground: onStartBG,  // Ganti ke startService
         onBackground: onIosBackground,
       ),
     );
@@ -217,271 +236,6 @@ class HomeController extends BaseController{
     }
   }
 
-  // Future<void> getJO() async {
-  //   // if(connectivityResult.contains(ConnectivityResult.none)){
-  //   //   RxList<DataJo> dataJoList = ;
-  //   //   RxList<DataDetail> dataJoDetail = ;
-  //   //   RxList<DataPIC> dataJoPIC = ;
-  //   //   RxList<DataDailyPhoto> dataJoDailyPhotos = ;
-  //   //   RxList<DataActivity> dataListActivity = ;
-  //   //   RxList<DataActivity5> dataListActivity5 = ;
-  //   //   RxList<DataActivity6> dataListActivity6 = ;
-  //   //   RxList<DataActivityLab> dataListActivityLab = ;
-  //   //   RxList<DataActivityLab5> dataListActivityLab5 = ;
-  //   // }
-  //   loadingDialog();
-  //   await Future.forEach(status, (id) => getJoList(id));
-  //   if(dataJoList.value.isNotEmpty){
-  //     await StorageCore().storage.write('data_jo_list', jsonEncode(dataJoList.value));
-  //
-  //     dataJoList.value.forEach((data)async{
-  //       final int id = data.joId!;
-  //       await getJoDetail(id);
-  //       await getJoPIC(id);
-  //       await getJoDailyPhoto(id);
-  //       await getJoDailyActivity(id);
-  //       await getJoDailyActivity5(id);
-  //       await getJoDailyActivity6(id);
-  //       await getJoDailyActivityLab(id);
-  //       await getJoDailyActivityLab5(id);
-  //     });
-  //
-  //     Future.delayed(Duration(seconds: 5),() async {
-  //       // debugPrint('check JO Daily Activity 5: ${jsonEncode(dataListActivity5.value)}');
-  //       if(dataJoDetail.isNotEmpty){
-  //         await StorageCore().storage.write('data_jo_detail', jsonEncode(dataJoDetail.value));
-  //       }
-  //       if(dataJoPIC.isNotEmpty){
-  //         await StorageCore().storage.write('data_jo_pic', jsonEncode(dataJoPIC.value));
-  //       }
-  //       if(dataJoDailyPhotos.isNotEmpty){
-  //         await StorageCore().storage.write('data_daily_photos', jsonEncode(dataJoDailyPhotos.value));
-  //       }
-  //       if(dataListActivity.isNotEmpty){
-  //         await StorageCore().storage.write('data_daily_activity', jsonEncode(dataListActivity.value));
-  //       }
-  //       if(dataListActivity5.isNotEmpty){
-  //         await StorageCore().storage.write('data_daily_activity_five', jsonEncode(dataListActivity5.value));
-  //       }
-  //       if(dataListActivity6.isNotEmpty){
-  //         await StorageCore().storage.write('data_daily_activity_six', jsonEncode(dataListActivity6.value));
-  //       }
-  //       if(dataListActivityLab.isNotEmpty){
-  //         await StorageCore().storage.write('data_daily_activity_lab', jsonEncode(dataListActivityLab.value));
-  //       }
-  //       if(dataListActivityLab5.isNotEmpty){
-  //         await StorageCore().storage.write('data_daily_activity_lab_five', jsonEncode(dataListActivityLab5.value));
-  //       }
-  //       Get.back();
-  //       openDialog("Success", "Berhasil mengambil data JO");
-  //     });
-  //   }
-  //   debugPrint('data JO from storage: ${jsonEncode(jsonDecode(await StorageCore().storage.read('data_jo_list')))}');
-  //   // debugPrint('data JO Detail from storage: ${jsonEncode(jsonDecode(await StorageCore().storage.read('data_jo_detail')))}');
-  //   // debugPrint('data JO PIC from storage: ${jsonEncode(jsonDecode(await StorageCore().storage.read('data_jo_pic')))}');
-  //   // debugPrint('data JO Daily Photos from storage: ${jsonEncode(jsonDecode(await StorageCore().storage.read('data_daily_photos')))}');
-  //   // debugPrint('data JO Activities from storage: ${jsonEncode(jsonDecode(await StorageCore().storage.read('data_daily_activity')))}');
-  //   //
-  //   // debugPrint('data JO Activity 5 from storage: ${jsonEncode(jsonDecode(await StorageCore().storage.read('data_daily_activity_five')))}');
-  //   // debugPrint('data JO Activity 6 from storage: ${jsonEncode(jsonDecode(await StorageCore().storage.read('data_daily_activity_six')))}');
-  //   // debugPrint('data JO Activities Lab from storage: ${jsonEncode(jsonDecode(await StorageCore().storage.read('data_daily_activity_lab')))}');
-  //   // debugPrint('data JO Activity Lab 5 from storage: ${jsonEncode(jsonDecode(await StorageCore().storage.read('data_daily_activity_lab_five')))}');
-  //   //
-  //   // Get.back();
-  //   // openDialog("Success", "Berhasil mengambil data JO");
-  // }
-
-  // void getJoList(int statusJo) async {
-  //   var response = await repository.getJoList(statusJo, int.parse(userData.value!.id.toString())) ?? JoListModel();
-  //   if(response.data!.data != null){
-  //     response.data!.data!.forEach((value){
-  //       dataJoList.value.add(DataJo.fromJson(jsonDecode(jsonEncode(value))));
-  //     });
-  //   }
-  //   debugPrint("JO List: ${jsonEncode(dataJoList.value)}");
-  // }
-  //
-  // void getJoListFromStorage() async {
-  //   var response = await jsonDecode(await StorageCore().storage.read('data_jo_list'));
-  //   if(response.isNotEmpty){
-  //     response.forEach((value){
-  //       dataJoList.value.add(DataJo.fromJson(jsonDecode(jsonEncode(value))));
-  //     });
-  //   }
-  //   debugPrint("JO List: ${jsonEncode(dataJoList.value)}");
-  // }
-  //
-  // Future<void> getJoDetail(int id) async{
-  //   var response = await repository.getJoDetail(id) ?? JoDetailModel();
-  //   debugPrint(jsonEncode(response));
-  //   dataJoDetail.value.add(response?.data ?? DataDetail());
-  // }
-  //
-  // Future<void> getJoDetailFromStorage() async{
-  //   var response = await jsonDecode(await StorageCore().storage.read('data_jo_detail'));
-  //   debugPrint(jsonEncode(response));
-  //   if(response.isNotEmpty){
-  //     response.forEach((value) {
-  //       dataJoDetail.value.add(DataDetail.fromJson(value));
-  //       }
-  //     );
-  //   }
-  // }
-  //
-  // Future<void> getJoPIC(int id) async{
-  //   var response = await repository.getJoPIC(id) ?? JoPicModel();
-  //   debugPrint('JO PIC: ${jsonEncode(response)}');
-  //   dataJoPIC.value.add(response?.data ?? DataPIC());
-  // }
-  //
-  // Future<void> getJoPICFromStorage() async{
-  //   var response = await jsonDecode(await StorageCore().storage.read('data_jo_pic'));
-  //   debugPrint('JO PIC: ${jsonEncode(response)}');
-  //   if(response.isNotEmpty){
-  //     response.forEach((value){
-  //       dataJoPIC.value.add(DataPIC.fromJson(value));
-  //     }
-  //     );
-  //   }
-  // }
-  //
-  // Future<String?> networkImageToBase64(String imageUrl) async {
-  //   debugPrint('image path: ${AppConstant.CORE_URL}$imageUrl');
-  //   http.Response response = await http.get(Uri.parse('${AppConstant.CORE_URL}/$imageUrl'));
-  //   final bytes = response?.bodyBytes;
-  //   return (bytes != null ? base64Encode(bytes) : null);
-  // }
-  //
-  // Future<void> getJoDailyPhoto(id) async{
-  //   var response = await repository.getJoDailyPhoto(id) ?? JoDailyPhoto();
-  //   debugPrint('JO Daily Photo: ${jsonEncode(response)}');
-  //   //dataJoDailyPhotos.value = response?.data ?? [];
-  //   if(response!.data != null) {
-  //     response!.data!.forEach((data) async {
-  //       final String photo = await networkImageToBase64(data.pathPhoto!) ?? '';
-  //       dataJoDailyPhotos.value.add(DataDailyPhoto(
-  //         id: data.id,
-  //         tHJoId: data.tHJoId,
-  //         pathPhoto: photo,
-  //         keterangan: data.keterangan,
-  //         createdAt: data.createdAt,
-  //         updatedAt: data.updatedAt,
-  //       )
-  //       );
-  //     });
-  //   }
-  // }
-  //
-  // Future<void> getJoDailyPhotoFromStorage() async{
-  //   var response = await jsonDecode(await StorageCore().storage.read('data_daily_photos'));
-  //   debugPrint('JO Daily Photo: ${jsonEncode(response)}');
-  //   //dataJoDailyPhotos.value = response?.data ?? [];
-  //   if(response.isNotEmpty) {
-  //     response.forEach((value){
-  //       dataJoDailyPhotos.value.add(DataDailyPhoto.fromJson(value));
-  //     });
-  //   }
-  // }
-  //
-  // Future<void> getJoDailyActivity(id) async{
-  //   var response = await repository.getJoListDailyActivity(id) ?? JoListDailyActivity();
-  //   debugPrint('JO Daily Activity: ${jsonEncode(response)}');
-  //   if(response.data?.data! != null){
-  //     response.data!.data!.forEach((data){
-  //       dataListActivity.value.add(data);
-  //     });
-  //   }
-  // }
-  //
-  // Future<void> getJoDailyActivityFromStorage() async{
-  //   var response = await jsonDecode(await StorageCore().storage.read('data_daily_activity'));
-  //   debugPrint('JO Daily Activity: ${jsonEncode(response)}');
-  //   if(response.isNotEmpty){
-  //     response.forEach((value){
-  //       dataListActivity.value.add(DataActivity.fromJson(value));
-  //     });
-  //   }
-  // }
-  //
-  // Future<void> getJoDailyActivity5(id) async{
-  //   var response = await repository.getJoListDailyActivity5(id) ?? JoListDailyActivity5();
-  //   debugPrint('JO Daily Activity 5: ${jsonEncode(response)}');
-  //   if(response.data! != null){
-  //       dataListActivity5.value.add(response.data!);
-  //   }
-  // }
-  //
-  // Future<void> getJoDailyActivity5FromStorage() async{
-  //   var response = await jsonDecode(await StorageCore().storage.read('data_daily_activity5'));
-  //   debugPrint('JO Daily Activity 5: ${jsonEncode(response)}');
-  //   if(response.isNotEmpty){
-  //     response.forEach((value){
-  //       dataListActivity5.value.add(DataListActivity5.fromJson(value));
-  //     });
-  //   }
-  // }
-  //
-  // Future<void> getJoDailyActivity6(id) async{
-  //   var response = await repository.getJoListDailyActivity6(id) ?? JoListDailyActivity6();
-  //   debugPrint('JO Daily Activity 6: ${jsonEncode(response)}');
-  //   if(response.data?.data! != null){
-  //     response.data!.data!.forEach((data){
-  //       dataListActivity6.value.add(data);
-  //     });
-  //   }
-  // }
-  //
-  // Future<void> getJoDailyActivity6FromStorage() async{
-  //   var response = await jsonDecode(await StorageCore().storage.read('data_daily_activity6'));
-  //   debugPrint('JO Daily Activity 6: ${jsonEncode(response)}');
-  //   if(response.isNotEmpty){
-  //     response.forEach((value){
-  //       dataListActivity6.value.add(DataActivity6.fromJson(value));
-  //     });
-  //   }
-  // }
-  //
-  // Future<void> getJoDailyActivityLab(id) async{
-  //   var response = await repository.getJoListDailyActivityLab(6) ?? JoListDailyActivityLab();
-  //   debugPrint('Jo Daily Activity Lab: ${jsonEncode(response)}');
-  //   if(response.data?.data! != null){
-  //     response.data!.data!.forEach((data){
-  //       dataListActivityLab.value.add(data);
-  //     });
-  //   }
-  // }
-  //
-  // Future<void> getJoDailyActivityLabFromStorage(id) async{
-  //   var response = await jsonDecode(await StorageCore().storage.read('data_daily_activity_lab'));
-  //   debugPrint('Jo Daily Activity Lab: ${jsonEncode(response)}');
-  //   if(response.isNotEmpty){
-  //     response.forEach((value){
-  //       dataListActivityLab.value.add(DataActivityLab.fromJson(value));
-  //     });
-  //   }
-  // }
-  //
-  //
-  // Future<void> getJoDailyActivityLab5(id) async{
-  //   var response = await repository.getJoListDailyActivityLab5(6) ?? JoListDailyActivityLab5();
-  //   debugPrint('JO Daily Activity Lab 5: ${jsonEncode(response)}');
-  //   if(response.data?.data! != null){
-  //     response.data!.data!.forEach((data){
-  //       dataListActivityLab5.value.add(data);
-  //     });
-  //   }
-  // }
-  //
-  // Future<void> getJoDailyActivityLab5FromStorage(id) async{
-  //   var response = await jsonDecode(await StorageCore().storage.read('data_daily_activity_lab5'));
-  //   debugPrint('JO Daily Activity Lab 5: ${jsonEncode(response)}');
-  //   if(response.isNotEmpty){
-  //     response.forEach((value){
-  //       dataListActivityLab5.value.add(DataActivityLab5.fromJson(value));
-  //     });
-  //   }
-  // }
-
   void loadingDialog(){
     Get.dialog(
       AlertDialog(
@@ -507,5 +261,133 @@ class HomeController extends BaseController{
       barrierDismissible: false,
     );
   }
+  
+  void versionSyncDialog()async{
+    // await showDialog<Widget>(
+    //     context: Get.context!,
+    //     builder: (context) {
+    //       return SafeArea(
+    //         child: Builder(builder: (context) {
+    //           return Material(
+    //               color: Colors.transparent,
+    //               child: Align(
+    //                   alignment: Alignment.center,
+    //                   child: Container(
+    //                       padding: EdgeInsets.all(16),
+    //                       height: 72.h,
+    //                       width: MediaQuery.sizeOf(Get.context!).width.w * 0.6,
+    //                       decoration: BoxDecoration(
+    //                         color: Color(0xff727272).withOpacity(0.8),
+    //                         borderRadius: BorderRadius.circular(10)
+    //                       ),
+    //                       child: Column(
+    //                         crossAxisAlignment: CrossAxisAlignment.start,
+    //                         mainAxisSize: MainAxisSize.min,
+    //                         children: [
+    //                           Text("Version ${version}",
+    //                             style: TextStyle(
+    //                                 color: Colors.white,
+    //                                 fontWeight: FontWeight.w700
+    //                             ),
+    //                           ),
+    //                           SizedBox(height: 16,),
+    //                           Text("Last Sync",
+    //                             style: TextStyle(
+    //                                 color: Colors.white,
+    //                                 fontWeight: FontWeight.w700
+    //                             ),
+    //                           )
+    //                         ],
+    //                       )
+    //                   )
+    //               ));
+    //         }),
+    //       );
+    //     },
+    //     barrierDismissible: true,
+    //     barrierColor: Colors.transparent
+    // );
+    Get.dialog(
+        AlertDialog(
+          backgroundColor: Color(0xff727272).withOpacity(0.8),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Version ${version}",
+               style: TextStyle(
+                 color: Colors.white,
+                 fontWeight: FontWeight.w700
+               ),
+              ),
+              SizedBox(height: 16,),
+              Text("Last Sync",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700
+                ),
+              )
+            ],
+          ),
+        ),
+      barrierColor: Colors.transparent
+    );
+    Future.delayed(Duration(seconds: 10), (){
+      Get.back();
+    });
 
+  }
+
+  @pragma('vm:entry-point')
+  static Future<void> onStartBG(ServiceInstance service) async {
+    // Timer untuk mengirim data setiap 15 menit
+    Timer.periodic(const Duration(seconds: 5 ), (timer) async {
+      // if (service is AndroidServiceInstance) {
+      //   timer.cancel();
+      //   return;
+      // }
+
+      // Data yang akan dikirim ke API
+      // Map<String, dynamic> requestData = {
+      //   "key1": "value1",
+      //   "key2": "value2",
+      // };
+      //
+      // var data = Activity.fromJson({
+      //   "t_h_jo_id" : 7,
+      //   "m_statusinspectionstages_id" : 4,
+      //   "trans_date" : "2024-08-31",
+      //   "start_activity_time" : "15:00:00",
+      //   "end_activity_time" : "16:00:00",
+      //   "activity" : "Menunggu Kedatangan Kapal",
+      //   "created_by" : 0,
+      //   "remarks" : "testing"
+      // });
+      // print('data yang dikirim background service: ${jsonEncode(data)}');
+      // await sendJoActivityInspection(data);
+      //
+      // // Opsional: Update notifikasi
+      // if (service is AndroidServiceInstance) {
+      //   service.setForegroundNotificationInfo(
+      //     title: "Background Service",
+      //     content: "Last sent at ${DateTime.now()}",
+      //   );
+      // }
+
+      debugPrint('test background service');
+    });
+  }
+
+}
+
+
+
+Future<void> sendJoActivityInspection(Activity data) async {
+  final repositoryBackground = Get.find<Repository>();
+  try {
+    var response = await repositoryBackground.insertActivityInspection(data);
+    print('response background service : ${response.message}');
+  } catch (e) {
+    print('response error background service : ${jsonEncode(e)}');
+  }
 }

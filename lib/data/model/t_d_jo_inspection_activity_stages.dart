@@ -102,7 +102,6 @@ class TDJoInspectionActivityStages {
     } else {
       _activityVessel = null; // atau nilai default sesuai kebutuhan
     }
-    //listactivitystagetranshipment
   }
 
   num? _id;
@@ -198,6 +197,7 @@ class TDJoInspectionActivityStages {
     map['updated_by'] = _updatedBy;
     map['created_at'] = _createdAt;
     map['updated_at'] = _updatedAt;
+
     if (_listActivity != null) {
       map['listactivity'] = _listActivity?.map((v) => v.toJson()).toList();
     }
@@ -207,6 +207,7 @@ class TDJoInspectionActivityStages {
     if (_listActivityStageTranshipment != null) {
       map['listactivitybarge'] = _listActivityStageTranshipment?.map((v) => v.toJson()).toList();
     }
+
     return map;
   }
 
