@@ -1811,10 +1811,6 @@ class JoDetailController extends BaseController {
           stageListModal[index] = matchingStage;
         }
 
-        // Reset the edit mode and index
-        editActivityMode.value = false;
-        editActivityIndex.value = 0;
-        enabledDate.value = true;
         cleanActivity();
         update(); // Notify observers
       }
@@ -2418,7 +2414,7 @@ class JoDetailController extends BaseController {
             initialDate: transhipment.initialDate,
             finalDate: transhipment.finalDate,
             jetty: transhipment.jetty,
-            deliveryQty: int.parse(transhipment!.deliveryQty!),
+            deliveryQty: double.parse(transhipment!.deliveryQty!),
             code: "JOIAT-${item.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${transhipmentCount}",
             isUpload: 0,
             isActive: 1,
@@ -2971,9 +2967,15 @@ class JoDetailController extends BaseController {
                                             height: 16,
                                           ),
                                           TextFormField(
-                                            controller:
-                                                deliveryQtyListTextController
-                                                    .value[index],
+                                            controller: deliveryQtyListTextController.value[index],
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: [
+                                              LengthLimitingTextInputFormatter(12),
+                                              FilteringTextInputFormatter.allow(
+                                                  RegExp(r'^(\d+)?\.?\d{0,3}')),
+                                              FilteringTextInputFormatter.allow(
+                                                  RegExp(r'^\d+\.?\d*'))
+                                            ],
                                             cursorColor: onFocusColor,
                                             onChanged: (value) {
                                               editActivity5Transhipment(index);
@@ -3201,15 +3203,15 @@ class JoDetailController extends BaseController {
           initialDate: transhipment.initialDate,
           finalDate: transhipment.finalDate,
           jetty: transhipment.jetty,
-          deliveryQty: double.parse(transhipment!.deliveryQty!).toInt(),
+          deliveryQty: double.parse(transhipment!.deliveryQty!),
               code: "JOIAT-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${transhipmentCount}",
           isUpload: 0,
           isActive: 1,
           createdBy: createdBy,
+          uomId: item.uomId,
           createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
         );
-        await db.insert("t_d_jo_inspection_activity_stages_transhipment",
-            dTranshipment.toInsert());
+        await db.insert("t_d_jo_inspection_activity_stages_transhipment", dTranshipment.toInsert());
       }
     }
     return 'success';
@@ -4022,9 +4024,7 @@ class JoDetailController extends BaseController {
         }
 
         // Reset the edit mode and index
-        editActivityMode.value = false;
-        editActivityIndex.value = 0;
-        enabledDate.value = true;
+        cleanActivity();
         // activity6Date.text = '';
         // activity6StartTime.text = '';
         // activity6EndTime.text = '';
@@ -6072,14 +6072,17 @@ class JoDetailController extends BaseController {
   }
 
   void cleanActivity() {
-    activityList.value = [];
-    activityListTextController.value = [];
+    //activityList.value = [];
+    //activityListTextController.value = [];
+    //stageListModal.value = [];
     editActivityMode.value = false;
+    enabledDate.value = true;
+    editActivityMode.value = false;
+    editActivityIndex.value = 0;
     activityDate.text = '';
     activityStartTime.text = '';
     activityEndTime.text = '';
     activityText.text = '';
-    stageListModal.value = [];
   }
 
   // Activity 5 Inspection Functions
@@ -6695,12 +6698,10 @@ class JoDetailController extends BaseController {
                                             height: 16,
                                           ),
                                           TextFormField(
-                                            controller:
-                                                deliveryQtyListTextController
-                                                    .value[index],
+                                            controller: deliveryQtyListTextController.value[index],
+                                            keyboardType: TextInputType.number,
                                             inputFormatters: [
-                                              LengthLimitingTextInputFormatter(
-                                                  12),
+                                              LengthLimitingTextInputFormatter(12),
                                               FilteringTextInputFormatter.allow(
                                                   RegExp(r'^(\d+)?\.?\d{0,3}')),
                                               FilteringTextInputFormatter.allow(

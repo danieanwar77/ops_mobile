@@ -1633,7 +1633,9 @@ class JoDetailScreen extends StatelessWidget {
                                                     const SizedBox(width: 16),
                                                     Expanded(
                                                       child: Text(
-                                                        '-',
+                                                        controller.stageList.isNotEmpty
+                                                            ? ('${controller.stageList.first.transDate ?? '-'} -  ${controller.stageList.last.transDate ?? '-'}')
+                                                            : '-',
                                                         style: const TextStyle(
                                                           fontSize: 14,
                                                         ),
@@ -2254,7 +2256,7 @@ class JoDetailScreen extends StatelessWidget {
                                                             SizedBox(width: 16),
                                                             Expanded(
                                                               child: Text(
-                                                                progressActivity.createdAt ?? '-',
+                                                                progressActivity.updatedAt == null ? (progressActivity.createdAt ?? '-') : (progressActivity.updatedAt ?? '-'),
                                                                 style: TextStyle(
                                                                   fontSize: 14,
                                                                 ),
@@ -2457,7 +2459,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                     SizedBox(width: 16),
                                                                     Expanded(
                                                                       child: Text(
-                                                                        double.parse(transhipment!.deliveryQty!.toString()).toInt().toString() ?? '-',
+                                                                        double.parse(transhipment!.deliveryQty!.toString()).toString() ?? '-',
                                                                         style: TextStyle(
                                                                           fontSize: 14,
                                                                         ),

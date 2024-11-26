@@ -23,7 +23,7 @@ class TDJoInspectionActivityStagesTranshipment {
       String? initialDate,
       String? finalDate,
       String? dateArrive,
-      num? deliveryQty,
+      double? deliveryQty,
       num? uomId,
       String? uomName,
       num? createdBy,
@@ -78,7 +78,7 @@ class TDJoInspectionActivityStagesTranshipment {
   String? _initialDate;
   String? _finalDate;
   dynamic? _dateArrive;
-  num? _deliveryQty;
+  double? _deliveryQty;
   num? _uomId;
   String? _uomName;
   num? _createdBy;
@@ -96,7 +96,7 @@ TDJoInspectionActivityStagesTranshipment copyWith({
   String? initialDate,
   String? finalDate,
   String? dateArrive,
-  num? deliveryQty,
+  double? deliveryQty,
   num? uomId,
   String? uomName,
   num? createdBy,
