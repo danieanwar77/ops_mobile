@@ -25,9 +25,9 @@ class JoDetailScreen extends StatelessWidget {
               child: Scaffold(
                   appBar: AppBar(
                     actions: [
-                      ((controller.dataJoDetail.value.detail?.picInspector != null && controller.dataJoDetail.value.detail?.picLaboratory == null) && controller.activityFinished.value == true ) ||
-                          ((controller.dataJoDetail.value.detail?.picInspector == null && controller.dataJoDetail.value.detail?.picLaboratory != null) && controller.dataJoDetail.value.laboratory!.where((item) => item.maxStage == 6).isNotEmpty) ||
-                          ((controller.dataJoDetail.value.detail?.picInspector != null && controller.dataJoDetail.value.detail?.picLaboratory != null) && controller.activityFinished.value == true && controller.dataJoDetail.value.laboratory!.where((item) => item.maxStage == 6).isNotEmpty)
+                      ((controller.dataJoDetail.value.detail?.picInspector != null && controller.dataJoDetail.value.detail?.picLaboratory == null) && (controller.dataJoDetail.value.inspectionFinishedDate == '' && controller.activityFinished.value == true) ) ||
+                          ((controller.dataJoDetail.value.detail?.picInspector == null && controller.dataJoDetail.value.detail?.picLaboratory != null) && (controller.dataJoDetail.value.laboratoryFinishedDate == '' && controller.activityFinished.value == true) ) ||
+                          ((controller.dataJoDetail.value.detail?.picInspector != null && controller.dataJoDetail.value.detail?.picLaboratory != null) && (controller.dataJoDetail.value.inspectionFinishedDate == '' && controller.dataJoDetail.value.laboratoryFinishedDate == '') && controller.activityFinished.value == true)
                           ? IconButton(
                               onPressed: (){
                                 controller.finishStageActivityConfirm();
@@ -1740,7 +1740,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       child: Text(controller.stageList.length == 0 ? "None" : controller.activityStages[controller.activityStage - 1], style: TextStyle(fontSize: 12.sp, color: Colors.white)))
                                                       : const SizedBox(),
                                                   Spacer(),
-                                                  controller.activity6ListStages.value.isEmpty && controller.activityFinished.value == false
+                                                  controller.activityFinished.value == false
                                                       ? controller.dataJoDetail.value.detail?.statusJo == 'Assigned' || controller.dataJoDetail.value.detail?.statusJo == 'On Progres'
                                                       ? IconButton(
                                                       onPressed: () {
@@ -2512,7 +2512,7 @@ class JoDetailScreen extends StatelessWidget {
                                                         style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                       ),
                                                       const SizedBox(width: 8),
-                                                      controller.activityStage == 6 && controller.activityFinished.value == false
+                                                      controller.activityStage == 6 && controller.activitySubmitted.value == false
                                                           ? InkWell(
                                                           onTap: () {
                                                             controller.drawerDailyActivity6Edit();
