@@ -129,12 +129,12 @@ class LabActivityDetailController extends BaseController{
   Future<void> getData() async{
 
     debugPrint('params: $id,${userData.value!.id!.toInt()}, $labId');
-    try{
+    //try{
       activityLabListStages.value.clear();
       var response = await SqlHelper.getDetailActivityLaboratory(id,userData.value!.id!.toInt(), labId);
       var text = '';
       var joGroup = groupBy(response, (item) => item['id']);
-
+      debugPrint('print data after group ${joGroup}');
       joGroup.forEach((key,jo){
         debugPrint("jo nya: ${key}");
         var transactionDateTime = jo.first['stage_created_at'];
@@ -228,13 +228,15 @@ class LabActivityDetailController extends BaseController{
                           update();
                           final finish = stageItem['activity_created_at'] ?? '';
                           final initial = status.where((item) => item['progress_id'] == 1).toList().first['activity_created_at'] ?? '';
-                          debugPrint('first date : ${initial}, last date : ${finish}');
-                          DateTime first = DateTime.parse(initial);
-                          DateTime last = DateTime.parse(finish);
-                          //debugPrint('first date : ${first}, last date : ${last}');
-                          prelim.value = initial.split(' ').first;
-                          tat.value = getDiffHours(first,last);
-                          update();
+                          //disabled
+                           debugPrint('first date : ${initial}, last date : ${finish}');
+                           DateTime first = DateTime.parse(initial);
+                           DateTime last = DateTime.parse(finish);
+                          Duration difference = last.difference(first);
+                          double hoursDifference = difference.inMinutes / 60;
+                           prelim.value = initial.split(' ').first;
+                           tat.value = hoursDifference.toInt();
+                          // update();
                         }
                         if (stageItem['progress_id'] == 6) {
                           if ((stageItem['activity'] != null || stageItem['activity'] != '') && activityItems.where((item) => item.code == stageItem['activity_code']).isEmpty) {
@@ -306,9 +308,9 @@ class LabActivityDetailController extends BaseController{
                             updatedBy : stageHead['updated_by'],
                             createdAt : stageHead['created_at'],
                             updatedAt : stageHead['updated_at'],
-                            totalSampleReceived : stageHead['total_sample_received'],
-                            totalSampleAnalyzed : stageHead['total_sample_analyzed'],
-                            totalSamplePreparation : stageHead['total_sample_preparation'],
+                            //totalSampleReceived : stageHead['total_sample_received'],
+                            //totalSampleAnalyzed : stageHead['total_sample_analyzed'],
+                            //totalSamplePreparation : stageHead['total_sample_preparation'],
                             code : stageHead['code'],
                             isActive : stageHead['is_active'],
                             isUpload : stageHead['is_upload'],
@@ -329,9 +331,9 @@ class LabActivityDetailController extends BaseController{
                             updatedBy : stageHead['updated_by'],
                             createdAt : stageHead['created_at'],
                             updatedAt : stageHead['updated_at'],
-                            totalSampleReceived : stageHead['total_sample_received'],
-                            totalSampleAnalyzed : stageHead['total_sample_analyzed'],
-                            totalSamplePreparation : stageHead['total_sample_preparation'],
+                            totalSampleReceived : stageHead['total_sample_received'].toInt(),
+                            totalSampleAnalyzed : stageHead['total_sample_analyzed'].toInt(),
+                            totalSamplePreparation : stageHead['total_sample_preparation'].toInt(),
                             code : stageHead['code'],
                             isActive : stageHead['is_active'],
                             isUpload : stageHead['is_upload'],
@@ -352,9 +354,9 @@ class LabActivityDetailController extends BaseController{
                             updatedBy : stageHead['updated_by'],
                             createdAt : stageHead['created_at'],
                             updatedAt : stageHead['updated_at'],
-                            totalSampleReceived : stageHead['total_sample_received'],
-                            totalSampleAnalyzed : stageHead['total_sample_analyzed'],
-                            totalSamplePreparation : stageHead['total_sample_preparation'],
+                            // totalSampleReceived : stageHead['total_sample_received'],
+                            // totalSampleAnalyzed : stageHead['total_sample_analyzed'],
+                            // totalSamplePreparation : stageHead['total_sample_preparation'],
                             code : stageHead['code'],
                             isActive : stageHead['is_active'],
                             isUpload : stageHead['is_upload'],
@@ -375,11 +377,11 @@ class LabActivityDetailController extends BaseController{
 
         });
       });
-    } catch(e){
-      debugPrint('error get data: $e');
-    } finally {
-      update();
-    }
+    // } catch(e){
+    //   debugPrint('error get data: $e');
+    // } finally {
+    //   update();
+    // }
 
   }
 
@@ -390,10 +392,10 @@ class LabActivityDetailController extends BaseController{
     final finish = activity5LabList.value.first.listLabActivity!.first!.createdAt;
     final initial = activityLabListStages.value.where((item) => item.mStatuslaboratoryprogresId == 1).first.createdAt;
     debugPrint('first date : ${initial}, last date : ${finish}');
-    DateTime first = DateTime.parse(initial!);
-    DateTime last = DateTime.parse(finish!);
-    prelim.value = initial.split(' ').first;
-    tat.value = getDiffHours(first,last);
+    // DateTime first = DateTime.parse(initial!);
+    // DateTime last = DateTime.parse(finish!);
+    // prelim.value = initial.split(' ').first;
+    // tat.value = getDiffHours(first,last);
   }
 
   int getDiffHours(DateTime start, DateTime end) {
@@ -703,8 +705,10 @@ class LabActivityDetailController extends BaseController{
       List<TDJoLaboratoryActivityStages> dataActStage = copiedList.where((data) => data.mStatuslaboratoryprogresId == activityLabStage).toList();
 
       for(int i = 0 ; i < dataActStage.length; i++){
+        debugPrint('json activity stage ${jsonEncode(dataActStage[i].toJson())}');
         TDJoLaboratoryActivityStages dataStage = dataActStage[i].copyWith(
             createdBy: createdBy,
+            isUpload: 0,
             code: "JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
         );
         int result = await db.insert("t_d_jo_laboratory_activity_stages",dataStage.toInsert());
@@ -845,12 +849,12 @@ class LabActivityDetailController extends BaseController{
                                         onTap: () async {
                                           activityEndTime.text = await selectTime(Get.context!);
                                         },
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Field wajib diisi!';
-                                          }
-                                          return null;
-                                        },
+                                        // validator: (value) {
+                                        //   if (value == null || value.isEmpty) {
+                                        //     return 'Field wajib diisi!';
+                                        //   }
+                                        //   return null;
+                                        // },
                                         style: const TextStyle(color: onFocusColor),
                                         decoration: InputDecoration(
                                             border: OutlineInputBorder(
@@ -861,7 +865,7 @@ class LabActivityDetailController extends BaseController{
                                               const BorderSide(color: onFocusColor),
                                               borderRadius: BorderRadius.circular(12),
                                             ),
-                                            labelText: 'End Time*',
+                                            labelText: 'End Time',
                                             floatingLabelStyle:
                                             const TextStyle(color: onFocusColor),
                                             fillColor: onFocusColor),
@@ -1319,15 +1323,13 @@ class LabActivityDetailController extends BaseController{
 
       List<TDJoLaboratoryActivityStages> copiedList = List.from(activityLabList.value);
       List<TDJoLaboratoryActivityStages> dataActStage = copiedList.where((data) => data.mStatuslaboratoryprogresId == activityLabStage).toList();
-
+      await db.update("t_d_jo_laboratory_activity_stages",{"is_active" : 0},where: "d_jo_laboratory_id = ? and m_statuslaboratoryprogres_id=?", whereArgs: [joLabId,activityLabStage]);
       for(int i = 0; i < dataActStage.length; i++){
         TDJoLaboratoryActivityStages dataStage = dataActStage[i];
-        //is_active diubah menjadi null berdasarkan dJoLaboratoryId dan mStatuslaboratoryprogresId
-        await db.update("t_d_jo_laboratory_activity_stages",{"is_active" : 0},where: "d_jo_laboratory_id = ? and m_statuslaboratoryprogres_id=?", whereArgs: [joLabId,activityLabStage]);
-        debugPrint("data update ${jsonEncode(dataStage)}");
         if(dataStage.id == null){
           TDJoLaboratoryActivityStages dataStage = dataActStage[i].copyWith(
               createdBy: createdBy,
+              isUpload: 0,
               code: "JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
           );
 
@@ -1403,7 +1405,7 @@ class LabActivityDetailController extends BaseController{
       activityLabListTextController.value.add(TextEditingController(text: item.remarks));
     });
     activityLabList.forEach((item){
-      debugPrint('Print item ${jsonEncode(item)}');
+      debugPrint('Print data lab yang diedit ${jsonEncode(item)}');
     });
 
     Get.bottomSheet(
@@ -1522,12 +1524,6 @@ class LabActivityDetailController extends BaseController{
                                         onTap: () async {
                                           activityEndTime.text = await selectTime(Get.context!);
                                         },
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Field wajib diisi!';
-                                          }
-                                          return null;
-                                        },
                                         style: const TextStyle(color: onFocusColor),
                                         decoration: InputDecoration(
                                             border: OutlineInputBorder(
@@ -1538,7 +1534,7 @@ class LabActivityDetailController extends BaseController{
                                               const BorderSide(color: onFocusColor),
                                               borderRadius: BorderRadius.circular(12),
                                             ),
-                                            labelText: 'End Time*',
+                                            labelText: 'End Time',
                                             floatingLabelStyle:
                                             const TextStyle(color: onFocusColor),
                                             fillColor: onFocusColor),
@@ -1957,18 +1953,17 @@ class LabActivityDetailController extends BaseController{
   // > Add Functions
 
   Future<String?> addActivity5LabStages() async {
+    final db = await SqlHelper.db();
 
     activity5LabListStages.value = [];
     var data = TDJoLaboratoryActivityStages(
       tHJoId: id,
       dJoLaboratoryId: joLabId,
       mStatuslaboratoryprogresId: activityLabStage,
-      transDate: DateFormat('yyyy-MM-dd')
-          .format(DateTime.now())
-          .toString(),
-      totalSampleReceived: int.parse(sampleReceived.text),
-      totalSampleAnalyzed: int.parse(sampleAnalyzed.text),
-      totalSamplePreparation: int.parse(samplePreparation.text),
+      transDate: DateFormat('yyyy-MM-dd').format(DateTime.now()).toString(),
+      totalSampleReceived: int.parse(sampleReceived.text.toString()),
+      totalSampleAnalyzed: int.parse(sampleAnalyzed.text.toString()),
+      totalSamplePreparation: int.parse(samplePreparation.text.toString()),
       isActive: 1,
       isUpload: 0,
       createdBy: userData.value?.id ?? 0,
@@ -1990,13 +1985,23 @@ class LabActivityDetailController extends BaseController{
         )
       ],
     );
+    int result = await db.insert("t_d_jo_laboratory_activity_stages", data.toInsert());
+    TDJoLaboratoryActivity detail =  TDJoLaboratoryActivity(
+      tDJoLaboratoryActivityStagesId: result,
+              tDJoLaboratoryId: joLabId,
+              startActivityTime: '',
+              endActivityTime: '',
+              activity: '',
+              isActive: 1,
+              isUpload: 0,
+              createdBy: userData.value?.id ?? 0,
+              createdAt: DateFormat('yyyy-MM-dd hh:mm:ss')
+                  .format(DateTime.now())
+                  .toString(),
+            );
+    int rsltDetail = await db.insert("t_d_jo_laboratory_activity",detail.toInsert());
     activity5LabList.value.add(data);
-    insertLocalActivity5Lab();
-    // postInsertActivity5Lab(activity5LabList.value);
-    activity5LabListStages.value.add(data);
     activitySubmitted.value = true;
-    update();
-    countPrelimTat();
     return 'success';
   }
 
@@ -2010,7 +2015,7 @@ class LabActivityDetailController extends BaseController{
       List<String> activityValues = [];
 
       activity5LabList.value.asMap().forEach((index,stage){
-        stageValues.add('''(${joLabId},${id},${activityLabStage == 0 ? 1 : activityLabStage},'${stage.transDate}','',${stage.totalSampleReceived},${stage.totalSampleAnalyzed},${stage.totalSamplePreparation},,$createdBy,'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',1,0)''');
+        stageValues.add('''(${joLabId},${id},${activityLabStage == 0 ? 1 : activityLabStage},'${stage.transDate}','',${stage.totalSampleReceived},${stage.totalSampleAnalyzed},${stage.totalSamplePreparation},$createdBy,'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',1,0)''');
         update();
         if(stage.listLabActivity!.isNotEmpty){
           var count = 0;
@@ -2043,8 +2048,6 @@ class LabActivityDetailController extends BaseController{
   }
 
   void drawerDailyActivity5Lab(){
-    debugPrint('stage lab now: $activityLabStage');
-    debugPrint('submit stage state: ${activitySubmitted.value}');
     Get.bottomSheet(
         GetBuilder(
             init: LabActivityDetailController(),
@@ -2082,6 +2085,7 @@ class LabActivityDetailController extends BaseController{
                             ),
                             const SizedBox(height: 16,),
                             TextFormField(
+                              keyboardType: TextInputType.number,
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(12),
                                 FilteringTextInputFormatter.digitsOnly
@@ -2111,6 +2115,7 @@ class LabActivityDetailController extends BaseController{
                             ),
                             const SizedBox(height: 16,),
                             TextFormField(
+                              keyboardType: TextInputType.number,
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(12),
                                 FilteringTextInputFormatter.digitsOnly
@@ -2140,6 +2145,7 @@ class LabActivityDetailController extends BaseController{
                             ),
                             const SizedBox(height: 16,),
                             TextFormField(
+                              keyboardType: TextInputType.number,
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(12),
                                 FilteringTextInputFormatter.digitsOnly
@@ -2272,7 +2278,7 @@ class LabActivityDetailController extends BaseController{
               if(result == 'success'){
                 Get.back();
                 Get.back();
-                //openDialog("Success", "Activity Stage ${activityLabStage-1} berhasil ditambahkan");
+                await getData();
               } else {
                 Get.back();
                 openDialog("Failed", "Activity Stage $activityLabStage masih kosong atau belum diinput");
@@ -2288,6 +2294,7 @@ class LabActivityDetailController extends BaseController{
 
   Future<String?> editActivity5LabStages() async {
     activity5LabListStages.value = [];
+    final db = await SqlHelper.db();
     var data = TDJoLaboratoryActivityStages(
       tHJoId: id,
       dJoLaboratoryId: joLabId,
@@ -2319,12 +2326,7 @@ class LabActivityDetailController extends BaseController{
         )
       ],
     );
-    activity5LabList.value = [];
-    activity5LabList.value.add(data);
-    updateInsertLocalActivity5Lab();
-    //updateInsertActivity5Lab(activity5LabList.value);
-    activity5LabListStages.value.add(data);
-    countPrelimTat();
+    await db.update("t_d_jo_laboratory_activity_stages", data.toEdit(),where: "d_jo_laboratory_id = ? and m_statuslaboratoryprogres_id = ? ", whereArgs: [joLabId,5]);
     return 'success';
   }
 
@@ -2370,13 +2372,11 @@ class LabActivityDetailController extends BaseController{
   }
 
   void drawerDailyActivity5LabEdit(){
-    debugPrint('stage lab now: $activityLabStage');
-    debugPrint('submit stage state: $activitySubmitted');
     if(activity5LabList.value.isEmpty){
       var labAct = activity5LabListStages.value.first;
-      sampleReceived.text = labAct.totalSampleReceived!.toString();
-      sampleAnalyzed.text = labAct.totalSampleAnalyzed!.toString();
-      samplePreparation.text = labAct.totalSamplePreparation!.toString();
+      sampleReceived.text = int.parse(labAct.totalSampleReceived!.toString()).toString();
+      sampleAnalyzed.text = int.parse(labAct.totalSampleAnalyzed!.toString()).toString();
+      samplePreparation.text = int.parse(labAct.totalSamplePreparation!.toString()).toString();
     }
     Get.bottomSheet(
         GetBuilder(
@@ -2415,6 +2415,7 @@ class LabActivityDetailController extends BaseController{
                             ),
                             const SizedBox(height: 16,),
                             TextFormField(
+                              keyboardType: TextInputType.number,
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(12),
                                 FilteringTextInputFormatter.digitsOnly
@@ -2444,6 +2445,7 @@ class LabActivityDetailController extends BaseController{
                             ),
                             const SizedBox(height: 16,),
                             TextFormField(
+                              keyboardType: TextInputType.number,
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(12),
                                 FilteringTextInputFormatter.digitsOnly
@@ -2473,6 +2475,7 @@ class LabActivityDetailController extends BaseController{
                             ),
                             const SizedBox(height: 16,),
                             TextFormField(
+                              keyboardType: TextInputType.number,
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(12),
                                 FilteringTextInputFormatter.digitsOnly
@@ -2600,7 +2603,7 @@ class LabActivityDetailController extends BaseController{
               if(result == 'success'){
                 Get.back();
                 Get.back();
-                //openDialog("Success", "Activity Stage ${activityLabStage-1} berhasil ditambahkan");
+               await getData();
               } else {
                 Get.back();
                 openDialog("Failed", "Activity Stage $activityLabStage masih kosong atau belum diinput");
@@ -3105,14 +3108,15 @@ class LabActivityDetailController extends BaseController{
               margin: EdgeInsets.only(top: 48),
               padding: EdgeInsets.all(24),
               width: double.infinity,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                       topRight: Radius.circular(24),
-                      topLeft: Radius.circular(24))),
-              child: Obx(
-                    () => Form(
-                  key: _formKey,
+                      topLeft: Radius.circular(24)
+                  )
+              ),
+              child: Obx(() => Form(
+                key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -3139,156 +3143,154 @@ class LabActivityDetailController extends BaseController{
                               const SizedBox(
                                 height: 16,
                               ),
-                              Form(
-                                key: _formKey,
-                                child: Column(
-                                  children: [
-                                    TextFormField(
-                                      showCursor: true,
-                                      readOnly: true,
-                                      controller: activity6Date,
-                                      cursorColor: onFocusColor,
-                                      onTap: () {
-                                        selectDate6(Get.context!);
-                                      },
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Field wajib diisi!';
-                                        }
-                                        return null;
-                                      },
-                                      style: const TextStyle(color: onFocusColor),
-                                      decoration: InputDecoration(
-                                          suffixIcon: IconButton(
-                                              onPressed: () {
-                                                selectDate6(Get.context!);
-                                              },
-                                              icon: const Icon(
-                                                  Icons.calendar_today_rounded)),
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide:
-                                            const BorderSide(color: onFocusColor),
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          labelText: 'Date*',
-                                          floatingLabelStyle:
-                                          const TextStyle(color: onFocusColor),
-                                          fillColor: onFocusColor),
-                                    ),
-                                    const SizedBox(
-                                      height: 16,
-                                    ),
-                                    Text('Detail Activities'),
-                                    const SizedBox(
-                                      height: 16,
-                                    ),
-                                    Row(
+                              Column(
+                                children: [
+                                  Form(
+                                    key: _formKey,
+                                    child: Column(
                                       children: [
-                                        Expanded(
-                                          child: TextFormField(
-                                            controller: activity6StartTime,
-                                            cursorColor: onFocusColor,
-                                            onTap: () async {
-                                              activity6StartTime.text =
-                                              await selectTime6(Get.context!);
-                                            },
-                                            validator: (value) {
-                                              if (value == null || value.isEmpty) {
-                                                return 'Field wajib diisi!';
-                                              }
-                                              return null;
-                                            },
-                                            style: const TextStyle(color: onFocusColor),
-                                            decoration: InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                  BorderRadius.circular(12),
-                                                ),
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderSide: const BorderSide(
-                                                      color: onFocusColor),
-                                                  borderRadius:
-                                                  BorderRadius.circular(12),
-                                                ),
-                                                labelText: 'Start Time*',
-                                                floatingLabelStyle: const TextStyle(
-                                                    color: onFocusColor),
-                                                fillColor: onFocusColor),
-                                          ),
+                                        TextFormField(
+                                          showCursor: true,
+                                          readOnly: true,
+                                          controller: activity6Date,
+                                          cursorColor: onFocusColor,
+                                          onTap: () {
+                                            selectDate6(Get.context!);
+                                          },
+                                          validator: (value) {
+                                            if (value == null || value.isEmpty) {
+                                              return 'Field wajib diisi!';
+                                            }
+                                            return null;
+                                          },
+                                          style: const TextStyle(color: onFocusColor),
+                                          decoration: InputDecoration(
+                                              suffixIcon: IconButton(
+                                                  onPressed: () {
+                                                    selectDate6(Get.context!);
+                                                  },
+                                                  icon: const Icon(
+                                                      Icons.calendar_today_rounded)),
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide:
+                                                const BorderSide(color: onFocusColor),
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              labelText: 'Date*',
+                                              floatingLabelStyle:
+                                              const TextStyle(color: onFocusColor),
+                                              fillColor: onFocusColor),
                                         ),
                                         const SizedBox(
-                                          width: 8,
+                                          height: 16,
                                         ),
-                                        Expanded(
-                                          child: TextFormField(
-                                            controller: activity6EndTime,
-                                            cursorColor: onFocusColor,
-                                            onTap: () async {
-                                              activity6EndTime.text =
-                                              await selectTime6(Get.context!);
-                                            },
-                                            validator: (value) {
-                                              if (value == null || value.isEmpty) {
-                                                return 'Field wajib diisi!';
-                                              }
-                                              return null;
-                                            },
-                                            style: const TextStyle(color: onFocusColor),
-                                            decoration: InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                  BorderRadius.circular(12),
-                                                ),
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderSide: const BorderSide(
-                                                      color: onFocusColor),
-                                                  borderRadius:
-                                                  BorderRadius.circular(12),
-                                                ),
-                                                labelText: 'End Time*',
-                                                floatingLabelStyle: const TextStyle(
-                                                    color: onFocusColor),
-                                                fillColor: onFocusColor),
-                                          ),
+                                        Text('Detail Activities'),
+                                        const SizedBox(
+                                          height: 16,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: TextFormField(
+                                                controller: activity6StartTime,
+                                                cursorColor: onFocusColor,
+                                                onTap: () async {
+                                                  activity6StartTime.text =
+                                                  await selectTime6(Get.context!);
+                                                },
+                                                validator: (value) {
+                                                  if (value == null || value.isEmpty) {
+                                                    return 'Field wajib diisi!';
+                                                  }
+                                                  return null;
+                                                },
+                                                style: const TextStyle(color: onFocusColor),
+                                                decoration: InputDecoration(
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                      BorderRadius.circular(12),
+                                                    ),
+                                                    focusedBorder: OutlineInputBorder(
+                                                      borderSide: const BorderSide(
+                                                          color: onFocusColor),
+                                                      borderRadius:
+                                                      BorderRadius.circular(12),
+                                                    ),
+                                                    labelText: 'Start Time*',
+                                                    floatingLabelStyle: const TextStyle(
+                                                        color: onFocusColor),
+                                                    fillColor: onFocusColor),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              width: 8,
+                                            ),
+                                            Expanded(
+                                              child: TextFormField(
+                                                controller: activity6EndTime,
+                                                cursorColor: onFocusColor,
+                                                onTap: () async {
+                                                  activity6EndTime.text =
+                                                  await selectTime6(Get.context!);
+                                                },
+                                                style: const TextStyle(color: onFocusColor),
+                                                decoration: InputDecoration(
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                      BorderRadius.circular(12),
+                                                    ),
+                                                    focusedBorder: OutlineInputBorder(
+                                                      borderSide: const BorderSide(
+                                                          color: onFocusColor),
+                                                      borderRadius:
+                                                      BorderRadius.circular(12),
+                                                    ),
+                                                    labelText: 'End Time',
+                                                    floatingLabelStyle: const TextStyle(
+                                                        color: onFocusColor),
+                                                    fillColor: onFocusColor),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 16,
+                                        ),
+                                        TextFormField(
+                                          controller: activity6Text,
+                                          cursorColor: onFocusColor,
+                                          inputFormatters: [
+                                            LengthLimitingTextInputFormatter(
+                                                150),
+                                          ],
+                                          validator: (value) {
+                                            if (value == null || value.isEmpty) {
+                                              return 'Field wajib diisi!';
+                                            }
+                                            return null;
+                                          },
+                                          style: const TextStyle(color: onFocusColor),
+                                          decoration: InputDecoration(
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide:
+                                                const BorderSide(color: onFocusColor),
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              labelText: 'Activity*',
+                                              floatingLabelStyle:
+                                              const TextStyle(color: onFocusColor),
+                                              fillColor: onFocusColor),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(
-                                      height: 16,
-                                    ),
-                                    TextFormField(
-                                      controller: activity6Text,
-                                      cursorColor: onFocusColor,
-                                      inputFormatters: [
-                                        LengthLimitingTextInputFormatter(
-                                            150),
-                                      ],
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Field wajib diisi!';
-                                        }
-                                        return null;
-                                      },
-                                      style: const TextStyle(color: onFocusColor),
-                                      decoration: InputDecoration(
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide:
-                                            const BorderSide(color: onFocusColor),
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          labelText: 'Activity*',
-                                          floatingLabelStyle:
-                                          const TextStyle(color: onFocusColor),
-                                          fillColor: onFocusColor),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                               const SizedBox(
                                 height: 16,
@@ -3725,44 +3727,52 @@ class LabActivityDetailController extends BaseController{
                                     backgroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
                                         side: BorderSide(color: primaryColor),
-                                        borderRadius: BorderRadius.circular(12))),
+                                        borderRadius: BorderRadius.circular(12)
+                                    )
+                                ),
                                 child: Container(
                                     padding:
                                     const EdgeInsets.symmetric(vertical: 12),
                                     width: double.infinity,
-                                    child: Center(
+                                    child: const Center(
                                         child: Text(
                                           'Cancel',
                                           style: TextStyle(
                                               color: primaryColor,
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold),
-                                        )))),
+                                        )
+                                    )
+                                )
+                            ),
                           ),
                           const SizedBox(
                             width: 16,
                           ),
                           Expanded(
                             child: ElevatedButton(
-                                onPressed: () {
-                                  addActivity6StageConfirm();
-                                },
+                                onPressed: addActivity6StageConfirm,
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: primaryColor,
                                     shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12))),
+                                        borderRadius: BorderRadius.circular(12)
+                                    )
+                                ),
                                 child: Container(
                                     padding:
                                     const EdgeInsets.symmetric(vertical: 12),
                                     width: double.infinity,
-                                    child: Center(
+                                    child: const Center(
                                         child: Text(
                                           'Submit',
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold),
-                                        )))),
+                                        )
+                                    )
+                                )
+                            ),
                           ),
                         ],
                       ),
@@ -3772,7 +3782,8 @@ class LabActivityDetailController extends BaseController{
                     ],
                   ),
                 ),
-              )),
+              )
+          ),
         ),
         isScrollControlled: true);
   }
@@ -4033,14 +4044,7 @@ class LabActivityDetailController extends BaseController{
                                       controller: activity6EndTime,
                                       cursorColor: onFocusColor,
                                       onTap: () async {
-                                        activity6EndTime.text =
-                                        await selectTime6(Get.context!);
-                                      },
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Field wajib diisi!';
-                                        }
-                                        return null;
+                                        activity6EndTime.text = await selectTime6(Get.context!);
                                       },
                                       style: const TextStyle(color: onFocusColor),
                                       decoration: InputDecoration(
@@ -4054,7 +4058,7 @@ class LabActivityDetailController extends BaseController{
                                             borderRadius:
                                             BorderRadius.circular(12),
                                           ),
-                                          labelText: 'End Time*',
+                                          labelText: 'End Time',
                                           floatingLabelStyle: const TextStyle(
                                               color: onFocusColor),
                                           fillColor: onFocusColor),

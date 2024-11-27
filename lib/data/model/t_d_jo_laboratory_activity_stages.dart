@@ -30,9 +30,9 @@ class TDJoLaboratoryActivityStages {
     num? updatedBy,
     String? createdAt,
     String? updatedAt,
-    dynamic totalSampleReceived,
-    dynamic totalSampleAnalyzed,
-    dynamic totalSamplePreparation,
+    int? totalSampleReceived,
+    int? totalSampleAnalyzed,
+    int? totalSamplePreparation,
     dynamic code,
     num? isActive,
     num? isUpload,
@@ -104,9 +104,9 @@ class TDJoLaboratoryActivityStages {
   num? _updatedBy;
   String? _createdAt;
   String? _updatedAt;
-  dynamic _totalSampleReceived;
-  dynamic _totalSampleAnalyzed;
-  dynamic _totalSamplePreparation;
+  int? _totalSampleReceived;
+  int? _totalSampleAnalyzed;
+  int? _totalSamplePreparation;
   dynamic _code;
   num? _isActive;
   num? _isUpload;
@@ -124,9 +124,9 @@ class TDJoLaboratoryActivityStages {
     num? updatedBy,
     String? createdAt,
     String? updatedAt,
-    dynamic totalSampleReceived,
-    dynamic totalSampleAnalyzed,
-    dynamic totalSamplePreparation,
+    int? totalSampleReceived,
+    int? totalSampleAnalyzed,
+    int? totalSamplePreparation,
     dynamic code,
     num? isActive,
     num? isUpload,
@@ -164,9 +164,9 @@ class TDJoLaboratoryActivityStages {
   num? get updatedBy => _updatedBy;
   String? get createdAt => _createdAt;
   String? get updatedAt => _updatedAt;
-  dynamic get totalSampleReceived => _totalSampleReceived;
-  dynamic get totalSampleAnalyzed => _totalSampleAnalyzed;
-  dynamic get totalSamplePreparation => _totalSamplePreparation;
+  int? get totalSampleReceived => _totalSampleReceived;
+  int? get totalSampleAnalyzed => _totalSampleAnalyzed;
+  int? get totalSamplePreparation => _totalSamplePreparation;
   dynamic get code => _code;
   num? get isActive => _isActive;
   num? get isUpload => _isUpload;

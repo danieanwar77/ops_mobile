@@ -7,6 +7,7 @@ import 'package:open_filex/open_filex.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory_attachment.dart';
 import 'package:ops_mobile/feature/lab_activity_detail/lab_activity_detail_controller.dart';
+import 'package:ops_mobile/utils/helper.dart';
 
 class LabActivityDetailScreen extends StatelessWidget{
   const LabActivityDetailScreen({super.key});
@@ -100,7 +101,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                       const VerticalDivider(width: 1),
                                       const SizedBox(width:16),
                                       Expanded( child:
-                                      Text('${controller.tat.value.toString() ??  '-'} Hours',
+                                      Text('${controller.tat.value.toString() ??  '-'} Jam',
                                         style: const TextStyle(
                                           fontSize: 14,
                                         ),
@@ -174,7 +175,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      const Text('Stage 1: Waiting For Arrival',
+                                                      const Text('Stage 1: Sample on Delivery',
                                                         style: TextStyle(
                                                             color: green,
                                                             fontSize: 14,
@@ -315,7 +316,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      const Text('Stage 2: Ship Arrived',
+                                                      const Text('Stage 2: Sample Received',
                                                         style: TextStyle(
                                                             color: green,
                                                             fontSize: 14,
@@ -456,7 +457,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      const Text('Stage 3: Ship Berthing',
+                                                      const Text('Stage 3: Preparation for Analyze',
                                                         style: TextStyle(
                                                             color: green,
                                                             fontSize: 14,
@@ -594,7 +595,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      const Text('Stage 4: Work Commence',
+                                                      const Text('Stage 4: Analyze on Progress',
                                                         style: TextStyle(
                                                             color: green,
                                                             fontSize: 14,
@@ -749,11 +750,8 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                     onTap: () {
                                                       controller.drawerDailyActivity5LabEdit();
                                                     },
-                                                    child: Icon(
-                                                        Icons
-                                                            .mode_edit_outlined,
-                                                        color:
-                                                        primaryColor,
+                                                    child: const Icon(Icons.mode_edit_outlined,
+                                                        color: primaryColor,
                                                         size: 18
                                                     )
                                                 ) : const SizedBox(),
@@ -810,7 +808,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                   SizedBox(width:16),
                                                                   Expanded(
                                                                     child:
-                                                                    Text('${activity.createdAt!.split(' ').first ?? '-'} - ${activity.createdAt!.split(' ').last ?? '-'}',
+                                                                    Text('${Helper.formatToHourMinuteFromDate(activity.createdAt ?? '')}',
                                                                       style: TextStyle(
                                                                         fontSize: 14,
                                                                       ),
@@ -836,7 +834,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                   SizedBox(width:16),
                                                                   Expanded(
                                                                     child:
-                                                                    Text(activity.totalSampleReceived.toString() ?? '-',
+                                                                    Text(Helper.formatNumber(activity.totalSampleReceived.toString()),
                                                                       style: TextStyle(
                                                                         fontSize: 14,
                                                                       ),
@@ -860,7 +858,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                   VerticalDivider(width: 1),
                                                                   SizedBox(width:16),
                                                                   Expanded( child:
-                                                                  Text(activity.totalSamplePreparation.toString() ?? '-',
+                                                                  Text(Helper.formatNumber(activity.totalSamplePreparation.toString()),
                                                                     style: TextStyle(
                                                                       fontSize: 14,
                                                                     ),
@@ -886,7 +884,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                   SizedBox(width:16),
                                                                   Expanded(
                                                                     child:
-                                                                    Text(activity.totalSampleAnalyzed.toString() ?? '-',
+                                                                    Text(Helper.formatNumber(activity.totalSampleAnalyzed.toString()),
                                                                       style: TextStyle(
                                                                         fontSize: 14,
                                                                       ),

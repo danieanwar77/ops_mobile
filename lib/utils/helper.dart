@@ -14,6 +14,16 @@ class Helper {
     }
   }
 
+  static String formatToHourMinuteFromDate(String time) {
+    try {
+      DateTime dateTime = DateFormat("yyyy-MM-dd hh:mm:ss").parse(time);
+      return DateFormat("HH:mm").format(dateTime);
+    } catch (e) {
+      // Handle any parsing errors
+      return time; // Return the original time if parsing fails
+    }
+  }
+
   static String formatNumber(String? number){
     try{
       if(number == null ) return '';
@@ -23,5 +33,4 @@ class Helper {
       return '';
     }
   }
-
 }
