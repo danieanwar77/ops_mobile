@@ -382,8 +382,8 @@ class JoDetailController extends BaseController {
   Future<void> getJoDetailLocal() async {
     final data = await SqlHelper.getDetailJo(id);
     debugPrint('data detail : ${jsonEncode(data.first)}');
-    inspectionFinishDate = data.first['inspection_finished_date'];
-    laboratoryFinishDate = data.first['laboratory_finished_date'];
+    debugPrint('inspect finish date nya nih: ${data.first['inspection_finished_date']}');
+    debugPrint('lab finish date nya nih: ${data.first['laboratory_finished_date']}');
     update();
     final sow = await SqlHelper.getDetailJoSow(id);
     debugPrint('data detail SOW : ${jsonEncode(sow)}');
@@ -440,14 +440,16 @@ class JoDetailController extends BaseController {
     bargesCount = barges.value.length != 0 ? barges.value.length : 0;
     activity5bargesCount = bargesCount;
     activity5Barges.value = barges.value;
-    if((picInspector == userData.value!.id && picLaboratory != userData.value!.id) && (inspectionFinishDate != '' && inspectionFinishDate == '')){
+    update();
+    if(dataJoDetail.value.inspectionFinishedDate != '' && dataJoDetail.value.laboratoryFinishedDate == ''){
       activityFinished.value = true;
-    } else if((picInspector != userData.value!.id && picLaboratory == userData.value!.id) && (inspectionFinishDate == '' && inspectionFinishDate != '')){
+    } else if(dataJoDetail.value.inspectionFinishedDate == '' && dataJoDetail.value.laboratoryFinishedDate != ''){
       activityFinished.value = true;
-    } else if((picInspector == userData.value!.id && picLaboratory == userData.value!.id) && (inspectionFinishDate != '' && inspectionFinishDate != '')){
+    } else if(dataJoDetail.value.inspectionFinishedDate != '' && dataJoDetail.value.laboratoryFinishedDate != ''){
       activityFinished.value = true;
     }
     update();
+    debugPrint('finishnya nih: ${activityFinished.value}');
     debugPrint('barges : ${jsonEncode(barges.value)}');
   }
 
@@ -3747,13 +3749,14 @@ class JoDetailController extends BaseController {
                                         var filename = photo.fileName!;
                                         return fileType == 'image'
                                             ? SizedBox(
-                                                width: 54,
-                                                height: 66,
+                                                width: 68,
+                                                height: 68,
                                                 child: Stack(
                                                   children: [
-                                                    SizedBox(
-                                                      width: 54,
-                                                      height: 54,
+                                                    Container(
+                                                      margin: const EdgeInsets.only(top:5),
+                                                      width: 63,
+                                                      height: 63,
                                                       child: InkWell(
                                                         onTap: () {
                                                           // controller
@@ -3768,24 +3771,21 @@ class JoDetailController extends BaseController {
                                                         ),
                                                       ),
                                                     ),
-                                                    Align(
-                                                      alignment:
-                                                          AlignmentDirectional
-                                                              .topEnd,
-                                                      child: SizedBox(
-                                                        height: 12,
-                                                        child: IconButton(
-                                                            onPressed: () {
+                                                    SizedBox(
+                                                      width: 68,
+                                                      height: 68,
+                                                      child: Align(
+                                                        alignment:
+                                                        Alignment
+                                                            .topRight,
+                                                        child: InkWell(
+                                                            onTap: () {
                                                               controller
                                                                   .removeActivity6Files(
-                                                                      index);
+                                                                  index);
                                                             },
-                                                            icon: const Icon(
-                                                              Icons
-                                                                  .close,
-                                                              size: 12,
-                                                              color: Colors.red,
-                                                            )),
+                                                            child: Image.asset('assets/icons/close.png', width: 24)
+                                                        ),
                                                       ),
                                                     ),
                                                   ],
@@ -3793,8 +3793,8 @@ class JoDetailController extends BaseController {
                                               )
                                             : fileType == 'doc'
                                                 ? SizedBox(
-                                                    width: 54,
-                                                    height: 66,
+                                                    width: 68,
+                                                    height: 68,
                                                     child: Stack(
                                                       children: [
                                                         InkWell(
@@ -3803,9 +3803,10 @@ class JoDetailController extends BaseController {
                                                             //     photo.pathName!);
                                                             mediaPickerEditConfirm(index);
                                                           },
-                                                          child: SizedBox(
-                                                            width: 54,
-                                                            height: 54,
+                                                          child: Container(
+                                                            margin: const EdgeInsets.only(top: 5),
+                                                            width: 63,
+                                                            height: 63,
                                                             child: Center(
                                                                 child: Column(
                                                               children: [
@@ -3824,28 +3825,21 @@ class JoDetailController extends BaseController {
                                                             )),
                                                           ),
                                                         ),
-                                                        Align(
-                                                          alignment:
-                                                              AlignmentDirectional
-                                                                  .topEnd,
-                                                          child: SizedBox(
-                                                            height: 12,
-                                                            child: IconButton(
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .zero,
-                                                                onPressed: () {
+                                                        SizedBox(
+                                                          width: 68,
+                                                          height: 68,
+                                                          child: Align(
+                                                            alignment:
+                                                            Alignment
+                                                                .topRight,
+                                                            child: InkWell(
+                                                                onTap: () {
                                                                   controller
                                                                       .removeActivity6Files(
-                                                                          index);
+                                                                      index);
                                                                 },
-                                                                icon: const Icon(
-                                                                  Icons
-                                                                      .close,
-                                                                  size: 12,
-                                                                  color: Colors
-                                                                      .red,
-                                                                )),
+                                                                child: Image.asset('assets/icons/close.png', width: 24)
+                                                            ),
                                                           ),
                                                         ),
                                                       ],
@@ -7967,13 +7961,14 @@ class JoDetailController extends BaseController {
                                         var filename = photo.fileName!;
                                         return fileType == 'image'
                                             ? SizedBox(
-                                                width: 54,
-                                                height: 66,
+                                                width: 68,
+                                                height: 68,
                                                 child: Stack(
                                                   children: [
-                                                    SizedBox(
-                                                      width: 54,
-                                                      height: 54,
+                                                    Container(
+                                                      margin: const EdgeInsets.only(top:5),
+                                                      width: 63,
+                                                      height: 63,
                                                       child: InkWell(
                                                         onTap: () {
                                                           // controller
@@ -7988,24 +7983,21 @@ class JoDetailController extends BaseController {
                                                         ),
                                                       ),
                                                     ),
-                                                    Align(
-                                                      alignment:
-                                                          AlignmentDirectional
-                                                              .topEnd,
-                                                      child: SizedBox(
-                                                        height: 12,
-                                                        child: IconButton(
-                                                            onPressed: () {
+                                                    SizedBox(
+                                                      width: 68,
+                                                      height: 68,
+                                                      child: Align(
+                                                        alignment:
+                                                            Alignment
+                                                                .topRight,
+                                                        child: InkWell(
+                                                            onTap: () {
                                                               controller
                                                                   .removeActivity6Files(
                                                                       index);
                                                             },
-                                                            icon: const Icon(
-                                                              Icons
-                                                                  .close,
-                                                              size: 12,
-                                                              color: Colors.red,
-                                                            )),
+                                                            child: Image.asset('assets/icons/close.png', width: 24)
+                                                        ),
                                                       ),
                                                     ),
                                                   ],
@@ -8013,8 +8005,8 @@ class JoDetailController extends BaseController {
                                               )
                                             : fileType == 'doc'
                                                 ? SizedBox(
-                                                    width: 54,
-                                                    height: 66,
+                                                    width: 68,
+                                                    height: 68,
                                                     child: Stack(
                                                       children: [
                                                         InkWell(
@@ -8023,12 +8015,14 @@ class JoDetailController extends BaseController {
                                                             //     photo.pathName!);
                                                             mediaPickerEditConfirm(index);
                                                           },
-                                                          child: SizedBox(
-                                                            width: 54,
-                                                            height: 54,
+                                                          child: Container(
+                                                            margin: const EdgeInsets.only(top: 5),
+                                                            width: 63,
+                                                            height: 63,
                                                             child: Center(
                                                                 child: Column(
                                                               children: [
+                                                                Spacer(),
                                                                 Image.asset(
                                                                   'assets/icons/pdfIcon.png',
                                                                   height: 42,
@@ -8044,28 +8038,21 @@ class JoDetailController extends BaseController {
                                                             )),
                                                           ),
                                                         ),
-                                                        Align(
-                                                          alignment:
-                                                              AlignmentDirectional
-                                                                  .topEnd,
-                                                          child: SizedBox(
-                                                            height: 12,
-                                                            child: IconButton(
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .zero,
-                                                                onPressed: () {
+                                                        SizedBox(
+                                                          width: 68,
+                                                          height: 68,
+                                                          child: Align(
+                                                            alignment:
+                                                                Alignment
+                                                                    .topRight,
+                                                            child: InkWell(
+                                                                onTap: () {
                                                                   controller
                                                                       .removeActivity6Files(
                                                                           index);
                                                                 },
-                                                                icon: const Icon(
-                                                                  Icons
-                                                                      .close,
-                                                                  size: 12,
-                                                                  color: Colors
-                                                                      .red,
-                                                                )),
+                                                                child: Image.asset('assets/icons/close.png', width: 24)
+                                                            )
                                                           ),
                                                         ),
                                                       ],
@@ -8116,7 +8103,7 @@ class JoDetailController extends BaseController {
                                 onPressed: () async {
                                   Get.back();
                                   // checkActivity6List();
-                                  // await getJoDailyActivity6AttachmentLocal();
+                                  await getJoDailyActivity6AttachmentLocal();
                                 },
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,

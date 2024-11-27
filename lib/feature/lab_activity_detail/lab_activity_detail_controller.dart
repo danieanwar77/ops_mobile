@@ -3126,7 +3126,7 @@ class LabActivityDetailController extends BaseController{
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Add Stage Inspection',
+                                'Add Stage Laboratory',
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
@@ -3145,150 +3145,147 @@ class LabActivityDetailController extends BaseController{
                               ),
                               Column(
                                 children: [
-                                  Form(
-                                    key: _formKey,
-                                    child: Column(
-                                      children: [
-                                        TextFormField(
-                                          showCursor: true,
-                                          readOnly: true,
-                                          controller: activity6Date,
-                                          cursorColor: onFocusColor,
-                                          onTap: () {
-                                            selectDate6(Get.context!);
-                                          },
-                                          validator: (value) {
-                                            if (value == null || value.isEmpty) {
-                                              return 'Field wajib diisi!';
-                                            }
-                                            return null;
-                                          },
-                                          style: const TextStyle(color: onFocusColor),
-                                          decoration: InputDecoration(
-                                              suffixIcon: IconButton(
-                                                  onPressed: () {
-                                                    selectDate6(Get.context!);
-                                                  },
-                                                  icon: const Icon(
-                                                      Icons.calendar_today_rounded)),
-                                              border: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(12),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide:
-                                                const BorderSide(color: onFocusColor),
-                                                borderRadius: BorderRadius.circular(12),
-                                              ),
-                                              labelText: 'Date*',
-                                              floatingLabelStyle:
-                                              const TextStyle(color: onFocusColor),
-                                              fillColor: onFocusColor),
-                                        ),
-                                        const SizedBox(
-                                          height: 16,
-                                        ),
-                                        Text('Detail Activities'),
-                                        const SizedBox(
-                                          height: 16,
-                                        ),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: TextFormField(
-                                                controller: activity6StartTime,
-                                                cursorColor: onFocusColor,
-                                                onTap: () async {
-                                                  activity6StartTime.text =
-                                                  await selectTime6(Get.context!);
+                                  Column(
+                                    children: [
+                                      TextFormField(
+                                        showCursor: true,
+                                        readOnly: true,
+                                        controller: activity6Date,
+                                        cursorColor: onFocusColor,
+                                        onTap: () {
+                                          selectDate6(Get.context!);
+                                        },
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Field wajib diisi!';
+                                          }
+                                          return null;
+                                        },
+                                        style: const TextStyle(color: onFocusColor),
+                                        decoration: InputDecoration(
+                                            suffixIcon: IconButton(
+                                                onPressed: () {
+                                                  selectDate6(Get.context!);
                                                 },
-                                                validator: (value) {
-                                                  if (value == null || value.isEmpty) {
-                                                    return 'Field wajib diisi!';
-                                                  }
-                                                  return null;
-                                                },
-                                                style: const TextStyle(color: onFocusColor),
-                                                decoration: InputDecoration(
-                                                    border: OutlineInputBorder(
-                                                      borderRadius:
-                                                      BorderRadius.circular(12),
-                                                    ),
-                                                    focusedBorder: OutlineInputBorder(
-                                                      borderSide: const BorderSide(
-                                                          color: onFocusColor),
-                                                      borderRadius:
-                                                      BorderRadius.circular(12),
-                                                    ),
-                                                    labelText: 'Start Time*',
-                                                    floatingLabelStyle: const TextStyle(
+                                                icon: const Icon(
+                                                    Icons.calendar_today_rounded)),
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide:
+                                              const BorderSide(color: onFocusColor),
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            labelText: 'Date*',
+                                            floatingLabelStyle:
+                                            const TextStyle(color: onFocusColor),
+                                            fillColor: onFocusColor),
+                                      ),
+                                      const SizedBox(
+                                        height: 16,
+                                      ),
+                                      Text('Detail Activities'),
+                                      const SizedBox(
+                                        height: 16,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: TextFormField(
+                                              controller: activity6StartTime,
+                                              cursorColor: onFocusColor,
+                                              onTap: () async {
+                                                activity6StartTime.text =
+                                                await selectTime6(Get.context!);
+                                              },
+                                              validator: (value) {
+                                                if (value == null || value.isEmpty) {
+                                                  return 'Field wajib diisi!';
+                                                }
+                                                return null;
+                                              },
+                                              style: const TextStyle(color: onFocusColor),
+                                              decoration: InputDecoration(
+                                                  border: OutlineInputBorder(
+                                                    borderRadius:
+                                                    BorderRadius.circular(12),
+                                                  ),
+                                                  focusedBorder: OutlineInputBorder(
+                                                    borderSide: const BorderSide(
                                                         color: onFocusColor),
-                                                    fillColor: onFocusColor),
-                                              ),
+                                                    borderRadius:
+                                                    BorderRadius.circular(12),
+                                                  ),
+                                                  labelText: 'Start Time*',
+                                                  floatingLabelStyle: const TextStyle(
+                                                      color: onFocusColor),
+                                                  fillColor: onFocusColor),
                                             ),
-                                            const SizedBox(
-                                              width: 8,
-                                            ),
-                                            Expanded(
-                                              child: TextFormField(
-                                                controller: activity6EndTime,
-                                                cursorColor: onFocusColor,
-                                                onTap: () async {
-                                                  activity6EndTime.text =
-                                                  await selectTime6(Get.context!);
-                                                },
-                                                style: const TextStyle(color: onFocusColor),
-                                                decoration: InputDecoration(
-                                                    border: OutlineInputBorder(
-                                                      borderRadius:
-                                                      BorderRadius.circular(12),
-                                                    ),
-                                                    focusedBorder: OutlineInputBorder(
-                                                      borderSide: const BorderSide(
-                                                          color: onFocusColor),
-                                                      borderRadius:
-                                                      BorderRadius.circular(12),
-                                                    ),
-                                                    labelText: 'End Time',
-                                                    floatingLabelStyle: const TextStyle(
+                                          ),
+                                          const SizedBox(
+                                            width: 8,
+                                          ),
+                                          Expanded(
+                                            child: TextFormField(
+                                              controller: activity6EndTime,
+                                              cursorColor: onFocusColor,
+                                              onTap: () async {
+                                                activity6EndTime.text =
+                                                await selectTime6(Get.context!);
+                                              },
+                                              style: const TextStyle(color: onFocusColor),
+                                              decoration: InputDecoration(
+                                                  border: OutlineInputBorder(
+                                                    borderRadius:
+                                                    BorderRadius.circular(12),
+                                                  ),
+                                                  focusedBorder: OutlineInputBorder(
+                                                    borderSide: const BorderSide(
                                                         color: onFocusColor),
-                                                    fillColor: onFocusColor),
-                                              ),
+                                                    borderRadius:
+                                                    BorderRadius.circular(12),
+                                                  ),
+                                                  labelText: 'End Time',
+                                                  floatingLabelStyle: const TextStyle(
+                                                      color: onFocusColor),
+                                                  fillColor: onFocusColor),
                                             ),
-                                          ],
-                                        ),
-                                        const SizedBox(
-                                          height: 16,
-                                        ),
-                                        TextFormField(
-                                          controller: activity6Text,
-                                          cursorColor: onFocusColor,
-                                          inputFormatters: [
-                                            LengthLimitingTextInputFormatter(
-                                                150),
-                                          ],
-                                          validator: (value) {
-                                            if (value == null || value.isEmpty) {
-                                              return 'Field wajib diisi!';
-                                            }
-                                            return null;
-                                          },
-                                          style: const TextStyle(color: onFocusColor),
-                                          decoration: InputDecoration(
-                                              border: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(12),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide:
-                                                const BorderSide(color: onFocusColor),
-                                                borderRadius: BorderRadius.circular(12),
-                                              ),
-                                              labelText: 'Activity*',
-                                              floatingLabelStyle:
-                                              const TextStyle(color: onFocusColor),
-                                              fillColor: onFocusColor),
-                                        ),
-                                      ],
-                                    ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 16,
+                                      ),
+                                      TextFormField(
+                                        controller: activity6Text,
+                                        cursorColor: onFocusColor,
+                                        inputFormatters: [
+                                          LengthLimitingTextInputFormatter(
+                                              150),
+                                        ],
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Field wajib diisi!';
+                                          }
+                                          return null;
+                                        },
+                                        style: const TextStyle(color: onFocusColor),
+                                        decoration: InputDecoration(
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide:
+                                              const BorderSide(color: onFocusColor),
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            labelText: 'Activity*',
+                                            floatingLabelStyle:
+                                            const TextStyle(color: onFocusColor),
+                                            fillColor: onFocusColor),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
