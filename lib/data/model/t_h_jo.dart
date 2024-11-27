@@ -100,7 +100,7 @@ class THJo {
     _endDateOfAttendance = json['end_date_of_attendance'];
     _dateAssigment = json['date_assigment'];
     _lokasiKerja = json['lokasi_kerja'];
-    _picInspector = json['pic_inspector'];
+    _picInspector = json['pic_inspector'].toString();
     _picLaboratory = json['pic_laboratory'];
     _inspectionCompletedDate = json['inspection_completed_date'];
     _laboratoryCompletedDate = json['laboratory_completed_date'];
