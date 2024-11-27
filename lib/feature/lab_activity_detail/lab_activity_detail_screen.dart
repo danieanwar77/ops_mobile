@@ -19,15 +19,22 @@ class LabActivityDetailScreen extends StatelessWidget{
         builder: (controller) => Scaffold(
           appBar: AppBar(
             actions: [
-              controller.activity6ListStages.value.isNotEmpty && controller.activityLabStage == 6 ? Padding(
+              controller.activity6ListStages.value.isNotEmpty && controller.activityLabStage == 6 && ( controller.joRx.value.laboratoryFinishedDate == null ||controller.joRx.value.laboratoryFinishedDate == "") ? Padding(
                 padding: const EdgeInsets.only(right: 8.0),
-                child: CircleAvatar(
-                    backgroundColor: green,
+                child: GestureDetector(
+                  onTap: () {
+                    controller.finishLabConfirm();
+                    debugPrint('print data finish lab confirm');
+                  },
+                  child: CircleAvatar(
+                    backgroundColor: Colors.green,
                     child: Image.asset(
-                        'assets/icons/finishjo.png',
-                        width: 21,
-                        height: 21
-                    )),
+                      'assets/icons/finishjo.png',
+                      width: 21,
+                      height: 21,
+                    ),
+                  ),
+                )
               ) : const SizedBox(),
             ],
             centerTitle: false,
@@ -916,7 +923,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                   ),
                                                 ),
                                                 const SizedBox(width: 8),
-                                                controller.activityLabStage == 6 ? InkWell(
+                                                controller.activityLabStage == 6  && ( controller.joRx.value.laboratoryFinishedDate == null ||controller.joRx.value.laboratoryFinishedDate == "") ? InkWell(
                                                     onTap: () {
                                                       controller.drawerDailyActivity6Edit();
                                                     },

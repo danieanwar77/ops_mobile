@@ -22,8 +22,7 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await requestPerminssion();
   /// FCM END
-
-
+  ///
   GlobalBindings().dependencies();
 
   ErrorWidget.builder = (FlutterErrorDetails details) {
