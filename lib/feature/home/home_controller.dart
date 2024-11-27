@@ -91,6 +91,7 @@ class HomeController extends BaseController{
     await StorageCore().storage.write('user', jsonEncode(data));
     debugPrint('data users: ${jsonEncode(userData.value)}');
     update();
+
     // connectivityResult = await (Connectivity().checkConnectivity());
     //await getJO();
     super.onInit();

@@ -67,6 +67,8 @@ class JoDetailController extends BaseController {
   List<Tab> joWaitingTab = [];
   bool isLoadingJO = false;
   bool isLoadingJOImage = false;
+  String inspectionFinishDate = '';
+  String laboratoryFinishDate = '';
 
   TextEditingController searchLabText = TextEditingController();
 
@@ -380,6 +382,9 @@ class JoDetailController extends BaseController {
   Future<void> getJoDetailLocal() async {
     final data = await SqlHelper.getDetailJo(id);
     debugPrint('data detail : ${jsonEncode(data.first)}');
+    inspectionFinishDate = data.first['inspection_finished_date'];
+    laboratoryFinishDate = data.first['laboratory_finished_date'];
+    update();
     final sow = await SqlHelper.getDetailJoSow(id);
     debugPrint('data detail SOW : ${jsonEncode(sow)}');
     final oos = await SqlHelper.getDetailJoOos(id);
@@ -435,6 +440,13 @@ class JoDetailController extends BaseController {
     bargesCount = barges.value.length != 0 ? barges.value.length : 0;
     activity5bargesCount = bargesCount;
     activity5Barges.value = barges.value;
+    if((picInspector == userData.value!.id && picLaboratory != userData.value!.id) && (inspectionFinishDate != '' && inspectionFinishDate == '')){
+      activityFinished.value = true;
+    } else if((picInspector != userData.value!.id && picLaboratory == userData.value!.id) && (inspectionFinishDate == '' && inspectionFinishDate != '')){
+      activityFinished.value = true;
+    } else if((picInspector == userData.value!.id && picLaboratory == userData.value!.id) && (inspectionFinishDate != '' && inspectionFinishDate != '')){
+      activityFinished.value = true;
+    }
     update();
     debugPrint('barges : ${jsonEncode(barges.value)}');
   }
@@ -794,7 +806,7 @@ class JoDetailController extends BaseController {
   Future cameraImage() async {
     File? image;
     try {
-      final XFile? pic = await picker.pickImage(source: ImageSource.camera);
+      final XFile? pic = await picker.pickImage(source: ImageSource.camera, imageQuality: 15);
       final imageTemp = File(pic!.path);
       image = imageTemp;
       update();
@@ -807,7 +819,7 @@ class JoDetailController extends BaseController {
   Future pickImage() async {
     File? image;
     try {
-      final XFile? pic = await picker.pickImage(source: ImageSource.gallery);
+      final XFile? pic = await picker.pickImage(source: ImageSource.gallery, imageQuality: 15);
       final imageTemp = File(pic!.path);
       image = imageTemp;
       update();
@@ -1243,55 +1255,64 @@ class JoDetailController extends BaseController {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    InkWell(
-                      onTap: () async {
-                        await inspectionMediaPreviewPickerConfirmEdit(index);
-                        photoPreview = activityPreviewFoto.value;
-                        update();
-                      },
-                      child: Center(
-                        child: SizedBox(
-                          height: MediaQuery.of(Get.context!).viewInsets.bottom != 0 ? 66.h : 180.h,
-                          width: MediaQuery.sizeOf(Get.context!).width.w,
-                          child: Image.file(
-                            photoPreview,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ),
                     SizedBox(
-                      height: 16.h,
-                    ),
-                    SizedBox(
-                      height: 16.h,
-                    ),
-                    dataJoDetail.value.detail?.statusJo == 'Assigned' ||
-                        dataJoDetail.value.detail?.statusJo == 'On Progres'
-                        ? SizedBox(
-                          child: TextFormField(
-                                            controller: dailyActivityPhotosDescEdit.value,
-                                            cursorColor: onFocusColor,
-                                            style: const TextStyle(color: onFocusColor),
-                            inputFormatters: [
-                              new LengthLimitingTextInputFormatter(150),
+                      height: MediaQuery.of(Get.context!).viewInsets.bottom != 0 ? 100.h : 200.h,
+                      child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              InkWell(
+                                onTap: () async {
+                                  await inspectionMediaPreviewPickerConfirmEdit(index);
+                                  photoPreview = activityPreviewFoto.value;
+                                  update();
+                                },
+                                child: Center(
+                                  child: SizedBox(
+                                    height: MediaQuery.of(Get.context!).viewInsets.bottom != 0 ? 66.h : 180.h,
+                                    width: MediaQuery.sizeOf(Get.context!).width.w,
+                                    child: Image.file(
+                                      photoPreview,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 16.h,
+                              ),
+                              SizedBox(
+                                height: 16.h,
+                              ),
+                              dataJoDetail.value.detail?.statusJo == 'Assigned' ||
+                                  dataJoDetail.value.detail?.statusJo == 'On Progres'
+                                  ? SizedBox(
+                                child: TextFormField(
+                                  controller: dailyActivityPhotosDescEdit.value,
+                                  cursorColor: onFocusColor,
+                                  style: const TextStyle(color: onFocusColor),
+                                  inputFormatters: [
+                                    new LengthLimitingTextInputFormatter(150),
+                                  ],
+                                  decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide:
+                                        const BorderSide(color: onFocusColor),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      labelText: 'Description',
+                                      floatingLabelStyle:
+                                      const TextStyle(color: onFocusColor),
+                                      fillColor: onFocusColor),
+                                ),
+                              )
+                                  : Text(desc),
                             ],
-                                            decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide:
-                              const BorderSide(color: onFocusColor),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            labelText: 'Description',
-                            floatingLabelStyle:
-                            const TextStyle(color: onFocusColor),
-                            fillColor: onFocusColor),
-                                          ),
-                        )
-                        : Text(desc),
+                          ),
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -2876,6 +2897,9 @@ class JoDetailController extends BaseController {
                                                     editActivity5Transhipment(
                                                         index);
                                                   },
+                                                  inputFormatters: [
+                                                    new LengthLimitingTextInputFormatter(150),
+                                                  ],
                                                   style: const TextStyle(
                                                       color: onFocusColor),
                                                   decoration: InputDecoration(
@@ -3492,13 +3516,13 @@ class JoDetailController extends BaseController {
                                                       children: [
                                                         Row(
                                                           children: [
-                                                            const Expanded(
+                                                            Expanded(
                                                                 flex: 2,
                                                                 child: Text(
                                                                   'Date',
                                                                   style: TextStyle(
                                                                       fontSize:
-                                                                          14,
+                                                                      12.sp,
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .w700),
@@ -3514,18 +3538,20 @@ class JoDetailController extends BaseController {
                                                                      Text(
                                                                         stage.transDate ??
                                                                             '-',
-                                                                        style: const TextStyle(
+                                                                        style: TextStyle(
                                                                             fontSize:
-                                                                                14),
+                                                                            12.sp),
                                                                       ),
                                                                     InkWell(
                                                                       onTap:
                                                                           () {
                                                                         debugPrint(
                                                                             'Delete header');
-                                                                        deleteActivityHeaderV2(
-                                                                            stage!.transDate!);
-                                                                      },
+                                                                        removeActivityByDateConfirm(
+                                                                            stage!.transDate!,
+                                                                            index,
+                                                                            stage.mStatusinspectionstagesId!.toInt());
+                                                                          },
                                                                       child: const ImageIcon(
                                                                           AssetImage("assets/icons/deleteStage.png"),
                                                                           color: Colors.red,
@@ -3578,7 +3604,7 @@ class JoDetailController extends BaseController {
                                                                         child: Text(
                                                                             '${activity.startActivityTime} - ${activity.endActivityTime}',
                                                                             style:
-                                                                                const TextStyle(fontSize: 14, fontWeight: FontWeight.w700))),
+                                                                                 TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700))),
                                                                     const VerticalDivider(
                                                                       width: 1,
                                                                     ),
@@ -3593,7 +3619,7 @@ class JoDetailController extends BaseController {
                                                                             Expanded(
                                                                               child: Text(
                                                                                 activity.activity ?? '-',
-                                                                                style: const TextStyle(fontSize: 14),
+                                                                                style: TextStyle(fontSize: 12.sp),
                                                                               ),
                                                                             ),
                                                                             InkWell(
@@ -3623,7 +3649,7 @@ class JoDetailController extends BaseController {
                                                                                 child: InkWell(
                                                                                   onTap: () {
                                                                                     debugPrint('Hapus detail');
-                                                                                    deleteActivityDetailV2(stage!.transDate!, activity!.activity!);
+                                                                                    removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(), activity.activity ?? '', activity.startActivityTime!, activity.endActivityTime ?? '');
                                                                                   },
                                                                                   child: const Icon(
                                                                                       Icons.remove,
@@ -3730,10 +3756,11 @@ class JoDetailController extends BaseController {
                                                       height: 54,
                                                       child: InkWell(
                                                         onTap: () {
-                                                          controller
-                                                              .previewImageAct6(
-                                                                  index,
-                                                                  photo.pathName!);
+                                                          // controller
+                                                          //     .previewImageAct6(
+                                                          //         index,
+                                                          //         photo.pathName!);
+                                                          mediaPickerEditConfirm(index);
                                                         },
                                                         child: Image.file(
                                                           File(photo.pathName!),
@@ -3772,8 +3799,9 @@ class JoDetailController extends BaseController {
                                                       children: [
                                                         InkWell(
                                                           onTap: () {
-                                                            OpenFilex.open(
-                                                                photo.pathName!);
+                                                            // OpenFilex.open(
+                                                            //     photo.pathName!);
+                                                            mediaPickerEditConfirm(index);
                                                           },
                                                           child: SizedBox(
                                                             width: 54,
@@ -3829,7 +3857,7 @@ class JoDetailController extends BaseController {
                               const SizedBox(
                                 height: 16,
                               ),
-                              SizedBox(
+                              activity6Attachments.value.length < 5 ? SizedBox(
                                 width: 68,
                                 height: 68,
                                 child: ElevatedButton(
@@ -3848,7 +3876,7 @@ class JoDetailController extends BaseController {
                                       Icons.folder_rounded,
                                       color: primaryColor,
                                     ))),
-                              ),
+                              ) : const SizedBox(),
                               const SizedBox(
                                 height: 16,
                               ),
@@ -5103,13 +5131,13 @@ class JoDetailController extends BaseController {
                                                     children: [
                                                       Row(
                                                         children: [
-                                                          const Expanded(
+                                                          Expanded(
                                                               flex: 2,
                                                               child: Text(
                                                                 'Date',
                                                                 style: TextStyle(
                                                                     fontSize:
-                                                                        14,
+                                                                    12.sp,
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .w700),
@@ -5127,9 +5155,9 @@ class JoDetailController extends BaseController {
                                                                     child: Text(
                                                                       stage.transDate ??
                                                                           '-',
-                                                                      style: const TextStyle(
+                                                                      style: TextStyle(
                                                                           fontSize:
-                                                                              14),
+                                                                          12.sp),
                                                                     ),
                                                                   ),
                                                                   InkWell(
@@ -5176,14 +5204,14 @@ class JoDetailController extends BaseController {
                                                                     CrossAxisAlignment
                                                                         .start,
                                                                 children: [
-                                                                  const Expanded(
+                                                                  Expanded(
                                                                       flex: 1,
                                                                       child:
                                                                           Text(
                                                                         'Activities',
                                                                         style: TextStyle(
                                                                             fontSize:
-                                                                                14,
+                                                                                12.sp,
                                                                             fontWeight:
                                                                                 FontWeight.w700),
                                                                       )),
@@ -5197,8 +5225,8 @@ class JoDetailController extends BaseController {
                                                                       flex: 1,
                                                                       child: Text(
                                                                           '${activity.startActivityTime} - ${activity.endActivityTime}',
-                                                                          style: const TextStyle(
-                                                                              fontSize: 14,
+                                                                          style: TextStyle(
+                                                                              fontSize: 12.sp,
                                                                               fontWeight: FontWeight.w700))),
                                                                   const VerticalDivider(
                                                                     width: 1,
@@ -5215,7 +5243,7 @@ class JoDetailController extends BaseController {
                                                                             child:
                                                                                 Text(
                                                                               activity.activity ?? '-',
-                                                                              style: const TextStyle(fontSize: 14),
+                                                                              style: TextStyle(fontSize: 12.sp),
                                                                             ),
                                                                           ),
                                                                           InkWell(
@@ -5247,7 +5275,7 @@ class JoDetailController extends BaseController {
                                                                                 onTap:
                                                                                     () {
                                                                                   debugPrint('Hapus detail');
-                                                                                  removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(), activity.activity ?? '');
+                                                                                  removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(), activity.activity ?? '', activity.startActivityTime!, activity.endActivityTime ?? '');
                                                                                 },
                                                                                 child: const Icon(
                                                                                     Icons.remove,
@@ -5261,6 +5289,9 @@ class JoDetailController extends BaseController {
                                                                       ))
                                                                 ]);
                                                           }),
+                                                      const SizedBox(
+                                                        height: 16,
+                                                      ),
                                                       TextFormField(
                                                         inputFormatters: [
                                                           LengthLimitingTextInputFormatter(
@@ -5710,7 +5741,7 @@ class JoDetailController extends BaseController {
                                               color: Colors.white,
                                               child: Padding(
                                                   padding:
-                                                      const EdgeInsets.only(
+                                                      EdgeInsets.only(
                                                           left: 16,
                                                           right: 16,
                                                           top: 8,
@@ -5719,13 +5750,13 @@ class JoDetailController extends BaseController {
                                                     children: [
                                                       Row(
                                                         children: [
-                                                          const Expanded(
+                                                          Expanded(
                                                               flex: 2,
                                                               child: Text(
                                                                 'Date',
                                                                 style: TextStyle(
                                                                     fontSize:
-                                                                        14,
+                                                                    12.sp,
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .w700),
@@ -5743,9 +5774,9 @@ class JoDetailController extends BaseController {
                                                                     child: Text(
                                                                       stage.transDate ??
                                                                           '-',
-                                                                      style: const TextStyle(
+                                                                      style: TextStyle(
                                                                           fontSize:
-                                                                              14),
+                                                                          12.sp),
                                                                     ),
                                                                   ),
                                                                   InkWell(
@@ -5784,14 +5815,14 @@ class JoDetailController extends BaseController {
                                                                     CrossAxisAlignment
                                                                         .start,
                                                                 children: [
-                                                                  const Expanded(
+                                                                  Expanded(
                                                                       flex: 1,
                                                                       child:
                                                                           Text(
                                                                         'Activities',
                                                                         style: TextStyle(
                                                                             fontSize:
-                                                                                14,
+                                                                            12.sp,
                                                                             fontWeight:
                                                                                 FontWeight.w700),
                                                                       )),
@@ -5805,8 +5836,8 @@ class JoDetailController extends BaseController {
                                                                       flex: 1,
                                                                       child: Text(
                                                                           '${Helper.formatToHourMinute(activity!.startActivityTime!)} - ${Helper.formatToHourMinute(activity!.endActivityTime!)}',
-                                                                          style: const TextStyle(
-                                                                              fontSize: 14,
+                                                                          style: TextStyle(
+                                                                              fontSize: 12.sp,
                                                                               fontWeight: FontWeight.w700))),
                                                                   const VerticalDivider(
                                                                     width: 1,
@@ -5823,7 +5854,7 @@ class JoDetailController extends BaseController {
                                                                             child:
                                                                                 Text(
                                                                               activity.activity ?? '-',
-                                                                              style: const TextStyle(fontSize: 14),
+                                                                              style: TextStyle(fontSize: 12.sp),
                                                                             ),
                                                                           ),
                                                                           InkWell(
@@ -5854,7 +5885,7 @@ class JoDetailController extends BaseController {
                                                                               child: InkWell(
                                                                                 onTap: () {debugPrint('Hapus detail');
                                                                                   //deleteActivityDetailV2(stage!.transDate!, activity!.activity!);
-                                                                                  removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(), activity.activity ?? '');
+                                                                                  removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(), activity.activity ?? '', activity.startActivityTime!, activity.endActivityTime ?? '');
                                                                                 },
                                                                                 child: const Icon(
                                                                                     Icons.remove,
@@ -5868,6 +5899,9 @@ class JoDetailController extends BaseController {
                                                                       ))
                                                                 ]);
                                                           }),
+                                                      const SizedBox(
+                                                        width: 16,
+                                                      ),
                                                       TextFormField(
                                                         inputFormatters: [
                                                           LengthLimitingTextInputFormatter(
@@ -6022,7 +6056,7 @@ class JoDetailController extends BaseController {
     );
   }
 
-  void removeActivityConfirm(String date, int indexitem, int index, int stage, String activity) {
+  void removeActivityConfirm(String date, int indexitem, int index, int stage, String activity, String start, String? end) {
     Get.dialog(
       AlertDialog(
         title: const Text(
@@ -6030,7 +6064,7 @@ class JoDetailController extends BaseController {
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Apakah anda ingin menghapus activity date $date'),
+        content: Text('Apakah anda ingin menghapus activity time ${start} - ${end} ?'),
         actions: [
           TextButton(
             child: const Text("Close"),
@@ -6059,7 +6093,7 @@ class JoDetailController extends BaseController {
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Apakah anda ingin menghapus activity date $date'),
+        content: Text('Apakah anda ingin menghapus activity date $date ?'),
         actions: [
           TextButton(
             child: const Text("Close"),
@@ -6588,6 +6622,9 @@ class JoDetailController extends BaseController {
                                               ? TextFormField(
                                                   controller: jettyListTextController.value[index],
                                                   cursorColor: onFocusColor,
+                                                  inputFormatters: [
+                                                    new LengthLimitingTextInputFormatter(150),
+                                                  ],
                                                   onChanged: (value) {
                                                     editActivity5Transhipment(
                                                         index);
@@ -7042,6 +7079,20 @@ class JoDetailController extends BaseController {
     debugPrint('file yangdi add: ${jsonEncode(activity6Attachments.value.last)}');
   }
 
+  void editActivity6Files(String path, index) {
+    activity6Attachments.value[index] = TDJoInspectionAttachment(
+      tHJoId: id,
+      pathName: path,
+      fileName: path.split('/').last,
+      isActive: 1,
+      isUpload: 0,
+      createdBy: userData.value?.id ?? 0,
+      createdAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(
+          DateTime.now()).toString(),
+    );
+    debugPrint('file yangdi edit: ${jsonEncode(activity6Attachments.value.last)}');
+  }
+
   void removeActivity6Files(int index) {
     activity6Attachments.value.removeAt(index);
     update();
@@ -7073,45 +7124,148 @@ class JoDetailController extends BaseController {
   }
 
   void cameraImageActivity6() async {
+    var total = 0;
+    activity6Attachments.value.forEach((item) async {
+      final fileBytes = await File(item.pathName!).readAsBytes();
+      total = total + fileBytes.lengthInBytes;
+      update();
+    });
     File? image;
     try {
-      final XFile? pic = await picker.pickImage(source: ImageSource.camera);
+      final XFile? pic = await picker.pickImage(source: ImageSource.camera, imageQuality: 10);
       if (pic != null) {
         final imageTemp = File(pic!.path);
         image = imageTemp;
-        final imageName = image.path.split('/').last;
-        final dir = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
-        bool exists = await Directory('$dir/ops/files/').exists();
+        final imageFileBytes = await File(image.path).readAsBytes();
 
-        if(exists == false){
-          Directory('$dir/ops/files/').create();
+        if(total + imageFileBytes.lengthInBytes > 10000000){
+          openDialog("Attention", 'Total File lebih dari 10 MB!');
+          update();
+        } else {
+          final imageName = image.path.split('/').last;
+          final dir = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
+          bool exists = await Directory('$dir/ops/files/').exists();
+
+          if(exists == false){
+            Directory('$dir/ops/files/').create();
+          }
+
+          image.rename('$dir/ops/files/$imageName');
+          update();
+          addActivity6Files(image.path);
         }
-
-        image.rename('$dir/ops/files/$imageName');
-        update();
-        addActivity6Files(image.path);
       }
     } on PlatformException catch (e) {
       openDialog('Failed', e.message ?? 'Gagal menambahkan file');
     }
-    openDialog('Success', 'Berhasil menambahkan file.');
+    //openDialog('Success', 'Berhasil menambahkan file.');
   }
 
   void fileActivity6() async {
+    var total = 0;
+    activity6Attachments.value.forEach((item) async {
+      final fileBytes = await File(item.pathName!).readAsBytes();
+      total = total + fileBytes.lengthInBytes;
+      update();
+    });
+
     try {
       final FilePickerResult? attach = await FilePicker.platform.pickFiles(
+          allowCompression: true,
+          compressionQuality: 10,
           allowMultiple: true,
           type: FileType.custom,
           allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf']);
       if (attach != null) {
         final List<XFile> xFiles = attach.xFiles;
-        xFiles.forEach((data) {
+        xFiles.forEach((data) async {
           final fileTemp = File(data!.path);
           final File file = fileTemp;
+          final checkFileBytes = await File(file.path).readAsBytes();
+          if(total + checkFileBytes.lengthInBytes > 10000000){
+            openDialog("Attention", 'Total File lebih dari 10 MB!');
+            return;
+          } else {
+            addActivity6Files(file.path);
+          }
           update();
-          addActivity6Files(file.path);
         });
-        openDialog('Success', 'Berhasil menambahkan file.');
+        //openDialog('Success', 'Berhasil menambahkan file.');
+      }
+    } on PlatformException catch (e) {
+      openDialog('Failed', e.message ?? 'Gagal menambahkan file.');
+    }
+  }
+
+  void cameraImageActivity6Update(int index) async {
+    var total = 0;
+
+    activity6Attachments.value.forEach((item) async {
+      final fileBytes = await File(item.pathName!).readAsBytes();
+      total = total + fileBytes.lengthInBytes;
+      update();
+    });
+    File? image;
+    try {
+      final XFile? pic = await picker.pickImage(source: ImageSource.camera, imageQuality: 10);
+      if (pic != null) {
+        final imageTemp = File(pic!.path);
+        image = imageTemp;
+        final imageFileBytes = await File(image.path).readAsBytes();
+
+        if(total + imageFileBytes.lengthInBytes > 10000000){
+          openDialog("Attention", 'Total File lebih dari 10 MB!');
+          update();
+        } else {
+          final imageName = image.path.split('/').last;
+          final dir = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
+          bool exists = await Directory('$dir/ops/files/').exists();
+
+          if(exists == false){
+            Directory('$dir/ops/files/').create();
+          }
+
+          image.rename('$dir/ops/files/$imageName');
+          update();
+          editActivity6Files(image.path, index);
+        }
+      }
+    } on PlatformException catch (e) {
+      openDialog('Failed', e.message ?? 'Gagal menambahkan file');
+    }
+    //openDialog('Success', 'Berhasil menambahkan file.');
+  }
+
+  void fileActivity6Update(int index) async {
+    var total = 0;
+    activity6Attachments.value.forEach((item) async {
+      final fileBytes = await File(item.pathName!).readAsBytes();
+      total = total + fileBytes.lengthInBytes;
+      update();
+    });
+
+    try {
+      final FilePickerResult? attach = await FilePicker.platform.pickFiles(
+          allowCompression: true,
+          compressionQuality: 10,
+          allowMultiple: true,
+          type: FileType.custom,
+          allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf']);
+      if (attach != null) {
+        final List<XFile> xFiles = attach.xFiles;
+        xFiles.forEach((data) async {
+          final fileTemp = File(data!.path);
+          final File file = fileTemp;
+          final checkFileBytes = await File(file.path).readAsBytes();
+          if(total + checkFileBytes.lengthInBytes > 10000000){
+            openDialog("Attention", 'Total File lebih dari 10 MB!');
+            return;
+          } else {
+            editActivity6Files(file.path, index);
+          }
+          update();
+        });
+        //openDialog('Success', 'Berhasil menambahkan file.');
       }
     } on PlatformException catch (e) {
       openDialog('Failed', e.message ?? 'Gagal menambahkan file.');
@@ -7230,6 +7384,71 @@ class JoDetailController extends BaseController {
                           Icons.folder_rounded,
                           color: primaryColor,
                         ))),
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  void mediaPickerEditConfirm(int index) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text(
+          'File Attachment',
+          style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
+        ),
+        content: const Text('Pilih sumber file yang ingin dilampirkan.'),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: Center(
+                  child: SizedBox(
+                    width: 68,
+                    height: 67,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Get.back();
+                          cameraImageActivity6Update(index);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                side: const BorderSide(color: primaryColor),
+                                borderRadius: BorderRadius.circular(12))),
+                        child: const Center(
+                            child: Icon(
+                              Icons.camera_alt,
+                              color: primaryColor,
+                            ))),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: SizedBox(
+                    width: 68,
+                    height: 68,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Get.back();
+                          fileActivity6Update(index);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                side: const BorderSide(color: primaryColor),
+                                borderRadius: BorderRadius.circular(12))),
+                        child: const Center(
+                            child: Icon(
+                              Icons.folder_rounded,
+                              color: primaryColor,
+                            ))),
                   ),
                 ),
               ),
@@ -7513,13 +7732,13 @@ class JoDetailController extends BaseController {
                                                       children: [
                                                         Row(
                                                           children: [
-                                                            const Expanded(
+                                                            Expanded(
                                                                 flex: 2,
                                                                 child: Text(
                                                                   'Date',
                                                                   style: TextStyle(
                                                                       fontSize:
-                                                                          14,
+                                                                      12.sp,
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .w700),
@@ -7535,9 +7754,9 @@ class JoDetailController extends BaseController {
                                                                     Text(
                                                                         stage.transDate ??
                                                                             '-',
-                                                                        style: const TextStyle(
+                                                                        style: TextStyle(
                                                                             fontSize:
-                                                                                14),
+                                                                            12.sp),
                                                                       ),
                                                                     const SizedBox(width: 6),
                                                                     InkWell(
@@ -7582,13 +7801,13 @@ class JoDetailController extends BaseController {
                                                                       CrossAxisAlignment
                                                                           .start,
                                                                   children: [
-                                                                    const Expanded(
+                                                                    Expanded(
                                                                         flex: 1,
                                                                         child:
                                                                             Text(
                                                                           'Activities',
                                                                           style: TextStyle(
-                                                                              fontSize: 14,
+                                                                              fontSize: 12.sp,
                                                                               fontWeight: FontWeight.w700),
                                                                         )),
                                                                     const VerticalDivider(
@@ -7602,7 +7821,7 @@ class JoDetailController extends BaseController {
                                                                         child: Text(
                                                                             '${Helper.formatToHourMinute(activity!.startActivityTime!)} - ${Helper.formatToHourMinute(activity!.endActivityTime!)}',
                                                                             style:
-                                                                                const TextStyle(fontSize: 14, fontWeight: FontWeight.w700))),
+                                                                                 TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700))),
                                                                     const VerticalDivider(
                                                                       width: 1,
                                                                     ),
@@ -7617,7 +7836,7 @@ class JoDetailController extends BaseController {
                                                                             Expanded(
                                                                               child: Text(
                                                                                 activity.activity ?? '-',
-                                                                                style: const TextStyle(fontSize: 14),
+                                                                                style: TextStyle(fontSize: 12.sp),
                                                                               ),
                                                                             ),
                                                                             InkWell(
@@ -7647,7 +7866,7 @@ class JoDetailController extends BaseController {
                                                                                 child: InkWell(
                                                                                   onTap: () {
                                                                                     debugPrint('Hapus detail');
-                                                                                    removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(), activity.activity ?? '');
+                                                                                    removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(), activity.activity ?? '', activity.startActivityTime!, activity.endActivityTime ?? '');
                                                                                   },
                                                                                   child: const Icon(
                                                                                     Icons.remove,
@@ -7661,6 +7880,9 @@ class JoDetailController extends BaseController {
                                                                         ))
                                                                   ]);
                                                             }),
+                                                        const SizedBox(
+                                                          width: 16,
+                                                        ),
                                                         TextFormField(
                                                           inputFormatters: [
                                                             LengthLimitingTextInputFormatter(
@@ -7754,10 +7976,11 @@ class JoDetailController extends BaseController {
                                                       height: 54,
                                                       child: InkWell(
                                                         onTap: () {
-                                                          controller
-                                                              .previewImageAct6(
-                                                                  index,
-                                                                  photo.pathName!);
+                                                          // controller
+                                                          //     .previewImageAct6(
+                                                          //         index,
+                                                          //         photo.pathName!);
+                                                          mediaPickerEditConfirm(index);
                                                         },
                                                         child: Image.file(
                                                           File(photo.pathName!),
@@ -7796,8 +8019,9 @@ class JoDetailController extends BaseController {
                                                       children: [
                                                         InkWell(
                                                           onTap: () {
-                                                            OpenFilex.open(
-                                                                photo.pathName!);
+                                                            // OpenFilex.open(
+                                                            //     photo.pathName!);
+                                                            mediaPickerEditConfirm(index);
                                                           },
                                                           child: SizedBox(
                                                             width: 54,
@@ -7856,8 +8080,13 @@ class JoDetailController extends BaseController {
                               SizedBox(
                                 width: 68,
                                 height: 68,
-                                child: ElevatedButton(
-                                    onPressed: () {
+                                child: activity6Attachments.value.length < 5 ? ElevatedButton(
+                                    onPressed: () async {
+                                      // var total = 0;
+                                      // activity6Attachments.value.forEach((item) async {
+                                      //   final fileBytes = await File(item.pathName!).readAsBytes();
+                                      //   total = total + fileBytes.lengthInBytes;
+                                      // });
                                       mediaPickerConfirm();
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -7871,7 +8100,7 @@ class JoDetailController extends BaseController {
                                         child: Icon(
                                       Icons.folder_rounded,
                                       color: primaryColor,
-                                    ))),
+                                    ))) : const SizedBox(),
                               ),
                               const SizedBox(
                                 height: 16,
@@ -8260,7 +8489,7 @@ class JoDetailController extends BaseController {
         final db = await SqlHelper.db();
         db.execute('''
           UPDATE t_h_jo
-          SET inspection_finished_date = '${DateTime.now().toString()}', m_statusjo_id = 4
+          SET inspection_finished_date = '${DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString()}', m_statusjo_id = 4
           WHERE id = ${dataJoDetail.value.detail!.id};
         ''');
       } catch(e){
@@ -8273,7 +8502,7 @@ class JoDetailController extends BaseController {
         final db = await SqlHelper.db();
         db.execute('''
           UPDATE t_h_jo
-          SET laboratory_finished_date = '${DateTime.now().toString()}', m_statusjo_id = 4
+          SET laboratory_finished_date = '${DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString()}', m_statusjo_id = 4
           WHERE id = ${dataJoDetail.value.detail!.id};
         ''');
       } catch(e){
@@ -8286,7 +8515,7 @@ class JoDetailController extends BaseController {
       final db = await SqlHelper.db();
       db.execute('''
             UPDATE t_h_jo
-            SET inspection_finished_date = '${().toString()}', laboratory_finished_date = '${DateTime.now().toString()}', m_statusjo_id = 4
+            SET inspection_finished_date = '${DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString()}', laboratory_finished_date = '${DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString()}', m_statusjo_id = 4
             WHERE id = ${dataJoDetail.value.detail!.id};
           ''');
       } catch(e){
