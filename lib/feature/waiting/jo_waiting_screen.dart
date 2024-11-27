@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
@@ -85,11 +86,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                   children: [
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'SO ID',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -108,8 +109,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.code ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -119,11 +120,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'JO ID',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -142,8 +143,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.soCode ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -153,11 +154,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'SO Created Date',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -176,8 +177,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.soCreatedAt ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -187,11 +188,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'JO Date',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -210,8 +211,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.joCreatedDate ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -221,11 +222,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Status',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -244,8 +245,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.statusJo ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -255,11 +256,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'SBU',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -278,8 +279,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.sbuName ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -289,11 +290,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Commodity',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -312,8 +313,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.commodityName ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -323,11 +324,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Company',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -346,8 +347,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.companyName ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -357,11 +358,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Client Category',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -380,8 +381,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.mClientCategoryName ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -391,11 +392,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Project Title',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -414,8 +415,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.projectTittle ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -425,11 +426,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Region',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -448,8 +449,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.region ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -459,11 +460,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Branch',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -482,8 +483,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.branch ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -493,11 +494,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Site Office',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -516,8 +517,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.siteOffice ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -540,10 +541,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                   shape: Border.all(
                                                       color:
                                                       Colors.transparent),
-                                                  title: const Text(
+                                                  title: Text(
                                                     'Survey Location',
                                                     style: TextStyle(
-                                                        fontSize: 14,
+                                                        fontSize: 12.sp,
                                                         fontWeight:
                                                         FontWeight.w700,
                                                         color: primaryColor),
@@ -555,11 +556,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                   children: <Widget>[
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Survey Location',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -578,8 +579,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.surveyLocation ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -589,11 +590,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Country',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -612,8 +613,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.countrySurvey ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -623,11 +624,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Province',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -646,8 +647,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.provinceSurvey ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -657,11 +658,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'City',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -680,8 +681,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.citySurvey ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -700,10 +701,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                   shape: Border.all(
                                                       color:
                                                       Colors.transparent),
-                                                  title: const Text(
+                                                  title: Text(
                                                     'Loading Port',
                                                     style: TextStyle(
-                                                        fontSize: 14,
+                                                        fontSize: 12.sp,
                                                         fontWeight:
                                                         FontWeight.w700,
                                                         color: primaryColor),
@@ -715,11 +716,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                   children: <Widget>[
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Country',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -738,8 +739,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.loadingPortCountry ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -749,11 +750,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Province',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -772,8 +773,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.loadingPortProvince ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -783,11 +784,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'City',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -806,8 +807,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.loadingPortCity ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -817,11 +818,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Origin Country',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -840,8 +841,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.loadingPortCountry ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -860,10 +861,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                   shape: Border.all(
                                                       color:
                                                       Colors.transparent),
-                                                  title: const Text(
+                                                  title: Text(
                                                     'Discharging Port',
                                                     style: TextStyle(
-                                                        fontSize: 14,
+                                                        fontSize: 12.sp,
                                                         fontWeight:
                                                         FontWeight.w700,
                                                         color: primaryColor),
@@ -875,11 +876,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                   children: <Widget>[
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Discharging Port',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -898,8 +899,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.dischargePort ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -909,11 +910,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Country',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -932,8 +933,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.dischargePortCountry ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -943,11 +944,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Province',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -966,8 +967,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.dischargePortProvince ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -977,11 +978,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'City',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -1000,8 +1001,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.dischargePortCity ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -1020,10 +1021,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                   shape: Border.all(
                                                       color:
                                                       Colors.transparent),
-                                                  title: const Text(
+                                                  title: Text(
                                                     'Supply Chain Information & Others',
                                                     style: TextStyle(
-                                                        fontSize: 14,
+                                                        fontSize: 12.sp,
                                                         fontWeight:
                                                         FontWeight.w700,
                                                         color: primaryColor),
@@ -1035,11 +1036,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                   children: <Widget>[
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Destination Country',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -1058,8 +1059,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.destinationCountry ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -1069,11 +1070,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Destination Category',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -1092,8 +1093,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.destinationCategoryName ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -1103,11 +1104,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Job Category',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -1126,8 +1127,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.jobCategoryName ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -1137,11 +1138,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Market Segmentation',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -1160,8 +1161,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.marketSegmentName ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -1171,11 +1172,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Sub Market Segmentation',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -1194,8 +1195,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.subMarketSegmentName ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -1205,11 +1206,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Supplier',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -1228,8 +1229,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.supplierName ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -1239,11 +1240,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Trader 1',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -1262,8 +1263,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.trader1Name ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -1273,11 +1274,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Trader 2',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -1296,8 +1297,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.trader2Name ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -1307,11 +1308,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Trader 3',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -1330,8 +1331,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.trader3Name ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -1341,11 +1342,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'End Buyer',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -1364,8 +1365,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.endBuyerName ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -1375,11 +1376,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Notes',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -1398,8 +1399,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.notes ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -1446,11 +1447,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                       CrossAxisAlignment
                                                           .start,
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Kind Of Services',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -1469,8 +1470,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.kosName ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -1480,11 +1481,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             "Order Start - End Date",
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -1498,8 +1499,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                           child: Text(
                                                             '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -1509,11 +1510,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Vessel',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -1532,8 +1533,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.vessel ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -1560,7 +1561,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     child:
                                                                     Text(
                                                                       'Barge ${i + 1}',
-                                                                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                     ),
                                                                   ),
                                                                   const VerticalDivider(
@@ -1571,8 +1572,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     child:
                                                                     Text(
                                                                       controller.barges.value[i] ?? '-',
-                                                                      style: const TextStyle(
-                                                                        fontSize: 14,
+                                                                      style: TextStyle(
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -1626,11 +1627,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                     ),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Qty',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -1650,8 +1651,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 .toString() ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -1661,11 +1662,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'UOM',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -1684,8 +1685,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.uomName ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -1693,10 +1694,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                     ),
                                                     const Divider(
                                                         thickness: 0.4),
-                                                    const Text(
+                                                    Text(
                                                       'SOW :',
                                                       style: TextStyle(
-                                                          fontSize: 14,
+                                                          fontSize: 12.sp,
                                                           fontWeight:
                                                           FontWeight
                                                               .w700),
@@ -1751,10 +1752,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                         : const SizedBox(),
                                                     const Divider(
                                                         thickness: 0.4),
-                                                    const Text(
+                                                    Text(
                                                       'OOS :',
                                                       style: TextStyle(
-                                                          fontSize: 14,
+                                                          fontSize: 12.sp,
                                                           fontWeight:
                                                           FontWeight
                                                               .w700),
@@ -1809,10 +1810,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                         : const SizedBox(),
                                                     const Divider(
                                                         thickness: 0.4),
-                                                    const Text(
+                                                    Text(
                                                       'Lab Analysis Parameter :',
                                                       style: TextStyle(
-                                                          fontSize: 14,
+                                                          fontSize: 12.sp,
                                                           fontWeight:
                                                           FontWeight
                                                               .w700),
@@ -1867,10 +1868,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                         : const SizedBox(),
                                                     const Divider(
                                                         thickness: 0.4),
-                                                    const Text(
+                                                    Text(
                                                       'Standard Method :',
                                                       style: TextStyle(
-                                                          fontSize: 14,
+                                                          fontSize: 12.sp,
                                                           fontWeight:
                                                           FontWeight
                                                               .w700),
@@ -1964,11 +1965,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                       CrossAxisAlignment
                                                           .start,
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'ETA Vessel',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -1987,8 +1988,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.ettaVessel ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -1998,11 +1999,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Date of Attendance',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -2016,8 +2017,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                           child: Text(
                                                             '${controller.dataJoPIC.value.detail?.startDateOfAttendance ?? '-'} - ${controller.dataJoPIC.value.detail?.endDateOfAttendance ?? '-'}',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -2027,11 +2028,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                         thickness: 0.4),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'Lokasi Kerja',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -2050,8 +2051,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.lokasiKerja ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -2059,11 +2060,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                     ),
                                                     const Divider(
                                                         thickness: 0.4),
-                                                    const Text(
+                                                    Text(
                                                       'Assign PIC Inspection',
                                                       style: TextStyle(
                                                           color: primaryColor,
-                                                          fontSize: 14,
+                                                          fontSize: 12.sp,
                                                           fontWeight:
                                                           FontWeight
                                                               .w700),
@@ -2073,11 +2074,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                     ),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'PIC Inspection',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -2096,8 +2097,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.picInspector ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -2105,11 +2106,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                     ),
                                                     const Divider(
                                                         thickness: 0.4),
-                                                    const Text(
+                                                    Text(
                                                       'Assign PIC Laboratory',
                                                       style: TextStyle(
                                                           color: primaryColor,
-                                                          fontSize: 14,
+                                                          fontSize: 12.sp,
                                                           fontWeight:
                                                           FontWeight
                                                               .w700),
@@ -2119,11 +2120,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                     ),
                                                     Row(
                                                       children: [
-                                                        const Expanded(
+                                                        Expanded(
                                                           child: Text(
                                                             'PIC Laboratory',
                                                             style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                                 fontWeight:
                                                                 FontWeight
                                                                     .w700),
@@ -2142,8 +2143,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 ?.picLaboratory ??
                                                                 '-',
                                                             style:
-                                                            const TextStyle(
-                                                              fontSize: 14,
+                                                            TextStyle(
+                                                              fontSize: 12.sp,
                                                             ),
                                                           ),
                                                         )
@@ -2172,7 +2173,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     child:
                                                                     Text(
                                                                       'Laboratory ${i + 1}',
-                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                     ),
                                                                   ),
                                                                   const VerticalDivider(
@@ -2183,8 +2184,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     child:
                                                                     Text(
                                                                       controller.dataJoPIC.value.lab![i].name ?? '-',
-                                                                      style: const TextStyle(
-                                                                        fontSize: 14,
+                                                                      style: TextStyle(
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -2210,10 +2211,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                     shape: Border.all(
                                                         color: Colors
                                                             .transparent),
-                                                    title: const Text(
+                                                    title: Text(
                                                       'Assign History',
                                                       style: TextStyle(
-                                                          fontSize: 14,
+                                                          fontSize: 12.sp,
                                                           fontWeight:
                                                           FontWeight.w700,
                                                           color:
@@ -2242,18 +2243,18 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 children: [
                                                                   Text(
                                                                     'Assign ${i}',
-                                                                    style: const TextStyle(
+                                                                    style: TextStyle(
                                                                         color: green,
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                         fontWeight: FontWeight.w700),
                                                                   ),
                                                                   const SizedBox(
                                                                       height: 16),
                                                                   Row(children: [
-                                                                    const Expanded(
+                                                                    Expanded(
                                                                       child: Text(
                                                                         'Assign Date',
-                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                       ),
                                                                     ),
                                                                     const VerticalDivider(width: 1),
@@ -2261,8 +2262,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     Expanded(
                                                                       child: Text(
                                                                         controller.dataJoPIC.value.assignHistory![i - 1].assignedDate ?? '-',
-                                                                        style: const TextStyle(
-                                                                          fontSize: 14,
+                                                                        style: TextStyle(
+                                                                          fontSize: 12.sp,
                                                                         ),
                                                                       ),
                                                                     ),
@@ -2270,10 +2271,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                                   const Divider(
                                                                       thickness: 0.4),
                                                                   Row(children: [
-                                                                    const Expanded(
+                                                                    Expanded(
                                                                       child: Text(
                                                                         'Assign By',
-                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                       ),
                                                                     ),
                                                                     const VerticalDivider(width: 1),
@@ -2281,8 +2282,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     Expanded(
                                                                       child: Text(
                                                                         controller.dataJoPIC.value.assignHistory![i - 1].assignBy ?? '-',
-                                                                        style: const TextStyle(
-                                                                          fontSize: 14,
+                                                                        style: TextStyle(
+                                                                          fontSize: 12.sp,
                                                                         ),
                                                                       ),
                                                                     ),
@@ -2290,10 +2291,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                                   const Divider(
                                                                       thickness: 0.4),
                                                                   Row(children: [
-                                                                    const Expanded(
+                                                                    Expanded(
                                                                       child: Text(
                                                                         'Remarks',
-                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                       ),
                                                                     ),
                                                                     const VerticalDivider(width: 1),
@@ -2301,8 +2302,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     Expanded(
                                                                       child: Text(
                                                                         controller.dataJoPIC.value.assignHistory![i - 1].remarks ?? '-',
-                                                                        style: const TextStyle(
-                                                                          fontSize: 14,
+                                                                        style: TextStyle(
+                                                                          fontSize: 12.sp,
                                                                         ),
                                                                       ),
                                                                     ),
@@ -2310,10 +2311,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                                   const Divider(
                                                                       thickness: 0.4),
                                                                   Row(children: [
-                                                                    const Expanded(
+                                                                    Expanded(
                                                                       child: Text(
                                                                         'Previous ETA Vessel',
-                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                       ),
                                                                     ),
                                                                     const VerticalDivider(width: 1),
@@ -2321,8 +2322,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     Expanded(
                                                                       child: Text(
                                                                         controller.dataJoPIC.value.assignHistory![i - 1].ettaVessel ?? '-',
-                                                                        style: const TextStyle(
-                                                                          fontSize: 14,
+                                                                        style: TextStyle(
+                                                                          fontSize: 12.sp,
                                                                         ),
                                                                       ),
                                                                     ),
@@ -2330,10 +2331,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                                   const Divider(
                                                                       thickness: 0.4),
                                                                   Row(children: [
-                                                                    const Expanded(
+                                                                    Expanded(
                                                                       child: Text(
                                                                         'Previous Date of Attendance',
-                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                       ),
                                                                     ),
                                                                     const VerticalDivider(width: 1),
@@ -2341,8 +2342,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     Expanded(
                                                                       child: Text(
                                                                         '${controller.dataJoPIC.value.assignHistory![i - 1].startDateOfAttendance ?? '-'} - ${controller.dataJoPIC.value.assignHistory![i - 1].endDateOfAttendance ?? '-'}',
-                                                                        style: const TextStyle(
-                                                                          fontSize: 14,
+                                                                        style: TextStyle(
+                                                                          fontSize: 12.sp,
                                                                         ),
                                                                       ),
                                                                     ),
@@ -2350,10 +2351,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                                   const Divider(
                                                                       thickness: 0.4),
                                                                   Row(children: [
-                                                                    const Expanded(
+                                                                    Expanded(
                                                                       child: Text(
                                                                         'Previous Lokasi Kerja',
-                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                       ),
                                                                     ),
                                                                     const VerticalDivider(width: 1),
@@ -2361,8 +2362,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     Expanded(
                                                                       child: Text(
                                                                         controller.dataJoPIC.value.assignHistory![i - 1].lokasiKerja ?? '-',
-                                                                        style: const TextStyle(
-                                                                          fontSize: 14,
+                                                                        style: TextStyle(
+                                                                          fontSize: 12.sp,
                                                                         ),
                                                                       ),
                                                                     ),
@@ -2370,10 +2371,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                                   const Divider(
                                                                       thickness: 0.4),
                                                                   Row(children: [
-                                                                    const Expanded(
+                                                                    Expanded(
                                                                       child: Text(
                                                                         'Previous PIC Inspection',
-                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                       ),
                                                                     ),
                                                                     const VerticalDivider(width: 1),
@@ -2381,8 +2382,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     Expanded(
                                                                       child: Text(
                                                                         controller.dataJoPIC.value.assignHistory![i - 1].picInspector ?? '-',
-                                                                        style: const TextStyle(
-                                                                          fontSize: 14,
+                                                                        style: TextStyle(
+                                                                          fontSize: 12.sp,
                                                                         ),
                                                                       ),
                                                                     ),
@@ -2390,10 +2391,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                                   const Divider(
                                                                       thickness: 0.4),
                                                                   Row(children: [
-                                                                    const Expanded(
+                                                                    Expanded(
                                                                       child: Text(
                                                                         'Previous PIC Laboratory',
-                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                       ),
                                                                     ),
                                                                     const VerticalDivider(width: 1),
@@ -2401,8 +2402,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     Expanded(
                                                                       child: Text(
                                                                         controller.dataJoPIC.value.assignHistory![i - 1].picLaboratory ?? '-',
-                                                                        style: const TextStyle(
-                                                                          fontSize: 14,
+                                                                        style: TextStyle(
+                                                                          fontSize: 12.sp,
                                                                         ),
                                                                       ),
                                                                     ),
@@ -2440,11 +2441,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                     crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                     children: [
-                                                      const Text(
+                                                      Text(
                                                         'Inspection Progress',
                                                         style: TextStyle(
                                                             color: primaryColor,
-                                                            fontSize: 14,
+                                                            fontSize: 14.sp,
                                                             fontWeight:
                                                             FontWeight.w700),
                                                       ),
@@ -2453,11 +2454,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                       ),
                                                       Row(
                                                         children: [
-                                                          const Expanded(
+                                                          Expanded(
                                                             child: Text(
                                                               'Order Start - End Date',
                                                               style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 12.sp,
                                                                   fontWeight:
                                                                   FontWeight
                                                                       .w700),
@@ -2471,8 +2472,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                             child: Text(
                                                               '-',
                                                               style:
-                                                              const TextStyle(
-                                                                fontSize: 14,
+                                                              TextStyle(
+                                                                fontSize: 12.sp,
                                                               ),
                                                             ),
                                                           )
@@ -2483,7 +2484,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                       Text(
                                                         'Photos',
                                                         style: TextStyle(
-                                                            fontSize: 14,
+                                                            fontSize: 12.sp,
                                                             fontWeight:
                                                             FontWeight.w700),
                                                       ),
@@ -2534,7 +2535,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                         Text(
                                                           'Daily Activity',
                                                           style: TextStyle(
-                                                              fontSize: 16,
+                                                              fontSize: 14.sp,
                                                               fontWeight:
                                                               FontWeight.w700,
                                                               color: primaryColor),
@@ -2558,9 +2559,9 @@ class JoWaitingScreen extends StatelessWidget {
                                                             ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                                           Row(
                                                             children: [
-                                                              const Text(
+                                                              Text(
                                                                 'Stage 1: Waiting For Arrival',
-                                                                style: TextStyle(color: green, fontSize: 14, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                               ),
                                                             ],
                                                           ),
@@ -2573,7 +2574,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                   Expanded(
                                                                     child: Text(
                                                                       'Date',
-                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                     ),
                                                                   ),
                                                                   VerticalDivider(width: 1),
@@ -2582,7 +2583,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     child: Text(
                                                                       progressActivity.transDate ?? '-',
                                                                       style: TextStyle(
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -2601,7 +2602,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                         flex: 1,
                                                                         child: Text(
                                                                           'Activities',
-                                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                         ),
                                                                       ),
                                                                       VerticalDivider(width: 1),
@@ -2610,7 +2611,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                         flex: 1,
                                                                         child: Text(
                                                                           '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                         ),
                                                                       ),
                                                                       VerticalDivider(width: 1),
@@ -2620,7 +2621,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                         child: Text(
                                                                           activity?.activity ?? '-',
                                                                           style: TextStyle(
-                                                                            fontSize: 14,
+                                                                            fontSize: 12.sp,
                                                                           ),
                                                                         ),
                                                                       )
@@ -2633,7 +2634,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                   Expanded(
                                                                     child: Text(
                                                                       'Remarks',
-                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                     ),
                                                                   ),
                                                                   VerticalDivider(width: 1),
@@ -2642,7 +2643,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     child: Text(
                                                                       progressActivity.remarks ?? '-',
                                                                       style: TextStyle(
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -2656,9 +2657,9 @@ class JoWaitingScreen extends StatelessWidget {
                                                             ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                                           Row(
                                                             children: [
-                                                              const Text(
+                                                              Text(
                                                                 'Stage 2: Ship Arrived',
-                                                                style: TextStyle(color: green, fontSize: 14, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                               ),
                                                               const SizedBox(width: 8),
                                                             ],
@@ -2671,7 +2672,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                   Expanded(
                                                                     child: Text(
                                                                       'Date',
-                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                     ),
                                                                   ),
                                                                   VerticalDivider(width: 1),
@@ -2680,7 +2681,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     child: Text(
                                                                       progressActivity.transDate ?? '-',
                                                                       style: TextStyle(
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -2699,7 +2700,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                         flex: 1,
                                                                         child: Text(
                                                                           'Activities',
-                                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                         ),
                                                                       ),
                                                                       VerticalDivider(width: 1),
@@ -2708,7 +2709,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                         flex: 1,
                                                                         child: Text(
                                                                           '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                         ),
                                                                       ),
                                                                       VerticalDivider(width: 1),
@@ -2718,7 +2719,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                         child: Text(
                                                                           activity?.activity ?? '-',
                                                                           style: TextStyle(
-                                                                            fontSize: 14,
+                                                                            fontSize: 12.sp,
                                                                           ),
                                                                         ),
                                                                       )
@@ -2731,7 +2732,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                   Expanded(
                                                                     child: Text(
                                                                       'Remarks',
-                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                     ),
                                                                   ),
                                                                   VerticalDivider(width: 1),
@@ -2740,7 +2741,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     child: Text(
                                                                       progressActivity.remarks ?? '-',
                                                                       style: TextStyle(
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -2754,9 +2755,9 @@ class JoWaitingScreen extends StatelessWidget {
                                                             ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                                           Row(
                                                             children: [
-                                                              const Text(
+                                                              Text(
                                                                 'Stage 3: Ship Berthing',
-                                                                style: TextStyle(color: green, fontSize: 14, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                               ),
                                                               const SizedBox(width: 8),
                                                             ],
@@ -2769,7 +2770,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                   Expanded(
                                                                     child: Text(
                                                                       'Date',
-                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                     ),
                                                                   ),
                                                                   VerticalDivider(width: 1),
@@ -2778,7 +2779,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     child: Text(
                                                                       progressActivity.transDate ?? '-',
                                                                       style: TextStyle(
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -2797,7 +2798,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                         flex: 1,
                                                                         child: Text(
                                                                           'Activities',
-                                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                         ),
                                                                       ),
                                                                       VerticalDivider(width: 1),
@@ -2806,7 +2807,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                         flex: 1,
                                                                         child: Text(
                                                                           '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                         ),
                                                                       ),
                                                                       VerticalDivider(width: 1),
@@ -2816,7 +2817,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                         child: Text(
                                                                           activity?.activity ?? '-',
                                                                           style: TextStyle(
-                                                                            fontSize: 14,
+                                                                            fontSize: 12.sp,
                                                                           ),
                                                                         ),
                                                                       )
@@ -2829,7 +2830,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                   Expanded(
                                                                     child: Text(
                                                                       'Remarks',
-                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                     ),
                                                                   ),
                                                                   VerticalDivider(width: 1),
@@ -2838,7 +2839,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     child: Text(
                                                                       progressActivity.remarks ?? '-',
                                                                       style: TextStyle(
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -2852,9 +2853,9 @@ class JoWaitingScreen extends StatelessWidget {
                                                             ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                                           Row(
                                                             children: [
-                                                              const Text(
+                                                              Text(
                                                                 'Stage 4: Work Commence',
-                                                                style: TextStyle(color: green, fontSize: 14, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                               ),
                                                               const SizedBox(width: 8),
                                                             ],
@@ -2867,7 +2868,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                   Expanded(
                                                                     child: Text(
                                                                       'Date',
-                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                     ),
                                                                   ),
                                                                   VerticalDivider(width: 1),
@@ -2876,7 +2877,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     child: Text(
                                                                       progressActivity.transDate ?? '-',
                                                                       style: TextStyle(
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -2895,7 +2896,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                         flex: 1,
                                                                         child: Text(
                                                                           'Activities',
-                                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                         ),
                                                                       ),
                                                                       VerticalDivider(width: 1),
@@ -2904,7 +2905,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                         flex: 1,
                                                                         child: Text(
                                                                           '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                         ),
                                                                       ),
                                                                       VerticalDivider(width: 1),
@@ -2914,7 +2915,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                         child: Text(
                                                                           activity?.activity ?? '-',
                                                                           style: TextStyle(
-                                                                            fontSize: 14,
+                                                                            fontSize: 12.sp,
                                                                           ),
                                                                         ),
                                                                       )
@@ -2927,7 +2928,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                   Expanded(
                                                                     child: Text(
                                                                       'Remarks',
-                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                     ),
                                                                   ),
                                                                   VerticalDivider(width: 1),
@@ -2936,7 +2937,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     child: Text(
                                                                       progressActivity.remarks ?? '-',
                                                                       style: TextStyle(
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -2952,9 +2953,9 @@ class JoWaitingScreen extends StatelessWidget {
                                                             children: [
                                                               Row(
                                                                 children: [
-                                                                  const Text(
+                                                                  Text(
                                                                     'Stage 5: Work Complete',
-                                                                    style: TextStyle(color: green, fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                   const SizedBox(width: 8),
                                                                 ],
@@ -2966,10 +2967,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                             Column(children: [
                                                               Row(
                                                                 children: [
-                                                                  const Expanded(
+                                                                  Expanded(
                                                                     child: Text(
                                                                       'Activity Date',
-                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                     ),
                                                                   ),
                                                                   const VerticalDivider(width: 1),
@@ -2978,7 +2979,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     child: Text(
                                                                       progressActivity.transDate ?? '-',
                                                                       style: TextStyle(
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -2990,7 +2991,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                   Expanded(
                                                                     child: Text(
                                                                       'Activity Time',
-                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                     ),
                                                                   ),
                                                                   VerticalDivider(width: 1),
@@ -2999,7 +3000,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     child: Text(
                                                                       progressActivity.createdAt ?? '-',
                                                                       style: TextStyle(
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -3008,10 +3009,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                               const Divider(thickness: 0.4),
                                                               Row(
                                                                 children: [
-                                                                  const Expanded(
+                                                                  Expanded(
                                                                     child: Text(
                                                                       'Actual Qty',
-                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                     ),
                                                                   ),
                                                                   const VerticalDivider(width: 1),
@@ -3020,8 +3021,8 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     child: Text(
                                                                       //double.parse(progressActivity?.actualQty ?? '0').toString(),
                                                                       progressActivity?.actualQty ?? '-',
-                                                                      style: const TextStyle(
-                                                                        fontSize: 14,
+                                                                      style: TextStyle(
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -3030,10 +3031,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                               const Divider(thickness: 0.4),
                                                               Row(
                                                                 children: [
-                                                                  const Expanded(
+                                                                  Expanded(
                                                                     child: Text(
                                                                       'UOM',
-                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                     ),
                                                                   ),
                                                                   VerticalDivider(width: 1),
@@ -3042,7 +3043,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     child: Text(
                                                                       controller.dataJoDetail.value.detail?.uomName ?? '-',
                                                                       style: TextStyle(
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -3051,10 +3052,10 @@ class JoWaitingScreen extends StatelessWidget {
                                                               const Divider(thickness: 0.4),
                                                               Row(
                                                                 children: [
-                                                                  const Expanded(
+                                                                  Expanded(
                                                                     child: Text(
                                                                       'Vessel',
-                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                     ),
                                                                   ),
                                                                   VerticalDivider(width: 1),
@@ -3063,7 +3064,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     child: Text(
                                                                       progressActivity!.activityVesel?.vessel ?? '-',
                                                                       style: TextStyle(
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -3084,7 +3085,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               child: Text(
                                                                                 'Barge ${index + 1}',
                                                                                 style: TextStyle(
-                                                                                  fontSize: 14,
+                                                                                  fontSize: 12.sp,
                                                                                   fontWeight: FontWeight.w700,
                                                                                 ),
                                                                               )),
@@ -3098,7 +3099,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               child: Text(
                                                                                 '${activityBarge!.barge!}',
                                                                                 style: TextStyle(
-                                                                                  fontSize: 14,
+                                                                                  fontSize: 12.sp,
                                                                                   fontWeight: FontWeight.w700,
                                                                                 ),
                                                                               ))
@@ -3122,15 +3123,15 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     children: [
                                                                       Text(
                                                                         'KOS Transhipment ${index + 1}',
-                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                       ),
                                                                       const SizedBox(height: 16),
                                                                       Row(
                                                                         children: [
-                                                                          const Expanded(
+                                                                          Expanded(
                                                                             child: Text(
                                                                               'Jetty',
-                                                                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                             ),
                                                                           ),
                                                                           VerticalDivider(width: 1),
@@ -3139,7 +3140,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                             child: Text(
                                                                               transhipment!.jetty ?? '-',
                                                                               style: TextStyle(
-                                                                                fontSize: 14,
+                                                                                fontSize: 12.sp,
                                                                               ),
                                                                             ),
                                                                           )
@@ -3151,7 +3152,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                           Expanded(
                                                                             child: Text(
                                                                               'Initial Date',
-                                                                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                             ),
                                                                           ),
                                                                           VerticalDivider(width: 1),
@@ -3160,7 +3161,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                             child: Text(
                                                                               transhipment!.initialDate ?? '-',
                                                                               style: TextStyle(
-                                                                                fontSize: 14,
+                                                                                fontSize: 12.sp,
                                                                               ),
                                                                             ),
                                                                           )
@@ -3172,7 +3173,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                           Expanded(
                                                                             child: Text(
                                                                               'Final Date',
-                                                                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                             ),
                                                                           ),
                                                                           VerticalDivider(width: 1),
@@ -3181,7 +3182,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                             child: Text(
                                                                               transhipment!.finalDate ?? '-',
                                                                               style: TextStyle(
-                                                                                fontSize: 14,
+                                                                                fontSize: 12.sp,
                                                                               ),
                                                                             ),
                                                                           )
@@ -3193,7 +3194,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                           Expanded(
                                                                             child: Text(
                                                                               'Delivery Qty',
-                                                                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                             ),
                                                                           ),
                                                                           VerticalDivider(width: 1),
@@ -3202,7 +3203,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                             child: Text(
                                                                               double.parse(transhipment!.deliveryQty!.toString()).toInt().toString() ?? '-',
                                                                               style: TextStyle(
-                                                                                fontSize: 14,
+                                                                                fontSize: 12.sp,
                                                                               ),
                                                                             ),
                                                                           )
@@ -3214,7 +3215,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                           Expanded(
                                                                             child: Text(
                                                                               'UOM',
-                                                                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                             ),
                                                                           ),
                                                                           VerticalDivider(width: 1),
@@ -3223,7 +3224,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                             child: Text(
                                                                               transhipment!.uomName ?? '-',
                                                                               style: TextStyle(
-                                                                                fontSize: 14,
+                                                                                fontSize: 12.sp,
                                                                               ),
                                                                             ),
                                                                           )
@@ -3243,9 +3244,9 @@ class JoWaitingScreen extends StatelessWidget {
                                                           ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                                         Row(
                                                           children: [
-                                                            const Text(
+                                                            Text(
                                                               'Stage 6: Report to Client',
-                                                              style: TextStyle(color: green, fontSize: 14, fontWeight: FontWeight.w700),
+                                                              style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                             ),
                                                             const SizedBox(width: 8),
                                                           ],
@@ -3258,7 +3259,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 Expanded(
                                                                   child: Text(
                                                                     'Date',
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 VerticalDivider(width: 1),
@@ -3267,7 +3268,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                   child: Text(
                                                                     progressActivity.transDate ?? '-',
                                                                     style: TextStyle(
-                                                                      fontSize: 14,
+                                                                      fontSize: 12.sp,
                                                                     ),
                                                                   ),
                                                                 )
@@ -3286,7 +3287,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                       flex: 1,
                                                                       child: Text(
                                                                         'Activities',
-                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                       ),
                                                                     ),
                                                                     VerticalDivider(width: 1),
@@ -3295,7 +3296,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                       flex: 1,
                                                                       child: Text(
                                                                         '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                       ),
                                                                     ),
                                                                     VerticalDivider(width: 1),
@@ -3305,7 +3306,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                       child: Text(
                                                                         activity?.activity ?? '-',
                                                                         style: TextStyle(
-                                                                          fontSize: 14,
+                                                                          fontSize: 12.sp,
                                                                         ),
                                                                       ),
                                                                     )
@@ -3318,7 +3319,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 Expanded(
                                                                   child: Text(
                                                                     'Remarks',
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 VerticalDivider(width: 1),
@@ -3327,7 +3328,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                   child: Text(
                                                                     progressActivity.remarks ?? '-',
                                                                     style: TextStyle(
-                                                                      fontSize: 14,
+                                                                      fontSize: 12.sp,
                                                                     ),
                                                                   ),
                                                                 )
@@ -3338,7 +3339,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                         const SizedBox(height: 16),
                                                         Text(
                                                           'Attachment',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                         const SizedBox(height: 16),
                                                         controller.activity6Attachments.value.isNotEmpty
@@ -3423,11 +3424,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 CrossAxisAlignment
                                                                     .start,
                                                                 children: [
-                                                                  const Text(
+                                                                  Text(
                                                                     'Stage 1: Waiting For Arrival',
                                                                     style: TextStyle(
                                                                         color: green,
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                         fontWeight: FontWeight.w700),
                                                                   ),
                                                                   const SizedBox(
@@ -3446,7 +3447,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               Expanded(
                                                                                 child: Text(
                                                                                   'Date',
-                                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                                 ),
                                                                               ),
                                                                               VerticalDivider(width: 1),
@@ -3455,7 +3456,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 child: Text(
                                                                                   progressActivity.transDate ?? '-',
                                                                                   style: TextStyle(
-                                                                                    fontSize: 14,
+                                                                                    fontSize: 12.sp,
                                                                                   ),
                                                                                 ),
                                                                               )
@@ -3468,7 +3469,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 flex: 1,
                                                                                 child: Text(
                                                                                   'Activities',
-                                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                                 ),
                                                                               ),
                                                                               VerticalDivider(width: 1),
@@ -3477,7 +3478,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 flex: 1,
                                                                                 child: Text(
                                                                                   '${progressActivity.startActivityTime ?? '-'} - ${progressActivity.endActivityTime ?? '-'}',
-                                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                                 ),
                                                                               ),
                                                                               VerticalDivider(width: 1),
@@ -3487,7 +3488,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 child: Text(
                                                                                   progressActivity.activity ?? '-',
                                                                                   style: TextStyle(
-                                                                                    fontSize: 14,
+                                                                                    fontSize: 12.sp,
                                                                                   ),
                                                                                 ),
                                                                               )
@@ -3499,7 +3500,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               Expanded(
                                                                                 child: Text(
                                                                                   'Remarks',
-                                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                                 ),
                                                                               ),
                                                                               VerticalDivider(width: 1),
@@ -3508,7 +3509,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 child: Text(
                                                                                   progressActivity.remarks ?? '-',
                                                                                   style: TextStyle(
-                                                                                    fontSize: 14,
+                                                                                    fontSize: 12.sp,
                                                                                   ),
                                                                                 ),
                                                                               )
@@ -3530,11 +3531,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 CrossAxisAlignment
                                                                     .start,
                                                                 children: [
-                                                                  const Text(
+                                                                  Text(
                                                                     'Stage 2: Ship Arrived',
                                                                     style: TextStyle(
                                                                         color: green,
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                         fontWeight: FontWeight.w700),
                                                                   ),
                                                                   const SizedBox(
@@ -3553,7 +3554,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               Expanded(
                                                                                 child: Text(
                                                                                   'Date',
-                                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                                 ),
                                                                               ),
                                                                               VerticalDivider(width: 1),
@@ -3562,7 +3563,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 child: Text(
                                                                                   progressActivity.transDate ?? '-',
                                                                                   style: TextStyle(
-                                                                                    fontSize: 14,
+                                                                                    fontSize: 12.sp,
                                                                                   ),
                                                                                 ),
                                                                               )
@@ -3575,7 +3576,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 flex: 1,
                                                                                 child: Text(
                                                                                   'Activities',
-                                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                                 ),
                                                                               ),
                                                                               VerticalDivider(width: 1),
@@ -3584,7 +3585,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 flex: 1,
                                                                                 child: Text(
                                                                                   '${progressActivity.startActivityTime ?? '-'} - ${progressActivity.endActivityTime ?? '-'}',
-                                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                                 ),
                                                                               ),
                                                                               VerticalDivider(width: 1),
@@ -3594,7 +3595,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 child: Text(
                                                                                   progressActivity.activity ?? '-',
                                                                                   style: TextStyle(
-                                                                                    fontSize: 14,
+                                                                                    fontSize: 12.sp,
                                                                                   ),
                                                                                 ),
                                                                               )
@@ -3606,7 +3607,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               Expanded(
                                                                                 child: Text(
                                                                                   'Remarks',
-                                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                                 ),
                                                                               ),
                                                                               VerticalDivider(width: 1),
@@ -3615,7 +3616,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 child: Text(
                                                                                   progressActivity.remarks ?? '-',
                                                                                   style: TextStyle(
-                                                                                    fontSize: 14,
+                                                                                    fontSize: 12.sp,
                                                                                   ),
                                                                                 ),
                                                                               )
@@ -3637,11 +3638,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 CrossAxisAlignment
                                                                     .start,
                                                                 children: [
-                                                                  const Text(
+                                                                  Text(
                                                                     'Stage 3: Ship Berthing',
                                                                     style: TextStyle(
                                                                         color: green,
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                         fontWeight: FontWeight.w700),
                                                                   ),
                                                                   const SizedBox(
@@ -3660,7 +3661,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               Expanded(
                                                                                 child: Text(
                                                                                   'Date',
-                                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                                 ),
                                                                               ),
                                                                               VerticalDivider(width: 1),
@@ -3669,7 +3670,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 child: Text(
                                                                                   progressActivity.transDate ?? '-',
                                                                                   style: TextStyle(
-                                                                                    fontSize: 14,
+                                                                                    fontSize: 12.sp,
                                                                                   ),
                                                                                 ),
                                                                               )
@@ -3682,7 +3683,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 flex: 1,
                                                                                 child: Text(
                                                                                   'Activities',
-                                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                                 ),
                                                                               ),
                                                                               VerticalDivider(width: 1),
@@ -3691,7 +3692,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 flex: 1,
                                                                                 child: Text(
                                                                                   '${progressActivity.startActivityTime ?? '-'} - ${progressActivity.endActivityTime ?? '-'}',
-                                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                                 ),
                                                                               ),
                                                                               VerticalDivider(width: 1),
@@ -3701,7 +3702,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 child: Text(
                                                                                   progressActivity.activity ?? '-',
                                                                                   style: TextStyle(
-                                                                                    fontSize: 14,
+                                                                                    fontSize: 12.sp,
                                                                                   ),
                                                                                 ),
                                                                               )
@@ -3712,7 +3713,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               Expanded(
                                                                                 child: Text(
                                                                                   'Remarks',
-                                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                                 ),
                                                                               ),
                                                                               VerticalDivider(width: 1),
@@ -3721,7 +3722,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 child: Text(
                                                                                   progressActivity.remarks ?? '-',
                                                                                   style: TextStyle(
-                                                                                    fontSize: 14,
+                                                                                    fontSize: 12.sp,
                                                                                   ),
                                                                                 ),
                                                                               )
@@ -3743,11 +3744,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 CrossAxisAlignment
                                                                     .start,
                                                                 children: [
-                                                                  const Text(
+                                                                  Text(
                                                                     'Stage 4: Work Commence',
                                                                     style: TextStyle(
                                                                         color: green,
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                         fontWeight: FontWeight.w700),
                                                                   ),
                                                                   const SizedBox(
@@ -3766,7 +3767,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               Expanded(
                                                                                 child: Text(
                                                                                   'Date',
-                                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                                 ),
                                                                               ),
                                                                               VerticalDivider(width: 1),
@@ -3775,7 +3776,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 child: Text(
                                                                                   progressActivity.transDate ?? '-',
                                                                                   style: TextStyle(
-                                                                                    fontSize: 14,
+                                                                                    fontSize: 12.sp,
                                                                                   ),
                                                                                 ),
                                                                               )
@@ -3788,7 +3789,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 flex: 1,
                                                                                 child: Text(
                                                                                   'Activities',
-                                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                                 ),
                                                                               ),
                                                                               VerticalDivider(width: 1),
@@ -3797,7 +3798,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 flex: 1,
                                                                                 child: Text(
                                                                                   '${progressActivity.startActivityTime ?? '-'} - ${progressActivity.endActivityTime ?? '-'}',
-                                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                                 ),
                                                                               ),
                                                                               VerticalDivider(width: 1),
@@ -3807,7 +3808,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 child: Text(
                                                                                   progressActivity.activity ?? '-',
                                                                                   style: TextStyle(
-                                                                                    fontSize: 14,
+                                                                                    fontSize: 12.sp,
                                                                                   ),
                                                                                 ),
                                                                               )
@@ -3819,7 +3820,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               Expanded(
                                                                                 child: Text(
                                                                                   'Remarks',
-                                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                                 ),
                                                                               ),
                                                                               VerticalDivider(width: 1),
@@ -3828,7 +3829,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                                 child: Text(
                                                                                   progressActivity.remarks ?? '-',
                                                                                   style: TextStyle(
-                                                                                    fontSize: 14,
+                                                                                    fontSize: 12.sp,
                                                                                   ),
                                                                                 ),
                                                                               )
@@ -3851,7 +3852,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                               'Stage 5: Work Complete',
                                                               style: TextStyle(
                                                                   color: green,
-                                                                  fontSize: 14,
+                                                                  fontSize: 12.sp,
                                                                   fontWeight:
                                                                   FontWeight
                                                                       .w700),
@@ -4047,7 +4048,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                             Expanded(
                                                                               child: Text(
                                                                                 'Barge ${index + 1}',
-                                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                               ),
                                                                             ),
                                                                             VerticalDivider(width: 1),
@@ -4056,7 +4057,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               child: Text(
                                                                                 controller.activity5ListStages.value.first.barge![index].barge ?? '-',
                                                                                 style: TextStyle(
-                                                                                  fontSize: 14,
+                                                                                  fontSize: 12.sp,
                                                                                 ),
                                                                               ),
                                                                             )
@@ -4084,7 +4085,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                       return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                                                         Text(
                                                                           'KOS Transhipment ${index + 1}',
-                                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                         ),
                                                                         const SizedBox(height: 16),
                                                                         Row(
@@ -4092,7 +4093,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                             Expanded(
                                                                               child: Text(
                                                                                 'Jetty',
-                                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                               ),
                                                                             ),
                                                                             VerticalDivider(width: 1),
@@ -4101,7 +4102,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               child: Text(
                                                                                 controller.activity5ListStages.value.first.transhipment![index].jetty ?? '-',
                                                                                 style: TextStyle(
-                                                                                  fontSize: 14,
+                                                                                  fontSize: 12.sp,
                                                                                 ),
                                                                               ),
                                                                             )
@@ -4113,7 +4114,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                             Expanded(
                                                                               child: Text(
                                                                                 'Initial Date',
-                                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                               ),
                                                                             ),
                                                                             VerticalDivider(width: 1),
@@ -4122,7 +4123,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               child: Text(
                                                                                 controller.activity5ListStages.value.first.transhipment![index].initialDate ?? '-',
                                                                                 style: TextStyle(
-                                                                                  fontSize: 14,
+                                                                                  fontSize: 12.sp,
                                                                                 ),
                                                                               ),
                                                                             )
@@ -4134,7 +4135,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                             Expanded(
                                                                               child: Text(
                                                                                 'Final Date',
-                                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                               ),
                                                                             ),
                                                                             VerticalDivider(width: 1),
@@ -4143,7 +4144,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               child: Text(
                                                                                 controller.activity5ListStages.value.first.transhipment![index].finalDate ?? '-',
                                                                                 style: TextStyle(
-                                                                                  fontSize: 14,
+                                                                                  fontSize: 12.sp,
                                                                                 ),
                                                                               ),
                                                                             )
@@ -4155,7 +4156,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                             Expanded(
                                                                               child: Text(
                                                                                 'Delivery Qty',
-                                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                               ),
                                                                             ),
                                                                             VerticalDivider(width: 1),
@@ -4164,7 +4165,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               child: Text(
                                                                                 controller.activity5ListStages.value.first.transhipment![index].deliveryQty ?? '-',
                                                                                 style: TextStyle(
-                                                                                  fontSize: 14,
+                                                                                  fontSize: 12.sp,
                                                                                 ),
                                                                               ),
                                                                             )
@@ -4176,7 +4177,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                             Expanded(
                                                                               child: Text(
                                                                                 'UOM',
-                                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                               ),
                                                                             ),
                                                                             VerticalDivider(width: 1),
@@ -4185,7 +4186,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               child: Text(
                                                                                 controller.dataJoDetail.value.detail!.uomName ?? '-',
                                                                                 style: TextStyle(
-                                                                                  fontSize: 14,
+                                                                                  fontSize: 12.sp,
                                                                                 ),
                                                                               ),
                                                                             )
@@ -4210,7 +4211,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                               'Stage 6: Report to Client',
                                                               style: TextStyle(
                                                                   color: green,
-                                                                  fontSize: 14,
+                                                                  fontSize: 12.sp,
                                                                   fontWeight:
                                                                   FontWeight
                                                                       .w700),
@@ -4242,7 +4243,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                             Expanded(
                                                                               child: Text(
                                                                                 'Date',
-                                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                               ),
                                                                             ),
                                                                             VerticalDivider(width: 1),
@@ -4251,7 +4252,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               child: Text(
                                                                                 act6.transDate ?? '-',
                                                                                 style: TextStyle(
-                                                                                  fontSize: 14,
+                                                                                  fontSize: 12.sp,
                                                                                 ),
                                                                               ),
                                                                             )
@@ -4266,7 +4267,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               flex: 1,
                                                                               child: Text(
                                                                                 'Activities',
-                                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                               ),
                                                                             ),
                                                                             VerticalDivider(width: 1),
@@ -4275,7 +4276,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               flex: 1,
                                                                               child: Text(
                                                                                 '${act6.startActivityTime ?? '-'} - ${act6.endActivityTime ?? '-'}',
-                                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                               ),
                                                                             ),
                                                                             VerticalDivider(width: 1),
@@ -4285,7 +4286,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               child: Text(
                                                                                 act6.activity ?? '-',
                                                                                 style: TextStyle(
-                                                                                  fontSize: 14,
+                                                                                  fontSize: 12.sp,
                                                                                 ),
                                                                               ),
                                                                             )
@@ -4299,7 +4300,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                             Expanded(
                                                                               child: Text(
                                                                                 'Remarks',
-                                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                               ),
                                                                             ),
                                                                             VerticalDivider(width: 1),
@@ -4308,7 +4309,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                               child: Text(
                                                                                 act6.remarks ?? '-',
                                                                                 style: TextStyle(
-                                                                                  fontSize: 14,
+                                                                                  fontSize: 12.sp,
                                                                                 ),
                                                                               ),
                                                                             )
@@ -4324,7 +4325,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                             Text(
                                                               'Attachment',
                                                               style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 12.sp,
                                                                   fontWeight:
                                                                   FontWeight
                                                                       .w700),
@@ -4473,7 +4474,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                     Expanded(
                                                                       child: Text(
                                                                         lab.name ?? '-',
-                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700,
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700,
                                                                             color: lab.maxStage!.toInt() > 0 && lab.maxStage!.toInt() < 6 ? stepperColor : lab.maxStage!.toInt() == 6 ? green : Colors.black ),
                                                                       ),
                                                                     ),
@@ -4499,7 +4500,7 @@ class JoWaitingScreen extends StatelessWidget {
                               child: Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: Column(children: [
-                                  controller.statusId == 4
+                                  controller.statusId == 4 && controller.inspectionDocuments.value.isEmpty
                                       ? Row(children: [
                                     Spacer(),
                                     IconButton(
@@ -4537,7 +4538,7 @@ class JoWaitingScreen extends StatelessWidget {
                                           title: Text(
                                             'Inspection Certificate',
                                             style: TextStyle(
-                                                fontSize: 14,
+                                                fontSize: 12.sp,
                                                 fontWeight:
                                                 FontWeight.w700,
                                                 color: primaryColor),
@@ -4884,7 +4885,7 @@ class JoWaitingScreen extends StatelessWidget {
                                         child: Text(
                                           'Inspection Certificate',
                                           style: TextStyle(
-                                              fontSize: 14,
+                                              fontSize: 12.sp,
                                               fontWeight:
                                               FontWeight.w700,
                                               color: primaryColor),
@@ -4937,7 +4938,7 @@ class JoWaitingScreen extends StatelessWidget {
                                           title: Text(
                                             'Laboratory Certificate',
                                             style: TextStyle(
-                                                fontSize: 14,
+                                                fontSize: 12.sp,
                                                 fontWeight:
                                                 FontWeight.w700,
                                                 color: primaryColor),
@@ -5284,7 +5285,7 @@ class JoWaitingScreen extends StatelessWidget {
                                         child: Text(
                                           'Laboratory Certificate',
                                           style: TextStyle(
-                                              fontSize: 14,
+                                              fontSize: 12.sp,
                                               fontWeight:
                                               FontWeight.w700,
                                               color: primaryColor),

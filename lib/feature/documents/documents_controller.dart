@@ -35,7 +35,7 @@ class DocumentsController extends BaseController {
   TextEditingController documentCertificateLhv = TextEditingController();
   TextEditingController documentCertificateLs = TextEditingController();
   RxList<Map<String, dynamic>> documents = RxList();
-  RxList<List<String>> documentsAttachments = RxList();
+  RxList<String> documentsAttachments = RxList();
   RxList<String> documentAttachments = RxList();
   final _formKey = GlobalKey<FormState>();
   final _formKeyEdit = GlobalKey<FormState>();
@@ -134,17 +134,24 @@ class DocumentsController extends BaseController {
   void fileDocument() async {
     try {
       final FilePickerResult? attach = await FilePicker.platform.pickFiles(
-          allowMultiple: true,
+          allowMultiple: false,
           type: FileType.custom,
           //allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf']);
           allowedExtensions: ['pdf']);
       if (attach != null) {
         final List<XFile> xFiles = attach.xFiles;
-        xFiles.forEach((data) {
+        xFiles.forEach((data) async {
           final fileTemp = File(data!.path);
           final File file = fileTemp;
-          documentAttachments.add(file.path);
-          update();
+          final fileBytes = await File(data!.path).readAsBytes();
+          debugPrint('size filenya: ${fileBytes.lengthInBytes}');
+          if(fileBytes.lengthInBytes > 2000000){
+            openDialog("Attention", 'File lebih dari 2 MB!');
+          } else {
+            documentAttachments.add(file.path);
+            update();
+          }
+
         });
         //openDialog('Success', 'Berhasil menambahkan file.');
       }
@@ -301,10 +308,6 @@ class DocumentsController extends BaseController {
                             onTap: () {
                               selectDate(Get.context!);
                             },
-                            style: const TextStyle(color: onFocusColor),
-                            inputFormatters: [
-                              new LengthLimitingTextInputFormatter(42),
-                            ],
                             decoration: InputDecoration(
                                 suffixIcon: IconButton(
                                     onPressed: () {
@@ -398,6 +401,9 @@ class DocumentsController extends BaseController {
                             controller: documentCertificateLs,
                             cursorColor: onFocusColor,
                             style: const TextStyle(color: onFocusColor),
+                            inputFormatters: [
+                              new LengthLimitingTextInputFormatter(50),
+                            ],
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -538,7 +544,7 @@ class DocumentsController extends BaseController {
                           const SizedBox(
                             height: 16,
                           ),
-                          SizedBox(
+                          documentAttachments.value.isEmpty ? SizedBox(
                             width: 68,
                             height: 68,
                             child: ElevatedButton(
@@ -556,7 +562,7 @@ class DocumentsController extends BaseController {
                                   Icons.folder_rounded,
                                   color: primaryColor,
                                 ))),
-                          ),
+                          ) : const SizedBox(),
                           const SizedBox(
                             height: 16,
                           ),
@@ -638,7 +644,7 @@ class DocumentsController extends BaseController {
     documentCertificateBlanko.text = documents.value[index]['certBlanko'];
     documentCertificateLhv.text = documents.value[index]['certLhv'];
     documentCertificateLs.text = documents.value[index]['certLs'];
-    documentAttachments.value = documentsAttachments[index];
+    documentAttachments.value.add(documentsAttachments.value[index]);
     Get.bottomSheet(
       GetBuilder(
         init: DocumentsController(),
@@ -676,6 +682,9 @@ class DocumentsController extends BaseController {
                             controller: documentCertificateNumber,
                             cursorColor: onFocusColor,
                             style: const TextStyle(color: onFocusColor),
+                            inputFormatters: [
+                              new LengthLimitingTextInputFormatter(50),
+                            ],
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -708,9 +717,6 @@ class DocumentsController extends BaseController {
                               selectDate(Get.context!);
                             },
                             style: const TextStyle(color: onFocusColor),
-                            inputFormatters: [
-                              new LengthLimitingTextInputFormatter(50),
-                            ],
                             decoration: InputDecoration(
                                 suffixIcon: IconButton(
                                     onPressed: () {
@@ -948,7 +954,7 @@ class DocumentsController extends BaseController {
                           const SizedBox(
                             height: 16,
                           ),
-                          SizedBox(
+                          documentAttachments.value.isEmpty ? SizedBox(
                             width: 68,
                             height: 68,
                             child: ElevatedButton(
@@ -966,7 +972,7 @@ class DocumentsController extends BaseController {
                                   Icons.folder_rounded,
                                   color: primaryColor,
                                 ))),
-                          ),
+                          ) : const SizedBox(),
                           const SizedBox(
                             height: 16,
                           ),
@@ -1058,7 +1064,7 @@ class DocumentsController extends BaseController {
         'certLhv': documentCertificateLhv.value.text,
         'certLs': documentCertificateLs.value.text
       });
-      documentsAttachments.value.add(documentAttachments.value);
+      documentsAttachments.value.add(documentAttachments.value.first);
     }
     documentAttachments.value = [];
     documentCertificateNumber.text = '';
@@ -1084,7 +1090,7 @@ class DocumentsController extends BaseController {
         'certLhv': documentCertificateLhv.value.text,
         'certLs': documentCertificateLs.value.text
       };
-      documentsAttachments.value[index] = documentAttachments.value;
+      documentsAttachments.value[index] = documentAttachments.value.first;
     }
     documentAttachments.value = [];
     documentCertificateNumber.text = '';
@@ -1098,7 +1104,32 @@ class DocumentsController extends BaseController {
 
   Future<void> deleteDocumentUI(String id) async {
     // documents  remove by id
-    documents.removeWhere((document) => document['id'] == id);
+    Get.dialog(
+      AlertDialog(
+        title: const Text(
+          'Attention',
+          style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
+        ),
+        content: Text('Apakah benar anda ingin menghapus data finalisasi JO ini?'),
+        actions: [
+          TextButton(
+            child: const Text("Close"),
+            onPressed: () => Get.back(),
+          ),
+          TextButton(
+            child: const Text(
+              "OK",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            onPressed: () async {
+              documents.removeWhere((document) => document['id'] == id);
+              Get.back();
+            },
+          ),
+        ],
+      ),
+    );
     update();
   }
 
@@ -1117,7 +1148,7 @@ class DocumentsController extends BaseController {
         'certLhv': documentCertificateLhv.value.text,
         'certLs': documentCertificateLs.value.text
       };
-      documentsAttachments.value[index] = documentAttachments.value;
+      documentsAttachments.value[index] = documentAttachments.value.first;
       // cari document berdasarkan index. ubah value certnumber sampai certls
       // documents.value.add(
       //   <String, String>{
@@ -1312,7 +1343,7 @@ class DocumentsController extends BaseController {
     late TDJoFinalizeInspection tdJoDocumentInspect;
     late TDJoFinalizeLaboratory tdJoDocumentLab;
 
-    for (var document in documents.value) {
+    for (var (index,document) in documents.value.indexed) {
       if(documentType.value == 'inspect') {
         tdJoDocumentInspect = TDJoFinalizeInspection(
           tHJoId: int.parse(idJo.value),
@@ -1328,12 +1359,39 @@ class DocumentsController extends BaseController {
           isActive: 1,
           isUpload: 0,
           createdBy: employeeId,
-          createdAt: DateTime.now().toString(),
+          createdAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString(),
           updatedBy: 0,
           updatedAt: '',
         );
         update();
         debugPrint('document details: ${jsonEncode(tdJoDocumentInspect)}');
+
+        var result = await db.insert(
+            't_d_jo_finalize_inspection',  // Nama tabel
+            tdJoDocumentInspect.toJson()
+        );
+
+        var fileName = documentsAttachments.value[index].split('/').last;
+
+        var attachment = {
+          't_d_jo_finalize_inspection_id' : result,
+          'path_file': documentsAttachments.value[index],
+          'file_name': fileName,
+          'code': "JDOIA-${employeeId}-${DateTime
+            .now()
+            .millisecondsSinceEpoch
+            .toString()}",
+          'is_active': 1,
+          'is_upload': 0,
+          'created_by': employeeId,
+          'created_at': DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString(),
+        };
+
+        await db.insert(
+            't_d_jo_document_inspection',  // Nama tabel
+            attachment
+        );
+
       } else {
         tdJoDocumentLab = TDJoFinalizeLaboratory(
             tDJoLabId: int.parse(idJo.value),
@@ -1343,48 +1401,61 @@ class DocumentsController extends BaseController {
             lhvNumber: document['certLhv'],
             lsNumber: document['certLs'],
             pathPdf: '-',
-            code: "JDOI-${employeeId}-${DateTime
+            code: "JDOL-${employeeId}-${DateTime
                 .now()
                 .millisecondsSinceEpoch
                 .toString()}",
             isActive: 1,
             isUpload: 0,
             createdBy: employeeId,
-            createdAt: DateTime.now().toString(),
+            createdAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString(),
             updatedBy: 0,
             updatedAt: ''
         );
         update();
         debugPrint('document details: ${jsonEncode(tdJoDocumentLab)}');
-      }
 
-
-      // Menyimpan dokumen ke SQLite
-      if(documentType.value == 'inspect') {
-        await db.insert(
-            't_d_jo_finalize_inspection',  // Nama tabel
-            tdJoDocumentInspect.toJson()
-        );
-
-
-      } else {
-        await db.insert(
+        var result = await db.insert(
             't_d_jo_finalize_laboratory',  // Nama tabel
             tdJoDocumentLab.toJson()
         );
+
+        var fileName = documentsAttachments.value[index].split('/').last;
+
+        var attachment = {
+          't_d_jo_finalize_laboratory_id' : result,
+          'path_file': documentsAttachments.value[index],
+          'file_name': fileName,
+          'code': "JDOLA-${employeeId}-${DateTime
+              .now()
+              .millisecondsSinceEpoch
+              .toString()}",
+          'is_active': 1,
+          'is_upload': 0,
+          'created_by': employeeId,
+          'created_at': DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString(),
+        };
+
+        await db.insert(
+            't_d_jo_document_laboratory',  // Nama tabel
+            attachment
+        );
       }
+
     }
 
     var checkFinalize = await db.rawQuery('''
-      SELECT pic_inspector, pic_laboratory, inspection_finished_date, laboratory_finished_date FROM t_h_jo where id = ${idJo.value}
+      SELECT pic_inspector, pic_laboratory, inspection_finished_date, laboratory_finished_date, inspection_completed_date, laboratory_completed_date  FROM t_h_jo where id = ${idJo.value}
     ''');
     Future.delayed(Duration(milliseconds: 200));
 
-    if((checkFinalize.first['pic_inspector'] != null && checkFinalize.first['pic_laboratory'] == null) && (checkFinalize.first['inspection_finished_date'] == null && checkFinalize.first['laboratory_finished_date'] == null) ){
+    debugPrint('check finalize: ${jsonEncode(checkFinalize)}');
+
+    if((checkFinalize.first['pic_inspector'] != '' && checkFinalize.first['pic_laboratory'] == '') && (checkFinalize.first['inspection_finished_date'] != '' && checkFinalize.first['laboratory_finished_date'] == '') && (checkFinalize.first['inspection_completed_date'] == '' && checkFinalize.first['laboratory_completed_date'] == '') ){
       try{
         await db.execute('''
             UPDATE t_h_jo
-            SET inspection_completed_date = '${'${DateTime.now().toString()}'}', m_statusjo_id = 5
+            SET inspection_completed_date = '${DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString()}', m_statusjo_id = 5
             WHERE id = ${idJo.value};
           ''');
       } catch(e){
@@ -1392,11 +1463,11 @@ class DocumentsController extends BaseController {
       } finally {
         update();
       }
-    } else if((checkFinalize.first['pic_inspector'] == null && checkFinalize.first['pic_laboratory'] != null) && (checkFinalize.first['inspection_finished_date'] == null && checkFinalize.first['laboratory_finished_date'] == null)){
+    } else if((checkFinalize.first['pic_inspector'] == '' && checkFinalize.first['pic_laboratory'] != '') && (checkFinalize.first['inspection_finished_date'] == '' && checkFinalize.first['laboratory_finished_date'] != '') && (checkFinalize.first['inspection_completed_date'] == '' && checkFinalize.first['laboratory_completed_date'] == '')){
       try{
         await db.execute('''
             UPDATE t_h_jo
-            SET laboratory_completed_date = '${DateTime.now().toString()}', m_statusjo_id = 5
+            SET laboratory_completed_date = '${DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString()}', m_statusjo_id = 5
             WHERE id = ${idJo.value};
           ''');
       } catch(e){
@@ -1404,13 +1475,35 @@ class DocumentsController extends BaseController {
       } finally {
         update();
       }
-    } else if((checkFinalize.first['pic_inspector'] == null && checkFinalize.first['pic_laboratory'] == null) && (checkFinalize.first['inspection_finished_date'] == null && checkFinalize.first['laboratory_finished_date'] == null)){
+    } else if((checkFinalize.first['pic_inspector'] != '' && checkFinalize.first['pic_laboratory'] != '') && (checkFinalize.first['inspection_finished_date'] != '' && checkFinalize.first['laboratory_finished_date'] != '')){
       try{
-        await db.execute('''
+        if(checkFinalize.first['inspection_completed_date'] == '' && checkFinalize.first['laboratory_completed_date'] == ''){
+          if(documentType.value == 'inspect'){
+            await db.execute('''
             UPDATE t_h_jo
-            SET inspection_completed_date = '${'${DateTime.now().toString()}'}', laboratory_completed_date = '${DateTime.now().toString()}', m_statusjo_id = 5
+            SET inspection_completed_date = '${DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString()}'
             WHERE id = ${idJo.value};
           ''');
+          } else {
+            await db.execute('''
+            UPDATE t_h_jo
+            SET laboratory_completed_date = '${DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString()}'
+            WHERE id = ${idJo.value};
+          ''');
+          }
+        } else if (checkFinalize.first['inspection_completed_date'] != '' && checkFinalize.first['laboratory_completed_date'] == '') {
+          await db.execute('''
+            UPDATE t_h_jo
+            SET laboratory_completed_date = '${DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString()}', m_statusjo_id = 5
+            WHERE id = ${idJo.value};
+          ''');
+        } else if (checkFinalize.first['inspection_completed_date'] == '' && checkFinalize.first['laboratory_completed_date'] != '') {
+          await db.execute('''
+            UPDATE t_h_jo
+            SET inspection_completed_date = '${DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString()}', m_statusjo_id = 5
+            WHERE id = ${idJo.value};
+          ''');
+        }
       } catch(e){
         debugPrint(e.toString());
       } finally {

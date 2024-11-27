@@ -80,12 +80,13 @@ class GetDataController extends BaseController{
   Future<void> getGenData(String token,String apkVersion,String platform)async{
     try{
       var response = await repository.getGenData(settingsData['e_number'], token, apkVersion,platform);
+      loadingProgressDialog();
         if(response.file != null){
           await createFileFromBase64Str(response.file!);
           await readZip();
           final data = await SqlHelper.getLogin(settingsData['e_number']);
           debugPrint('user data: $data');
-
+          Get.back();
           openDialog('Success', 'Berhasil ambil data', (){Get.to<void>(LoginScreen());});
         } else {
           openDialog('Failed', 'Data gagal diambil',(){});
@@ -93,6 +94,33 @@ class GetDataController extends BaseController{
     } catch(e) {
       openDialog('Failed', '$e', (){});
     }
+  }
+
+  void loadingProgressDialog() {
+    Get.dialog(
+        AlertDialog(
+          title: Text(
+            'Loading Get Data',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
+          ),
+          content: SizedBox(
+            width: double.infinity,
+            height: 84,
+            child: Column(
+              children: [
+                SizedBox(
+                    width: 84,
+                    height: 84,
+                    child: CircularProgressIndicator()
+                ),
+              ],
+            ),
+          ),
+          actions: [],
+        ),
+        barrierDismissible: false
+    );
   }
 
   Future<void> generateFirebase()async{

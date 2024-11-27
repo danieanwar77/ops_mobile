@@ -580,6 +580,7 @@ class SqlHelper extends BaseController {
       updated_at
       FROM t_d_jo_finalize_inspection
       WHERE t_h_jo_id = $idJo
+      and is_active = 1
     ''');
   }
 
@@ -603,6 +604,7 @@ class SqlHelper extends BaseController {
       updated_at
       FROM t_d_jo_finalize_laboratory
       WHERE t_d_jo_laboratory_id = $idJo
+      and is_active = 1
     ''');
   }
 
@@ -623,6 +625,7 @@ class SqlHelper extends BaseController {
       updated_at
       FROM t_d_jo_document_inspection
       WHERE t_d_jo_finalize_inspection_id in (${id.join(',')})
+      AND is_active = 1
     ''');
   }
 
@@ -643,6 +646,7 @@ class SqlHelper extends BaseController {
       updated_at
       FROM t_d_jo_document_laboratory
       WHERE t_d_jo_finalize_laboratory_id in (${id.join(',')})
+      and is_active = 1
     ''');
   }
 

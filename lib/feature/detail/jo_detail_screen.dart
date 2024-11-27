@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
@@ -92,10 +93,10 @@ class JoDetailScreen extends StatelessWidget {
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'SO ID',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -103,8 +104,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.code ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -113,10 +114,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'JO ID',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -124,8 +125,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.soCode ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -134,10 +135,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'SO Created Date',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -145,8 +146,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.soCreatedAt ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -155,10 +156,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'JO Date',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -166,8 +167,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.joCreatedDate ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -176,10 +177,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Status',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -187,8 +188,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.statusJo ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -197,10 +198,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'SBU',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -208,8 +209,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.sbuName ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -218,10 +219,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Commodity',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -229,8 +230,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.commodityName ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -239,10 +240,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Company',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -250,8 +251,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.companyName ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -260,10 +261,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Client Category',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -271,8 +272,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.mClientCategoryName ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -281,10 +282,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Project Title',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -292,8 +293,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.projectTittle ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -302,10 +303,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Region',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -313,8 +314,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.region ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -323,10 +324,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Branch',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -334,8 +335,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.branch ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -344,10 +345,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Site Office',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -355,8 +356,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.siteOffice ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -374,18 +375,18 @@ class JoDetailScreen extends StatelessWidget {
                                               width: MediaQuery.sizeOf(context).width - 40,
                                               child: ExpansionTile(
                                                 shape: Border.all(color: Colors.transparent),
-                                                title: const Text(
+                                                title: Text(
                                                   'Survey Location',
-                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: primaryColor),
+                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700, color: primaryColor),
                                                 ),
                                                 childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
                                                 children: <Widget>[
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Survey Location',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -393,8 +394,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.surveyLocation ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -403,10 +404,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Country',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -414,8 +415,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.countrySurvey ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -424,10 +425,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Province',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -435,8 +436,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.provinceSurvey ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -445,10 +446,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'City',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -456,8 +457,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.citySurvey ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -471,18 +472,18 @@ class JoDetailScreen extends StatelessWidget {
                                               width: MediaQuery.sizeOf(context).width - 40,
                                               child: ExpansionTile(
                                                 shape: Border.all(color: Colors.transparent),
-                                                title: const Text(
+                                                title: Text(
                                                   'Loading Port',
-                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: primaryColor),
+                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700, color: primaryColor),
                                                 ),
                                                 childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
                                                 children: <Widget>[
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Country',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -490,8 +491,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.loadingPortCountry ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -500,10 +501,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Province',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -511,8 +512,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.loadingPortProvince ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -521,10 +522,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'City',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -532,8 +533,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.loadingPortCity ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -542,10 +543,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Origin Country',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -553,8 +554,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.loadingPortCountry ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -568,18 +569,18 @@ class JoDetailScreen extends StatelessWidget {
                                               width: MediaQuery.sizeOf(context).width - 40,
                                               child: ExpansionTile(
                                                 shape: Border.all(color: Colors.transparent),
-                                                title: const Text(
+                                                title: Text(
                                                   'Discharging Port',
-                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: primaryColor),
+                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700, color: primaryColor),
                                                 ),
                                                 childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
                                                 children: <Widget>[
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Discharging Port',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -587,8 +588,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.dischargePort ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -597,10 +598,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Country',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -608,8 +609,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.dischargePortCountry ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -618,10 +619,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Province',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -629,8 +630,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.dischargePortProvince ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -639,10 +640,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'City',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -650,8 +651,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.dischargePortCity ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -665,18 +666,18 @@ class JoDetailScreen extends StatelessWidget {
                                               width: MediaQuery.sizeOf(context).width - 40,
                                               child: ExpansionTile(
                                                 shape: Border.all(color: Colors.transparent),
-                                                title: const Text(
+                                                title: Text(
                                                   'Supply Chain Information & Others',
-                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: primaryColor),
+                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700, color: primaryColor),
                                                 ),
                                                 childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
                                                 children: <Widget>[
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Destination Country',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -684,8 +685,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.destinationCountry ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -694,10 +695,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Destination Category',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -705,8 +706,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.destinationCategoryName ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -715,10 +716,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Job Category',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -726,8 +727,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.jobCategoryName ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -736,10 +737,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Market Segmentation',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -747,8 +748,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.marketSegmentName ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -757,10 +758,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Sub Market Segmentation',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -768,8 +769,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.subMarketSegmentName ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -778,10 +779,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Supplier',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -789,8 +790,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.supplierName ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -799,10 +800,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Trader 1',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -810,8 +811,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.trader1Name ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -820,10 +821,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Trader 2',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -831,8 +832,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.trader2Name ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -841,10 +842,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Trader 3',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -852,8 +853,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.trader3Name ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -862,10 +863,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'End Buyer',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -873,8 +874,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.endBuyerName ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -883,10 +884,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Notes',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -894,8 +895,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.notes ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -936,10 +937,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   Row(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Kind Of Services',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -947,8 +948,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.kosName ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -957,10 +958,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           "Order Start - End Date",
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1.0),
@@ -968,8 +969,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -978,10 +979,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Vessel',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -989,8 +990,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.vessel ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -1008,7 +1009,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                 Expanded(
                                                                   child: Text(
                                                                     'Barge ${i + 1}',
-                                                                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 const VerticalDivider(width: 1),
@@ -1016,8 +1017,8 @@ class JoDetailScreen extends StatelessWidget {
                                                                 Expanded(
                                                                   child: Text(
                                                                     controller.barges.value[i] ?? '-',
-                                                                    style: const TextStyle(
-                                                                      fontSize: 14,
+                                                                    style: TextStyle(
+                                                                      fontSize: 12.sp,
                                                                     ),
                                                                   ),
                                                                 )
@@ -1028,14 +1029,14 @@ class JoDetailScreen extends StatelessWidget {
                                                         ),
                                                     ],
                                                   )
-                                                      : const Column(
+                                                      : Column(
                                                     children: [
                                                       Row(
                                                         children: [
                                                           Expanded(
                                                             child: Text(
                                                               'Barge 1',
-                                                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                             ),
                                                           ),
                                                           VerticalDivider(width: 1),
@@ -1044,7 +1045,7 @@ class JoDetailScreen extends StatelessWidget {
                                                             child: Text(
                                                               '-',
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                               ),
                                                             ),
                                                           )
@@ -1055,10 +1056,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   ),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Qty',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -1066,8 +1067,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.qty.toString() ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -1076,10 +1077,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'UOM',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -1087,17 +1088,17 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoDetail.value.detail?.uomName ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
                                                     ],
                                                   ),
                                                   const Divider(thickness: 0.4),
-                                                  const Text(
+                                                  Text(
                                                     'SOW :',
-                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                   ),
                                                   controller.dataJoDetail.value.sow!.isNotEmpty
                                                       ? Column(
@@ -1108,16 +1109,16 @@ class JoDetailScreen extends StatelessWidget {
                                                           children: [
                                                             Text(
                                                               '${i + 1}.',
-                                                              style: const TextStyle(
-                                                                fontSize: 14,
+                                                              style: TextStyle(
+                                                                fontSize: 12.sp,
                                                               ),
                                                             ),
                                                             const SizedBox(width: 16),
                                                             Expanded(
                                                               child: Text(
                                                                 controller.dataJoDetail.value.sow![i].name ?? '-',
-                                                                style: const TextStyle(
-                                                                  fontSize: 14,
+                                                                style: TextStyle(
+                                                                  fontSize: 12.sp,
                                                                 ),
                                                               ),
                                                             )
@@ -1127,9 +1128,9 @@ class JoDetailScreen extends StatelessWidget {
                                                   )
                                                       : const SizedBox(),
                                                   const Divider(thickness: 0.4),
-                                                  const Text(
+                                                  Text(
                                                     'OOS :',
-                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                   ),
                                                   controller.dataJoDetail.value.oos!.isNotEmpty
                                                       ? Column(
@@ -1140,16 +1141,16 @@ class JoDetailScreen extends StatelessWidget {
                                                           children: [
                                                             Text(
                                                               '${i + 1}.',
-                                                              style: const TextStyle(
-                                                                fontSize: 14,
+                                                              style: TextStyle(
+                                                                fontSize: 12.sp,
                                                               ),
                                                             ),
                                                             const SizedBox(width: 16),
                                                             Expanded(
                                                               child: Text(
                                                                 controller.dataJoDetail.value.oos![i].name ?? '-',
-                                                                style: const TextStyle(
-                                                                  fontSize: 14,
+                                                                style: TextStyle(
+                                                                  fontSize: 12.sp,
                                                                 ),
                                                               ),
                                                             )
@@ -1159,9 +1160,9 @@ class JoDetailScreen extends StatelessWidget {
                                                   )
                                                       : const SizedBox(),
                                                   const Divider(thickness: 0.4),
-                                                  const Text(
+                                                  Text(
                                                     'Lab Analysis Parameter :',
-                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                   ),
                                                   controller.dataJoDetail.value.lap!.isNotEmpty
                                                       ? Column(
@@ -1173,7 +1174,7 @@ class JoDetailScreen extends StatelessWidget {
                                                             Text(
                                                               "${i + 1}.",
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                               ),
                                                             ),
                                                             SizedBox(width: 16),
@@ -1181,7 +1182,7 @@ class JoDetailScreen extends StatelessWidget {
                                                               child: Text(
                                                                 controller.dataJoDetail.value.lap![i].name ?? '-',
                                                                 style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 12.sp,
                                                                 ),
                                                               ),
                                                             )
@@ -1191,9 +1192,9 @@ class JoDetailScreen extends StatelessWidget {
                                                   )
                                                       : const SizedBox(),
                                                   const Divider(thickness: 0.4),
-                                                  const Text(
+                                                  Text(
                                                     'Standard Method :',
-                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                   ),
                                                   controller.dataJoDetail.value.stdMethod!.isNotEmpty
                                                       ? Column(
@@ -1204,16 +1205,16 @@ class JoDetailScreen extends StatelessWidget {
                                                           children: [
                                                             Text(
                                                               '${i + 1}.',
-                                                              style: const TextStyle(
-                                                                fontSize: 14,
+                                                              style: TextStyle(
+                                                                fontSize: 12.sp,
                                                               ),
                                                             ),
                                                             const SizedBox(width: 16),
                                                             Expanded(
                                                               child: Text(
                                                                 controller.dataJoDetail.value.stdMethod![i].name ?? '-',
-                                                                style: const TextStyle(
-                                                                  fontSize: 14,
+                                                                style: TextStyle(
+                                                                  fontSize: 12.sp,
                                                                 ),
                                                               ),
                                                             )
@@ -1254,10 +1255,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   Row(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'ETA Vessel',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -1265,8 +1266,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoPIC.value.detail?.ettaVessel ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -1275,10 +1276,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Date of Attendance',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1.0),
@@ -1286,8 +1287,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           '${controller.dataJoPIC.value.detail?.startDateOfAttendance ?? '-'} - ${controller.dataJoPIC.value.detail?.endDateOfAttendance ?? '-'}',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -1296,10 +1297,10 @@ class JoDetailScreen extends StatelessWidget {
                                                   const Divider(thickness: 0.4),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'Lokasi Kerja',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -1307,27 +1308,27 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoPIC.value.detail?.lokasiKerja ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
                                                     ],
                                                   ),
                                                   const Divider(thickness: 0.4),
-                                                  const Text(
+                                                  Text(
                                                     'Assign PIC Inspection',
-                                                    style: TextStyle(color: primaryColor, fontSize: 14, fontWeight: FontWeight.w700),
+                                                    style: TextStyle(color: primaryColor, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                   ),
                                                   const SizedBox(
                                                     height: 16,
                                                   ),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'PIC Inspection',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -1335,27 +1336,27 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoPIC.value.detail?.picInspector ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
                                                     ],
                                                   ),
                                                   const Divider(thickness: 0.4),
-                                                  const Text(
+                                                  Text(
                                                     'Assign PIC Laboratory',
-                                                    style: TextStyle(color: primaryColor, fontSize: 14, fontWeight: FontWeight.w700),
+                                                    style: TextStyle(color: primaryColor, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                   ),
                                                   const SizedBox(
                                                     height: 16,
                                                   ),
                                                   Row(
                                                     children: [
-                                                      const Expanded(
+                                                      Expanded(
                                                         child: Text(
                                                           'PIC Laboratory',
-                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                       ),
                                                       const VerticalDivider(width: 1),
@@ -1363,8 +1364,8 @@ class JoDetailScreen extends StatelessWidget {
                                                       Expanded(
                                                         child: Text(
                                                           controller.dataJoPIC.value.detail?.picLaboratory ?? '-',
-                                                          style: const TextStyle(
-                                                            fontSize: 14,
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
                                                           ),
                                                         ),
                                                       )
@@ -1384,7 +1385,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                   Expanded(
                                                                     child: Text(
                                                                       'Laboratory ${i + 1}',
-                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                     ),
                                                                   ),
                                                                   const VerticalDivider(width: 1),
@@ -1392,8 +1393,8 @@ class JoDetailScreen extends StatelessWidget {
                                                                   Expanded(
                                                                     child: Text(
                                                                       controller.dataJoPIC.value.lab![i].name ?? '-',
-                                                                      style: const TextStyle(
-                                                                        fontSize: 14,
+                                                                      style: TextStyle(
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -1414,9 +1415,9 @@ class JoDetailScreen extends StatelessWidget {
                                                 width: MediaQuery.sizeOf(context).width - 40,
                                                 child: ExpansionTile(
                                                   shape: Border.all(color: Colors.transparent),
-                                                  title: const Text(
+                                                  title: Text(
                                                     'Assign History',
-                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: primaryColor),
+                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700, color: primaryColor),
                                                   ),
                                                   childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
                                                   children: <Widget>[
@@ -1431,14 +1432,14 @@ class JoDetailScreen extends StatelessWidget {
                                                             return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                                               Text(
                                                                 'Assign ${index + 1}',
-                                                                style: const TextStyle(color: green, fontSize: 14, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                               ),
                                                               const SizedBox(height: 16),
                                                               Row(children: [
-                                                                const Expanded(
+                                                                 Expanded(
                                                                   child: Text(
                                                                     'Assign Date',
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 const VerticalDivider(width: 1),
@@ -1446,18 +1447,18 @@ class JoDetailScreen extends StatelessWidget {
                                                                 Expanded(
                                                                   child: Text(
                                                                     assignHistory?.assignedDate ?? '-',
-                                                                    style: const TextStyle(
-                                                                      fontSize: 14,
+                                                                    style: TextStyle(
+                                                                      fontSize: 12.sp,
                                                                     ),
                                                                   ),
                                                                 ),
                                                               ]),
                                                               const Divider(thickness: 0.4),
                                                               Row(children: [
-                                                                const Expanded(
+                                                                Expanded(
                                                                   child: Text(
                                                                     'Assign By',
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 const VerticalDivider(width: 1),
@@ -1465,18 +1466,18 @@ class JoDetailScreen extends StatelessWidget {
                                                                 Expanded(
                                                                   child: Text(
                                                                     assignHistory?.assignBy ?? '-',
-                                                                    style: const TextStyle(
-                                                                      fontSize: 14,
+                                                                    style: TextStyle(
+                                                                      fontSize: 12.sp,
                                                                     ),
                                                                   ),
                                                                 ),
                                                               ]),
                                                               const Divider(thickness: 0.4),
                                                               Row(children: [
-                                                                const Expanded(
+                                                                Expanded(
                                                                   child: Text(
                                                                     'Remarks',
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 const VerticalDivider(width: 1),
@@ -1484,18 +1485,18 @@ class JoDetailScreen extends StatelessWidget {
                                                                 Expanded(
                                                                   child: Text(
                                                                     assignHistory?.remarks ?? '-',
-                                                                    style: const TextStyle(
-                                                                      fontSize: 14,
+                                                                    style: TextStyle(
+                                                                      fontSize: 12.sp,
                                                                     ),
                                                                   ),
                                                                 ),
                                                               ]),
                                                               const Divider(thickness: 0.4),
                                                               Row(children: [
-                                                                const Expanded(
+                                                                Expanded(
                                                                   child: Text(
                                                                     'Previous ETA Vessel',
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 const VerticalDivider(width: 1),
@@ -1503,18 +1504,18 @@ class JoDetailScreen extends StatelessWidget {
                                                                 Expanded(
                                                                   child: Text(
                                                                     assignHistory?.ettaVessel ?? '-',
-                                                                    style: const TextStyle(
-                                                                      fontSize: 14,
+                                                                    style: TextStyle(
+                                                                      fontSize: 12.sp,
                                                                     ),
                                                                   ),
                                                                 ),
                                                               ]),
                                                               const Divider(thickness: 0.4),
                                                               Row(children: [
-                                                                const Expanded(
+                                                                Expanded(
                                                                   child: Text(
                                                                     'Previous Date of Attendance',
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 const VerticalDivider(width: 1),
@@ -1522,18 +1523,18 @@ class JoDetailScreen extends StatelessWidget {
                                                                 Expanded(
                                                                   child: Text(
                                                                     '${assignHistory?.startDateOfAttendance ?? '-'} - ${assignHistory?.endDateOfAttendance ?? '-'}',
-                                                                    style: const TextStyle(
-                                                                      fontSize: 14,
+                                                                    style: TextStyle(
+                                                                      fontSize: 12.sp,
                                                                     ),
                                                                   ),
                                                                 ),
                                                               ]),
                                                               const Divider(thickness: 0.4),
                                                               Row(children: [
-                                                                const Expanded(
+                                                                Expanded(
                                                                   child: Text(
                                                                     'Previous Lokasi Kerja',
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 const VerticalDivider(width: 1),
@@ -1541,18 +1542,18 @@ class JoDetailScreen extends StatelessWidget {
                                                                 Expanded(
                                                                   child: Text(
                                                                     assignHistory?.lokasiKerja ?? '-',
-                                                                    style: const TextStyle(
-                                                                      fontSize: 14,
+                                                                    style: TextStyle(
+                                                                      fontSize: 12.sp,
                                                                     ),
                                                                   ),
                                                                 ),
                                                               ]),
                                                               const Divider(thickness: 0.4),
                                                               Row(children: [
-                                                                const Expanded(
+                                                                Expanded(
                                                                   child: Text(
                                                                     'Previous PIC Inspection',
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 const VerticalDivider(width: 1),
@@ -1560,18 +1561,18 @@ class JoDetailScreen extends StatelessWidget {
                                                                 Expanded(
                                                                   child: Text(
                                                                     assignHistory?.picInspector ?? '-',
-                                                                    style: const TextStyle(
-                                                                      fontSize: 14,
+                                                                    style: TextStyle(
+                                                                      fontSize: 12.sp,
                                                                     ),
                                                                   ),
                                                                 ),
                                                               ]),
                                                               const Divider(thickness: 0.4),
                                                               Row(children: [
-                                                                const Expanded(
+                                                                Expanded(
                                                                   child: Text(
                                                                     'Previous PIC Laboratory',
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 const VerticalDivider(width: 1),
@@ -1579,8 +1580,8 @@ class JoDetailScreen extends StatelessWidget {
                                                                 Expanded(
                                                                   child: Text(
                                                                     assignHistory?.picLaboratory ?? '-',
-                                                                    style: const TextStyle(
-                                                                      fontSize: 14,
+                                                                    style: TextStyle(
+                                                                      fontSize: 12.sp,
                                                                     ),
                                                                   ),
                                                                 ),
@@ -1603,7 +1604,7 @@ class JoDetailScreen extends StatelessWidget {
                           ),
                           'Progress & Daily Activity' => SingleChildScrollView(
                             child: Padding(
-                                padding: const EdgeInsets.all(16),
+                                padding: EdgeInsets.all(16.r),
                                 child: Obx(
                                       () => Column(children: [
                                     SizedBox(
@@ -1614,19 +1615,19 @@ class JoDetailScreen extends StatelessWidget {
                                             child: Column(
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                const Text(
+                                                Text(
                                                   'Inspection Progress',
-                                                  style: TextStyle(color: primaryColor, fontSize: 14, fontWeight: FontWeight.w700),
+                                                  style: TextStyle(color: primaryColor, fontSize: 14.sp, fontWeight: FontWeight.w700),
                                                 ),
                                                 const SizedBox(
                                                   height: 16,
                                                 ),
                                                 Row(
                                                   children: [
-                                                    const Expanded(
+                                                    Expanded(
                                                       child: Text(
                                                         'Order Start - End Date',
-                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                       ),
                                                     ),
                                                     const VerticalDivider(width: 1),
@@ -1636,8 +1637,8 @@ class JoDetailScreen extends StatelessWidget {
                                                         controller.stageList.isNotEmpty
                                                             ? ('${controller.stageList.first.transDate ?? '-'} -  ${controller.stageList.last.transDate ?? '-'}')
                                                             : '-',
-                                                        style: const TextStyle(
-                                                          fontSize: 14,
+                                                        style: TextStyle(
+                                                          fontSize: 11.sp,
                                                         ),
                                                       ),
                                                     )
@@ -1646,7 +1647,7 @@ class JoDetailScreen extends StatelessWidget {
                                                 const Divider(thickness: 0.4),
                                                 Text(
                                                   'Photos',
-                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                 ),
                                                 const Divider(thickness: 0.4),
                                                 controller.isLoadingJOImage == false
@@ -1726,7 +1727,7 @@ class JoDetailScreen extends StatelessWidget {
                                                 Row(children: [
                                                   Text(
                                                     'Daily Activity',
-                                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: primaryColor),
+                                                    style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w700, color: primaryColor),
                                                   ),
                                                   const SizedBox(width: 8),
                                                   controller.dataJoDetail.value.detail?.statusJo != ''
@@ -1736,7 +1737,7 @@ class JoDetailScreen extends StatelessWidget {
                                                         color: primaryColor,
                                                         borderRadius: BorderRadius.circular(6),
                                                       ),
-                                                      child: Text(controller.stageList.length == 0 ? "None" : controller.activityStages[controller.activityStage - 1], style: TextStyle(color: Colors.white)))
+                                                      child: Text(controller.stageList.length == 0 ? "None" : controller.activityStages[controller.activityStage - 1], style: TextStyle(fontSize: 12.sp, color: Colors.white)))
                                                       : const SizedBox(),
                                                   Spacer(),
                                                   controller.activity6ListStages.value.isEmpty && controller.activityFinished.value == false
@@ -1781,9 +1782,9 @@ class JoDetailScreen extends StatelessWidget {
                                                       ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                                     Row(
                                                       children: [
-                                                        const Text(
+                                                        Text(
                                                           'Stage 1: Waiting For Arrival',
-                                                          style: TextStyle(color: green, fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                         const SizedBox(width: 8),
                                                         controller.activityStage == 1
@@ -1804,7 +1805,7 @@ class JoDetailScreen extends StatelessWidget {
                                                             Expanded(
                                                               child: Text(
                                                                 'Date',
-                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                               ),
                                                             ),
                                                             VerticalDivider(width: 1),
@@ -1813,7 +1814,7 @@ class JoDetailScreen extends StatelessWidget {
                                                               child: Text(
                                                                 progressActivity.transDate ?? '-',
                                                                 style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 11.sp,
                                                                 ),
                                                               ),
                                                             )
@@ -1832,7 +1833,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                   flex: 1,
                                                                   child: Text(
                                                                     'Activities',
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 VerticalDivider(width: 1),
@@ -1841,7 +1842,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                   flex: 1,
                                                                   child: Text(
                                                                     '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 VerticalDivider(width: 1),
@@ -1851,7 +1852,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                   child: Text(
                                                                     activity?.activity ?? '-',
                                                                     style: TextStyle(
-                                                                      fontSize: 14,
+                                                                      fontSize: 11.sp,
                                                                     ),
                                                                   ),
                                                                 )
@@ -1859,21 +1860,22 @@ class JoDetailScreen extends StatelessWidget {
                                                             );
                                                           },
                                                         ),
+                                                        const SizedBox(height: 12),
                                                         Row(
                                                           children: [
                                                             Expanded(
                                                               child: Text(
                                                                 'Remarks',
-                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
                                                               ),
                                                             ),
                                                             VerticalDivider(width: 1),
                                                             SizedBox(width: 16),
                                                             Expanded(
                                                               child: Text(
-                                                                progressActivity.remarks ?? '-',
+                                                                progressActivity.remarks != '' ? progressActivity.remarks! : '-',
                                                                 style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 12.sp,
                                                                 ),
                                                               ),
                                                             )
@@ -1887,9 +1889,9 @@ class JoDetailScreen extends StatelessWidget {
                                                       ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                                     Row(
                                                       children: [
-                                                        const Text(
+                                                        Text(
                                                           'Stage 2: Ship Arrived',
-                                                          style: TextStyle(color: green, fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                         const SizedBox(width: 8),
                                                         controller.activityStage == 2
@@ -1909,7 +1911,7 @@ class JoDetailScreen extends StatelessWidget {
                                                             Expanded(
                                                               child: Text(
                                                                 'Date',
-                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                               ),
                                                             ),
                                                             VerticalDivider(width: 1),
@@ -1918,7 +1920,7 @@ class JoDetailScreen extends StatelessWidget {
                                                               child: Text(
                                                                 progressActivity.transDate ?? '-',
                                                                 style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 11.sp,
                                                                 ),
                                                               ),
                                                             )
@@ -1937,7 +1939,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                   flex: 1,
                                                                   child: Text(
                                                                     'Activities',
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 VerticalDivider(width: 1),
@@ -1946,7 +1948,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                   flex: 1,
                                                                   child: Text(
                                                                     '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 VerticalDivider(width: 1),
@@ -1956,7 +1958,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                   child: Text(
                                                                     activity?.activity ?? '-',
                                                                     style: TextStyle(
-                                                                      fontSize: 14,
+                                                                      fontSize: 11.sp,
                                                                     ),
                                                                   ),
                                                                 )
@@ -1964,21 +1966,22 @@ class JoDetailScreen extends StatelessWidget {
                                                             );
                                                           },
                                                         ),
+                                                        const SizedBox(height: 12),
                                                         Row(
                                                           children: [
                                                             Expanded(
                                                               child: Text(
                                                                 'Remarks',
-                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                               ),
                                                             ),
                                                             VerticalDivider(width: 1),
                                                             SizedBox(width: 16),
                                                             Expanded(
                                                               child: Text(
-                                                                progressActivity.remarks ?? '-',
+                                                                progressActivity.remarks != '' ? progressActivity.remarks! : '-',
                                                                 style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 12.sp,
                                                                 ),
                                                               ),
                                                             )
@@ -1992,9 +1995,9 @@ class JoDetailScreen extends StatelessWidget {
                                                       ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                                     Row(
                                                       children: [
-                                                        const Text(
+                                                        Text(
                                                           'Stage 3: Ship Berthing',
-                                                          style: TextStyle(color: green, fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                         const SizedBox(width: 8),
                                                         controller.activityStage == 3
@@ -2014,7 +2017,7 @@ class JoDetailScreen extends StatelessWidget {
                                                             Expanded(
                                                               child: Text(
                                                                 'Date',
-                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                               ),
                                                             ),
                                                             VerticalDivider(width: 1),
@@ -2023,7 +2026,7 @@ class JoDetailScreen extends StatelessWidget {
                                                               child: Text(
                                                                 progressActivity.transDate ?? '-',
                                                                 style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 11.sp,
                                                                 ),
                                                               ),
                                                             )
@@ -2042,7 +2045,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                   flex: 1,
                                                                   child: Text(
                                                                     'Activities',
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 VerticalDivider(width: 1),
@@ -2051,7 +2054,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                   flex: 1,
                                                                   child: Text(
                                                                     '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 VerticalDivider(width: 1),
@@ -2061,7 +2064,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                   child: Text(
                                                                     activity?.activity ?? '-',
                                                                     style: TextStyle(
-                                                                      fontSize: 14,
+                                                                      fontSize: 12.sp,
                                                                     ),
                                                                   ),
                                                                 )
@@ -2069,21 +2072,22 @@ class JoDetailScreen extends StatelessWidget {
                                                             );
                                                           },
                                                         ),
+                                                        const SizedBox(height: 12),
                                                         Row(
                                                           children: [
                                                             Expanded(
                                                               child: Text(
                                                                 'Remarks',
-                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                               ),
                                                             ),
                                                             VerticalDivider(width: 1),
                                                             SizedBox(width: 16),
                                                             Expanded(
                                                               child: Text(
-                                                                progressActivity.remarks ?? '-',
+                                                                progressActivity.remarks != '' ? progressActivity.remarks! : '-',
                                                                 style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 11.sp,
                                                                 ),
                                                               ),
                                                             )
@@ -2097,9 +2101,9 @@ class JoDetailScreen extends StatelessWidget {
                                                       ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                                     Row(
                                                       children: [
-                                                        const Text(
+                                                        Text(
                                                           'Stage 4: Work Commence',
-                                                          style: TextStyle(color: green, fontSize: 14, fontWeight: FontWeight.w700),
+                                                          style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                         const SizedBox(width: 8),
                                                         controller.activityStage == 4
@@ -2119,7 +2123,7 @@ class JoDetailScreen extends StatelessWidget {
                                                             Expanded(
                                                               child: Text(
                                                                 'Date',
-                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                               ),
                                                             ),
                                                             VerticalDivider(width: 1),
@@ -2128,7 +2132,7 @@ class JoDetailScreen extends StatelessWidget {
                                                               child: Text(
                                                                 progressActivity.transDate ?? '-',
                                                                 style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 11.sp,
                                                                 ),
                                                               ),
                                                             )
@@ -2147,7 +2151,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                   flex: 1,
                                                                   child: Text(
                                                                     'Activities',
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 VerticalDivider(width: 1),
@@ -2156,7 +2160,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                   flex: 1,
                                                                   child: Text(
                                                                     '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 VerticalDivider(width: 1),
@@ -2166,7 +2170,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                   child: Text(
                                                                     activity?.activity ?? '-',
                                                                     style: TextStyle(
-                                                                      fontSize: 14,
+                                                                      fontSize: 11.sp,
                                                                     ),
                                                                   ),
                                                                 )
@@ -2174,21 +2178,22 @@ class JoDetailScreen extends StatelessWidget {
                                                             );
                                                           },
                                                         ),
+                                                        const SizedBox(height: 12),
                                                         Row(
                                                           children: [
                                                             Expanded(
                                                               child: Text(
                                                                 'Remarks',
-                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                               ),
                                                             ),
                                                             VerticalDivider(width: 1),
                                                             SizedBox(width: 16),
                                                             Expanded(
                                                               child: Text(
-                                                                progressActivity.remarks ?? '-',
+                                                                progressActivity.remarks != '' ? progressActivity.remarks! : '-',
                                                                 style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 11.sp,
                                                                 ),
                                                               ),
                                                             )
@@ -2204,11 +2209,10 @@ class JoDetailScreen extends StatelessWidget {
                                                       children: [
                                                         Row(
                                                           children: [
-                                                            const Text(
+                                                            Text(
                                                               'Stage 5: Work Complete',
-                                                              style: TextStyle(color: green, fontSize: 14, fontWeight: FontWeight.w700),
+                                                              style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                             ),
-                                                            const SizedBox(width: 8),
                                                             controller.activityStage == 5
                                                                 ? InkWell(
                                                                 onTap: () {
@@ -2221,14 +2225,15 @@ class JoDetailScreen extends StatelessWidget {
                                                         const SizedBox(width: 8),
                                                       ],
                                                     ),
+                                                    const SizedBox(height: 16),
                                                     for (var progressActivity in controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 5))
                                                       Column(children: [
                                                         Row(
                                                           children: [
-                                                            const Expanded(
+                                                            Expanded(
                                                               child: Text(
                                                                 'Activity Date',
-                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                               ),
                                                             ),
                                                             const VerticalDivider(width: 1),
@@ -2237,7 +2242,7 @@ class JoDetailScreen extends StatelessWidget {
                                                               child: Text(
                                                                 progressActivity.transDate ?? '-',
                                                                 style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 11.sp,
                                                                 ),
                                                               ),
                                                             )
@@ -2249,7 +2254,7 @@ class JoDetailScreen extends StatelessWidget {
                                                             Expanded(
                                                               child: Text(
                                                                 'Activity Time',
-                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                               ),
                                                             ),
                                                             VerticalDivider(width: 1),
@@ -2258,7 +2263,7 @@ class JoDetailScreen extends StatelessWidget {
                                                               child: Text(
                                                                 progressActivity.updatedAt == null ? (progressActivity.createdAt ?? '-') : (progressActivity.updatedAt ?? '-'),
                                                                 style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 11.sp,
                                                                 ),
                                                               ),
                                                             )
@@ -2267,10 +2272,10 @@ class JoDetailScreen extends StatelessWidget {
                                                         const Divider(thickness: 0.4),
                                                         Row(
                                                           children: [
-                                                            const Expanded(
+                                                            Expanded(
                                                               child: Text(
                                                                 'Actual Qty',
-                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                               ),
                                                             ),
                                                             const VerticalDivider(width: 1),
@@ -2279,8 +2284,8 @@ class JoDetailScreen extends StatelessWidget {
                                                               child: Text(
                                                                 //double.parse(progressActivity?.actualQty ?? '0').toString(),
                                                                 progressActivity?.actualQty ?? '-',
-                                                                style: const TextStyle(
-                                                                  fontSize: 14,
+                                                                style: TextStyle(
+                                                                  fontSize: 12.sp,
                                                                 ),
                                                               ),
                                                             )
@@ -2289,10 +2294,10 @@ class JoDetailScreen extends StatelessWidget {
                                                         const Divider(thickness: 0.4),
                                                         Row(
                                                           children: [
-                                                            const Expanded(
+                                                            Expanded(
                                                               child: Text(
                                                                 'UOM',
-                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                               ),
                                                             ),
                                                             VerticalDivider(width: 1),
@@ -2301,7 +2306,7 @@ class JoDetailScreen extends StatelessWidget {
                                                               child: Text(
                                                                 controller.dataJoDetail.value.detail?.uomName ?? '-',
                                                                 style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 11.sp,
                                                                 ),
                                                               ),
                                                             )
@@ -2310,10 +2315,10 @@ class JoDetailScreen extends StatelessWidget {
                                                         const Divider(thickness: 0.4),
                                                         Row(
                                                           children: [
-                                                            const Expanded(
+                                                            Expanded(
                                                               child: Text(
                                                                 'Vessel',
-                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                               ),
                                                             ),
                                                             VerticalDivider(width: 1),
@@ -2322,7 +2327,7 @@ class JoDetailScreen extends StatelessWidget {
                                                               child: Text(
                                                                 progressActivity!.activityVesel?.vessel ?? '-',
                                                                 style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 11.sp,
                                                                 ),
                                                               ),
                                                             )
@@ -2343,7 +2348,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                         child: Text(
                                                                           'Barge ${index + 1}',
                                                                           style: TextStyle(
-                                                                            fontSize: 14,
+                                                                            fontSize: 12.sp,
                                                                             fontWeight: FontWeight.w700,
                                                                           ),
                                                                         )),
@@ -2357,7 +2362,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                         child: Text(
                                                                           '${activityBarge!.barge!}',
                                                                           style: TextStyle(
-                                                                            fontSize: 14,
+                                                                            fontSize: 11.sp,
                                                                             fontWeight: FontWeight.w700,
                                                                           ),
                                                                         ))
@@ -2381,15 +2386,15 @@ class JoDetailScreen extends StatelessWidget {
                                                               children: [
                                                                 Text(
                                                                   'KOS Transhipment ${index + 1}',
-                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                 ),
                                                                 const SizedBox(height: 16),
                                                                 Row(
                                                                   children: [
-                                                                    const Expanded(
+                                                                    Expanded(
                                                                       child: Text(
                                                                         'Jetty',
-                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                       ),
                                                                     ),
                                                                     VerticalDivider(width: 1),
@@ -2398,7 +2403,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                       child: Text(
                                                                         transhipment!.jetty ?? '-',
                                                                         style: TextStyle(
-                                                                          fontSize: 14,
+                                                                          fontSize: 11.sp,
                                                                         ),
                                                                       ),
                                                                     )
@@ -2410,7 +2415,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                     Expanded(
                                                                       child: Text(
                                                                         'Initial Date',
-                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                       ),
                                                                     ),
                                                                     VerticalDivider(width: 1),
@@ -2419,7 +2424,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                       child: Text(
                                                                         transhipment!.initialDate ?? '-',
                                                                         style: TextStyle(
-                                                                          fontSize: 14,
+                                                                          fontSize: 11.sp,
                                                                         ),
                                                                       ),
                                                                     )
@@ -2431,7 +2436,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                     Expanded(
                                                                       child: Text(
                                                                         'Final Date',
-                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                       ),
                                                                     ),
                                                                     VerticalDivider(width: 1),
@@ -2440,7 +2445,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                       child: Text(
                                                                         transhipment!.finalDate ?? '-',
                                                                         style: TextStyle(
-                                                                          fontSize: 14,
+                                                                          fontSize: 11.sp,
                                                                         ),
                                                                       ),
                                                                     )
@@ -2452,7 +2457,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                     Expanded(
                                                                       child: Text(
                                                                         'Delivery Qty',
-                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                       ),
                                                                     ),
                                                                     VerticalDivider(width: 1),
@@ -2461,7 +2466,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                       child: Text(
                                                                         double.parse(transhipment!.deliveryQty!.toString()).toString() ?? '-',
                                                                         style: TextStyle(
-                                                                          fontSize: 14,
+                                                                          fontSize: 11.sp,
                                                                         ),
                                                                       ),
                                                                     )
@@ -2473,7 +2478,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                     Expanded(
                                                                       child: Text(
                                                                         'UOM',
-                                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                       ),
                                                                     ),
                                                                     VerticalDivider(width: 1),
@@ -2482,7 +2487,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                       child: Text(
                                                                         transhipment!.uomName ?? '-',
                                                                         style: TextStyle(
-                                                                          fontSize: 14,
+                                                                          fontSize: 11.sp,
                                                                         ),
                                                                       ),
                                                                     )
@@ -2502,12 +2507,12 @@ class JoDetailScreen extends StatelessWidget {
                                                     ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                                   Row(
                                                     children: [
-                                                      const Text(
+                                                      Text(
                                                         'Stage 6: Report to Client',
-                                                        style: TextStyle(color: green, fontSize: 14, fontWeight: FontWeight.w700),
+                                                        style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                       ),
                                                       const SizedBox(width: 8),
-                                                      controller.activityStage == 6
+                                                      controller.activityStage == 6 && controller.activityFinished.value == false
                                                           ? InkWell(
                                                           onTap: () {
                                                             controller.drawerDailyActivity6Edit();
@@ -2516,7 +2521,7 @@ class JoDetailScreen extends StatelessWidget {
                                                           : const SizedBox(),
                                                     ],
                                                   ),
-                                                  const SizedBox(height: 16),
+                                                  const SizedBox(height: 8),
                                                   for (var progressActivity in controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 6))
                                                     Column(children: [
                                                       Row(
@@ -2524,7 +2529,7 @@ class JoDetailScreen extends StatelessWidget {
                                                           Expanded(
                                                             child: Text(
                                                               'Date',
-                                                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                             ),
                                                           ),
                                                           VerticalDivider(width: 1),
@@ -2533,7 +2538,7 @@ class JoDetailScreen extends StatelessWidget {
                                                             child: Text(
                                                               progressActivity.transDate ?? '-',
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 11.sp,
                                                               ),
                                                             ),
                                                           )
@@ -2552,7 +2557,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                 flex: 1,
                                                                 child: Text(
                                                                   'Activities',
-                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                 ),
                                                               ),
                                                               VerticalDivider(width: 1),
@@ -2561,7 +2566,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                 flex: 1,
                                                                 child: Text(
                                                                   '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                  style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
                                                                 ),
                                                               ),
                                                               VerticalDivider(width: 1),
@@ -2571,7 +2576,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                 child: Text(
                                                                   activity?.activity ?? '-',
                                                                   style: TextStyle(
-                                                                    fontSize: 14,
+                                                                    fontSize: 11.sp,
                                                                   ),
                                                                 ),
                                                               )
@@ -2584,7 +2589,7 @@ class JoDetailScreen extends StatelessWidget {
                                                           Expanded(
                                                             child: Text(
                                                               'Remarks',
-                                                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                             ),
                                                           ),
                                                           VerticalDivider(width: 1),
@@ -2593,7 +2598,7 @@ class JoDetailScreen extends StatelessWidget {
                                                             child: Text(
                                                               progressActivity.remarks ?? '-',
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                               ),
                                                             ),
                                                           )
@@ -2604,7 +2609,7 @@ class JoDetailScreen extends StatelessWidget {
                                                   const SizedBox(height: 16),
                                                   Text(
                                                     'Attachment',
-                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                   ),
                                                   const SizedBox(height: 16),
                                                   controller.activity6AttachmentsStage.value.isNotEmpty
@@ -2737,7 +2742,7 @@ class JoDetailScreen extends StatelessWidget {
                                                               Expanded(
                                                                 child: Text(
                                                                   lab.name ?? '-',
-                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700,
+                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700,
                                                                   color: lab.maxStage!.toInt() > 0 && lab.maxStage!.toInt() < 6 ? stepperColor : lab.maxStage!.toInt() == 6 ? green : Colors.black ),
                                                                 ),
                                                               ),
