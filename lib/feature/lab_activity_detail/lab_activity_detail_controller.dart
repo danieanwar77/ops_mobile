@@ -139,6 +139,7 @@ class LabActivityDetailController extends BaseController{
     );
     //try{
       activityLabListStages.value.clear();
+      activity6ListStages.value.clear();
       var response = await SqlHelper.getDetailActivityLaboratory(id,userData.value!.id!.toInt(), labId);
       var text = '';
       var joGroup = groupBy(response, (item) => item['id']);
@@ -252,8 +253,8 @@ class LabActivityDetailController extends BaseController{
                               "id": stageItem['activity_id'],
                               "t_d_jo_laboratory_activity_stages_id": stageItem['stage_id'],
                               "t_d_jo_laboratory_id": stageItem['jo_laboratory_id'],
-                              "start_activity_time": Helper.formatToHourMinute(stageItem['start_activity_time']),
-                              "end_activity_time": Helper.formatToHourMinute(stageItem['end_activity_time']),
+                              "start_activity_time": Helper.formatToHourMinute(stageItem['start_activity_time'] ?? ''),
+                              "end_activity_time": Helper.formatToHourMinute(stageItem['end_activity_time'] ?? ''),
                               "activity": stageItem['activity'],
                               "code": stageItem['activity_code'],
                               "is_active": stageItem['activity_is_active'],
@@ -265,7 +266,7 @@ class LabActivityDetailController extends BaseController{
                             }));
                             update();
                           }
-                          if ((stageItem['path_name'] != null || stageItem['path_name'] != '') && attachments.where((item) => item.id == stageItem['attachment_id']).isEmpty) {
+                          if ((stageItem['path_name'] != null && stageItem['path_name'] != '') && attachments.where((item) => item.id == stageItem['attachment_id']).isEmpty) {
                             attachments.add(TDJoLaboratoryAttachment.fromJson({
                               "id": stageItem['attachment_id'],
                               "t_d_jo_laboratory_id": stageItem['jo_laboratory_id'],
@@ -2954,6 +2955,7 @@ class LabActivityDetailController extends BaseController{
       var attachment =  activity6Attachments.value;
       debugPrint("print lab attahment ${attachment}");
       for(int i = 0; i < activity6List.length; i++) {
+        debugPrint('print data activity ${jsonEncode(activity6List[i].toJson())}');
         TDJoLaboratoryActivityStages dataStage = TDJoLaboratoryActivityStages(
           code: 'JOLAS-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
           dJoLaboratoryId: activity6List[i].dJoLaboratoryId,
@@ -2991,7 +2993,7 @@ class LabActivityDetailController extends BaseController{
         int resultAttachment = await db.insert("t_d_jo_laboratory_attachment", attachmentData.toInsert());
         debugPrint('print data attachment ${attachmentData.toInsert()} id ${resultAttachment}');
       }
-      activity6AttachmentsStage.value = activity6Attachments.value;
+      //activity6AttachmentsStage.value = activity6Attachments.value;
       activity6Attachments.value = [];
       activity6List.value = [];
       activity6ListTextController.value = [];
@@ -4610,8 +4612,12 @@ class LabActivityDetailController extends BaseController{
 
       for(int i = 0; i < activity6List.length; i++) {
         TDJoLaboratoryActivityStages labActStage = activity6List[i];
-        await db.update("t_d_jo_laboratory_activity_stages", {"is_active": 0},where: "id=?",whereArgs: [labActStage.id]);
+        if(labActStage.id != null){
+          await db.update("t_d_jo_laboratory_activity_stages", {"is_active": 0},where: "id=?",whereArgs: [labActStage.id]);
+        }
+        debugPrint('print data  ${labActStage.toJson()}');
         if(labActStage.id == null){
+          debugPrint('print data id is null ${labActStage.toJson()}');
           TDJoLaboratoryActivityStages dataStage = TDJoLaboratoryActivityStages(
               code: 'JOLAS-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
               dJoLaboratoryId: activity6List[i].dJoLaboratoryId,
@@ -4648,18 +4654,19 @@ class LabActivityDetailController extends BaseController{
               createdBy: activity6List[i].createdBy,
               createdAt: activity6List[i].createdAt,
               isActive: 1,
-              isUpload: 0
+              isUpload: 0,
+            id: labActStage.id
           );
           await db.update("t_d_jo_laboratory_activity_stages", dataStage.toEdit(),where: "id=?",whereArgs: [dataStage.id]);
           List<TDJoLaboratoryActivity> actStage = activity6List[i].listLabActivity ?? [];
-          await db.update("t_d_jo_laboratory_activity", {"is_active": 0},where: "t_d_jo_laboratory_stages_id=?",whereArgs: [dataStage.id]);
+          await db.update("t_d_jo_laboratory_activity", {"is_active": 0},where: "t_d_jo_laboratory_activity_stages_id=?",whereArgs: [dataStage.id]);
           for (int j = 0; j < actStage.length; j++) {
             TDJoLaboratoryActivity dataAct = actStage[j].copyWith(
                 startActivityTime: actStage[j].startActivityTime,
                 endActivityTime: actStage[j].endActivityTime,
                 activity: actStage[j].activity,
                 tDJoLaboratoryActivityStagesId: dataStage.id,
-                tDJoLaboratoryId: dataStage.dJoLaboratoryId,
+                tDJoLaboratoryId: labId,
                 createdBy: createdBy,
                 isActive: 1,
                 isUpload: 0,
@@ -4694,8 +4701,8 @@ class LabActivityDetailController extends BaseController{
 
         debugPrint('print data attachment ${attachment[a].toJson()}');
       }
-      activity6ListStages.value = activity6List.value;
-      activity6AttachmentsStage.value = activity6Attachments.value;
+      //activity6ListStages.value = activity6List.value;
+      //activity6AttachmentsStage.value = activity6Attachments.value;
       activity6Attachments.value = [];
       activityLabList.value = [];
       activityLabListTextController.value = [];
