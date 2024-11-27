@@ -23,6 +23,7 @@ import 'package:ops_mobile/data/model/response_jo_insert_activity_lab.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity_stages.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory_attachment.dart';
+import 'package:ops_mobile/data/model/t_h_jo.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/utils/helper.dart';
@@ -99,6 +100,8 @@ class LabActivityDetailController extends BaseController{
   RxList<TDJoLaboratoryAttachment> activity6Attachments = RxList();
   RxList<TDJoLaboratoryAttachment> activity6AttachmentsStage = RxList();
 
+  Rx<THJo> joRx = THJo().obs;
+
   @override
   void onInit() async {
     var dataUser = jsonDecode(await StorageCore().storage.read('user'));
@@ -129,6 +132,11 @@ class LabActivityDetailController extends BaseController{
   Future<void> getData() async{
 
     debugPrint('params: $id,${userData.value!.id!.toInt()}, $labId');
+    final db = await SqlHelper.db();
+    var joRslt = await db.rawQuery(
+        "SELECT * FROM t_h_jo WHERE id = ?",
+        [id] // Nilai parameter
+    );
     //try{
       activityLabListStages.value.clear();
       var response = await SqlHelper.getDetailActivityLaboratory(id,userData.value!.id!.toInt(), labId);
@@ -377,6 +385,10 @@ class LabActivityDetailController extends BaseController{
 
         });
       });
+      if(joRslt.length> 0){
+        joRx.value = THJo.fromJson(joRslt[0]);
+        debugPrint('print data  jo ${joRx.value.toJson()}');
+      }
     // } catch(e){
     //   debugPrint('error get data: $e');
     // } finally {
@@ -501,7 +513,7 @@ class LabActivityDetailController extends BaseController{
           transDate: activityDate.text,
           isActive: 1,
           createdBy: userData.value?.id ?? 0,
-          createdAt: DateFormat('yyyy-MM-dd hh:mm:ss')
+          createdAt: DateFormat('yyyy-MM-dd HH:mm:ss')
               .format(DateTime.now())
               .toString(),
           listLabActivity: [TDJoLaboratoryActivity(
@@ -510,7 +522,7 @@ class LabActivityDetailController extends BaseController{
             activity: activityText.text,
             isActive: 1,
             createdBy: userData.value?.id ?? 0,
-            createdAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(
+            createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(
                 DateTime.now()).toString(),
           )
           ]
@@ -527,7 +539,7 @@ class LabActivityDetailController extends BaseController{
             transDate: activityDate.text,
             isActive: 1,
             createdBy: userData.value?.id ?? 0,
-            createdAt: DateFormat('yyyy-MM-dd hh:mm:ss')
+            createdAt: DateFormat('yyyy-MM-dd HH:mm:ss')
                 .format(DateTime.now())
                 .toString(),
             listLabActivity: [TDJoLaboratoryActivity(
@@ -536,7 +548,7 @@ class LabActivityDetailController extends BaseController{
               activity: activityText.text,
               isActive: 1,
               createdBy: userData.value?.id ?? 0,
-              createdAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(
+              createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(
                   DateTime.now()).toString(),
             )
             ]
@@ -551,7 +563,7 @@ class LabActivityDetailController extends BaseController{
               activity: activityText.text,
               isActive: 1,
               createdBy: userData.value?.id ?? 0,
-              createdAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(
+              createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(
                   DateTime.now()).toString(),
             ));
       }
@@ -586,7 +598,7 @@ class LabActivityDetailController extends BaseController{
         activity: activityText.text,
         isActive: 1,
         updatedBy: userData.value?.id ?? 0,
-        updatedAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(
+        updatedAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(
             DateTime.now()).toString(),
     );
     editActivityMode.value = false;
@@ -1724,22 +1736,19 @@ class LabActivityDetailController extends BaseController{
                                                                             onTap: () {
                                                                               toggleEditActivity(index, indexItem);
                                                                             },
-                                                                            child: Icon(
-                                                                              Icons
-                                                                                  .mode_edit_outlined,
-                                                                              color:
-                                                                              primaryColor,
-                                                                            )),
+                                                                            child: const Icon(
+                                                                              Icons.mode_edit_outlined,
+                                                                              color: primaryColor,
+                                                                            )
+                                                                        ),
                                                                         InkWell(
                                                                             onTap: () {
                                                                               removeActivityConfirm(date!, indexItem, index, activityLabStage);
                                                                             },
-                                                                            child: Icon(
-                                                                              Icons
-                                                                                  .delete_forever,
-                                                                              color: Colors
-                                                                                  .red,
-                                                                            ))
+                                                                            child: const Icon(Icons.delete_forever,
+                                                                              color: Colors.red,
+                                                                            )
+                                                                        )
                                                                       ],
                                                                     ),
                                                                   )
@@ -1954,7 +1963,7 @@ class LabActivityDetailController extends BaseController{
 
   Future<String?> addActivity5LabStages() async {
     final db = await SqlHelper.db();
-
+    final createdBy = userData.value!.id;
     activity5LabListStages.value = [];
     var data = TDJoLaboratoryActivityStages(
       tHJoId: id,
@@ -1967,7 +1976,7 @@ class LabActivityDetailController extends BaseController{
       isActive: 1,
       isUpload: 0,
       createdBy: userData.value?.id ?? 0,
-      createdAt: DateFormat('yyyy-MM-dd hh:mm:ss')
+      createdAt: DateFormat('yyyy-MM-dd HH:mm:ss')
           .format(DateTime.now())
           .toString(),
       listLabActivity: [
@@ -1978,10 +1987,9 @@ class LabActivityDetailController extends BaseController{
           activity: '',
           isActive: 1,
           isUpload: 0,
+          code: 'JOLA-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
           createdBy: userData.value?.id ?? 0,
-          createdAt: DateFormat('yyyy-MM-dd hh:mm:ss')
-              .format(DateTime.now())
-              .toString(),
+          createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()).toString(),
         )
       ],
     );
@@ -1994,8 +2002,9 @@ class LabActivityDetailController extends BaseController{
               activity: '',
               isActive: 1,
               isUpload: 0,
+              code: 'JOLAS-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
               createdBy: userData.value?.id ?? 0,
-              createdAt: DateFormat('yyyy-MM-dd hh:mm:ss')
+              createdAt: DateFormat('yyyy-MM-dd HH:mm:ss')
                   .format(DateTime.now())
                   .toString(),
             );
@@ -2308,7 +2317,7 @@ class LabActivityDetailController extends BaseController{
       isActive: 1,
       isUpload: 0,
       createdBy: userData.value?.id ?? 0,
-      createdAt: DateFormat('yyyy-MM-dd hh:mm:ss')
+      createdAt: DateFormat('yyyy-MM-dd HH:mm:ss')
           .format(DateTime.now())
           .toString(),
       listLabActivity: [
@@ -2320,7 +2329,7 @@ class LabActivityDetailController extends BaseController{
           isActive: 1,
           isUpload: 0,
           createdBy: userData.value?.id ?? 0,
-          createdAt: DateFormat('yyyy-MM-dd hh:mm:ss')
+          createdAt: DateFormat('yyyy-MM-dd HH:mm:ss')
               .format(DateTime.now())
               .toString(),
         )
@@ -2688,7 +2697,7 @@ class LabActivityDetailController extends BaseController{
           transDate: activity6Date.text,
           isActive: 1,
           createdBy: userData.value?.id ?? 0,
-          createdAt: DateFormat('yyyy-MM-dd hh:mm:ss')
+          createdAt: DateFormat('yyyy-MM-dd HH:mm:ss')
               .format(DateTime.now())
               .toString(),
           listLabActivity: [TDJoLaboratoryActivity(
@@ -2697,7 +2706,7 @@ class LabActivityDetailController extends BaseController{
             activity: activity6Text.text,
             isActive: 1,
             createdBy: userData.value?.id ?? 0,
-            createdAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(
+            createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(
                 DateTime.now()).toString(),
           )
           ]
@@ -2714,7 +2723,7 @@ class LabActivityDetailController extends BaseController{
             transDate: activity6Date.text,
             isActive: 1,
             createdBy: userData.value?.id ?? 0,
-            createdAt: DateFormat('yyyy-MM-dd hh:mm:ss')
+            createdAt: DateFormat('yyyy-MM-dd HH:mm:ss')
                 .format(DateTime.now())
                 .toString(),
             listLabActivity: [TDJoLaboratoryActivity(
@@ -2723,7 +2732,7 @@ class LabActivityDetailController extends BaseController{
               activity: activity6Text.text,
               isActive: 1,
               createdBy: userData.value?.id ?? 0,
-              createdAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(
+              createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(
                   DateTime.now()).toString(),
             )
             ]
@@ -2738,7 +2747,7 @@ class LabActivityDetailController extends BaseController{
               activity: activity6Text.text,
               isActive: 1,
               createdBy: userData.value?.id ?? 0,
-              createdAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(
+              createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(
                   DateTime.now()).toString(),
             ));
       }
@@ -2773,7 +2782,7 @@ class LabActivityDetailController extends BaseController{
       activity: activity6Text.text,
       isActive: 1,
       createdBy: userData.value?.id ?? 0,
-      createdAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(
+      createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(
           DateTime.now()).toString(),
     );
     editActivityMode.value = false;
@@ -2937,15 +2946,50 @@ class LabActivityDetailController extends BaseController{
   }
 
   Future<String?> addActivity6Stages() async {
-    if (activity6List.value
-        .where((data) => data.mStatuslaboratoryprogresId == 6)
-        .toList()
-        .isNotEmpty) {
+    if (activity6List.value.where((data) => data.mStatuslaboratoryprogresId == 6).toList().isNotEmpty) {
       //activityStage++;
-      insertLocalActivity6();
-      //postInsertActivity(post);
-      for (var item in activity6List.value) {
-        activity6ListStages.value.add(item);
+      final createdBy = userData.value!.id;
+      final db = await SqlHelper.db();
+      debugPrint('print data activity 6 ${jsonEncode(activity6List)}');
+      var attachment =  activity6Attachments.value;
+      debugPrint("print lab attahment ${attachment}");
+      for(int i = 0; i < activity6List.length; i++) {
+        TDJoLaboratoryActivityStages dataStage = TDJoLaboratoryActivityStages(
+          code: 'JOLAS-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+          dJoLaboratoryId: activity6List[i].dJoLaboratoryId,
+          tHJoId: activity6List[i].tHJoId,
+          mStatuslaboratoryprogresId: activity6List[i].mStatuslaboratoryprogresId,
+          transDate: activity6List[i].transDate,
+          remarks: activity6List[i].remarks,
+          createdBy: activity6List[i].createdBy,
+          createdAt: activity6List[i].createdAt,
+          isActive: 1,
+          isUpload: 0
+        );
+        int result = await db.insert("t_d_jo_laboratory_activity_stages", dataStage.toInsert());
+        List<TDJoLaboratoryActivity> actStage = activity6List[i].listLabActivity ?? [];
+        for (int j = 0; j < actStage.length; j++) {
+          TDJoLaboratoryActivity dataAct = actStage[j].copyWith(
+              startActivityTime: actStage[j].startActivityTime,
+              endActivityTime: actStage[j].endActivityTime,
+              activity: actStage[j].activity,
+              tDJoLaboratoryActivityStagesId: result,
+              tDJoLaboratoryId: dataStage.dJoLaboratoryId,
+              createdBy: createdBy,
+              isActive: 1,
+              isUpload: 0,
+              code: "JOLA-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+          );
+          int rsltAct = await db.insert("t_d_jo_laboratory_activity", dataAct.toInsert());
+        }
+      }
+
+      for(int a=0; a < attachment.length; a++){
+        TDJoLaboratoryAttachment attachmentData = attachment[a].copyWith(
+          code: "JOLA-A-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+        );
+        int resultAttachment = await db.insert("t_d_jo_laboratory_attachment", attachmentData.toInsert());
+        debugPrint('print data attachment ${attachmentData.toInsert()} id ${resultAttachment}');
       }
       activity6AttachmentsStage.value = activity6Attachments.value;
       activity6Attachments.value = [];
@@ -2973,37 +3017,32 @@ class LabActivityDetailController extends BaseController{
     try {
       // Your logic here
       final createdBy = userData.value!.id;
+      final db = await SqlHelper.db();
       //TDJoLaboratory joLab = joLaboratory.value;
 
       List<String> stageValues = [];
       List<String> activityValues = [];
       List<String> attachmentValues = [];
 
-      activity6List.value.asMap().forEach((index,stage){
-        stageValues.add('''(${joLabId},${id},${activityLabStage == 0 ? 1 : activityLabStage},'${stage.transDate}','${activity6ListTextController.value[index].text}',$createdBy,'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',1,0)''');
-        update();
-        if(stage.listLabActivity!.isNotEmpty){
-          var count = 0;
-          stage.listLabActivity!.forEach((activity){
-            count++;
-            activityValues.add('''((SELECT id FROM t_d_jo_laboratory_activity_stages WHERE trans_date = '${stage.transDate}' AND m_statuslaboratoryprogres_id = ${activityLabStage == 0 ? 1 : activityLabStage} LIMIT 1),${joLabId},'${activity.startActivityTime}','${activity.endActivityTime}','${activity.activity}','JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}$count',1,0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
-            update();
-          });
-        }
-      });
+      debugPrint('print data activity 6 ${jsonEncode(activity6List)}');
+      var attachment =  activity6Attachments.value;
+      debugPrint("print lab attahment ${attachment}");
 
-      if(activity6Attachments.value.isNotEmpty){
-        var count = 0;
-        activity6Attachments.value.forEach((attachment){
-          count++;
-          attachmentValues.add('''(${joLabId},'${activityLabStage}','${attachment.pathName}','${attachment.fileName}','JOLAT-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}$count',1,0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
-        });
-      }
+
+
+
+      // if(activity6Attachments.value.isNotEmpty){
+      //   var count = 0;
+      //   activity6Attachments.value.forEach((attachment){
+      //     count++;
+      //     attachmentValues.add('''(${joLabId},'${activityLabStage}','${attachment.pathName}','${attachment.fileName}','JOLAT-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}$count',1,0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
+      //   });
+      // }
 
       debugPrint("stage join: ${stageValues.join(',')}");
       debugPrint("activity join: ${activityValues.join(',')}");
 
-      await SqlHelper.insertLaboratoryActivity6(stageValues.join(','), activityValues.join(','), attachmentValues.join(','));
+      //await SqlHelper.insertLaboratoryActivity6(stageValues.join(','), activityValues.join(','), attachmentValues.join(','));
 
       debugPrint('activity lab saat ini : ${activityLabStage}');
       update();
@@ -3029,7 +3068,7 @@ class LabActivityDetailController extends BaseController{
       isActive: 1,
       isUpload: 0,
       createdBy: userData.value?.id ?? 0,
-      createdAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(
+      createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(
           DateTime.now()).toString(),
     ));
   }
@@ -3600,10 +3639,8 @@ class LabActivityDetailController extends BaseController{
                                   itemCount:
                                   activity6Attachments.value.length,
                                   itemBuilder: (content, index) {
-                                    final TDJoLaboratoryAttachment photo =
-                                    activity6Attachments.value[index];
-                                    final String fileType =
-                                    checkFileType(photo.pathName!);
+                                    final TDJoLaboratoryAttachment photo = activity6Attachments.value[index];
+                                    final String fileType = checkFileType(photo.pathName!);
                                     var filename = photo.fileName;
                                     return fileType == 'image' ? SizedBox(
                                       width: 54,
@@ -4389,10 +4426,8 @@ class LabActivityDetailController extends BaseController{
                                   itemCount:
                                   activity6Attachments.value.length,
                                   itemBuilder: (content, index) {
-                                    final TDJoLaboratoryAttachment photo =
-                                    activity6Attachments.value[index];
-                                    final String fileType =
-                                    checkFileType(photo.pathName!);
+                                    final TDJoLaboratoryAttachment photo = activity6Attachments.value[index];
+                                    final String fileType = checkFileType(photo.pathName!);
                                     var filename = photo.fileName;
                                     return fileType == 'image' ? SizedBox(
                                       width: 54,
@@ -4565,15 +4600,100 @@ class LabActivityDetailController extends BaseController{
         isScrollControlled: true);
   }
 
-  String? editActivity6Stages() {
-    if (activity6List.value
-        .where((data) => data.mStatuslaboratoryprogresId == activityLabStage)
-        .toList()
-        .isNotEmpty) {
-      //activityStage++;
-      updateInsertLocalActivity6();
-      // postUpdateActivity6(post);
-      // activityStage--;
+  Future<String?> editActivity6Stages() async {
+    if (activity6List.value.where((data) => data.mStatuslaboratoryprogresId == activityLabStage).toList().isNotEmpty) {
+      final createdBy = userData.value!.id;
+      final db = await SqlHelper.db();
+      debugPrint('print data activity 6 ${jsonEncode(activity6List)}');
+      var attachment =  activity6Attachments.value;
+      debugPrint("print lab attahment ${attachment}");
+
+      for(int i = 0; i < activity6List.length; i++) {
+        TDJoLaboratoryActivityStages labActStage = activity6List[i];
+        await db.update("t_d_jo_laboratory_activity_stages", {"is_active": 0},where: "id=?",whereArgs: [labActStage.id]);
+        if(labActStage.id == null){
+          TDJoLaboratoryActivityStages dataStage = TDJoLaboratoryActivityStages(
+              code: 'JOLAS-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+              dJoLaboratoryId: activity6List[i].dJoLaboratoryId,
+              tHJoId: activity6List[i].tHJoId,
+              mStatuslaboratoryprogresId: activity6List[i].mStatuslaboratoryprogresId,
+              transDate: activity6List[i].transDate,
+              remarks: activity6List[i].remarks,
+              createdBy: activity6List[i].createdBy,
+              createdAt: activity6List[i].createdAt,
+              isActive: 1,
+              isUpload: 0
+          );
+          int result = await db.insert("t_d_jo_laboratory_activity_stages", dataStage.toInsert());
+          List<TDJoLaboratoryActivity> actStage = activity6List[i].listLabActivity ?? [];
+          for (int j = 0; j < actStage.length; j++) {
+            TDJoLaboratoryActivity dataAct = actStage[j].copyWith(
+                startActivityTime: actStage[j].startActivityTime,
+                endActivityTime: actStage[j].endActivityTime,
+                activity: actStage[j].activity,
+                tDJoLaboratoryActivityStagesId: result,
+                tDJoLaboratoryId: dataStage.dJoLaboratoryId,
+                createdBy: createdBy,
+                isActive: 1,
+                isUpload: 0,
+                code: "JOLA-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+            );
+            int rsltAct = await db.insert("t_d_jo_laboratory_activity", dataAct.toInsert());
+          }
+        }else{
+          TDJoLaboratoryActivityStages dataStage = TDJoLaboratoryActivityStages(
+              mStatuslaboratoryprogresId: activity6List[i].mStatuslaboratoryprogresId,
+              transDate: activity6List[i].transDate,
+              remarks: activity6List[i].remarks,
+              createdBy: activity6List[i].createdBy,
+              createdAt: activity6List[i].createdAt,
+              isActive: 1,
+              isUpload: 0
+          );
+          await db.update("t_d_jo_laboratory_activity_stages", dataStage.toEdit(),where: "id=?",whereArgs: [dataStage.id]);
+          List<TDJoLaboratoryActivity> actStage = activity6List[i].listLabActivity ?? [];
+          await db.update("t_d_jo_laboratory_activity", {"is_active": 0},where: "t_d_jo_laboratory_stages_id=?",whereArgs: [dataStage.id]);
+          for (int j = 0; j < actStage.length; j++) {
+            TDJoLaboratoryActivity dataAct = actStage[j].copyWith(
+                startActivityTime: actStage[j].startActivityTime,
+                endActivityTime: actStage[j].endActivityTime,
+                activity: actStage[j].activity,
+                tDJoLaboratoryActivityStagesId: dataStage.id,
+                tDJoLaboratoryId: dataStage.dJoLaboratoryId,
+                createdBy: createdBy,
+                isActive: 1,
+                isUpload: 0,
+                code: "JOLA-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+            );
+
+            if(dataAct.id == null){
+              int rsltAct = await db.insert("t_d_jo_laboratory_activity", dataAct.toInsert());
+            }else{
+              await db.update("t_d_jo_laboratory_activity", dataAct.toEdit(),where: "id=?",whereArgs: [dataAct.id]);
+            }
+
+          }
+        }
+
+      }
+
+      //set is_active = 1 untuk sementara
+      await db.update("t_d_jo_laboratory_attachment",{"is_active": 0},whereArgs: [joLabId],where: "t_d_jo_laboratory_id=?");
+      for(int a=0; a < attachment.length; a++){
+        TDJoLaboratoryAttachment attachmentData = attachment[a].copyWith(
+            code: "JOLA-A-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+          tDJoLaboratoryId: joLabId,
+          isActive: 1,
+          isUpload: 0,
+        );
+        if(attachmentData.id == null){
+          await db.insert("t_d_jo_laboratory_attachment", attachmentData.toInsert());
+        }else{
+          await db.update("t_d_jo_laboratory_attachment",attachmentData.toEdit(),whereArgs: [attachmentData.id],where: "id=?");
+        }
+
+        debugPrint('print data attachment ${attachment[a].toJson()}');
+      }
       activity6ListStages.value = activity6List.value;
       activity6AttachmentsStage.value = activity6Attachments.value;
       activity6Attachments.value = [];
@@ -4586,7 +4706,6 @@ class LabActivityDetailController extends BaseController{
       activityText.text = '';
 
       activitySubmitted.value = true;
-      // activityLabStage--;
       update();
       return 'success';
     } else if (activity6List.value
@@ -4650,12 +4769,12 @@ class LabActivityDetailController extends BaseController{
   void addActivity6StageConfirm() {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Attention',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text(
+        content: const Text(
             'Apakah benar anda akan submit stage report to client ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
@@ -4671,12 +4790,10 @@ class LabActivityDetailController extends BaseController{
               var result = await addActivity6Stages();
               if (result == 'success') {
                 Get.back();
-                //openDialog("Success", "Activity Stage ${activityStage-1} berhasil ditambahkan");
                 Get.back();
+                await getData();
               } else {
                 Get.back();
-                openDialog("Failed",
-                    "Activity Stage $activityLabStage gagal diinput");
               }
             },
           ),
@@ -4688,12 +4805,12 @@ class LabActivityDetailController extends BaseController{
   void editActivity6StageConfirm() {
     Get.dialog(
       AlertDialog(
-        title: Text(
+        title: const Text(
           'Attention',
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text(
+        content: const Text(
             'Apakah benar anda akan menyimpan perubahan stage report to client ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
@@ -4709,12 +4826,11 @@ class LabActivityDetailController extends BaseController{
               var result = await editActivity6Stages();
               if (result == 'success') {
                 Get.back();
-                //openDialog("Success", "Activity Stage ${activityStage-1} berhasil ditambahkan");
                 Get.back();
+                await getData();
               } else {
                 Get.back();
-                openDialog("Failed",
-                    "Activity Stage $activityLabStage gagal diinput");
+                openDialog("Failed", "Activity Stage $activityLabStage gagal diinput");
               }
             },
           ),
@@ -4769,11 +4885,9 @@ class LabActivityDetailController extends BaseController{
   Future<void> finishJoLab()async{
     try{
       final db = await SqlHelper.db();
-      db.execute('''
-          UPDATE t_h_jo
-          SET laboratory_finished_date = '${DateTime.now}', m_statusjo_id = 4
-          WHERE id = ${id};
-        ''');
+      final time = DateTime.now();
+      await db.execute('''UPDATE t_h_jo SET laboratory_finished_date = '${time}' WHERE id = ${id};''');
+      debugPrint(" print data jo  ${id}");
     } catch(e){
       debugPrint(e.toString());
     } finally {
@@ -4796,6 +4910,38 @@ class LabActivityDetailController extends BaseController{
           TextButton(
             child: const Text("Close"),
             onPressed: () => Get.back(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void finishLabConfirm() {
+    Get.dialog(
+      AlertDialog(
+        title: const Text("Attention",
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: primaryColor
+          ),
+        ),
+        content: const Text("Apakah benar anda ingin Finish JO Lab ini? pastikan data yg anda input benar, karena anda tidak bisa mengubah data setelah Finish JO"),
+        actions: [
+          TextButton(
+            child: const Text("Close"),
+            onPressed: () => Get.back(),
+          ),
+          TextButton(
+            child: const Text(
+              "OK",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            onPressed: () async {
+              await finishJoLab();
+              await getData();
+              Get.back();
+            },
           ),
         ],
       ),

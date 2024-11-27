@@ -25,6 +25,9 @@ import 'package:ops_mobile/data/model/jo_list_model.dart';
 import 'package:ops_mobile/data/model/jo_pic_model.dart';
 import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages.dart';
+import 'package:ops_mobile/data/model/t_h_jo.dart';
+import 'package:ops_mobile/data/network.dart';
 import 'package:ops_mobile/data/respository/repository.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
@@ -342,7 +345,18 @@ class HomeController extends BaseController{
   @pragma('vm:entry-point')
   static Future<void> onStartBG(ServiceInstance service) async {
     // Timer untuk mengirim data setiap 15 menit
-    Timer.periodic(const Duration(seconds: 5 ), (timer) async {
+    Timer.periodic(const Duration(seconds: 60 ), (timer) async {
+     // NetworkCore networkCore = Get.find<NetworkCore>();
+      final db = await SqlHelper.db();
+      final sqlActStage = 'select * from t_d_jo_activity_inspection_activity_stages where is_upload=1 order by id';
+     // List<Map<String,dynamic>> result  = await db.rawQuery(sqlActStage);
+      //if(result.length > 0 ){
+        //ambil data pertama saja
+        //THJo hJoSend = THJo.fromJson(result[0]);
+
+
+
+      //}
       // if (service is AndroidServiceInstance) {
       //   timer.cancel();
       //   return;
@@ -374,7 +388,6 @@ class HomeController extends BaseController{
       //     content: "Last sent at ${DateTime.now()}",
       //   );
       // }
-
       debugPrint('test background service');
     });
   }
