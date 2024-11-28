@@ -1813,47 +1813,63 @@ class JoDetailScreen extends StatelessWidget {
                                                           ],
                                                         ),
                                                         const Divider(thickness: 0.4),
-                                                        ListView.builder(
-                                                          shrinkWrap: true,
-                                                          physics: NeverScrollableScrollPhysics(),
-                                                          itemCount: progressActivity.listActivity?.length ?? 0,
-                                                          itemBuilder: (context, index) {
-                                                            final activity = progressActivity.listActivity?[index];
-                                                            return Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  flex: 1,
-                                                                  child: Text(
-                                                                    'Activities',
-                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                  ),
-                                                                ),
-                                                                VerticalDivider(width: 1),
-                                                                SizedBox(width: 8),
-                                                                Expanded(
-                                                                  flex: 1,
-                                                                  child: Text(
-                                                                    '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                    style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
-                                                                  ),
-                                                                ),
-                                                                VerticalDivider(width: 1),
-                                                                SizedBox(width: 8),
-                                                                Expanded(
-                                                                  flex: 2,
-                                                                  child: Text(
-                                                                    activity?.activity ?? '-',
-                                                                    style: TextStyle(
-                                                                      fontSize: 11.sp,
+                                                        Row(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            Expanded(
+                                                              flex: 1,
+                                                              child: Text(
+                                                                'Activities',
+                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                              ),
+                                                            ),
+                                                            VerticalDivider(width: 1),
+                                                            SizedBox(width: 8),
+                                                            Expanded(
+                                                                flex: 3,
+                                                                child: Column(
+                                                                  children: [
+                                                                    ListView.builder(
+                                                                      shrinkWrap: true,
+                                                                      physics: NeverScrollableScrollPhysics(),
+                                                                      itemCount: progressActivity.listActivity?.length ?? 0,
+                                                                      itemBuilder: (context, index) {
+                                                                        final activity = progressActivity.listActivity?[index];
+                                                                        return Padding(
+                                                                          padding: const EdgeInsets.only(bottom: 8.0),
+                                                                          child: Row(
+                                                                            children: [
+                                                                              Expanded(
+                                                                                flex: 1,
+                                                                                child: Text(
+                                                                                  '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
+                                                                                  style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
+                                                                                ),
+                                                                              ),
+                                                                              VerticalDivider(width: 1),
+                                                                              SizedBox(width: 8),
+                                                                              Expanded(
+                                                                                flex: 2,
+                                                                                child: Text(
+                                                                                  activity?.activity ?? '-',
+                                                                                  style: TextStyle(
+                                                                                    fontSize: 11.sp,
+                                                                                  ),
+                                                                                ),
+                                                                              )
+                                                                            ],
+                                                                          ),
+                                                                        );
+                                                                      },
                                                                     ),
-                                                                  ),
+                                                                  ],
                                                                 )
-                                                              ],
-                                                            );
-                                                          },
+                                                            )
+                                                          ],
                                                         ),
                                                         const SizedBox(height: 12),
                                                         Row(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
                                                           children: [
                                                             Expanded(
                                                               child: Text(
@@ -1919,47 +1935,63 @@ class JoDetailScreen extends StatelessWidget {
                                                           ],
                                                         ),
                                                         const Divider(thickness: 0.4),
-                                                        ListView.builder(
-                                                          shrinkWrap: true,
-                                                          physics: NeverScrollableScrollPhysics(),
-                                                          itemCount: progressActivity.listActivity?.length ?? 0,
-                                                          itemBuilder: (context, index) {
-                                                            final activity = progressActivity.listActivity?[index];
-                                                            return Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  flex: 1,
-                                                                  child: Text(
-                                                                    'Activities',
-                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                  ),
-                                                                ),
-                                                                VerticalDivider(width: 1),
-                                                                SizedBox(width: 8),
-                                                                Expanded(
-                                                                  flex: 1,
-                                                                  child: Text(
-                                                                    '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                    style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
-                                                                  ),
-                                                                ),
-                                                                VerticalDivider(width: 1),
-                                                                SizedBox(width: 8),
-                                                                Expanded(
-                                                                  flex: 2,
-                                                                  child: Text(
-                                                                    activity?.activity ?? '-',
-                                                                    style: TextStyle(
-                                                                      fontSize: 11.sp,
+                                                        Row(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            Expanded(
+                                                              flex: 1,
+                                                              child: Text(
+                                                                'Activities',
+                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                              ),
+                                                            ),
+                                                            VerticalDivider(width: 1),
+                                                            SizedBox(width: 8),
+                                                            Expanded(
+                                                                flex: 3,
+                                                                child: Column(
+                                                                  children: [
+                                                                    ListView.builder(
+                                                                      shrinkWrap: true,
+                                                                      physics: NeverScrollableScrollPhysics(),
+                                                                      itemCount: progressActivity.listActivity?.length ?? 0,
+                                                                      itemBuilder: (context, index) {
+                                                                        final activity = progressActivity.listActivity?[index];
+                                                                        return Padding(
+                                                                          padding: const EdgeInsets.only(bottom: 8.0),
+                                                                          child: Row(
+                                                                            children: [
+                                                                              Expanded(
+                                                                                flex: 1,
+                                                                                child: Text(
+                                                                                  '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
+                                                                                  style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
+                                                                                ),
+                                                                              ),
+                                                                              VerticalDivider(width: 1),
+                                                                              SizedBox(width: 8),
+                                                                              Expanded(
+                                                                                flex: 2,
+                                                                                child: Text(
+                                                                                  activity?.activity ?? '-',
+                                                                                  style: TextStyle(
+                                                                                    fontSize: 11.sp,
+                                                                                  ),
+                                                                                ),
+                                                                              )
+                                                                            ],
+                                                                          ),
+                                                                        );
+                                                                      },
                                                                     ),
-                                                                  ),
+                                                                  ],
                                                                 )
-                                                              ],
-                                                            );
-                                                          },
+                                                            )
+                                                          ],
                                                         ),
                                                         const SizedBox(height: 12),
                                                         Row(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
                                                           children: [
                                                             Expanded(
                                                               child: Text(
@@ -2025,47 +2057,63 @@ class JoDetailScreen extends StatelessWidget {
                                                           ],
                                                         ),
                                                         const Divider(thickness: 0.4),
-                                                        ListView.builder(
-                                                          shrinkWrap: true,
-                                                          physics: NeverScrollableScrollPhysics(),
-                                                          itemCount: progressActivity.listActivity?.length ?? 0,
-                                                          itemBuilder: (context, index) {
-                                                            final activity = progressActivity.listActivity?[index];
-                                                            return Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  flex: 1,
-                                                                  child: Text(
-                                                                    'Activities',
-                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                  ),
-                                                                ),
-                                                                VerticalDivider(width: 1),
-                                                                SizedBox(width: 8),
-                                                                Expanded(
-                                                                  flex: 1,
-                                                                  child: Text(
-                                                                    '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                  ),
-                                                                ),
-                                                                VerticalDivider(width: 1),
-                                                                SizedBox(width: 8),
-                                                                Expanded(
-                                                                  flex: 2,
-                                                                  child: Text(
-                                                                    activity?.activity ?? '-',
-                                                                    style: TextStyle(
-                                                                      fontSize: 12.sp,
+                                                        Row(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            Expanded(
+                                                              flex: 1,
+                                                              child: Text(
+                                                                'Activities',
+                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                              ),
+                                                            ),
+                                                            VerticalDivider(width: 1),
+                                                            SizedBox(width: 8),
+                                                            Expanded(
+                                                                flex: 3,
+                                                                child: Column(
+                                                                  children: [
+                                                                    ListView.builder(
+                                                                      shrinkWrap: true,
+                                                                      physics: NeverScrollableScrollPhysics(),
+                                                                      itemCount: progressActivity.listActivity?.length ?? 0,
+                                                                      itemBuilder: (context, index) {
+                                                                        final activity = progressActivity.listActivity?[index];
+                                                                        return Padding(
+                                                                          padding: const EdgeInsets.only(bottom: 8.0),
+                                                                          child: Row(
+                                                                            children: [
+                                                                              Expanded(
+                                                                                flex: 1,
+                                                                                child: Text(
+                                                                                  '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
+                                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                ),
+                                                                              ),
+                                                                              VerticalDivider(width: 1),
+                                                                              SizedBox(width: 8),
+                                                                              Expanded(
+                                                                                flex: 2,
+                                                                                child: Text(
+                                                                                  activity?.activity ?? '-',
+                                                                                  style: TextStyle(
+                                                                                    fontSize: 12.sp,
+                                                                                  ),
+                                                                                ),
+                                                                              )
+                                                                            ],
+                                                                          ),
+                                                                        );
+                                                                      },
                                                                     ),
-                                                                  ),
+                                                                  ],
                                                                 )
-                                                              ],
-                                                            );
-                                                          },
+                                                            )
+                                                          ],
                                                         ),
                                                         const SizedBox(height: 12),
                                                         Row(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
                                                           children: [
                                                             Expanded(
                                                               child: Text(
@@ -2131,47 +2179,63 @@ class JoDetailScreen extends StatelessWidget {
                                                           ],
                                                         ),
                                                         const Divider(thickness: 0.4),
-                                                        ListView.builder(
-                                                          shrinkWrap: true,
-                                                          physics: NeverScrollableScrollPhysics(),
-                                                          itemCount: progressActivity.listActivity?.length ?? 0,
-                                                          itemBuilder: (context, index) {
-                                                            final activity = progressActivity.listActivity?[index];
-                                                            return Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  flex: 1,
-                                                                  child: Text(
-                                                                    'Activities',
-                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                  ),
+                                                        Row(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Expanded(
+                                                                flex: 1,
+                                                                child: Text(
+                                                                  'Activities',
+                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                 ),
-                                                                VerticalDivider(width: 1),
-                                                                SizedBox(width: 8),
-                                                                Expanded(
-                                                                  flex: 1,
-                                                                  child: Text(
-                                                                    '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                    style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
-                                                                  ),
-                                                                ),
-                                                                VerticalDivider(width: 1),
-                                                                SizedBox(width: 8),
-                                                                Expanded(
-                                                                  flex: 2,
-                                                                  child: Text(
-                                                                    activity?.activity ?? '-',
-                                                                    style: TextStyle(
-                                                                      fontSize: 11.sp,
-                                                                    ),
-                                                                  ),
-                                                                )
-                                                              ],
-                                                            );
-                                                          },
+                                                              ),
+                                                              VerticalDivider(width: 1),
+                                                              SizedBox(width: 8),
+                                                              Expanded(
+                                                                  flex: 3,
+                                                                  child: Column(
+                                                                    children: [
+                                                                      ListView.builder(
+                                                                        shrinkWrap: true,
+                                                                        physics: NeverScrollableScrollPhysics(),
+                                                                        itemCount: progressActivity.listActivity?.length ?? 0,
+                                                                        itemBuilder: (context, index) {
+                                                                          final activity = progressActivity.listActivity?[index];
+                                                                          return Padding(
+                                                                            padding: const EdgeInsets.only(bottom: 8.0),
+                                                                            child: Row(
+                                                                              children: [
+                                                                                Expanded(
+                                                                                  flex: 1,
+                                                                                  child: Text(
+                                                                                    '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
+                                                                                    style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
+                                                                                  ),
+                                                                                ),
+                                                                                VerticalDivider(width: 1),
+                                                                                SizedBox(width: 8),
+                                                                                Expanded(
+                                                                                  flex: 2,
+                                                                                  child: Text(
+                                                                                    activity?.activity ?? '-',
+                                                                                    style: TextStyle(
+                                                                                      fontSize: 11.sp,
+                                                                                    ),
+                                                                                  ),
+                                                                                )
+                                                                              ],
+                                                                            ),
+                                                                          );
+                                                                        },
+                                                                      ),
+                                                                    ],
+                                                                  )
+                                                              )
+                                                            ]
                                                         ),
                                                         const SizedBox(height: 12),
                                                         Row(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
                                                           children: [
                                                             Expanded(
                                                               child: Text(
@@ -2537,46 +2601,62 @@ class JoDetailScreen extends StatelessWidget {
                                                         ],
                                                       ),
                                                       const Divider(thickness: 0.4),
-                                                      ListView.builder(
-                                                        shrinkWrap: true,
-                                                        physics: NeverScrollableScrollPhysics(),
-                                                        itemCount: progressActivity.listActivity?.length ?? 0,
-                                                        itemBuilder: (context, index) {
-                                                          final activity = progressActivity.listActivity?[index];
-                                                          return Row(
-                                                            children: [
-                                                              Expanded(
-                                                                flex: 1,
-                                                                child: Text(
-                                                                  'Activities',
-                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                ),
+                                                      Row(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            Expanded(
+                                                              flex: 1,
+                                                              child: Text(
+                                                                'Activities',
+                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                               ),
-                                                              VerticalDivider(width: 1),
-                                                              SizedBox(width: 8),
-                                                              Expanded(
-                                                                flex: 1,
-                                                                child: Text(
-                                                                  '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                  style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
-                                                                ),
-                                                              ),
-                                                              VerticalDivider(width: 1),
-                                                              SizedBox(width: 8),
-                                                              Expanded(
-                                                                flex: 2,
-                                                                child: Text(
-                                                                  activity?.activity ?? '-',
-                                                                  style: TextStyle(
-                                                                    fontSize: 11.sp,
-                                                                  ),
-                                                                ),
-                                                              )
-                                                            ],
-                                                          );
-                                                        },
+                                                            ),
+                                                            VerticalDivider(width: 1),
+                                                            SizedBox(width: 8),
+                                                            Expanded(
+                                                              flex: 3,
+                                                                child: Column(
+                                                                    children: [
+                                                                      ListView.builder(
+                                                                        shrinkWrap: true,
+                                                                        physics: NeverScrollableScrollPhysics(),
+                                                                        itemCount: progressActivity.listActivity?.length ?? 0,
+                                                                        itemBuilder: (context, index) {
+                                                                          final activity = progressActivity.listActivity?[index];
+                                                                          return Padding(
+                                                                            padding: const EdgeInsets.only(bottom: 8.0),
+                                                                            child: Row(
+                                                                              children: [
+                                                                                Expanded(
+                                                                                  flex: 1,
+                                                                                  child: Text(
+                                                                                    '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
+                                                                                    style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
+                                                                                  ),
+                                                                                ),
+                                                                                VerticalDivider(width: 1),
+                                                                                SizedBox(width: 8),
+                                                                                Expanded(
+                                                                                  flex: 2,
+                                                                                  child: Text(
+                                                                                    activity?.activity ?? '-',
+                                                                                    style: TextStyle(
+                                                                                      fontSize: 11.sp,
+                                                                                    ),
+                                                                                  ),
+                                                                                )
+                                                                              ],
+                                                                            ),
+                                                                          );
+                                                                        },
+                                                                      ),
+                                                                    ]
+                                                                )
+                                                            )
+                                                          ]
                                                       ),
                                                       Row(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
                                                         children: [
                                                           Expanded(
                                                             child: Text(

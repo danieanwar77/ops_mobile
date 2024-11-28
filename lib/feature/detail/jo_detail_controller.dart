@@ -62,6 +62,7 @@ class JoDetailController extends BaseController {
   bool isLoadingJOImage = false;
   String inspectionFinishDate = '';
   String laboratoryFinishDate = '';
+  String pickedTime = '';
 
   TextEditingController searchLabText = TextEditingController();
 
@@ -1498,12 +1499,22 @@ class JoDetailController extends BaseController {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialEntryMode: TimePickerEntryMode.input,
-      initialTime: TimeOfDay.now(),
+      initialTime: pickedTime != '' ? TimeOfDay(hour:int.parse(pickedTime.split(":")[0]),minute: int.parse(pickedTime.split(":")[1])) : TimeOfDay.now(),
+        builder: (context, childWidget) {
+          return MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                // Using 24-Hour format
+                  alwaysUse24HourFormat: true),
+              // If you want 12-Hour format, just change alwaysUse24HourFormat to false or remove all the builder argument
+              child: childWidget!);
+        }
     );
     if (picked != null) {
-      List timeSplit = picked.format(context).split(' ');
-      final String formattedTime = timeSplit[0];
-      final String time = formattedTime;
+      //debugPrint('hasil pick time:${picked.hour}:${picked.minute}');
+      final String time = '${picked.hour}:${picked.minute}';
+      // List timeSplit = picked.format(context).split(' ');
+      // final String formattedTime = timeSplit[0];
+      // final String time = formattedTime;
       return time;
     } else {
       return '';
@@ -2780,6 +2791,8 @@ class JoDetailController extends BaseController {
                                       controller: activityStartTime,
                                       cursorColor: onFocusColor,
                                       onTap: () async {
+                                        pickedTime = activityStartTime.text;
+                                        update();
                                         activityStartTime.text = await selectTime6(Get.context!);
                                       },
                                       validator: (value) {
@@ -2810,6 +2823,8 @@ class JoDetailController extends BaseController {
                                       controller: activityEndTime,
                                       cursorColor: onFocusColor,
                                       onTap: () async {
+                                        pickedTime = activityEndTime.text;
+                                        update();
                                         activityEndTime.text = await selectTime6(Get.context!);
                                       },
                                       style: const TextStyle(color: onFocusColor),
@@ -2915,6 +2930,7 @@ class JoDetailController extends BaseController {
                                                                       stage.transDate ?? '-',
                                                                       style: TextStyle(fontSize: 12.sp),
                                                                     ),
+                                                                    const SizedBox(width: 6),
                                                                     InkWell(
                                                                       onTap: () {
                                                                         debugPrint('Delete header');
@@ -2929,74 +2945,89 @@ class JoDetailController extends BaseController {
                                                         const SizedBox(
                                                           height: 16,
                                                         ),
-                                                        ListView.builder(
-                                                            shrinkWrap: true,
-                                                            physics: const NeverScrollableScrollPhysics(),
-                                                            itemCount: stage.listActivity!.length ?? 0,
-                                                            itemBuilder: (context, indexDetail) {
-                                                              TDJoInspectionActivity activity = stage.listActivity![indexDetail];
-                                                              return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                                const Expanded(
-                                                                    flex: 1,
-                                                                    child: Text(
-                                                                      'Activities',
-                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                                                                    )),
-                                                                const VerticalDivider(
-                                                                  width: 1,
-                                                                ),
-                                                                const SizedBox(
-                                                                  width: 8,
-                                                                ),
-                                                                Expanded(
-                                                                    flex: 1,
-                                                                    child: Text('${activity.startActivityTime} - ${activity.endActivityTime}',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700))),
-                                                                const VerticalDivider(
-                                                                  width: 1,
-                                                                ),
-                                                                const SizedBox(
-                                                                  width: 8,
-                                                                ),
-                                                                Expanded(
-                                                                    flex: 2,
-                                                                    child: Row(
-                                                                      children: [
-                                                                        Expanded(
-                                                                          child: Text(
-                                                                            activity.activity ?? '-',
-                                                                            style: TextStyle(fontSize: 12.sp),
-                                                                          ),
-                                                                        ),
-                                                                        InkWell(
-                                                                          onTap: () {
-                                                                            debugPrint('Edit activity 6 ');
-                                                                            editActivity6DetailV2(stage!.transDate!, activity!.activity!);
-                                                                          },
-                                                                          child: const ImageIcon(AssetImage("assets/icons/editActivity.png"), color: primaryColor, size: 16),
-                                                                        ),
-                                                                        const SizedBox(
-                                                                          width: 6,
-                                                                        ),
-                                                                        SizedBox(
-                                                                          height: 18,
-                                                                          width: 18,
-                                                                          child: Ink(
-                                                                            decoration: ShapeDecoration(color: Colors.red, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
-                                                                            child: InkWell(
-                                                                              onTap: () {
-                                                                                debugPrint('Hapus detail');
-                                                                                removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(),
-                                                                                    activity.activity ?? '', activity.startActivityTime!, activity.endActivityTime ?? '');
-                                                                              },
-                                                                              child: const Icon(Icons.remove, color: Colors.white, size: 12),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ))
-                                                              ]);
-                                                            }),
+                                                        Row(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            const Expanded(
+                                                                flex: 1,
+                                                                child: Text(
+                                                                  'Activities',
+                                                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                )),
+                                                            const VerticalDivider(
+                                                              width: 1,
+                                                            ),
+                                                            const SizedBox(
+                                                              width: 8,
+                                                            ),
+                                                            Expanded(
+                                                                flex: 3,
+                                                                child: Column(
+                                                                  children: [
+                                                                    ListView.builder(
+                                                                        shrinkWrap: true,
+                                                                        physics: const NeverScrollableScrollPhysics(),
+                                                                        itemCount: stage.listActivity!.length ?? 0,
+                                                                        itemBuilder: (context, indexDetail) {
+                                                                          TDJoInspectionActivity activity = stage.listActivity![indexDetail];
+                                                                          return Padding(
+                                                                            padding: const EdgeInsets.only(bottom: 8.0),
+                                                                            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                                              Expanded(
+                                                                                  flex: 1,
+                                                                                  child: Text('${activity.startActivityTime} - ${activity.endActivityTime}',
+                                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700))),
+                                                                              const VerticalDivider(
+                                                                                width: 1,
+                                                                              ),
+                                                                              const SizedBox(
+                                                                                width: 8,
+                                                                              ),
+                                                                              Expanded(
+                                                                                  flex: 2,
+                                                                                  child: Row(
+                                                                                    children: [
+                                                                                      Expanded(
+                                                                                        child: Text(
+                                                                                          activity.activity ?? '-',
+                                                                                          style: TextStyle(fontSize: 12.sp),
+                                                                                        ),
+                                                                                      ),
+                                                                                      InkWell(
+                                                                                        onTap: () {
+                                                                                          debugPrint('Edit activity 6 ');
+                                                                                          editActivity6DetailV2(stage!.transDate!, activity!.activity!);
+                                                                                        },
+                                                                                        child: const ImageIcon(AssetImage("assets/icons/editActivity.png"), color: primaryColor, size: 16),
+                                                                                      ),
+                                                                                      const SizedBox(
+                                                                                        width: 6,
+                                                                                      ),
+                                                                                      SizedBox(
+                                                                                        height: 18,
+                                                                                        width: 18,
+                                                                                        child: Ink(
+                                                                                          decoration: ShapeDecoration(color: Colors.red, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
+                                                                                          child: InkWell(
+                                                                                            onTap: () {
+                                                                                              debugPrint('Hapus detail');
+                                                                                              removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(),
+                                                                                                  activity.activity ?? '', activity.startActivityTime!, activity.endActivityTime ?? '');
+                                                                                            },
+                                                                                            child: const Icon(Icons.remove, color: Colors.white, size: 12),
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                    ],
+                                                                                  ))
+                                                                            ]),
+                                                                          );
+                                                                        }),
+                                                                  ],
+                                                                )
+                                                            )
+                                                          ],
+                                                        ),
                                                         TextFormField(
                                                           inputFormatters: [
                                                             LengthLimitingTextInputFormatter(250),
@@ -4164,7 +4195,7 @@ class JoDetailController extends BaseController {
                                                               flex: 2,
                                                               child: Text(
                                                                 'Date',
-                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
                                                               )),
                                                           const VerticalDivider(width: 1),
                                                           const SizedBox(width: 16),
@@ -4172,13 +4203,11 @@ class JoDetailController extends BaseController {
                                                               flex: 2,
                                                               child: Row(
                                                                 children: [
-                                                                  Expanded(
-                                                                    flex: 1,
-                                                                    child: Text(
-                                                                      stage.transDate ?? '-',
-                                                                      style: TextStyle(fontSize: 12.sp),
-                                                                    ),
+                                                                  Text(
+                                                                    stage.transDate ?? '-',
+                                                                    style: TextStyle(fontSize: 11.sp),
                                                                   ),
+                                                                  const SizedBox(width: 6),
                                                                   InkWell(
                                                                     onTap: () {
                                                                       debugPrint('Delete header');
@@ -4193,74 +4222,90 @@ class JoDetailController extends BaseController {
                                                       const SizedBox(
                                                         height: 16,
                                                       ),
-                                                      ListView.builder(
-                                                          shrinkWrap: true,
-                                                          physics: const NeverScrollableScrollPhysics(),
-                                                          itemCount: stage.listActivity!.length ?? 0,
-                                                          itemBuilder: (context, indexDetail) {
-                                                            TDJoInspectionActivity activity = stage.listActivity![indexDetail];
-                                                            return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                              Expanded(
-                                                                  flex: 1,
-                                                                  child: Text(
-                                                                    'Activities',
-                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                  )),
-                                                              const VerticalDivider(
-                                                                width: 1,
-                                                              ),
-                                                              const SizedBox(
-                                                                width: 8,
-                                                              ),
-                                                              Expanded(
-                                                                  flex: 1,
-                                                                  child: Text('${activity.startActivityTime} - ${activity.endActivityTime}',
-                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700))),
-                                                              const VerticalDivider(
-                                                                width: 1,
-                                                              ),
-                                                              const SizedBox(
-                                                                width: 8,
-                                                              ),
-                                                              Expanded(
-                                                                  flex: 2,
-                                                                  child: Row(
-                                                                    children: [
-                                                                      Expanded(
-                                                                        child: Text(
-                                                                          activity.activity ?? '-',
-                                                                          style: TextStyle(fontSize: 12.sp),
-                                                                        ),
-                                                                      ),
-                                                                      InkWell(
-                                                                        onTap: () {
-                                                                          debugPrint('Edit');
-                                                                          editActivityDetailV2(stage!.transDate!, activity!.activity!);
-                                                                        },
-                                                                        child: const ImageIcon(AssetImage("assets/icons/editActivity.png"), color: primaryColor, size: 16),
-                                                                      ),
-                                                                      const SizedBox(
-                                                                        width: 6,
-                                                                      ),
-                                                                      SizedBox(
-                                                                        height: 18,
-                                                                        width: 18,
-                                                                        child: Ink(
-                                                                          decoration: ShapeDecoration(color: Colors.red, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
-                                                                          child: InkWell(
-                                                                            onTap: () {
-                                                                              debugPrint('Hapus detail');
-                                                                              removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(),
-                                                                                  activity.activity ?? '', activity.startActivityTime!, activity.endActivityTime ?? '');
-                                                                            },
-                                                                            child: const Icon(Icons.remove, color: Colors.white, size: 12),
+                                                      Row(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Expanded(
+                                                              flex: 1,
+                                                              child: Text(
+                                                                'Activities',
+                                                                style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
+                                                              )),
+                                                          const VerticalDivider(
+                                                            width: 1,
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 8,
+                                                          ),
+                                                          Expanded(
+                                                            flex: 3,
+                                                              child: Column(
+                                                              children: [
+                                                                ListView.builder(
+                                                                    shrinkWrap: true,
+                                                                    physics: const NeverScrollableScrollPhysics(),
+                                                                    itemCount: stage.listActivity!.length ?? 0,
+                                                                    itemBuilder: (context, indexDetail) {
+                                                                      TDJoInspectionActivity activity = stage.listActivity![indexDetail];
+                                                                      return Padding(
+                                                                        padding: const EdgeInsets.only(bottom: 8.0),
+                                                                        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                                          Expanded(
+                                                                              flex: 1,
+                                                                              child: Text('${activity.startActivityTime} - ${activity.endActivityTime}',
+                                                                                  style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w700))),
+                                                                          const VerticalDivider(
+                                                                            width: 1,
                                                                           ),
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ))
-                                                            ]);
-                                                          }),
+                                                                          const SizedBox(
+                                                                            width: 8,
+                                                                          ),
+                                                                          Expanded(
+                                                                              flex: 2,
+                                                                              child: Row(
+                                                                                children: [
+                                                                                  Expanded(
+                                                                                    child: Text(
+                                                                                      activity.activity ?? '-',
+                                                                                      style: TextStyle(fontSize: 11.sp),
+                                                                                    ),
+                                                                                  ),
+                                                                                  InkWell(
+                                                                                    onTap: () {
+                                                                                      debugPrint('Edit');
+                                                                                      editActivityDetailV2(stage!.transDate!, activity!.activity!);
+                                                                                    },
+                                                                                    child: const ImageIcon(AssetImage("assets/icons/editActivity.png"), color: primaryColor, size: 16),
+                                                                                  ),
+                                                                                  const SizedBox(
+                                                                                    width: 6,
+                                                                                  ),
+                                                                                  SizedBox(
+                                                                                    height: 18,
+                                                                                    width: 18,
+                                                                                    child: Ink(
+                                                                                      decoration: ShapeDecoration(color: Colors.red, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
+                                                                                      child: InkWell(
+                                                                                        onTap: () {
+                                                                                          debugPrint('Hapus detail');
+                                                                                          removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(),
+                                                                                              activity.activity ?? '', activity.startActivityTime!, activity.endActivityTime ?? '');
+                                                                                        },
+                                                                                        child: const Icon(Icons.remove, color: Colors.white, size: 12),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
+                                                                                ],
+                                                                              ))
+                                                                        ]),
+                                                                      );
+                                                                    }),
+                                                              ],
+                                                            )
+                                                          )
+                                                        ],
+                                                      ),
+                                                      const Divider(),
                                                       const SizedBox(
                                                         height: 16,
                                                       ),
@@ -4634,7 +4679,7 @@ class JoDetailController extends BaseController {
                                                               flex: 2,
                                                               child: Text(
                                                                 'Date',
-                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
                                                               )),
                                                           const VerticalDivider(width: 1),
                                                           const SizedBox(width: 16),
@@ -4642,13 +4687,11 @@ class JoDetailController extends BaseController {
                                                               flex: 2,
                                                               child: Row(
                                                                 children: [
-                                                                  Expanded(
-                                                                    flex: 1,
-                                                                    child: Text(
-                                                                      stage.transDate ?? '-',
-                                                                      style: TextStyle(fontSize: 12.sp),
-                                                                    ),
+                                                                  Text(
+                                                                    stage.transDate ?? '-',
+                                                                    style: TextStyle(fontSize: 11.sp),
                                                                   ),
+                                                                  const SizedBox(width: 6),
                                                                   InkWell(
                                                                     onTap: () {
                                                                       removeActivityByDateConfirm(stage!.transDate!, index, stage.mStatusinspectionstagesId!.toInt());
@@ -4662,75 +4705,90 @@ class JoDetailController extends BaseController {
                                                       const SizedBox(
                                                         height: 16,
                                                       ),
-                                                      ListView.builder(
-                                                          shrinkWrap: true,
-                                                          physics: const NeverScrollableScrollPhysics(),
-                                                          itemCount: stage.listActivity!.length ?? 0,
-                                                          itemBuilder: (context, indexDetail) {
-                                                            TDJoInspectionActivity activity = stage.listActivity![indexDetail];
-                                                            return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                              Expanded(
-                                                                  flex: 1,
-                                                                  child: Text(
-                                                                    'Activities',
-                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                  )),
-                                                              const VerticalDivider(
-                                                                width: 1,
-                                                              ),
-                                                              const SizedBox(
-                                                                width: 8,
-                                                              ),
-                                                              Expanded(
-                                                                  flex: 1,
-                                                                  child: Text('${Helper.formatToHourMinute(activity!.startActivityTime!)} - ${Helper.formatToHourMinute(activity!.endActivityTime!)}',
-                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700))),
-                                                              const VerticalDivider(
-                                                                width: 1,
-                                                              ),
-                                                              const SizedBox(
-                                                                width: 8,
-                                                              ),
-                                                              Expanded(
-                                                                  flex: 2,
-                                                                  child: Row(
-                                                                    children: [
-                                                                      Expanded(
-                                                                        child: Text(
-                                                                          activity.activity ?? '-',
-                                                                          style: TextStyle(fontSize: 12.sp),
-                                                                        ),
-                                                                      ),
-                                                                      InkWell(
-                                                                        onTap: () {
-                                                                          debugPrint('Edit');
-                                                                          editActivityDetailV2(stage!.transDate!, activity!.activity!);
-                                                                        },
-                                                                        child: const ImageIcon(AssetImage("assets/icons/editActivity.png"), color: primaryColor, size: 16),
-                                                                      ),
-                                                                      const SizedBox(
-                                                                        width: 6,
-                                                                      ),
-                                                                      SizedBox(
-                                                                        height: 18,
-                                                                        width: 18,
-                                                                        child: Ink(
-                                                                          decoration: ShapeDecoration(color: Colors.red, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
-                                                                          child: InkWell(
-                                                                            onTap: () {
-                                                                              debugPrint('Hapus detail');
-                                                                              //deleteActivityDetailV2(stage!.transDate!, activity!.activity!);
-                                                                              removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(),
-                                                                                  activity.activity ?? '', activity.startActivityTime!, activity.endActivityTime ?? '');
-                                                                            },
-                                                                            child: const Icon(Icons.remove, color: Colors.white, size: 12),
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ))
-                                                            ]);
-                                                          }),
+                                                      Row(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Expanded(
+                                                              flex: 1,
+                                                              child: Text(
+                                                                'Activities',
+                                                                style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
+                                                              )),
+                                                          const VerticalDivider(
+                                                            width: 1,
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 8,
+                                                          ),
+                                                          Expanded(
+                                                            flex: 3,
+                                                              child: Column(
+                                                                children: [
+                                                                  ListView.builder(
+                                                                      shrinkWrap: true,
+                                                                      physics: const NeverScrollableScrollPhysics(),
+                                                                      itemCount: stage.listActivity!.length ?? 0,
+                                                                      itemBuilder: (context, indexDetail) {
+                                                                        TDJoInspectionActivity activity = stage.listActivity![indexDetail];
+                                                                        return Padding(
+                                                                          padding: const EdgeInsets.only(bottom: 8.0),
+                                                                          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                                            Expanded(
+                                                                                flex: 1,
+                                                                                child: Text('${Helper.formatToHourMinute(activity!.startActivityTime!)} - ${Helper.formatToHourMinute(activity!.endActivityTime!)}',
+                                                                                    style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w700))),
+                                                                            const VerticalDivider(
+                                                                              width: 1,
+                                                                            ),
+                                                                            const SizedBox(
+                                                                              width: 8,
+                                                                            ),
+                                                                            Expanded(
+                                                                                flex: 2,
+                                                                                child: Row(
+                                                                                  children: [
+                                                                                    Expanded(
+                                                                                      child: Text(
+                                                                                        activity.activity ?? '-',
+                                                                                        style: TextStyle(fontSize: 11.sp),
+                                                                                      ),
+                                                                                    ),
+                                                                                    InkWell(
+                                                                                      onTap: () {
+                                                                                        debugPrint('Edit');
+                                                                                        editActivityDetailV2(stage!.transDate!, activity!.activity!);
+                                                                                      },
+                                                                                      child: const ImageIcon(AssetImage("assets/icons/editActivity.png"), color: primaryColor, size: 16),
+                                                                                    ),
+                                                                                    const SizedBox(
+                                                                                      width: 6,
+                                                                                    ),
+                                                                                    SizedBox(
+                                                                                      height: 18,
+                                                                                      width: 18,
+                                                                                      child: Ink(
+                                                                                        decoration: ShapeDecoration(color: Colors.red, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
+                                                                                        child: InkWell(
+                                                                                          onTap: () {
+                                                                                            debugPrint('Hapus detail');
+                                                                                            //deleteActivityDetailV2(stage!.transDate!, activity!.activity!);
+                                                                                            removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(),
+                                                                                                activity.activity ?? '', activity.startActivityTime!, activity.endActivityTime ?? '');
+                                                                                          },
+                                                                                          child: const Icon(Icons.remove, color: Colors.white, size: 12),
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ],
+                                                                                ))
+                                                                          ]),
+                                                                        );
+                                                                      }),
+                                                                ],
+                                                              )
+                                                          )
+                                                        ],
+                                                      ),
                                                       const SizedBox(
                                                         width: 16,
                                                       ),
@@ -5651,12 +5709,23 @@ class JoDetailController extends BaseController {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialEntryMode: TimePickerEntryMode.input,
-      initialTime: TimeOfDay.now(),
+      initialTime: pickedTime != '' ?
+      TimeOfDay(hour:int.parse(pickedTime.split(":")[0]),minute: int.parse(pickedTime.split(":")[1]))
+          : TimeOfDay.now(),
+        builder: (context, childWidget) {
+          return MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                // Using 24-Hour format
+                  alwaysUse24HourFormat: true),
+              // If you want 12-Hour format, just change alwaysUse24HourFormat to false or remove all the builder argument
+              child: childWidget!);
+        }
     );
     if (picked != null) {
-      List timeSplit = picked.format(context).split(' ');
-      final String formattedTime = timeSplit[0];
-      final String time = formattedTime;
+      final String time = '${picked.hour}:${picked.minute}';
+      // List timeSplit = picked.format(context).split(' ');
+      // final String formattedTime = timeSplit[0];
+      // final String time = formattedTime;
       return time;
     } else {
       return '';
@@ -6124,6 +6193,8 @@ class JoDetailController extends BaseController {
                                       controller: activityStartTime,
                                       cursorColor: onFocusColor,
                                       onTap: () async {
+                                        pickedTime = activityStartTime.text;
+                                        update();
                                         activityStartTime.text = await selectTime6(Get.context!);
                                       },
                                       validator: (value) {
@@ -6155,6 +6226,8 @@ class JoDetailController extends BaseController {
                                       cursorColor: onFocusColor,
                                       readOnly: true,
                                       onTap: () async {
+                                        pickedTime = activityEndTime.text;
+                                        update();
                                         activityEndTime.text = await selectTime6(Get.context!);
                                       },
                                       style: const TextStyle(color: onFocusColor),
@@ -6248,7 +6321,7 @@ class JoDetailController extends BaseController {
                                                                 flex: 2,
                                                                 child: Text(
                                                                   'Date',
-                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                  style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
                                                                 )),
                                                             const VerticalDivider(width: 1),
                                                             const SizedBox(width: 16),
@@ -6258,7 +6331,7 @@ class JoDetailController extends BaseController {
                                                                   children: [
                                                                     Text(
                                                                       stage.transDate ?? '-',
-                                                                      style: TextStyle(fontSize: 12.sp),
+                                                                      style: TextStyle(fontSize: 11.sp),
                                                                     ),
                                                                     const SizedBox(width: 6),
                                                                     InkWell(
@@ -6275,74 +6348,89 @@ class JoDetailController extends BaseController {
                                                         const SizedBox(
                                                           height: 16,
                                                         ),
-                                                        ListView.builder(
-                                                            shrinkWrap: true,
-                                                            physics: const NeverScrollableScrollPhysics(),
-                                                            itemCount: stage.listActivity!.length ?? 0,
-                                                            itemBuilder: (context, indexDetail) {
-                                                              TDJoInspectionActivity activity = stage.listActivity![indexDetail];
-                                                              return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                                Expanded(
-                                                                    flex: 1,
-                                                                    child: Text(
-                                                                      'Activities',
-                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                    )),
-                                                                const VerticalDivider(
-                                                                  width: 1,
-                                                                ),
-                                                                const SizedBox(
-                                                                  width: 8,
-                                                                ),
-                                                                Expanded(
-                                                                    flex: 1,
-                                                                    child: Text('${Helper.formatToHourMinute(activity!.startActivityTime!)} - ${Helper.formatToHourMinute(activity!.endActivityTime!)}',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700))),
-                                                                const VerticalDivider(
-                                                                  width: 1,
-                                                                ),
-                                                                const SizedBox(
-                                                                  width: 8,
-                                                                ),
-                                                                Expanded(
-                                                                    flex: 2,
-                                                                    child: Row(
-                                                                      children: [
-                                                                        Expanded(
-                                                                          child: Text(
-                                                                            activity.activity ?? '-',
-                                                                            style: TextStyle(fontSize: 12.sp),
-                                                                          ),
-                                                                        ),
-                                                                        InkWell(
-                                                                          onTap: () {
-                                                                            debugPrint('Edit');
-                                                                            editActivityDetailV2(stage!.transDate!, activity!.activity!);
-                                                                          },
-                                                                          child: const ImageIcon(AssetImage("assets/icons/editActivity.png"), color: primaryColor, size: 16),
-                                                                        ),
-                                                                        const SizedBox(
-                                                                          width: 6,
-                                                                        ),
-                                                                        SizedBox(
-                                                                          height: 18,
-                                                                          width: 18,
-                                                                          child: Ink(
-                                                                            decoration: ShapeDecoration(color: Colors.red, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
-                                                                            child: InkWell(
-                                                                              onTap: () {
-                                                                                debugPrint('Hapus detail');
-                                                                                removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(),
-                                                                                    activity.activity ?? '', activity.startActivityTime!, activity.endActivityTime ?? '');
-                                                                              },
-                                                                              child: const Icon(Icons.remove, color: Colors.white, size: 12),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ))
-                                                              ]);
-                                                            }),
+                                                        Row(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            Expanded(
+                                                                flex: 1,
+                                                                child: Text(
+                                                                  'Activities',
+                                                                  style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700),
+                                                                )),
+                                                            const VerticalDivider(
+                                                              width: 1,
+                                                            ),
+                                                            const SizedBox(
+                                                              width: 8,
+                                                            ),
+                                                            Expanded(
+                                                                flex: 3,
+                                                                child: Column(
+                                                                  children: [
+                                                                    ListView.builder(
+                                                                        shrinkWrap: true,
+                                                                        physics: const NeverScrollableScrollPhysics(),
+                                                                        itemCount: stage.listActivity!.length ?? 0,
+                                                                        itemBuilder: (context, indexDetail) {
+                                                                          TDJoInspectionActivity activity = stage.listActivity![indexDetail];
+                                                                          return Padding(
+                                                                            padding: const EdgeInsets.only(bottom: 8.0),
+                                                                            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                                              Expanded(
+                                                                                  flex: 1,
+                                                                                  child: Text('${Helper.formatToHourMinute(activity!.startActivityTime!)} - ${Helper.formatToHourMinute(activity!.endActivityTime!)}',
+                                                                                      style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w700))),
+                                                                              const VerticalDivider(
+                                                                                width: 1,
+                                                                              ),
+                                                                              const SizedBox(
+                                                                                width: 8,
+                                                                              ),
+                                                                              Expanded(
+                                                                                  flex: 2,
+                                                                                  child: Row(
+                                                                                    children: [
+                                                                                      Expanded(
+                                                                                        child: Text(
+                                                                                          activity.activity ?? '-',
+                                                                                          style: TextStyle(fontSize: 11.sp),
+                                                                                        ),
+                                                                                      ),
+                                                                                      InkWell(
+                                                                                        onTap: () {
+                                                                                          debugPrint('Edit');
+                                                                                          editActivityDetailV2(stage!.transDate!, activity!.activity!);
+                                                                                        },
+                                                                                        child: const ImageIcon(AssetImage("assets/icons/editActivity.png"), color: primaryColor, size: 16),
+                                                                                      ),
+                                                                                      const SizedBox(
+                                                                                        width: 6,
+                                                                                      ),
+                                                                                      SizedBox(
+                                                                                        height: 18,
+                                                                                        width: 18,
+                                                                                        child: Ink(
+                                                                                          decoration: ShapeDecoration(color: Colors.red, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
+                                                                                          child: InkWell(
+                                                                                            onTap: () {
+                                                                                              debugPrint('Hapus detail');
+                                                                                              removeActivityConfirm(stage!.transDate!, indexDetail, index, stage!.mStatusinspectionstagesId!.toInt(),
+                                                                                                  activity.activity ?? '', activity.startActivityTime!, activity.endActivityTime ?? '');
+                                                                                            },
+                                                                                            child: const Icon(Icons.remove, color: Colors.white, size: 12),
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                    ],
+                                                                                  ))
+                                                                            ]),
+                                                                          );
+                                                                        }),
+                                                                  ],
+                                                                )
+                                                            )
+                                                          ],
+                                                        ),
                                                         const SizedBox(
                                                           width: 16,
                                                         ),

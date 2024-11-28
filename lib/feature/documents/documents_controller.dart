@@ -914,41 +914,51 @@ class DocumentsController extends BaseController {
                                     )
                                         : fileType == 'doc'
                                             ? SizedBox(
+                                      width: 68,
+                                      height: 68,
+                                      child: Stack(
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                OpenFilex.open(photo);
+                                              },
+                                              child: Container(
+                                                margin: const EdgeInsets.only(top: 5),
+                                                width: 63,
+                                                height: 63,
+                                                child: Center(
+                                                    child: Column(
+                                                      children: [
+                                                        Spacer(),
+                                                        Image.asset(
+                                                          'assets/icons/pdfIcon.png',
+                                                          height: 42,
+                                                        ),
+                                                        Text(filename,
+                                                            style: TextStyle(
+                                                                fontSize: 8),
+                                                            overflow: TextOverflow
+                                                                .ellipsis)
+                                                      ],
+                                                    )),
+                                              ),
+                                            ),
+                                            SizedBox(
                                               width: 68,
                                               height: 68,
-                                              child: Stack(
-                                                children: [
-                                                  Container(
-                                                    margin: const EdgeInsets.only(top:5),
-                                                    width: 63,
-                                                    height: 63,
-                                                    child: InkWell(
-                                                      onTap: () {
-                                                        previewImage(
-                                                            index, photo, '');
-                                                      },
-                                                      child: Image.file(
-                                                        File(photo),
-                                                        fit: BoxFit.cover,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 68,
-                                                    height: 68,
-                                                    child: Align(
-                                                      alignment: Alignment.topRight,
-                                                      child: InkWell(
-                                                          onTap: (){
-                                                            controller.removeFiles(index);
-                                                          },
-                                                          child: Image.asset('assets/icons/close.png', width: 24)
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
+                                              child: Align(
+                                                alignment: Alignment.topRight,
+                                                child: InkWell(
+                                                    onTap: (){
+                                                      controller.removeFiles(index);
+                                                    },
+                                                    child: Image.asset('assets/icons/close.png', width: 24)
+                                                ),
                                               ),
-                                            )
+                                            ),
+                                          ]
+                                      ),
+                                    )
                                             : SizedBox();
                                   })
                               : const SizedBox(),
