@@ -30,8 +30,6 @@ import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/utils/helper.dart';
 
 import 'package:ops_mobile/data/model/login_data_model.dart';
-import 'package:sqflite/sqflite.dart';
-
 
 class LabActivityDetailController extends BaseController{
 
@@ -133,21 +131,17 @@ class LabActivityDetailController extends BaseController{
   Future<void> getData() async{
 
     debugPrint('params: $id,${userData.value!.id!.toInt()}, $labId');
-    final db = await SqlHelper.db();
-    var joRslt = await db.rawQuery(
-        "SELECT * FROM t_h_jo WHERE id = ?",
-        [id] // Nilai parameter
-    );
+    THJo thJo = await THJo.getJoById(id);
     //try{
       activityLabListStages.value.clear();
       activity5LabListStages.value.clear();
       activity6ListStages.value.clear();
+      activitySubmitted.value = false;
+      activityLabStage = 1;
       var response = await SqlHelper.getDetailActivityLaboratory(id,userData.value!.id!.toInt(), labId);
       var text = '';
       var joGroup = groupBy(response, (item) => item['id']);
-      debugPrint('print data after group ${joGroup}');
       joGroup.forEach((key,jo){
-        debugPrint("jo nya: ${key}");
         var transactionDateTime = jo.first['stage_created_at'];
         var statusJo = jo.first['status_jo'];
         statusId.value = statusJo;
@@ -287,7 +281,10 @@ class LabActivityDetailController extends BaseController{
                             update();
                           }
                         } else {
-                          if ((stageItem['activity_code'] != null || stageItem['activity_code'] != '') && activityItems.where((item) => item.code == stageItem['activity_code']).isEmpty){
+                          debugPrint('print activity items  ${jsonEncode(stageItem)}');
+                          debugPrint('print result activity code ${stageItem['activity_code'] != null}');
+                          debugPrint('print result activity code ${stageItem['activity_code']}');
+                          if ((stageItem['activity_code'] != null && stageItem['activity_code'] != '') && activityItems.where((item) => item.code == stageItem['activity_code']).isEmpty){
                             activityItems.add(TDJoLaboratoryActivity.fromJson({
                               "id": stageItem['activity_id'],
                               "t_d_jo_laboratory_activity_stages_id": stageItem['stage_id'],
@@ -330,7 +327,7 @@ class LabActivityDetailController extends BaseController{
                             listLabAttachment: attachments
                         )
                         );
-                        debugPrint('isian laboratory activity: ${jsonEncode(activityLabListStages.value.last)}');
+                        debugPrint('print data laboratory activity ${jsonEncode(activityItems)}');
                       } else if(stageHead['m_statuslaboratoryprogres_id'] == 5) {
                         activity5LabListStages.value.add(TDJoLaboratoryActivityStages(
                             id : stageHead['id'],
@@ -389,14 +386,14 @@ class LabActivityDetailController extends BaseController{
 
         });
       });
-      if(joRslt.length> 0){
-        joRx.value = THJo.fromJson(joRslt[0]);
+      if(thJo.id != null){
+        joRx.value = thJo;
         debugPrint('print data  jo ${joRx.value.toJson()}');
       }
     // } catch(e){
     //   debugPrint('error get data: $e');
     // } finally {
-    //   update();
+      update();
     // }
 
   }
@@ -649,30 +646,11 @@ class LabActivityDetailController extends BaseController{
 
     var stageItem = activityLabList.value[index].listLabActivity![indexitem];
     activityLabList.value[index].listLabActivity!.removeAt(indexitem);
-    // if(stageItem.id != null){
-    //   activityLabList.value[index].listLabActivity![indexitem] = TDJoLaboratoryActivity(
-    //     id: stageItem.id,
-    //     tDJoLaboratoryActivityStagesId: stageItem.tDJoLaboratoryActivityStagesId,
-    //     tDJoLaboratoryId: stageItem.tDJoLaboratoryId,
-    //     startActivityTime: stageItem.startActivityTime,
-    //     endActivityTime: stageItem.endActivityTime,
-    //     activity: stageItem.activity,
-    //     code: stageItem.code,
-    //     isActive: 0,
-    //     isUpload: stageItem.isUpload,
-    //     createdBy: stageItem.createdBy,
-    //     updatedBy: stageItem.updatedBy,
-    //     createdAt: stageItem.createdAt,
-    //     updatedAt: stageItem.updatedAt,
-    //   );
-    // } else {
-    //   activityLabList.value[index].listLabActivity!.removeAt(indexitem);
-    // }
 
-    if(activityLabList.value[index].listLabActivity!.isEmpty){
-      activityLabListTextController.value.removeAt(index);
-      activityLabList.value.removeAt(index);
-    }
+    // if(activityLabList.value[index].listLabActivity!.isEmpty){
+    //   activityLabListTextController.value.removeAt(index);
+    //   activityLabList.value.removeAt(index);
+    // }
 
 
     update();
@@ -682,31 +660,6 @@ class LabActivityDetailController extends BaseController{
     var stage = activityLabList.value.where((item) => item.transDate == date && item.mStatuslaboratoryprogresId == activityLabStage).first;
     var indexStage = activityLabList.value.indexWhere((item) => item.transDate == date && item.mStatuslaboratoryprogresId == activityLabStage);
     activityLabList.value.removeAt(indexStage);
-    // if(stage.id != null){
-    //   activityLabList.value[indexStage] = TDJoLaboratoryActivityStages(
-    //     id : stage.id,
-    //     dJoLaboratoryId : stage.dJoLaboratoryId, //check lagi value masih null
-    //     tHJoId : stage.tHJoId,
-    //     mStatuslaboratoryprogresId : stage.mStatuslaboratoryprogresId,
-    //     transDate : stage.transDate,
-    //     remarks : stage.remarks,
-    //     createdBy : stage.createdBy,
-    //     updatedBy : stage.updatedBy,
-    //     createdAt : stage.createdAt,
-    //     updatedAt : stage.updatedAt,
-    //     totalSampleReceived : stage.totalSampleReceived,
-    //     totalSampleAnalyzed : stage.totalSampleAnalyzed,
-    //     totalSamplePreparation : stage.totalSamplePreparation,
-    //     code : stage.code,
-    //     isActive : 0,
-    //     isUpload : 0,
-    //     listLabActivity: stage.listLabActivity,
-    //     listLabAttachment: stage.listLabAttachment,
-    //   );
-    // } else {
-    //   activityLabList.value.removeAt(indexStage);
-    // }
-    //activityLabList.value.removeWhere((item) => item.transDate == date && item.mStatuslaboratoryprogresId == stageProgress);
     activityLabListTextController.value.removeAt(indexStage);
     update();
   }
@@ -725,7 +678,7 @@ class LabActivityDetailController extends BaseController{
         TDJoLaboratoryActivityStages dataStage = dataActStage[i].copyWith(
             createdBy: createdBy,
             isUpload: 0,
-            code: "JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+            code: "JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${i}"
         );
         int result = await db.insert("t_d_jo_laboratory_activity_stages",dataStage.toInsert());
         List<TDJoLaboratoryActivity> actStage = dataStage.listLabActivity ?? [];
@@ -735,7 +688,7 @@ class LabActivityDetailController extends BaseController{
               tDJoLaboratoryId: dataStage.dJoLaboratoryId,
               createdBy: createdBy,
               isUpload: 0,
-              code: "JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+              code: "JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${j}"
           );
           int rsltAct = await db.insert("t_d_jo_laboratory_activity",dataAct.toInsert());
         }
@@ -768,7 +721,7 @@ class LabActivityDetailController extends BaseController{
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Add Stage Laboratory',
+                          const Text('Add Stage Laboratory',
                             style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -777,7 +730,7 @@ class LabActivityDetailController extends BaseController{
                           ),
                           const SizedBox(height: 16,),
                           Text('Stage ${activityLabStage}: ${labStagesName[activityLabStage-1]}',
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700
                             ),
@@ -954,32 +907,31 @@ class LabActivityDetailController extends BaseController{
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
                               itemCount: activityLabList.value.map((item){return item.transDate;}).toSet().toList().length,
-                              itemBuilder: (context, index)
-                              { var date = activityLabList.value.map((item){return item.transDate;}).toSet().toList()[index];
-                              var activity = activityLabList.value[index];
-                              return Column(
-                                children: [
-                                  Card(
-                                    color: Colors.white,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
+                              itemBuilder: (context, index) {
+                                var date = activityLabList.value.map((item){return item.transDate;}).toSet().toList()[index];
+                                var activity = activityLabList.value[index];
+                                return Column(
+                                  children: [
+                                    Card(
+                                      color: Colors.white,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
                                           left: 16,
                                           right: 16,
                                           top: 8,
-                                          bottom: 16),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Expanded(
-                                                flex: 2,
-                                                child: Text(
-                                                  'Date',
-                                                  style: TextStyle(
+                                          bottom: 16
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  flex: 2,
+                                                  child: Text('Date',
+                                                    style: TextStyle(
                                                       fontSize: 11.sp,
-                                                      fontWeight:
-                                                      FontWeight
-                                                          .w700),
+                                                      fontWeight: FontWeight.w700
+                                                    ),
                                                 ),
                                               ),
                                               VerticalDivider(width: 1),
@@ -1013,123 +965,121 @@ class LabActivityDetailController extends BaseController{
                                               )
                                             ],
                                           ),
-                                          Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Expanded(
-                                                flex: 1,
-                                                child: Text(
-                                                  'Activities',
-                                                  style: TextStyle(
-                                                      fontSize: 11.sp,
-                                                      fontWeight:
-                                                      FontWeight
-                                                          .w700),
+                                            Row(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Expanded(
+                                                  flex: 1,
+                                                  child: Text(
+                                                    'Activities',
+                                                    style: TextStyle(
+                                                        fontSize: 11.sp,
+                                                        fontWeight:
+                                                        FontWeight
+                                                            .w700),
+                                                  ),
                                                 ),
-                                              ),
-                                              VerticalDivider(width: 1),
-                                              SizedBox(width: 8),
-                                              Expanded(
-                                                flex: 3,
-                                                  child: Column(
-                                                    children: [
-                                                      ListView.builder(
-                                                          shrinkWrap: true,
-                                                          physics: NeverScrollableScrollPhysics(),
-                                                          itemCount: activity.listLabActivity?.length,
-                                                          itemBuilder: (context, indexItem){
-                                                            if(activityLabList.value[index].transDate == date){
-                                                              var activityItem = activity.listLabActivity![indexItem];
-                                                              return Row(
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  Expanded(
-                                                                    flex: 1,
-                                                                    child: Text(
-                                                                      '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
-                                                                      style: TextStyle(
-                                                                          fontSize: 10.sp,
-                                                                          fontWeight:
-                                                                          FontWeight
-                                                                              .w700),
+                                                VerticalDivider(width: 1),
+                                                SizedBox(width: 8),
+                                                Expanded(
+                                                  flex: 3,
+                                                    child: Column(
+                                                      children: [
+                                                        ListView.builder(
+                                                            shrinkWrap: true,
+                                                            physics: NeverScrollableScrollPhysics(),
+                                                            itemCount: activity.listLabActivity?.length,
+                                                            itemBuilder: (context, indexItem){
+                                                              if(activityLabList.value[index].transDate == date){
+                                                                var activityItem = activity.listLabActivity![indexItem];
+                                                                return Row(
+                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  children: [
+                                                                    Expanded(
+                                                                      flex: 1,
+                                                                      child: Text(
+                                                                        '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
+                                                                        style: TextStyle(
+                                                                            fontSize: 10.sp,
+                                                                            fontWeight:
+                                                                            FontWeight
+                                                                                .w700),
+                                                                      ),
                                                                     ),
-                                                                  ),
-                                                                  VerticalDivider(width: 1),
-                                                                  SizedBox(width: 8),
-                                                                  Expanded(
-                                                                    flex: 2,
-                                                                    child: Row(
-                                                                      children: [
-                                                                        Expanded(
-                                                                          child: Text(
-                                                                            activityItem.activity ?? '-',
-                                                                            style: TextStyle(
-                                                                              fontSize: 11.sp,
+                                                                    VerticalDivider(width: 1),
+                                                                    SizedBox(width: 8),
+                                                                    Expanded(
+                                                                      flex: 2,
+                                                                      child: Row(
+                                                                        children: [
+                                                                          Expanded(
+                                                                            child: Text(
+                                                                              activityItem.activity ?? '-',
+                                                                              style: TextStyle(
+                                                                                fontSize: 11.sp,
+                                                                              ),
                                                                             ),
                                                                           ),
-                                                                        ),
-                                                                        InkWell(
-                                                                            onTap: () {
-                                                                              toggleEditActivity(index, indexItem);
-                                                                            },
-                                                                            child: ImageIcon(
-                                                                                AssetImage("assets/icons/editActivity.png"),
-                                                                                color: primaryColor,
-                                                                                size: 12.h
-                                                                            ),
-                                                                        ),
-                                                                        const SizedBox(
-                                                                          width: 6,
-                                                                        ),
-                                                                        SizedBox(
-                                                                          height: 12.h,
-                                                                          width: 12.h,
-                                                                          child: Ink(
-                                                                            decoration: ShapeDecoration(
-                                                                                color: Colors.red,
-                                                                                shape: RoundedRectangleBorder(
-                                                                                    borderRadius: BorderRadius.circular(4.w)
-                                                                                )
-                                                                            ),
-                                                                            child: InkWell(
-                                                                                onTap: () {
-                                                                                  removeActivityConfirm(date!, indexItem, index, activityLabStage); //check tambahkan activity yang mau dihapus
-                                                                                },
-                                                                                child: Icon(
-                                                                                    Icons.remove,
-                                                                                    color: Colors.white,
-                                                                                    size: 10.h
-                                                                                )
-                                                                            ),
+                                                                          InkWell(
+                                                                              onTap: () {
+                                                                                toggleEditActivity(index, indexItem);
+                                                                              },
+                                                                              child: ImageIcon(
+                                                                                  AssetImage("assets/icons/editActivity.png"),
+                                                                                  color: primaryColor,
+                                                                                  size: 12.h
+                                                                              ),
                                                                           ),
-                                                                        )
-                                                                      ],
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              );
-                                                            } else {
-                                                              return const SizedBox();
-                                                            }
-                                                          })
-                                                    ],
-                                                  )
-                                              )
-                                            ],
-                                          ),
-                                          const Divider(),
-                                          const SizedBox(
-                                            height: 16,
-                                          ),
-                                          TextFormField(
+                                                                          const SizedBox(
+                                                                            width: 6,
+                                                                          ),
+                                                                          SizedBox(
+                                                                            height: 12.h,
+                                                                            width: 12.h,
+                                                                            child: Ink(
+                                                                              decoration: ShapeDecoration(
+                                                                                  color: Colors.red,
+                                                                                  shape: RoundedRectangleBorder(
+                                                                                      borderRadius: BorderRadius.circular(4.w)
+                                                                                  )
+                                                                              ),
+                                                                              child: InkWell(
+                                                                                  onTap: () {
+                                                                                    removeActivityConfirm("${activityItem.startActivityTime}", indexItem, index, activityLabStage); //check tambahkan activity yang mau dihapus
+                                                                                  },
+                                                                                  child: Icon(
+                                                                                      Icons.remove,
+                                                                                      color: Colors.white,
+                                                                                      size: 10.h
+                                                                                  )
+                                                                              ),
+                                                                            ),
+                                                                          )
+                                                                        ],
+                                                                      ),
+                                                                    )
+                                                                  ],
+                                                                );
+                                                              } else {
+                                                                return const SizedBox();
+                                                              }
+                                                            })
+                                                      ],
+                                                    )
+                                                )
+                                              ],
+                                            ),
+                                            const Divider(),
+                                            const SizedBox(
+                                              height: 16,
+                                            ),
+                                            TextFormField(
                                             controller: activityLabListTextController[index],
                                             inputFormatters: [
                                               LengthLimitingTextInputFormatter(
                                                   250),
                                             ],
                                             onChanged: (value){
-                                              debugPrint(value);
-                                              debugPrint('text remarks controller : ${activityLabListTextController[index].text}');
                                               editActivityRemarks(date!, value, index);
                                             },
                                             cursorColor: onFocusColor,
@@ -1175,9 +1125,10 @@ class LabActivityDetailController extends BaseController{
                     children: [
                       Expanded(
                         child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               clearActivityLabForm();
                               Get.back();
+                              await getData();
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
@@ -1362,7 +1313,7 @@ class LabActivityDetailController extends BaseController{
           TDJoLaboratoryActivityStages dataStage = dataActStage[i].copyWith(
               createdBy: createdBy,
               isUpload: 0,
-              code: "JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+              code: "JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${i}"
           );
 
           int result = await db.insert("t_d_jo_laboratory_activity_stages",dataStage.toInsert());
@@ -1400,7 +1351,7 @@ class LabActivityDetailController extends BaseController{
                   tDJoLaboratoryId: dataStage.dJoLaboratoryId,
                   createdBy: createdBy,
                   isUpload: 0,
-                  code: "JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+                  code: "JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${j}"
               );
               int rsltAct = await db.insert("t_d_jo_laboratory_activity", dataAct.toInsert());
             }else{
@@ -1777,7 +1728,7 @@ class LabActivityDetailController extends BaseController{
                                                                             ),
                                                                             child: InkWell(
                                                                                 onTap: () {
-                                                                                  removeActivityConfirm(date!, indexItem, index, activityLabStage);
+                                                                                  removeActivityConfirm("${activityItem.startActivityTime}", indexItem, index, activityLabStage);
                                                                                 },
                                                                                 child: Icon(
                                                                                     Icons.remove,

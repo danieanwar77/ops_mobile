@@ -698,14 +698,14 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                       physics: NeverScrollableScrollPhysics(),
                                                                       itemCount: progressActivity.listLabActivity?.length,
                                                                       itemBuilder: (context, indexItem){
-                                                                        var activityItem = progressActivity.listLabActivity![indexItem];
+                                                                        var activityItem = progressActivity.listLabActivity?[indexItem];
                                                                         return Row(
                                                                           crossAxisAlignment: CrossAxisAlignment.start,
                                                                           children: [
                                                                             Expanded(
                                                                               flex: 1,
                                                                               child: Text(
-                                                                                '${Helper.formatToHourMinute(activityItem.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activityItem.endActivityTime!) ?? '-'}',
+                                                                                '${Helper.formatToHourMinute(activityItem!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activityItem.endActivityTime!) ?? '-'}',
                                                                                 style: TextStyle(
                                                                                     fontSize: 12.sp,
                                                                                     fontWeight:
