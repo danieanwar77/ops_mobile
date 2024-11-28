@@ -1740,8 +1740,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       child: Text(controller.stageList.length == 0 ? "None" : controller.activityStages[controller.activityStage - 1], style: TextStyle(fontSize: 12.sp, color: Colors.white)))
                                                       : const SizedBox(),
                                                   Spacer(),
-                                                  controller.activityFinished.value == false
-                                                      ? controller.dataJoDetail.value.detail?.statusJo == 'Assigned' || controller.dataJoDetail.value.detail?.statusJo == 'On Progres'
+                                                  controller.dataJoDetail.value.detail?.statusJo == 'Assigned' || controller.dataJoDetail.value.detail?.statusJo == 'On Progres'
                                                       ? IconButton(
                                                       onPressed: () {
                                                         debugPrint("activitySubmitted ${controller.activitySubmitted.value}");
@@ -1772,7 +1771,6 @@ class JoDetailScreen extends StatelessWidget {
                                                         'assets/icons/addactivity.png',
                                                         height: 32,
                                                       ))
-                                                      : const SizedBox()
                                                       : const SizedBox(),
                                                 ]),
                                                 const SizedBox(height: 16),
