@@ -25,9 +25,7 @@ class JoDetailScreen extends StatelessWidget {
               child: Scaffold(
                   appBar: AppBar(
                     actions: [
-                      ((controller.dataJoDetail.value.detail?.picInspector != null && controller.dataJoDetail.value.detail?.picLaboratory == null) && (controller.dataJoDetail.value.inspectionFinishedDate == '' && controller.activityFinished.value == true) ) ||
-                          ((controller.dataJoDetail.value.detail?.picInspector == null && controller.dataJoDetail.value.detail?.picLaboratory != null) && (controller.dataJoDetail.value.laboratoryFinishedDate == '' && controller.activityFinished.value == true) ) ||
-                          ((controller.dataJoDetail.value.detail?.picInspector != null && controller.dataJoDetail.value.detail?.picLaboratory != null) && (controller.dataJoDetail.value.inspectionFinishedDate == '' && controller.dataJoDetail.value.laboratoryFinishedDate == '') && controller.activityFinished.value == true)
+                      controller.activityStage == 6 && (controller.joRx.value.inspectionFinishedDate != null && controller.joRx.value.inspectionFinishedDate.toString().length == 0)
                           ? IconButton(
                               onPressed: (){
                                 controller.finishStageActivityConfirm();
@@ -1687,6 +1685,7 @@ class JoDetailScreen extends StatelessWidget {
                                     controller.dataJoDetail.value.detail?.statusJo == 'Assigned' || controller.dataJoDetail.value.detail?.statusJo == 'On Progres'
                                         ? Column(children: [
                                       const SizedBox(height: 16),
+                                      controller.joRx.value.inspectionFinishedDate.toString().length == 0 ?
                                       Row(
                                         children: [
                                           Expanded(
@@ -1700,8 +1699,9 @@ class JoDetailScreen extends StatelessWidget {
                                                   border: Border.all(width: 1, color: primaryColor),
                                                   borderRadius: BorderRadius.circular(20),
                                                 ),
-                                                child: Row(children: [
-                                                  Icon(Icons.camera_alt_sharp, color: primaryColor),
+                                                child:  Row(
+                                                    children: [
+                                                      Icon(Icons.camera_alt_sharp, color: primaryColor),
                                                   Expanded(
                                                       child: Center(
                                                           child: Text(
@@ -1714,7 +1714,7 @@ class JoDetailScreen extends StatelessWidget {
                                           ),
                                           Expanded(child: const SizedBox()),
                                         ],
-                                      ),
+                                      ): const SizedBox(),
                                     ])
                                         : const SizedBox(),
                                     const SizedBox(height: 16),
@@ -1740,15 +1740,9 @@ class JoDetailScreen extends StatelessWidget {
                                                       child: Text(controller.stageList.length == 0 ? "None" : controller.activityStages[controller.activityStage - 1], style: TextStyle(fontSize: 12.sp, color: Colors.white)))
                                                       : const SizedBox(),
                                                   Spacer(),
-                                                  controller.dataJoDetail.value.detail?.statusJo == 'Assigned' || controller.dataJoDetail.value.detail?.statusJo == 'On Progres'
+                                                  (controller.dataJoDetail.value.detail?.statusJo == 'Assigned' || controller.dataJoDetail.value.detail?.statusJo == 'On Progres' ) &&  (controller.activityStage != 6)
                                                       ? IconButton(
                                                       onPressed: () {
-                                                        debugPrint("activitySubmitted ${controller.activitySubmitted.value}");
-                                                        debugPrint("activityStage ${controller.activityStage}");
-                                                        // if(controller.activityStage == 1){
-                                                        //   controller.nextStageActivityConfirm();
-                                                        //   //controller.drawerDailyActivity();
-                                                        // }
                                                         if (controller.activitySubmitted.value == true) {
                                                           controller.activityStage == 1
                                                               ? controller.nextStageActivityConfirm()
@@ -2510,7 +2504,7 @@ class JoDetailScreen extends StatelessWidget {
                                                         style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                       ),
                                                       const SizedBox(width: 8),
-                                                      controller.activityStage == 6 && controller.activitySubmitted.value == false
+                                                      controller.activityStage == 6 && (controller.joRx.value.inspectionFinishedDate == null || controller.joRx.value.inspectionFinishedDate == "")
                                                           ? InkWell(
                                                           onTap: () {
                                                             controller.drawerDailyActivity6Edit();
