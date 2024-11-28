@@ -1,3 +1,5 @@
+import 'package:ops_mobile/data/sqlite.dart';
+
 /// id : 1
 /// t_so_id : 1
 /// type_jo : 3
@@ -41,7 +43,7 @@ class THJo {
       String? endDateOfAttendance,
       String? dateAssigment,
       num? lokasiKerja, 
-      String? picInspector,
+      num? picInspector,
       num? picLaboratory, 
       dynamic inspectionCompletedDate, 
       dynamic laboratoryCompletedDate, 
@@ -100,8 +102,8 @@ class THJo {
     _endDateOfAttendance = json['end_date_of_attendance'];
     _dateAssigment = json['date_assigment'];
     _lokasiKerja = json['lokasi_kerja'];
-    _picInspector = json['pic_inspector'].toString();
-    _picLaboratory = json['pic_laboratory'];
+    //_picInspector = json['pic_inspector'];
+    //_picLaboratory = num.tryParse(json['pic_laboratory']);
     _inspectionCompletedDate = json['inspection_completed_date'];
     _laboratoryCompletedDate = json['laboratory_completed_date'];
     _inspectionFinishedDate = json['inspection_finished_date'];
@@ -129,7 +131,7 @@ class THJo {
   String? _endDateOfAttendance;
   String? _dateAssigment;
   num? _lokasiKerja;
-  String? _picInspector;
+  num? _picInspector;
   num? _picLaboratory;
   dynamic _inspectionCompletedDate;
   dynamic _laboratoryCompletedDate;
@@ -157,7 +159,7 @@ THJo copyWith({  num? id,
   String? endDateOfAttendance,
   String? dateAssigment,
   num? lokasiKerja,
-  String? picInspector,
+  num? picInspector,
   num? picLaboratory,
   dynamic inspectionCompletedDate,
   dynamic laboratoryCompletedDate,
@@ -214,7 +216,7 @@ THJo copyWith({  num? id,
   String? get endDateOfAttendance => _endDateOfAttendance;
   String? get dateAssigment => _dateAssigment;
   num? get lokasiKerja => _lokasiKerja;
-  String? get picInspector => _picInspector;
+  num? get picInspector => _picInspector;
   num? get picLaboratory => _picLaboratory;
   dynamic get inspectionCompletedDate => _inspectionCompletedDate;
   dynamic get laboratoryCompletedDate => _laboratoryCompletedDate;
@@ -286,5 +288,14 @@ THJo copyWith({  num? id,
     return map;
   }
 
+  static Future<THJo>getJoById(int id) async{
+    final db = await SqlHelper.db();
+    var joRslt = await db.rawQuery("SELECT * FROM t_h_jo WHERE id = ?", [id]);
+    if(joRslt.length > 0){
+      return THJo.fromJson(joRslt[0]);
+    }
+    return THJo();
+
+  }
 
 }

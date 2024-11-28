@@ -184,4 +184,24 @@ TDJoInspectionActivityStagesTranshipment copyWith({
     return map;
   }
 
+  Map<String, dynamic> toEdit() {
+    final map = <String, dynamic>{};
+    map['t_d_inspection_stages_id'] = _tDInspectionStagesId;
+    map['t_d_jo_inspection_activity_id'] = _tDJoInspectionActivityId;
+    map['initial_date'] = _initialDate;
+    map['final_date'] = _finalDate;
+    map['date_arrive'] = _dateArrive;
+    map['delivery_qty'] = _deliveryQty;
+    map['uom_id'] = _uomId;
+    //map['created_by'] = _createdBy;
+    map['jetty'] = _jetty;
+    //map['code'] = _code;
+    map['is_active'] = _isActive;
+    map['is_upload'] = _isUpload;
+    map['updated_by'] = _updatedBy;
+    //map['created_at'] = _createdAt;
+    map['updated_at'] = _updatedAt;
+    return map;
+  }
+
 }

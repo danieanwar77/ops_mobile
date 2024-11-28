@@ -489,10 +489,12 @@ class FormDataArray {
 
 class Transhipment {
   Transhipment({
+    int? id,
     String? jetty,
     String? initialDate,
     String? finalDate,
     String? deliveryQty,}){
+    _id = id;
     _jetty = jetty;
     _initialDate = initialDate;
     _finalDate = finalDate;
@@ -505,6 +507,7 @@ class Transhipment {
     _finalDate = json['final_date'];
     _deliveryQty = json['delivery_qty'];
   }
+  int? _id;
   String? _jetty;
   String? _initialDate;
   String? _finalDate;
@@ -518,6 +521,7 @@ class Transhipment {
     finalDate: finalDate ?? _finalDate,
     deliveryQty: deliveryQty ?? _deliveryQty,
   );
+  int? get id => _id;
   String? get jetty => _jetty;
   String? get initialDate => _initialDate;
   String? get finalDate => _finalDate;
@@ -526,6 +530,7 @@ class Transhipment {
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['jetty'] = _jetty;
+    map['id'] = _id;
     map['initial_date'] = _initialDate;
     map['final_date'] = _finalDate;
     map['delivery_qty'] = _deliveryQty;
