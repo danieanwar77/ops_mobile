@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
@@ -36,6 +37,21 @@ class LabActivityDetailScreen extends StatelessWidget{
                   ),
                 )
               ) : const SizedBox(),
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: IconButton(
+                  onPressed: (){
+
+                  },
+                  icon: CircleAvatar(
+                      backgroundColor: Color(0xffFF5C70),
+                      child: Icon(
+                        Icons.description,
+                        color: Colors.white,
+                        size: 21,
+                      )),
+                ),
+              )
             ],
             centerTitle: false,
             backgroundColor: primaryColor,
@@ -54,7 +70,16 @@ class LabActivityDetailScreen extends StatelessWidget{
             child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Obx(() => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text('Laboratory Progress',
+                        style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w700,
+                            color: primaryColor
+                        ),
+                      ),
+                      const SizedBox(height: 16,),
                       SizedBox(
                         child: Card(
                             color: Colors.white,
@@ -66,27 +91,27 @@ class LabActivityDetailScreen extends StatelessWidget{
                                   Text(controller.labName ?? '-',
                                     style: TextStyle(
                                         color: primaryColor,
-                                        fontSize: 14,
+                                        fontSize: 12.sp,
                                         fontWeight: FontWeight.w700
                                     ),
                                   ),
                                   const SizedBox(height: 16,),
                                   Row(
                                     children: [
-                                      const Expanded( child:
-                                      Text('Prelim',
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700
+                                      Expanded( child:
+                                        Text('Prelim',
+                                          style: TextStyle(
+                                              fontSize: 12.sp,
+                                              fontWeight: FontWeight.w700
+                                          ),
                                         ),
-                                      ),
                                       ),
                                       const VerticalDivider(width: 1),
                                       const SizedBox(width:16),
                                       Expanded( child:
                                       Text(controller.prelim.value ?? '-',
-                                        style: const TextStyle(
-                                          fontSize: 14,
+                                        style: TextStyle(
+                                          fontSize: 12.sp,
                                         ),
                                       ),
                                       )
@@ -97,20 +122,20 @@ class LabActivityDetailScreen extends StatelessWidget{
                                   ),
                                   Row(
                                     children: [
-                                      const Expanded( child:
-                                      Text('TAT',
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700
+                                      Expanded( child:
+                                        Text('TAT',
+                                          style: TextStyle(
+                                              fontSize: 12.sp,
+                                              fontWeight: FontWeight.w700
+                                          ),
                                         ),
-                                      ),
                                       ),
                                       const VerticalDivider(width: 1),
                                       const SizedBox(width:16),
                                       Expanded( child:
                                       Text('${controller.tat.value.toString() ??  '-'} Jam',
-                                        style: const TextStyle(
-                                          fontSize: 14,
+                                        style: TextStyle(
+                                          fontSize: 12.sp,
                                         ),
                                       ),
                                       )
@@ -136,23 +161,19 @@ class LabActivityDetailScreen extends StatelessWidget{
                                           children: [
                                             Text('Daily Activity',
                                               style: TextStyle(
-                                                  fontSize: 16,
+                                                  fontSize: 14.sp,
                                                   fontWeight: FontWeight.w700,
                                                   color: primaryColor
                                               ),
                                             ),
                                             const SizedBox(width: 8),
-                                            (controller.activityLabStage == 1 ) ? Container(
+                                            (controller.joRx.value.mStatusjoId == 2 || controller.joRx.value.mStatusjoId == 3) ? Container(
                                                 padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                                                 decoration: BoxDecoration(
                                                   color: primaryColor,
                                                   borderRadius: BorderRadius.circular(6),
                                                 ),
-                                                child: Text('New',
-                                                    style: TextStyle(
-                                                        color: Colors.white
-                                                    )
-                                                )
+                                                child: Text(controller.activityLabListStages.value.length == 0 ? "None" : controller.labStagesName[controller.activityLabStage - 1], style: TextStyle(fontSize: 12.sp, color: Colors.white))
                                             ) : const SizedBox(),
                                             Spacer(),
                                             controller.activity6ListStages.value.isEmpty && (controller.statusId == 2 || controller.statusId == 3) ? IconButton(
@@ -182,10 +203,10 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      const Text('Stage 1: Sample on Delivery',
+                                                      Text('Stage 1: Sample on Delivery',
                                                         style: TextStyle(
                                                             color: green,
-                                                            fontSize: 14,
+                                                            fontSize: 12.sp,
                                                             fontWeight: FontWeight.w700
                                                         ),
                                                       ),
@@ -212,7 +233,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text('Date',
                                                               style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 12.sp,
                                                                   fontWeight: FontWeight.w700
                                                               ),
                                                             ),
@@ -222,7 +243,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text(progressActivity.transDate ?? '-',
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                               ),
                                                             ),
                                                             )
@@ -238,7 +259,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                               child:
                                                               Text('Activities',
                                                                 style: TextStyle(
-                                                                    fontSize: 14,
+                                                                    fontSize: 12.sp,
                                                                     fontWeight: FontWeight.w700
                                                                 ),
                                                               ),
@@ -246,6 +267,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             VerticalDivider(width: 1),
                                                             SizedBox(width:8),
                                                             Expanded(
+                                                              flex: 3,
                                                               child: Column(
                                                                 children: [
                                                                   ListView.builder(
@@ -260,9 +282,9 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                             Expanded(
                                                                               flex: 1,
                                                                               child: Text(
-                                                                                '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
+                                                                                '${Helper.formatToHourMinute(activityItem.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activityItem.endActivityTime!) ?? '-'}',
                                                                                 style: TextStyle(
-                                                                                    fontSize: 14,
+                                                                                    fontSize: 12.sp,
                                                                                     fontWeight:
                                                                                     FontWeight
                                                                                         .w700),
@@ -275,7 +297,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                               child: Text(
                                                                                 activityItem.activity ?? '-',
                                                                                 style: TextStyle(
-                                                                                  fontSize: 14,
+                                                                                  fontSize: 12.sp,
                                                                                 ),
                                                                               ),
                                                                             )
@@ -295,7 +317,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text('Remarks',
                                                               style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 12.sp,
                                                                   fontWeight: FontWeight.w700
                                                               ),
                                                             ),
@@ -305,7 +327,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text(progressActivity.remarks ?? '-',
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                               ),
                                                             ),
                                                             )
@@ -323,10 +345,10 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      const Text('Stage 2: Sample Received',
+                                                      Text('Stage 2: Sample Received',
                                                         style: TextStyle(
                                                             color: green,
-                                                            fontSize: 14,
+                                                            fontSize: 12.sp,
                                                             fontWeight: FontWeight.w700
                                                         ),
                                                       ),
@@ -353,7 +375,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text('Date',
                                                               style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 12.sp,
                                                                   fontWeight: FontWeight.w700
                                                               ),
                                                             ),
@@ -363,7 +385,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text(progressActivity.transDate ?? '-',
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                               ),
                                                             ),
                                                             )
@@ -379,7 +401,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                               child:
                                                               Text('Activities',
                                                                 style: TextStyle(
-                                                                    fontSize: 14,
+                                                                    fontSize: 12.sp,
                                                                     fontWeight: FontWeight.w700
                                                                 ),
                                                               ),
@@ -387,6 +409,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             VerticalDivider(width: 1),
                                                             SizedBox(width:8),
                                                             Expanded(
+                                                              flex: 3,
                                                               child: Column(
                                                                 children: [
                                                                   ListView.builder(
@@ -401,9 +424,9 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                             Expanded(
                                                                               flex: 1,
                                                                               child: Text(
-                                                                                '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
+                                                                                '${Helper.formatToHourMinute(activityItem.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activityItem.endActivityTime!) ?? '-'}',
                                                                                 style: TextStyle(
-                                                                                    fontSize: 14,
+                                                                                    fontSize: 12.sp,
                                                                                     fontWeight:
                                                                                     FontWeight
                                                                                         .w700),
@@ -416,7 +439,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                               child: Text(
                                                                                 activityItem.activity ?? '-',
                                                                                 style: TextStyle(
-                                                                                  fontSize: 14,
+                                                                                  fontSize: 12.sp,
                                                                                 ),
                                                                               ),
                                                                             )
@@ -436,7 +459,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text('Remarks',
                                                               style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 12.sp,
                                                                   fontWeight: FontWeight.w700
                                                               ),
                                                             ),
@@ -446,7 +469,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text(progressActivity.remarks ?? '-',
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                               ),
                                                             ),
                                                             )
@@ -464,10 +487,10 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      const Text('Stage 3: Preparation for Analyze',
+                                                      Text('Stage 3: Preparation for Analyze',
                                                         style: TextStyle(
                                                             color: green,
-                                                            fontSize: 14,
+                                                            fontSize: 12.sp,
                                                             fontWeight: FontWeight.w700
                                                         ),
                                                       ),
@@ -494,7 +517,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text('Date',
                                                               style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 12.sp,
                                                                   fontWeight: FontWeight.w700
                                                               ),
                                                             ),
@@ -504,7 +527,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text(progressActivity.transDate ?? '-',
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                               ),
                                                             ),
                                                             )
@@ -520,7 +543,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                               child:
                                                               Text('Activities',
                                                                 style: TextStyle(
-                                                                    fontSize: 14,
+                                                                    fontSize: 12.sp,
                                                                     fontWeight: FontWeight.w700
                                                                 ),
                                                               ),
@@ -528,6 +551,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             VerticalDivider(width: 1),
                                                             SizedBox(width:8),
                                                             Expanded(
+                                                              flex: 3,
                                                               child: Column(
                                                                 children: [
                                                                   ListView.builder(
@@ -542,9 +566,9 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                             Expanded(
                                                                               flex: 1,
                                                                               child: Text(
-                                                                                '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
+                                                                                '${Helper.formatToHourMinute(activityItem.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activityItem.endActivityTime!) ?? '-'}',
                                                                                 style: TextStyle(
-                                                                                    fontSize: 14,
+                                                                                    fontSize: 12.sp,
                                                                                     fontWeight:
                                                                                     FontWeight
                                                                                         .w700),
@@ -557,7 +581,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                               child: Text(
                                                                                 activityItem.activity ?? '-',
                                                                                 style: TextStyle(
-                                                                                  fontSize: 14,
+                                                                                  fontSize: 12.sp,
                                                                                 ),
                                                                               ),
                                                                             )
@@ -574,7 +598,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text('Remarks',
                                                               style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 12.sp,
                                                                   fontWeight: FontWeight.w700
                                                               ),
                                                             ),
@@ -584,7 +608,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text(progressActivity.remarks ?? '-',
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                               ),
                                                             ),
                                                             )
@@ -602,10 +626,10 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      const Text('Stage 4: Analyze on Progress',
+                                                      Text('Stage 4: Analyze on Progress',
                                                         style: TextStyle(
                                                             color: green,
-                                                            fontSize: 14,
+                                                            fontSize: 12.sp,
                                                             fontWeight: FontWeight.w700
                                                         ),
                                                       ),
@@ -632,7 +656,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text('Date',
                                                               style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 12.sp,
                                                                   fontWeight: FontWeight.w700
                                                               ),
                                                             ),
@@ -642,7 +666,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text(progressActivity.transDate ?? '-',
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                               ),
                                                             ),
                                                             )
@@ -658,7 +682,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                               child:
                                                               Text('Activities',
                                                                 style: TextStyle(
-                                                                    fontSize: 14,
+                                                                    fontSize: 12.sp,
                                                                     fontWeight: FontWeight.w700
                                                                 ),
                                                               ),
@@ -666,6 +690,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             VerticalDivider(width: 1),
                                                             SizedBox(width:8),
                                                             Expanded(
+                                                              flex: 3,
                                                               child: Column(
                                                                 children: [
                                                                   ListView.builder(
@@ -680,9 +705,9 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                             Expanded(
                                                                               flex: 1,
                                                                               child: Text(
-                                                                                '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
+                                                                                '${Helper.formatToHourMinute(activityItem.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activityItem.endActivityTime!) ?? '-'}',
                                                                                 style: TextStyle(
-                                                                                    fontSize: 14,
+                                                                                    fontSize: 12.sp,
                                                                                     fontWeight:
                                                                                     FontWeight
                                                                                         .w700),
@@ -695,7 +720,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                               child: Text(
                                                                                 activityItem.activity ?? '-',
                                                                                 style: TextStyle(
-                                                                                  fontSize: 14,
+                                                                                  fontSize: 12.sp,
                                                                                 ),
                                                                               ),
                                                                             )
@@ -715,7 +740,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text('Remarks',
                                                               style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 12.sp,
                                                                   fontWeight: FontWeight.w700
                                                               ),
                                                             ),
@@ -725,7 +750,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text(progressActivity.remarks ?? '-',
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                               ),
                                                             ),
                                                             )
@@ -745,10 +770,10 @@ class LabActivityDetailScreen extends StatelessWidget{
                                           children: [
                                             Row(
                                               children: [
-                                                const Text('Stage 5: Issued Analyzed Result',
+                                                Text('Stage 5: Issued Analyzed Result',
                                                   style: TextStyle(
                                                       color: green,
-                                                      fontSize: 14,
+                                                      fontSize: 12.sp,
                                                       fontWeight: FontWeight.w700
                                                   ),
                                                 ),
@@ -781,7 +806,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                   Expanded( child:
                                                                   Text('Activity Date',
                                                                     style: TextStyle(
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                         fontWeight: FontWeight.w700
                                                                     ),
                                                                   ),
@@ -791,7 +816,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                   Expanded( child:
                                                                   Text(activity.transDate ?? '-',
                                                                     style: TextStyle(
-                                                                      fontSize: 14,
+                                                                      fontSize: 12.sp,
                                                                     ),
                                                                   ),
                                                                   )
@@ -806,7 +831,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                     child:
                                                                     Text('Activity Time',
                                                                       style: TextStyle(
-                                                                          fontSize: 14,
+                                                                          fontSize: 12.sp,
                                                                           fontWeight: FontWeight.w700
                                                                       ),
                                                                     ),
@@ -817,7 +842,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                     child:
                                                                     Text('${Helper.formatToHourMinuteFromDate(activity.createdAt ?? '')}',
                                                                       style: TextStyle(
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -832,7 +857,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                     child:
                                                                     Text('Total Sample Received',
                                                                       style: TextStyle(
-                                                                          fontSize: 14,
+                                                                          fontSize: 12.sp,
                                                                           fontWeight: FontWeight.w700
                                                                       ),
                                                                     ),
@@ -843,7 +868,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                     child:
                                                                     Text(Helper.formatNumber(activity.totalSampleReceived.toString()),
                                                                       style: TextStyle(
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -857,7 +882,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                   Expanded( child:
                                                                   Text('Total Sample Preparation',
                                                                     style: TextStyle(
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                         fontWeight: FontWeight.w700
                                                                     ),
                                                                   ),
@@ -867,7 +892,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                   Expanded( child:
                                                                   Text(Helper.formatNumber(activity.totalSamplePreparation.toString()),
                                                                     style: TextStyle(
-                                                                      fontSize: 14,
+                                                                      fontSize: 12.sp,
                                                                     ),
                                                                   ),
                                                                   )
@@ -882,7 +907,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                     child:
                                                                     Text('Total Sample Analyzed',
                                                                       style: TextStyle(
-                                                                          fontSize: 14,
+                                                                          fontSize: 12.sp,
                                                                           fontWeight: FontWeight.w700
                                                                       ),
                                                                     ),
@@ -893,7 +918,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                     child:
                                                                     Text(Helper.formatNumber(activity.totalSampleAnalyzed.toString()),
                                                                       style: TextStyle(
-                                                                        fontSize: 14,
+                                                                        fontSize: 12.sp,
                                                                       ),
                                                                     ),
                                                                   )
@@ -915,10 +940,10 @@ class LabActivityDetailScreen extends StatelessWidget{
                                           children: [
                                             Row(
                                               children: [
-                                                const Text('Stage 6: Report to Client',
+                                                Text('Stage 6: Report to Client',
                                                   style: TextStyle(
                                                       color: green,
-                                                      fontSize: 14,
+                                                      fontSize: 12.sp,
                                                       fontWeight: FontWeight.w700
                                                   ),
                                                 ),
@@ -951,7 +976,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text('Date',
                                                               style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 12.sp,
                                                                   fontWeight: FontWeight.w700
                                                               ),
                                                             ),
@@ -961,7 +986,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text(act6.transDate ?? '-',
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                               ),
                                                             ),
                                                             )
@@ -977,7 +1002,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                               child:
                                                               Text('Activities',
                                                                 style: TextStyle(
-                                                                    fontSize: 14,
+                                                                    fontSize: 12.sp,
                                                                     fontWeight: FontWeight.w700
                                                                 ),
                                                               ),
@@ -985,6 +1010,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             VerticalDivider(width: 1),
                                                             SizedBox(width:8),
                                                             Expanded(
+                                                              flex: 3,
                                                               child: Column(
                                                                 children: [
                                                                   ListView.builder(
@@ -999,9 +1025,9 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                             Expanded(
                                                                               flex: 1,
                                                                               child: Text(
-                                                                                '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
+                                                                                '${Helper.formatToHourMinute(activityItem.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activityItem.endActivityTime!) ?? '-'}',
                                                                                 style: TextStyle(
-                                                                                    fontSize: 14,
+                                                                                    fontSize: 12.sp,
                                                                                     fontWeight:
                                                                                     FontWeight
                                                                                         .w700),
@@ -1014,7 +1040,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                               child: Text(
                                                                                 activityItem.activity ?? '-',
                                                                                 style: TextStyle(
-                                                                                  fontSize: 14,
+                                                                                  fontSize: 12.sp,
                                                                                 ),
                                                                               ),
                                                                             )
@@ -1034,7 +1060,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text('Remarks',
                                                               style: TextStyle(
-                                                                  fontSize: 14,
+                                                                  fontSize: 12.sp,
                                                                   fontWeight: FontWeight.w700
                                                               ),
                                                             ),
@@ -1044,7 +1070,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                             Expanded( child:
                                                             Text(act6.remarks ?? '-',
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12.sp,
                                                               ),
                                                             ),
                                                             )
@@ -1060,7 +1086,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                             const SizedBox(height: 16),
                                             Text('Attachment',
                                               style: TextStyle(
-                                                  fontSize: 14,
+                                                  fontSize: 12.sp,
                                                   fontWeight: FontWeight.w700
                                               ),
                                             ),

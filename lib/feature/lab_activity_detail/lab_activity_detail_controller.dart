@@ -7,6 +7,7 @@ import 'package:external_path/external_path.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -749,473 +750,493 @@ class LabActivityDetailController extends BaseController{
     Get.bottomSheet(
         GetBuilder(
           init: LabActivityDetailController(),
-          builder: (controller) => Container(
-              margin: EdgeInsets.only(top: 48),
-              padding: EdgeInsets.all(24),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(topRight: Radius.circular(24), topLeft: Radius.circular(24))
-              ),
-              child: Obx(() => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Add Stage Laboratory',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: primaryColor
-                            ),
-                          ),
-                          const SizedBox(height: 16,),
-                          Text('Stage ${activityLabStage}: ${labStagesName[activityLabStage-1]}',
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700
-                            ),
-                          ),
-                          const SizedBox(height: 16,),
-                          Form(
-                            key: _formKey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                TextFormField(
-                                  showCursor: true,
-                                  readOnly: true,
-                                  controller: activityDate,
-                                  cursorColor: onFocusColor,
-                                  onTap: (){
-                                    selectDate(Get.context!);
-                                  },
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Field wajib diisi!';
-                                    }
-                                    return null;
-                                  },
-                                  style: const TextStyle(color: onFocusColor),
-                                  decoration: InputDecoration(
-                                      suffixIcon: IconButton(
-                                          onPressed: (){
-                                            selectDate(Get.context!);
-                                          },
-                                          icon: const Icon(Icons.calendar_today_rounded)
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide:
-                                        const BorderSide(color: onFocusColor),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      labelText: 'Date*',
-                                      floatingLabelStyle:
-                                      const TextStyle(color: onFocusColor),
-                                      fillColor: onFocusColor),
-                                ),
-                                const SizedBox(height: 16,),
-                                Text('Detail Activities'),
-                                const SizedBox(height: 16,),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: TextFormField(
-                                        controller: activityStartTime,
-                                        cursorColor: onFocusColor,
-                                        onTap: () async {
-                                          activityStartTime.text = await selectTime(Get.context!);
-                                        },
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Field wajib diisi!';
-                                          }
-                                          return null;
-                                        },
-                                        style: const TextStyle(color: onFocusColor),
-                                        decoration: InputDecoration(
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide:
-                                              const BorderSide(color: onFocusColor),
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            labelText: 'Start Time*',
-                                            floatingLabelStyle:
-                                            const TextStyle(color: onFocusColor),
-                                            fillColor: onFocusColor),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8,),
-                                    Expanded(
-                                      child: TextFormField(
-                                        controller: activityEndTime,
-                                        cursorColor: onFocusColor,
-                                        onTap: () async {
-                                          activityEndTime.text = await selectTime(Get.context!);
-                                        },
-                                        // validator: (value) {
-                                        //   if (value == null || value.isEmpty) {
-                                        //     return 'Field wajib diisi!';
-                                        //   }
-                                        //   return null;
-                                        // },
-                                        style: const TextStyle(color: onFocusColor),
-                                        decoration: InputDecoration(
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide:
-                                              const BorderSide(color: onFocusColor),
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            labelText: 'End Time',
-                                            floatingLabelStyle:
-                                            const TextStyle(color: onFocusColor),
-                                            fillColor: onFocusColor),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 16,),
-                                TextFormField(
-                                  controller: activityText,
-                                  cursorColor: onFocusColor,
-                                  inputFormatters: [
-                                    LengthLimitingTextInputFormatter(150),
-                                  ],
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Field wajib diisi!';
-                                    }
-                                    return null;
-                                  },
-                                  style: const TextStyle(color: onFocusColor),
-                                  decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide:
-                                        const BorderSide(color: onFocusColor),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      labelText: 'Activity*',
-                                      floatingLabelStyle:
-                                      const TextStyle(color: onFocusColor),
-                                      fillColor: onFocusColor),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 16,),
-                          InkWell(
-                            onTap: (){
-                              if (_formKey.currentState!.validate()) {
-                                if(editActivityMode.value == false){
-                                  addActivity();
-                                } else {
-                                  editActivity(editActivityIndex.value);
-                                }
-                              }
-                            },
-                            child: Container(
-                              margin: EdgeInsets.only(right: 8),
-                              height: 42,
-                              width: 42,
-                              decoration: BoxDecoration(
-                                  color: primaryColor,
-                                  borderRadius: BorderRadius.circular(8)
-                              ),
-                              child: Center(
-                                child: Icon(
-                                  editActivityMode.value == false
-                                      ? Icons.add
-                                      : Icons.check,
-                                  color: Colors.white,
-                                ),
+          builder: (controller) => PopScope(
+            canPop: false,
+            child: Container(
+                margin: EdgeInsets.only(top: 48),
+                padding: EdgeInsets.all(24),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(topRight: Radius.circular(24), topLeft: Radius.circular(24))
+                ),
+                child: Obx(() => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Add Stage Laboratory',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: primaryColor
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 16,),
-                          activityLabList.value.isNotEmpty ? ListView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: activityLabList.value.map((item){return item.transDate;}).toSet().toList().length,
-                              itemBuilder: (context, index)
-                              { var date = activityLabList.value.map((item){return item.transDate;}).toSet().toList()[index];
-                              var activity = activityLabList.value[index];
-                              return Column(
+                            const SizedBox(height: 16,),
+                            Text('Stage ${activityLabStage}: ${labStagesName[activityLabStage-1]}',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700
+                              ),
+                            ),
+                            const SizedBox(height: 16,),
+                            Form(
+                              key: _formKey,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Card(
-                                    color: Colors.white,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 16,
-                                          right: 16,
-                                          top: 8,
-                                          bottom: 16),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Expanded(
-                                                flex: 2,
-                                                child: Text(
-                                                  'Date',
-                                                  style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                      FontWeight
-                                                          .w700),
-                                                ),
-                                              ),
-                                              VerticalDivider(width: 1),
-                                              SizedBox(width: 16),
-                                              Expanded(
-                                                flex: 2,
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 1,
-                                                      child: Text(
-                                                        date ?? '-',
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    InkWell(
-                                                        onTap:
-                                                            () {
-                                                          removeActivityByDateConfirm(date!, index, activityLabStage);
-                                                        },
-                                                        child: Icon(
-                                                          Icons
-                                                              .delete_forever,
-                                                          color: Colors
-                                                              .red,
-                                                        ))
-                                                  ],
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                          Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Expanded(
-                                                flex: 1,
-                                                child: Text(
-                                                  'Activities',
-                                                  style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                      FontWeight
-                                                          .w700),
-                                                ),
-                                              ),
-                                              VerticalDivider(width: 1),
-                                              SizedBox(width: 8),
-                                              Expanded(
-                                                  child: Column(
-                                                    children: [
-                                                      ListView.builder(
-                                                          shrinkWrap: true,
-                                                          physics: NeverScrollableScrollPhysics(),
-                                                          itemCount: activity.listLabActivity?.length,
-                                                          itemBuilder: (context, indexItem){
-                                                            if(activityLabList.value[index].transDate == date){
-                                                              var activityItem = activity.listLabActivity![indexItem];
-                                                              return Row(
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  Expanded(
-                                                                    flex: 1,
-                                                                    child: Text(
-                                                                      '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
-                                                                      style: TextStyle(
-                                                                          fontSize: 14,
-                                                                          fontWeight:
-                                                                          FontWeight
-                                                                              .w700),
-                                                                    ),
-                                                                  ),
-                                                                  VerticalDivider(width: 1),
-                                                                  SizedBox(width: 8),
-                                                                  Expanded(
-                                                                    flex: 2,
-                                                                    child: Row(
-                                                                      children: [
-                                                                        Expanded(
-                                                                          child: Text(
-                                                                            activityItem.activity ?? '-',
-                                                                            style: TextStyle(
-                                                                              fontSize: 14,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        InkWell(
-                                                                            onTap: () {
-                                                                              toggleEditActivity(index, indexItem);
-                                                                            },
-                                                                            child: Icon(
-                                                                              Icons
-                                                                                  .mode_edit_outlined,
-                                                                              color:
-                                                                              primaryColor,
-                                                                            )),
-                                                                        InkWell(
-                                                                            onTap: () {
-                                                                              removeActivityConfirm(date!, indexItem, index, activityLabStage); //check tambahkan activity yang mau dihapus
-                                                                            },
-                                                                            child: Icon(
-                                                                              Icons
-                                                                                  .delete_forever,
-                                                                              color: Colors
-                                                                                  .red,
-                                                                            ))
-                                                                      ],
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              );
-                                                            } else {
-                                                              return const SizedBox();
-                                                            }
-                                                          })
-                                                    ],
-                                                  )
-                                              )
-                                            ],
-                                          ),
-                                          const Divider(),
-                                          const SizedBox(
-                                            height: 16,
-                                          ),
-                                          TextFormField(
-                                            controller: activityLabListTextController[index],
-                                            inputFormatters: [
-                                              LengthLimitingTextInputFormatter(
-                                                  250),
-                                            ],
-                                            onChanged: (value){
-                                              debugPrint(value);
-                                              debugPrint('text remarks controller : ${activityLabListTextController[index].text}');
-                                              editActivityRemarks(date!, value, index);
+                                  TextFormField(
+                                    showCursor: true,
+                                    readOnly: true,
+                                    controller: activityDate,
+                                    cursorColor: onFocusColor,
+                                    onTap: (){
+                                      selectDate(Get.context!);
+                                    },
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Field wajib diisi!';
+                                      }
+                                      return null;
+                                    },
+                                    style: const TextStyle(color: onFocusColor),
+                                    decoration: InputDecoration(
+                                        suffixIcon: IconButton(
+                                            onPressed: (){
+                                              selectDate(Get.context!);
                                             },
-                                            cursorColor: onFocusColor,
-                                            style: const TextStyle(
-                                                color: onFocusColor),
-                                            decoration: InputDecoration(
-                                                border:
-                                                OutlineInputBorder(
-                                                  borderRadius:
-                                                  BorderRadius
-                                                      .circular(12),
-                                                ),
-                                                focusedBorder:
-                                                OutlineInputBorder(
-                                                  borderSide:
-                                                  const BorderSide(
-                                                      color:
-                                                      onFocusColor),
-                                                  borderRadius:
-                                                  BorderRadius
-                                                      .circular(12),
-                                                ),
-                                                labelText: 'Remarks',
-                                                floatingLabelStyle:
-                                                const TextStyle(
-                                                    color:
-                                                    onFocusColor),
-                                                fillColor:
-                                                onFocusColor),
-                                          ),
-                                        ],
+                                            icon: const Icon(Icons.calendar_today_rounded)
+                                        ),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide:
+                                          const BorderSide(color: onFocusColor),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        labelText: 'Date*',
+                                        floatingLabelStyle:
+                                        const TextStyle(color: onFocusColor),
+                                        fillColor: onFocusColor),
+                                  ),
+                                  const SizedBox(height: 16,),
+                                  Text('Detail Activities'),
+                                  const SizedBox(height: 16,),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextFormField(
+                                          controller: activityStartTime,
+                                          cursorColor: onFocusColor,
+                                          onTap: () async {
+                                            activityStartTime.text = await selectTime(Get.context!);
+                                          },
+                                          validator: (value) {
+                                            if (value == null || value.isEmpty) {
+                                              return 'Field wajib diisi!';
+                                            }
+                                            return null;
+                                          },
+                                          style: const TextStyle(color: onFocusColor),
+                                          decoration: InputDecoration(
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide:
+                                                const BorderSide(color: onFocusColor),
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              labelText: 'Start Time*',
+                                              floatingLabelStyle:
+                                              const TextStyle(color: onFocusColor),
+                                              fillColor: onFocusColor),
+                                        ),
                                       ),
-                                    ),
+                                      const SizedBox(width: 8,),
+                                      Expanded(
+                                        child: TextFormField(
+                                          controller: activityEndTime,
+                                          cursorColor: onFocusColor,
+                                          onTap: () async {
+                                            activityEndTime.text = await selectTime(Get.context!);
+                                          },
+                                          // validator: (value) {
+                                          //   if (value == null || value.isEmpty) {
+                                          //     return 'Field wajib diisi!';
+                                          //   }
+                                          //   return null;
+                                          // },
+                                          style: const TextStyle(color: onFocusColor),
+                                          decoration: InputDecoration(
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide:
+                                                const BorderSide(color: onFocusColor),
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              labelText: 'End Time',
+                                              floatingLabelStyle:
+                                              const TextStyle(color: onFocusColor),
+                                              fillColor: onFocusColor),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16,),
+                                  TextFormField(
+                                    controller: activityText,
+                                    cursorColor: onFocusColor,
+                                    inputFormatters: [
+                                      LengthLimitingTextInputFormatter(150),
+                                    ],
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Field wajib diisi!';
+                                      }
+                                      return null;
+                                    },
+                                    style: const TextStyle(color: onFocusColor),
+                                    decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide:
+                                          const BorderSide(color: onFocusColor),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        labelText: 'Activity*',
+                                        floatingLabelStyle:
+                                        const TextStyle(color: onFocusColor),
+                                        fillColor: onFocusColor),
                                   ),
                                 ],
-                              );
-                              }) : SizedBox(),
-                        ],
+                              ),
+                            ),
+                            const SizedBox(height: 16,),
+                            InkWell(
+                              onTap: (){
+                                if (_formKey.currentState!.validate()) {
+                                  if(editActivityMode.value == false){
+                                    addActivity();
+                                  } else {
+                                    editActivity(editActivityIndex.value);
+                                  }
+                                }
+                              },
+                              child: Container(
+                                margin: EdgeInsets.only(right: 8),
+                                height: 42,
+                                width: 42,
+                                decoration: BoxDecoration(
+                                    color: primaryColor,
+                                    borderRadius: BorderRadius.circular(8)
+                                ),
+                                child: Center(
+                                  child: Icon(
+                                    editActivityMode.value == false
+                                        ? Icons.add
+                                        : Icons.check,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16,),
+                            activityLabList.value.isNotEmpty ? ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: activityLabList.value.map((item){return item.transDate;}).toSet().toList().length,
+                                itemBuilder: (context, index)
+                                { var date = activityLabList.value.map((item){return item.transDate;}).toSet().toList()[index];
+                                var activity = activityLabList.value[index];
+                                return Column(
+                                  children: [
+                                    Card(
+                                      color: Colors.white,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 16,
+                                            right: 16,
+                                            top: 8,
+                                            bottom: 16),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  flex: 2,
+                                                  child: Text(
+                                                    'Date',
+                                                    style: TextStyle(
+                                                        fontSize: 11.sp,
+                                                        fontWeight:
+                                                        FontWeight
+                                                            .w700),
+                                                  ),
+                                                ),
+                                                const VerticalDivider(width: 1),
+                                                const SizedBox(width: 16),
+                                                Expanded(
+                                                  flex: 2,
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        date ?? '-',
+                                                        style: TextStyle(
+                                                          fontSize: 11.sp,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 8,),
+                                                      InkWell(
+                                                          onTap:
+                                                              () {
+                                                            removeActivityByDateConfirm(date!, index, activityLabStage);
+                                                          },
+                                                          child: const ImageIcon(
+                                                              AssetImage("assets/icons/deleteStage.png"),
+                                                              color: Colors.red,
+                                                              size: 18
+                                                          ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            const SizedBox(
+                                              height: 16,
+                                            ),
+                                            Row(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Expanded(
+                                                  flex: 1,
+                                                  child: Text(
+                                                    'Activities',
+                                                    style: TextStyle(
+                                                        fontSize: 11.sp,
+                                                        fontWeight:
+                                                        FontWeight
+                                                            .w700),
+                                                  ),
+                                                ),
+                                                VerticalDivider(width: 1),
+                                                SizedBox(width: 8),
+                                                Expanded(
+                                                    flex: 3,
+                                                    child: Column(
+                                                      children: [
+                                                        ListView.builder(
+                                                            shrinkWrap: true,
+                                                            physics: NeverScrollableScrollPhysics(),
+                                                            itemCount: activity.listLabActivity?.length,
+                                                            itemBuilder: (context, indexItem){
+                                                              if(activityLabList.value[index].transDate == date){
+                                                                var activityItem = activity.listLabActivity![indexItem];
+                                                                return Row(
+                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  children: [
+                                                                    Expanded(
+                                                                      flex: 1,
+                                                                      child: Text(
+                                                                        '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
+                                                                        style: TextStyle(
+                                                                            fontSize: 10.sp,
+                                                                            fontWeight:
+                                                                            FontWeight
+                                                                                .w700),
+                                                                      ),
+                                                                    ),
+                                                                    VerticalDivider(width: 1),
+                                                                    SizedBox(width: 8),
+                                                                    Expanded(
+                                                                      flex: 2,
+                                                                      child: Row(
+                                                                        children: [
+                                                                          Expanded(
+                                                                            child: Text(
+                                                                              activityItem.activity ?? '-',
+                                                                              style: TextStyle(
+                                                                                fontSize: 11.sp,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          InkWell(
+                                                                              onTap: () {
+                                                                                toggleEditActivity(index, indexItem);
+                                                                              },
+                                                                              child: ImageIcon(
+                                                                                  AssetImage("assets/icons/editActivity.png"),
+                                                                                  color: primaryColor,
+                                                                                  size: 12.h
+                                                                              ),
+                                                                          ),
+                                                                          const SizedBox(width: 8,),
+                                                                          SizedBox(
+                                                                            height: 12.h,
+                                                                            width: 12.h,
+                                                                            child: Ink(
+                                                                              decoration: ShapeDecoration(
+                                                                                  color: Colors.red,
+                                                                                  shape: RoundedRectangleBorder(
+                                                                                      borderRadius: BorderRadius.circular(4.w)
+                                                                                  )
+                                                                              ),
+                                                                              child: InkWell(
+                                                                                  onTap: () {
+                                                                                    removeActivityConfirm(date!, indexItem, index, activityLabStage, activityItem.startActivityTime!, activityItem.endActivityTime ?? '' ); //check tambahkan activity yang mau dihapus
+                                                                                  },
+                                                                                child: Icon(
+                                                                                    Icons.remove,
+                                                                                    color: Colors.white,
+                                                                                    size: 10.h
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          )
+                                                                        ],
+                                                                      ),
+                                                                    )
+                                                                  ],
+                                                                );
+                                                              } else {
+                                                                return const SizedBox();
+                                                              }
+                                                            })
+                                                      ],
+                                                    )
+                                                )
+                                              ],
+                                            ),
+                                            const Divider(),
+                                            const SizedBox(
+                                              height: 16,
+                                            ),
+                                            TextFormField(
+                                              controller: activityLabListTextController[index],
+                                              inputFormatters: [
+                                                LengthLimitingTextInputFormatter(
+                                                    250),
+                                              ],
+                                              onChanged: (value){
+                                                debugPrint(value);
+                                                debugPrint('text remarks controller : ${activityLabListTextController[index].text}');
+                                                editActivityRemarks(date!, value, index);
+                                              },
+                                              cursorColor: onFocusColor,
+                                              style: const TextStyle(
+                                                  color: onFocusColor),
+                                              decoration: InputDecoration(
+                                                  border:
+                                                  OutlineInputBorder(
+                                                    borderRadius:
+                                                    BorderRadius
+                                                        .circular(12),
+                                                  ),
+                                                  focusedBorder:
+                                                  OutlineInputBorder(
+                                                    borderSide:
+                                                    const BorderSide(
+                                                        color:
+                                                        onFocusColor),
+                                                    borderRadius:
+                                                    BorderRadius
+                                                        .circular(12),
+                                                  ),
+                                                  labelText: 'Remarks',
+                                                  floatingLabelStyle:
+                                                  const TextStyle(
+                                                      color:
+                                                      onFocusColor),
+                                                  fillColor:
+                                                  onFocusColor),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                                }) : SizedBox(),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                            onPressed: () {
-                              clearActivityLabForm();
-                              Get.back();
-                            },
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                    side: BorderSide(color: primaryColor),
-                                    borderRadius: BorderRadius.circular(12))),
-                            child: Container(
-                                padding:
-                                const EdgeInsets.symmetric(vertical: 12),
-                                width: double.infinity,
-                                child: Center(
-                                    child: Text(
-                                      'Cancel',
-                                      style: TextStyle(
-                                          color: primaryColor,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                    )
-                                )
-                            )
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                              onPressed: () {
+                                clearActivityLabForm();
+                                Get.back();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                      side: BorderSide(color: primaryColor),
+                                      borderRadius: BorderRadius.circular(12))),
+                              child: Container(
+                                  padding:
+                                  const EdgeInsets.symmetric(vertical: 12),
+                                  width: double.infinity,
+                                  child: Center(
+                                      child: Text(
+                                        'Cancel',
+                                        style: TextStyle(
+                                            color: primaryColor,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      )
+                                  )
+                              )
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 16,),
-                      Expanded(
-                        child: ElevatedButton(
-                            onPressed: () {
-                              addActivityLabStageConfirm();
-                            },
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: primaryColor,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12))),
-                            child: Container(
-                                padding:
-                                const EdgeInsets.symmetric(vertical: 12),
-                                width: double.infinity,
-                                child: Center(
-                                    child: Text(
-                                      'Submit',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                    )
-                                )
-                            )
+                        const SizedBox(width: 16,),
+                        Expanded(
+                          child: ElevatedButton(
+                              onPressed: () {
+                                addActivityLabStageConfirm();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: primaryColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12))),
+                              child: Container(
+                                  padding:
+                                  const EdgeInsets.symmetric(vertical: 12),
+                                  width: double.infinity,
+                                  child: Center(
+                                      child: Text(
+                                        'Submit',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      )
+                                  )
+                              )
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16,),
-                ],
-              ),
-              )
+                      ],
+                    ),
+                    const SizedBox(height: 16,),
+                  ],
+                ),
+                )
+            ),
           ),
         ),
-        isScrollControlled: true
+        isScrollControlled: true,
+        isDismissible: false,
+        enableDrag: false
     );
   }
 
@@ -1269,7 +1290,7 @@ class LabActivityDetailController extends BaseController{
     );
   }
 
-  void removeActivityConfirm(String date, int indexitem, int index, int stage) {
+  void removeActivityConfirm(String date, int indexitem, int index, int stage, String start, String? end) {
     Get.dialog(
       AlertDialog(
         title: Text(
@@ -1277,7 +1298,7 @@ class LabActivityDetailController extends BaseController{
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Apakah anda ingin menghapus activity date $date'),
+        content: Text('Apakah anda ingin menghapus activity time $start ${end != '' ? '- $end' : '' } ?'),
         actions: [
           TextButton(
             child: const Text("Close"),
@@ -1306,7 +1327,7 @@ class LabActivityDetailController extends BaseController{
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Apakah anda ingin menghapus activity date $date'),
+        content: Text('Apakah anda ingin menghapus activity date $date ?'),
         actions: [
           TextButton(
             child: const Text("Close"),
@@ -1424,465 +1445,488 @@ class LabActivityDetailController extends BaseController{
     Get.bottomSheet(
         GetBuilder(
           init: LabActivityDetailController(),
-          builder: (controller) => Container(
-              margin: EdgeInsets.only(top: 48),
-              padding: EdgeInsets.all(24),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(topRight: Radius.circular(24), topLeft: Radius.circular(24))
-              ),
-              child: Obx(() => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Add Stage Laboratory',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: primaryColor
-                            ),
-                          ),
-                          const SizedBox(height: 16,),
-                          Text('Stage ${activityLabStage}: ${labStagesName[activityLabStage-1]}',
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700
-                            ),
-                          ),
-                          const SizedBox(height: 16,),
-                          Form(
-                            key: _formKey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                TextFormField(
-                                  showCursor: true,
-                                  readOnly: true,
-                                  controller: activityDate,
-                                  cursorColor: onFocusColor,
-                                  onTap: (){
-                                    selectDate(Get.context!);
-                                  },
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Field wajib diisi!';
-                                    }
-                                    return null;
-                                  },
-                                  style: const TextStyle(color: onFocusColor),
-                                  decoration: InputDecoration(
-                                      suffixIcon: IconButton(
-                                          onPressed: (){
-                                            selectDate(Get.context!);
-                                          },
-                                          icon: const Icon(Icons.calendar_today_rounded)
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide:
-                                        const BorderSide(color: onFocusColor),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      labelText: 'Date*',
-                                      floatingLabelStyle:
-                                      const TextStyle(color: onFocusColor),
-                                      fillColor: onFocusColor),
-                                ),
-                                const SizedBox(height: 16,),
-                                Text('Detail Activities'),
-                                const SizedBox(height: 16,),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: TextFormField(
-                                        controller: activityStartTime,
-                                        cursorColor: onFocusColor,
-                                        onTap: () async {
-                                          activityStartTime.text = await selectTime(Get.context!);
-                                        },
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Field wajib diisi!';
-                                          }
-                                          return null;
-                                        },
-                                        style: const TextStyle(color: onFocusColor),
-                                        decoration: InputDecoration(
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide:
-                                              const BorderSide(color: onFocusColor),
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            labelText: 'Start Time*',
-                                            floatingLabelStyle:
-                                            const TextStyle(color: onFocusColor),
-                                            fillColor: onFocusColor),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8,),
-                                    Expanded(
-                                      child: TextFormField(
-                                        controller: activityEndTime,
-                                        cursorColor: onFocusColor,
-                                        onTap: () async {
-                                          activityEndTime.text = await selectTime(Get.context!);
-                                        },
-                                        style: const TextStyle(color: onFocusColor),
-                                        decoration: InputDecoration(
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide:
-                                              const BorderSide(color: onFocusColor),
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            labelText: 'End Time',
-                                            floatingLabelStyle:
-                                            const TextStyle(color: onFocusColor),
-                                            fillColor: onFocusColor),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 16,),
-                                TextFormField(
-                                  controller: activityText,
-                                  cursorColor: onFocusColor,
-                                  inputFormatters: [
-                                    LengthLimitingTextInputFormatter(150),
-                                  ],
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Field wajib diisi!';
-                                    }
-                                    return null;
-                                  },
-                                  style: const TextStyle(color: onFocusColor),
-                                  decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide:
-                                        const BorderSide(color: onFocusColor),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      labelText: 'Activity*',
-                                      floatingLabelStyle:
-                                      const TextStyle(color: onFocusColor),
-                                      fillColor: onFocusColor),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 16,),
-                          InkWell(
-                            onTap: (){
-                              if (_formKey.currentState!.validate()) {
-                                if(editActivityMode.value == false){
-                                  addActivity();
-                                } else {
-                                  editActivity(editActivityIndex.value);
-                                }
-                              }
-                            },
-                            child: Container(
-                              margin: EdgeInsets.only(right: 8),
-                              height: 42,
-                              width: 42,
-                              decoration: BoxDecoration(
-                                  color: primaryColor,
-                                  borderRadius: BorderRadius.circular(8)
-                              ),
-                              child: Center(
-                                child: Icon(
-                                  editActivityMode.value == false
-                                      ? Icons.add
-                                      : Icons.check,
-                                  color: Colors.white,
-                                ),
+          builder: (controller) => PopScope(
+            canPop: false,
+            child: Container(
+                margin: EdgeInsets.only(top: 48),
+                padding: EdgeInsets.all(24),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(topRight: Radius.circular(24), topLeft: Radius.circular(24))
+                ),
+                child: Obx(() => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Add Stage Laboratory',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: primaryColor
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 16,),
-                          activityLabList.value.isNotEmpty ? ListView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: activityLabList.value.map((item){return item.transDate;}).toSet().toList().length,
-                              itemBuilder: (context, index) {
-                                var date = activityLabList.value.map((item){return item.transDate;}).toSet().toList()[index];
-                                var activity = activityLabList.value[index];
-                              return Column(
+                            const SizedBox(height: 16,),
+                            Text('Stage ${activityLabStage}: ${labStagesName[activityLabStage-1]}',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700
+                              ),
+                            ),
+                            const SizedBox(height: 16,),
+                            Form(
+                              key: _formKey,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Card(
-                                    color: Colors.white,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 16,
-                                          right: 16,
-                                          top: 8,
-                                          bottom: 16),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Expanded(
-                                                flex: 2,
-                                                child: Text(
-                                                  'Date',
-                                                  style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                      FontWeight
-                                                          .w700),
-                                                ),
-                                              ),
-                                              VerticalDivider(width: 1),
-                                              SizedBox(width: 16),
-                                              Expanded(
-                                                flex: 2,
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 1,
-                                                      child: Text(
-                                                        date ?? '-',
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    IconButton(
-                                                        onPressed:
-                                                            () {
-                                                          removeActivityByDateConfirm(date!, index, activityLabStage);
-                                                        },
-                                                        icon: Icon(
-                                                          Icons
-                                                              .delete_forever,
-                                                          color: Colors
-                                                              .red,
-                                                        ))
-                                                  ],
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                          Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Expanded(
-                                                flex: 1,
-                                                child: Text(
-                                                  'Activities',
-                                                  style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                      FontWeight
-                                                          .w700),
-                                                ),
-                                              ),
-                                              VerticalDivider(width: 1),
-                                              SizedBox(width: 8),
-                                              Expanded(
-                                                  child: Column(
-                                                    children: [
-                                                      ListView.builder(
-                                                          shrinkWrap: true,
-                                                          physics: NeverScrollableScrollPhysics(),
-                                                          itemCount: activity.listLabActivity?.length,
-                                                          itemBuilder: (context, indexItem){
-                                                            var activityItem = activity.listLabActivity![indexItem];
-                                                            if(activityLabList.value[index].transDate == date){
-                                                              return Row(
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  Expanded(
-                                                                    flex: 1,
-                                                                    child: Text(
-                                                                      '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
-                                                                      style: TextStyle(
-                                                                          fontSize: 14,
-                                                                          fontWeight:
-                                                                          FontWeight
-                                                                              .w700),
-                                                                    ),
-                                                                  ),
-                                                                  VerticalDivider(width: 1),
-                                                                  SizedBox(width: 8),
-                                                                  Expanded(
-                                                                    flex: 2,
-                                                                    child: Row(
-                                                                      children: [
-                                                                        Expanded(
-                                                                          child: Text(
-                                                                            activityItem.activity ?? '-',
-                                                                            style: TextStyle(
-                                                                              fontSize: 14,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        InkWell(
-                                                                            onTap: () {
-                                                                              toggleEditActivity(index, indexItem);
-                                                                            },
-                                                                            child: const Icon(
-                                                                              Icons.mode_edit_outlined,
-                                                                              color: primaryColor,
-                                                                            )
-                                                                        ),
-                                                                        InkWell(
-                                                                            onTap: () {
-                                                                              removeActivityConfirm(date!, indexItem, index, activityLabStage);
-                                                                            },
-                                                                            child: const Icon(Icons.delete_forever,
-                                                                              color: Colors.red,
-                                                                            )
-                                                                        )
-                                                                      ],
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              );
-                                                            } else {
-                                                              return const SizedBox();
-                                                            }
-                                                          }
-                                                          )
-                                                    ],
-                                                  )
-                                              )
-                                            ],
-                                          ),
-                                          const Divider(),
-                                          const SizedBox(
-                                            height: 16,
-                                          ),
-                                          TextFormField(
-                                            controller: activityLabListTextController[index],
-                                            inputFormatters: [
-                                              LengthLimitingTextInputFormatter(
-                                                  250),
-                                            ],
-                                            onChanged: (value){
-                                              debugPrint(value);
-                                              debugPrint('text remarks controller : ${activityLabListTextController[index].text}');
-                                              editActivityRemarks(date!, value, index);
+                                  TextFormField(
+                                    showCursor: true,
+                                    readOnly: true,
+                                    controller: activityDate,
+                                    cursorColor: onFocusColor,
+                                    onTap: (){
+                                      selectDate(Get.context!);
+                                    },
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Field wajib diisi!';
+                                      }
+                                      return null;
+                                    },
+                                    style: const TextStyle(color: onFocusColor),
+                                    decoration: InputDecoration(
+                                        suffixIcon: IconButton(
+                                            onPressed: (){
+                                              selectDate(Get.context!);
                                             },
-                                            cursorColor: onFocusColor,
-                                            style: const TextStyle(
-                                                color: onFocusColor),
-                                            decoration: InputDecoration(
-                                                border:
-                                                OutlineInputBorder(
-                                                  borderRadius:
-                                                  BorderRadius
-                                                      .circular(12),
-                                                ),
-                                                focusedBorder:
-                                                OutlineInputBorder(
-                                                  borderSide:
-                                                  const BorderSide(
-                                                      color:
-                                                      onFocusColor),
-                                                  borderRadius:
-                                                  BorderRadius
-                                                      .circular(12),
-                                                ),
-                                                labelText: 'Remarks',
-                                                floatingLabelStyle:
-                                                const TextStyle(
-                                                    color:
-                                                    onFocusColor),
-                                                fillColor:
-                                                onFocusColor),
-                                          ),
-                                        ],
+                                            icon: const Icon(Icons.calendar_today_rounded)
+                                        ),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide:
+                                          const BorderSide(color: onFocusColor),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        labelText: 'Date*',
+                                        floatingLabelStyle:
+                                        const TextStyle(color: onFocusColor),
+                                        fillColor: onFocusColor),
+                                  ),
+                                  const SizedBox(height: 16,),
+                                  Text('Detail Activities'),
+                                  const SizedBox(height: 16,),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextFormField(
+                                          controller: activityStartTime,
+                                          cursorColor: onFocusColor,
+                                          onTap: () async {
+                                            activityStartTime.text = await selectTime(Get.context!);
+                                          },
+                                          validator: (value) {
+                                            if (value == null || value.isEmpty) {
+                                              return 'Field wajib diisi!';
+                                            }
+                                            return null;
+                                          },
+                                          style: const TextStyle(color: onFocusColor),
+                                          decoration: InputDecoration(
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide:
+                                                const BorderSide(color: onFocusColor),
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              labelText: 'Start Time*',
+                                              floatingLabelStyle:
+                                              const TextStyle(color: onFocusColor),
+                                              fillColor: onFocusColor),
+                                        ),
                                       ),
-                                    ),
+                                      const SizedBox(width: 8,),
+                                      Expanded(
+                                        child: TextFormField(
+                                          controller: activityEndTime,
+                                          cursorColor: onFocusColor,
+                                          onTap: () async {
+                                            activityEndTime.text = await selectTime(Get.context!);
+                                          },
+                                          style: const TextStyle(color: onFocusColor),
+                                          decoration: InputDecoration(
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide:
+                                                const BorderSide(color: onFocusColor),
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              labelText: 'End Time',
+                                              floatingLabelStyle:
+                                              const TextStyle(color: onFocusColor),
+                                              fillColor: onFocusColor),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16,),
+                                  TextFormField(
+                                    controller: activityText,
+                                    cursorColor: onFocusColor,
+                                    inputFormatters: [
+                                      LengthLimitingTextInputFormatter(150),
+                                    ],
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Field wajib diisi!';
+                                      }
+                                      return null;
+                                    },
+                                    style: const TextStyle(color: onFocusColor),
+                                    decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide:
+                                          const BorderSide(color: onFocusColor),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        labelText: 'Activity*',
+                                        floatingLabelStyle:
+                                        const TextStyle(color: onFocusColor),
+                                        fillColor: onFocusColor),
                                   ),
                                 ],
-                              );
-                              }) : SizedBox(),
-                        ],
+                              ),
+                            ),
+                            const SizedBox(height: 16,),
+                            InkWell(
+                              onTap: (){
+                                if (_formKey.currentState!.validate()) {
+                                  if(editActivityMode.value == false){
+                                    addActivity();
+                                  } else {
+                                    editActivity(editActivityIndex.value);
+                                  }
+                                }
+                              },
+                              child: Container(
+                                margin: EdgeInsets.only(right: 8),
+                                height: 42,
+                                width: 42,
+                                decoration: BoxDecoration(
+                                    color: primaryColor,
+                                    borderRadius: BorderRadius.circular(8)
+                                ),
+                                child: Center(
+                                  child: Icon(
+                                    editActivityMode.value == false
+                                        ? Icons.add
+                                        : Icons.check,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16,),
+                            activityLabList.value.isNotEmpty ? ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: activityLabList.value.map((item){return item.transDate;}).toSet().toList().length,
+                                itemBuilder: (context, index) {
+                                  var date = activityLabList.value.map((item){return item.transDate;}).toSet().toList()[index];
+                                  var activity = activityLabList.value[index];
+                                return Column(
+                                  children: [
+                                    Card(
+                                      color: Colors.white,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 16,
+                                            right: 16,
+                                            top: 8,
+                                            bottom: 16),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  flex: 2,
+                                                  child: Text(
+                                                    'Date',
+                                                    style: TextStyle(
+                                                        fontSize: 11.sp,
+                                                        fontWeight:
+                                                        FontWeight
+                                                            .w700),
+                                                  ),
+                                                ),
+                                                VerticalDivider(width: 1),
+                                                SizedBox(width: 16),
+                                                Expanded(
+                                                  flex: 2,
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        date ?? '-',
+                                                        style: TextStyle(
+                                                          fontSize: 11.sp,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 8,),
+                                                      IconButton(
+                                                          onPressed:
+                                                              () {
+                                                            removeActivityByDateConfirm(date!, index, activityLabStage);
+                                                          },
+                                                          icon: const ImageIcon(
+                                                              AssetImage("assets/icons/deleteStage.png"),
+                                                              color: Colors.red,
+                                                              size: 18
+                                                          ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            const SizedBox(
+                                              height: 16,
+                                            ),
+                                            Row(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Expanded(
+                                                  flex: 1,
+                                                  child: Text(
+                                                    'Activities',
+                                                    style: TextStyle(
+                                                        fontSize: 11.sp,
+                                                        fontWeight:
+                                                        FontWeight
+                                                            .w700),
+                                                  ),
+                                                ),
+                                                VerticalDivider(width: 1),
+                                                SizedBox(width: 8),
+                                                Expanded(
+                                                    flex: 3,
+                                                    child: Column(
+                                                      children: [
+                                                        ListView.builder(
+                                                            shrinkWrap: true,
+                                                            physics: NeverScrollableScrollPhysics(),
+                                                            itemCount: activity.listLabActivity?.length,
+                                                            itemBuilder: (context, indexItem){
+                                                              var activityItem = activity.listLabActivity![indexItem];
+                                                              if(activityLabList.value[index].transDate == date){
+                                                                return Row(
+                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  children: [
+                                                                    Expanded(
+                                                                      flex: 1,
+                                                                      child: Text(
+                                                                        '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
+                                                                        style: TextStyle(
+                                                                            fontSize: 11.sp,
+                                                                            fontWeight:
+                                                                            FontWeight
+                                                                                .w700),
+                                                                      ),
+                                                                    ),
+                                                                    VerticalDivider(width: 1),
+                                                                    SizedBox(width: 8),
+                                                                    Expanded(
+                                                                      flex: 2,
+                                                                      child: Row(
+                                                                        children: [
+                                                                          Expanded(
+                                                                            child: Text(
+                                                                              activityItem.activity ?? '-',
+                                                                              style: TextStyle(
+                                                                                fontSize: 11.sp,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          InkWell(
+                                                                              onTap: () {
+                                                                                toggleEditActivity(index, indexItem);
+                                                                              },
+                                                                            child: ImageIcon(
+                                                                                AssetImage("assets/icons/editActivity.png"),
+                                                                                color: primaryColor,
+                                                                                size: 12.h
+                                                                            ),
+                                                                          ),
+                                                                          const SizedBox(width: 8,),
+                                                                          SizedBox(
+                                                                            height: 12.h,
+                                                                            width: 12.h,
+                                                                            child: Ink(
+                                                                              decoration: ShapeDecoration(
+                                                                                  color: Colors.red,
+                                                                                  shape: RoundedRectangleBorder(
+                                                                                      borderRadius: BorderRadius.circular(4.w)
+                                                                                  )
+                                                                              ),
+                                                                              child: InkWell(
+                                                                                  onTap: () {
+                                                                                    removeActivityConfirm(date!, indexItem, index, activityLabStage, activityItem.startActivityTime!, activityItem.endActivityTime ?? '' );
+                                                                                  },
+                                                                                child: Icon(
+                                                                                    Icons.remove,
+                                                                                    color: Colors.white,
+                                                                                    size: 10.h
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          )
+                                                                        ],
+                                                                      ),
+                                                                    )
+                                                                  ],
+                                                                );
+                                                              } else {
+                                                                return const SizedBox();
+                                                              }
+                                                            }
+                                                            )
+                                                      ],
+                                                    )
+                                                )
+                                              ],
+                                            ),
+                                            const Divider(),
+                                            const SizedBox(
+                                              height: 16,
+                                            ),
+                                            TextFormField(
+                                              controller: activityLabListTextController[index],
+                                              inputFormatters: [
+                                                LengthLimitingTextInputFormatter(
+                                                    250),
+                                              ],
+                                              onChanged: (value){
+                                                debugPrint(value);
+                                                debugPrint('text remarks controller : ${activityLabListTextController[index].text}');
+                                                editActivityRemarks(date!, value, index);
+                                              },
+                                              cursorColor: onFocusColor,
+                                              style: const TextStyle(
+                                                  color: onFocusColor),
+                                              decoration: InputDecoration(
+                                                  border:
+                                                  OutlineInputBorder(
+                                                    borderRadius:
+                                                    BorderRadius
+                                                        .circular(12),
+                                                  ),
+                                                  focusedBorder:
+                                                  OutlineInputBorder(
+                                                    borderSide:
+                                                    const BorderSide(
+                                                        color:
+                                                        onFocusColor),
+                                                    borderRadius:
+                                                    BorderRadius
+                                                        .circular(12),
+                                                  ),
+                                                  labelText: 'Remarks',
+                                                  floatingLabelStyle:
+                                                  const TextStyle(
+                                                      color:
+                                                      onFocusColor),
+                                                  fillColor:
+                                                  onFocusColor),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                                }) : SizedBox(),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                            onPressed: () {
-                              clearActivityLabForm();
-                              Get.back();
-                            },
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                    side: BorderSide(color: primaryColor),
-                                    borderRadius: BorderRadius.circular(12))),
-                            child: Container(
-                                padding:
-                                const EdgeInsets.symmetric(vertical: 12),
-                                width: double.infinity,
-                                child: Center(
-                                    child: Text(
-                                      'Cancel',
-                                      style: TextStyle(
-                                          color: primaryColor,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                    )
-                                )
-                            )
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                              onPressed: () {
+                                clearActivityLabForm();
+                                Get.back();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                      side: BorderSide(color: primaryColor),
+                                      borderRadius: BorderRadius.circular(12))),
+                              child: Container(
+                                  padding:
+                                  const EdgeInsets.symmetric(vertical: 12),
+                                  width: double.infinity,
+                                  child: Center(
+                                      child: Text(
+                                        'Cancel',
+                                        style: TextStyle(
+                                            color: primaryColor,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      )
+                                  )
+                              )
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 16,),
-                      Expanded(
-                        child: ElevatedButton(
-                            onPressed: () {
-                              editActivityLabStageConfirm();
-                            },
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: primaryColor,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12))),
-                            child: Container(
-                                padding:
-                                const EdgeInsets.symmetric(vertical: 12),
-                                width: double.infinity,
-                                child: const Center(
-                                    child: Text(
-                                      'Submit',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                    )
-                                )
-                            )
+                        const SizedBox(width: 16,),
+                        Expanded(
+                          child: ElevatedButton(
+                              onPressed: () {
+                                editActivityLabStageConfirm();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: primaryColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12))),
+                              child: Container(
+                                  padding:
+                                  const EdgeInsets.symmetric(vertical: 12),
+                                  width: double.infinity,
+                                  child: const Center(
+                                      child: Text(
+                                        'Submit',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      )
+                                  )
+                              )
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16,),
-                ],
-              ),
-              )
+                      ],
+                    ),
+                    const SizedBox(height: 16,),
+                  ],
+                ),
+                )
+            ),
           ),
         ),
-        isScrollControlled: true
+        isScrollControlled: true,
+        isDismissible: false,
+        enableDrag: false,
     );
   }
 
@@ -2061,200 +2105,205 @@ class LabActivityDetailController extends BaseController{
     Get.bottomSheet(
         GetBuilder(
             init: LabActivityDetailController(),
-            builder: (controller) => Container(
-              margin: EdgeInsets.only(top: 48),
-              padding: EdgeInsets.all(24),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(topRight: Radius.circular(24), topLeft: Radius.circular(24))
-              ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Add Stage Laboratory',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: primaryColor
+            builder: (controller) => PopScope(
+              canPop: false,
+              child: Container(
+                margin: EdgeInsets.only(top: 48),
+                padding: EdgeInsets.all(24),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(topRight: Radius.circular(24), topLeft: Radius.circular(24))
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Add Stage Laboratory',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: primaryColor
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 16,),
-                            Text('Stage ${activityLabStage}: ${labStagesName[activityLabStage-1]}',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700
+                              const SizedBox(height: 16,),
+                              Text('Stage ${activityLabStage}: ${labStagesName[activityLabStage-1]}',
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 16,),
-                            TextFormField(
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(12),
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Field wajib diisi!';
-                                }
-                                return null;
-                              },
-                              controller: sampleReceived,
-                              cursorColor: onFocusColor,
-                              style: const TextStyle(color: onFocusColor),
-                              decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide:
-                                    const BorderSide(color: onFocusColor),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  labelText: 'Total sample received*',
-                                  floatingLabelStyle:
-                                  const TextStyle(color: onFocusColor),
-                                  fillColor: onFocusColor),
-                            ),
-                            const SizedBox(height: 16,),
-                            TextFormField(
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(12),
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Field wajib diisi!';
-                                }
-                                return null;
-                              },
-                              controller: samplePreparation,
-                              cursorColor: onFocusColor,
-                              style: const TextStyle(color: onFocusColor),
-                              decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide:
-                                    const BorderSide(color: onFocusColor),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  labelText: 'Total sample preparation*',
-                                  floatingLabelStyle:
-                                  const TextStyle(color: onFocusColor),
-                                  fillColor: onFocusColor),
-                            ),
-                            const SizedBox(height: 16,),
-                            TextFormField(
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(12),
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Field wajib diisi!';
-                                }
-                                return null;
-                              },
-                              controller: sampleAnalyzed,
-                              cursorColor: onFocusColor,
-                              style: const TextStyle(color: onFocusColor),
-                              decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide:
-                                    const BorderSide(color: onFocusColor),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  labelText: 'Total sample analyzed*',
-                                  floatingLabelStyle:
-                                  const TextStyle(color: onFocusColor),
-                                  fillColor: onFocusColor),
-                            ),
-                            const SizedBox(height: 16,),
-                          ],
+                              const SizedBox(height: 16,),
+                              TextFormField(
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(12),
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Field wajib diisi!';
+                                  }
+                                  return null;
+                                },
+                                controller: sampleReceived,
+                                cursorColor: onFocusColor,
+                                style: const TextStyle(color: onFocusColor),
+                                decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide:
+                                      const BorderSide(color: onFocusColor),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    labelText: 'Total sample received*',
+                                    floatingLabelStyle:
+                                    const TextStyle(color: onFocusColor),
+                                    fillColor: onFocusColor),
+                              ),
+                              const SizedBox(height: 16,),
+                              TextFormField(
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(12),
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Field wajib diisi!';
+                                  }
+                                  return null;
+                                },
+                                controller: samplePreparation,
+                                cursorColor: onFocusColor,
+                                style: const TextStyle(color: onFocusColor),
+                                decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide:
+                                      const BorderSide(color: onFocusColor),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    labelText: 'Total sample preparation*',
+                                    floatingLabelStyle:
+                                    const TextStyle(color: onFocusColor),
+                                    fillColor: onFocusColor),
+                              ),
+                              const SizedBox(height: 16,),
+                              TextFormField(
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(12),
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Field wajib diisi!';
+                                  }
+                                  return null;
+                                },
+                                controller: sampleAnalyzed,
+                                cursorColor: onFocusColor,
+                                style: const TextStyle(color: onFocusColor),
+                                decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide:
+                                      const BorderSide(color: onFocusColor),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    labelText: 'Total sample analyzed*',
+                                    floatingLabelStyle:
+                                    const TextStyle(color: onFocusColor),
+                                    fillColor: onFocusColor),
+                              ),
+                              const SizedBox(height: 16,),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                              onPressed: () {
-                                clearActivity5LabForm();
-                                Get.back();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                      side: BorderSide(color: primaryColor),
-                                      borderRadius: BorderRadius.circular(12))),
-                              child: Container(
-                                  padding:
-                                  const EdgeInsets.symmetric(vertical: 12),
-                                  width: double.infinity,
-                                  child: Center(
-                                      child: Text(
-                                        'Cancel',
-                                        style: TextStyle(
-                                            color: primaryColor,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold),
-                                      )
-                                  )
-                              )
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  clearActivity5LabForm();
+                                  Get.back();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                        side: BorderSide(color: primaryColor),
+                                        borderRadius: BorderRadius.circular(12))),
+                                child: Container(
+                                    padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                    width: double.infinity,
+                                    child: Center(
+                                        child: Text(
+                                          'Cancel',
+                                          style: TextStyle(
+                                              color: primaryColor,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        )
+                                    )
+                                )
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 16,),
-                        Expanded(
-                          child: ElevatedButton(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  addActivity5LabStageConfirm();
-                                  update();
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: primaryColor,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12))),
-                              child: Container(
-                                  padding:
-                                  const EdgeInsets.symmetric(vertical: 12),
-                                  width: double.infinity,
-                                  child: Center(
-                                      child: Text(
-                                        'Save',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold),
-                                      )
-                                  )
-                              )
+                          const SizedBox(width: 16,),
+                          Expanded(
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    addActivity5LabStageConfirm();
+                                    update();
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: primaryColor,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12))),
+                                child: Container(
+                                    padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                    width: double.infinity,
+                                    child: Center(
+                                        child: Text(
+                                          'Save',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        )
+                                    )
+                                )
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16,),
-                  ],
+                        ],
+                      ),
+                      const SizedBox(height: 16,),
+                    ],
+                  ),
                 ),
               ),
             )
         ),
-        isScrollControlled: true
+        isScrollControlled: true,
+        isDismissible: false,
+        enableDrag: false,
     );
   }
 
@@ -2391,199 +2440,204 @@ class LabActivityDetailController extends BaseController{
     Get.bottomSheet(
         GetBuilder(
             init: LabActivityDetailController(),
-            builder: (controller) => Container(
-              margin: EdgeInsets.only(top: 48),
-              padding: EdgeInsets.all(24),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(topRight: Radius.circular(24), topLeft: Radius.circular(24))
-              ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Add Stage Laboratory',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: primaryColor
+            builder: (controller) => PopScope(
+              canPop: false,
+              child: Container(
+                margin: EdgeInsets.only(top: 48),
+                padding: EdgeInsets.all(24),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(topRight: Radius.circular(24), topLeft: Radius.circular(24))
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Add Stage Laboratory',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: primaryColor
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 16,),
-                            Text('Stage ${activityLabStage}: ${labStagesName[activityLabStage-1]}',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700
+                              const SizedBox(height: 16,),
+                              Text('Stage ${activityLabStage}: ${labStagesName[activityLabStage-1]}',
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 16,),
-                            TextFormField(
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(12),
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Field wajib diisi!';
-                                }
-                                return null;
-                              },
-                              controller: sampleReceived,
-                              cursorColor: onFocusColor,
-                              style: const TextStyle(color: onFocusColor),
-                              decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide:
-                                    const BorderSide(color: onFocusColor),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  labelText: 'Total sample received*',
-                                  floatingLabelStyle:
-                                  const TextStyle(color: onFocusColor),
-                                  fillColor: onFocusColor),
-                            ),
-                            const SizedBox(height: 16,),
-                            TextFormField(
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(12),
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Field wajib diisi!';
-                                }
-                                return null;
-                              },
-                              controller: samplePreparation,
-                              cursorColor: onFocusColor,
-                              style: const TextStyle(color: onFocusColor),
-                              decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide:
-                                    const BorderSide(color: onFocusColor),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  labelText: 'Total sample preparation*',
-                                  floatingLabelStyle:
-                                  const TextStyle(color: onFocusColor),
-                                  fillColor: onFocusColor),
-                            ),
-                            const SizedBox(height: 16,),
-                            TextFormField(
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(12),
-                                FilteringTextInputFormatter.digitsOnly
-                              ],
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Field wajib diisi!';
-                                }
-                                return null;
-                              },
-                              controller: sampleAnalyzed,
-                              cursorColor: onFocusColor,
-                              style: const TextStyle(color: onFocusColor),
-                              decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide:
-                                    const BorderSide(color: onFocusColor),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  labelText: 'Total sample analyzed*',
-                                  floatingLabelStyle:
-                                  const TextStyle(color: onFocusColor),
-                                  fillColor: onFocusColor),
-                            ),
-                            const SizedBox(height: 16,),
-                          ],
+                              const SizedBox(height: 16,),
+                              TextFormField(
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(12),
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Field wajib diisi!';
+                                  }
+                                  return null;
+                                },
+                                controller: sampleReceived,
+                                cursorColor: onFocusColor,
+                                style: const TextStyle(color: onFocusColor),
+                                decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide:
+                                      const BorderSide(color: onFocusColor),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    labelText: 'Total sample received*',
+                                    floatingLabelStyle:
+                                    const TextStyle(color: onFocusColor),
+                                    fillColor: onFocusColor),
+                              ),
+                              const SizedBox(height: 16,),
+                              TextFormField(
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(12),
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Field wajib diisi!';
+                                  }
+                                  return null;
+                                },
+                                controller: samplePreparation,
+                                cursorColor: onFocusColor,
+                                style: const TextStyle(color: onFocusColor),
+                                decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide:
+                                      const BorderSide(color: onFocusColor),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    labelText: 'Total sample preparation*',
+                                    floatingLabelStyle:
+                                    const TextStyle(color: onFocusColor),
+                                    fillColor: onFocusColor),
+                              ),
+                              const SizedBox(height: 16,),
+                              TextFormField(
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(12),
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Field wajib diisi!';
+                                  }
+                                  return null;
+                                },
+                                controller: sampleAnalyzed,
+                                cursorColor: onFocusColor,
+                                style: const TextStyle(color: onFocusColor),
+                                decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide:
+                                      const BorderSide(color: onFocusColor),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    labelText: 'Total sample analyzed*',
+                                    floatingLabelStyle:
+                                    const TextStyle(color: onFocusColor),
+                                    fillColor: onFocusColor),
+                              ),
+                              const SizedBox(height: 16,),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                              onPressed: () {
-                                clearActivity5LabForm();
-                                Get.back();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                      side: BorderSide(color: primaryColor),
-                                      borderRadius: BorderRadius.circular(12))),
-                              child: Container(
-                                  padding:
-                                  const EdgeInsets.symmetric(vertical: 12),
-                                  width: double.infinity,
-                                  child: Center(
-                                      child: Text(
-                                        'Cancel',
-                                        style: TextStyle(
-                                            color: primaryColor,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold),
-                                      )
-                                  )
-                              )
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  clearActivity5LabForm();
+                                  Get.back();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                        side: BorderSide(color: primaryColor),
+                                        borderRadius: BorderRadius.circular(12))),
+                                child: Container(
+                                    padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                    width: double.infinity,
+                                    child: Center(
+                                        child: Text(
+                                          'Cancel',
+                                          style: TextStyle(
+                                              color: primaryColor,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        )
+                                    )
+                                )
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 16,),
-                        Expanded(
-                          child: ElevatedButton(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  editActivity5LabStageConfirm();
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: primaryColor,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12))),
-                              child: Container(
-                                  padding:
-                                  const EdgeInsets.symmetric(vertical: 12),
-                                  width: double.infinity,
-                                  child: Center(
-                                      child: Text(
-                                        'Save',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold),
-                                      )
-                                  )
-                              )
+                          const SizedBox(width: 16,),
+                          Expanded(
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    editActivity5LabStageConfirm();
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: primaryColor,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12))),
+                                child: Container(
+                                    padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                    width: double.infinity,
+                                    child: Center(
+                                        child: Text(
+                                          'Save',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        )
+                                    )
+                                )
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16,),
-                  ],
+                        ],
+                      ),
+                      const SizedBox(height: 16,),
+                    ],
+                  ),
                 ),
               ),
             )
         ),
-        isScrollControlled: true
+        isScrollControlled: true,
+        isDismissible: false,
+        enableDrag: false,
     );
   }
 
@@ -3145,683 +3199,702 @@ class LabActivityDetailController extends BaseController{
     Get.bottomSheet(
         GetBuilder(
           init: LabActivityDetailController(),
-          builder: (controller) => Container(
-              margin: EdgeInsets.only(top: 48),
-              padding: EdgeInsets.all(24),
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(24),
-                      topLeft: Radius.circular(24)
-                  )
-              ),
-              child: Obx(() => Form(
-                key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Add Stage Laboratory',
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: primaryColor),
-                              ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              const Text(
-                                'Stage 6: Report to Client',
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.w700),
-                              ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              Column(
-                                children: [
-                                  Column(
-                                    children: [
-                                      TextFormField(
-                                        showCursor: true,
-                                        readOnly: true,
-                                        controller: activity6Date,
-                                        cursorColor: onFocusColor,
-                                        onTap: () {
-                                          selectDate6(Get.context!);
-                                        },
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Field wajib diisi!';
-                                          }
-                                          return null;
-                                        },
-                                        style: const TextStyle(color: onFocusColor),
-                                        decoration: InputDecoration(
-                                            suffixIcon: IconButton(
-                                                onPressed: () {
-                                                  selectDate6(Get.context!);
+          builder: (controller) => PopScope(
+            canPop: false,
+            child: Container(
+                margin: EdgeInsets.only(top: 48),
+                padding: EdgeInsets.all(24),
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(24),
+                        topLeft: Radius.circular(24)
+                    )
+                ),
+                child: Obx(() => Form(
+                  key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Add Stage Laboratory',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: primaryColor),
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                const Text(
+                                  'Stage 6: Report to Client',
+                                  style: TextStyle(
+                                      fontSize: 14, fontWeight: FontWeight.w700),
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                Column(
+                                  children: [
+                                    Column(
+                                      children: [
+                                        TextFormField(
+                                          showCursor: true,
+                                          readOnly: true,
+                                          controller: activity6Date,
+                                          cursorColor: onFocusColor,
+                                          onTap: () {
+                                            selectDate6(Get.context!);
+                                          },
+                                          validator: (value) {
+                                            if (value == null || value.isEmpty) {
+                                              return 'Field wajib diisi!';
+                                            }
+                                            return null;
+                                          },
+                                          style: const TextStyle(color: onFocusColor),
+                                          decoration: InputDecoration(
+                                              suffixIcon: IconButton(
+                                                  onPressed: () {
+                                                    selectDate6(Get.context!);
+                                                  },
+                                                  icon: const Icon(
+                                                      Icons.calendar_today_rounded)),
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide:
+                                                const BorderSide(color: onFocusColor),
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              labelText: 'Date*',
+                                              floatingLabelStyle:
+                                              const TextStyle(color: onFocusColor),
+                                              fillColor: onFocusColor),
+                                        ),
+                                        const SizedBox(
+                                          height: 16,
+                                        ),
+                                        Text('Detail Activities'),
+                                        const SizedBox(
+                                          height: 16,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: TextFormField(
+                                                controller: activity6StartTime,
+                                                cursorColor: onFocusColor,
+                                                onTap: () async {
+                                                  activity6StartTime.text =
+                                                  await selectTime6(Get.context!);
                                                 },
-                                                icon: const Icon(
-                                                    Icons.calendar_today_rounded)),
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide:
-                                              const BorderSide(color: onFocusColor),
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            labelText: 'Date*',
-                                            floatingLabelStyle:
-                                            const TextStyle(color: onFocusColor),
-                                            fillColor: onFocusColor),
-                                      ),
-                                      const SizedBox(
-                                        height: 16,
-                                      ),
-                                      Text('Detail Activities'),
-                                      const SizedBox(
-                                        height: 16,
-                                      ),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: TextFormField(
-                                              controller: activity6StartTime,
-                                              cursorColor: onFocusColor,
-                                              onTap: () async {
-                                                activity6StartTime.text =
-                                                await selectTime6(Get.context!);
-                                              },
-                                              validator: (value) {
-                                                if (value == null || value.isEmpty) {
-                                                  return 'Field wajib diisi!';
-                                                }
-                                                return null;
-                                              },
-                                              style: const TextStyle(color: onFocusColor),
-                                              decoration: InputDecoration(
-                                                  border: OutlineInputBorder(
-                                                    borderRadius:
-                                                    BorderRadius.circular(12),
-                                                  ),
-                                                  focusedBorder: OutlineInputBorder(
-                                                    borderSide: const BorderSide(
+                                                validator: (value) {
+                                                  if (value == null || value.isEmpty) {
+                                                    return 'Field wajib diisi!';
+                                                  }
+                                                  return null;
+                                                },
+                                                style: const TextStyle(color: onFocusColor),
+                                                decoration: InputDecoration(
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                      BorderRadius.circular(12),
+                                                    ),
+                                                    focusedBorder: OutlineInputBorder(
+                                                      borderSide: const BorderSide(
+                                                          color: onFocusColor),
+                                                      borderRadius:
+                                                      BorderRadius.circular(12),
+                                                    ),
+                                                    labelText: 'Start Time*',
+                                                    floatingLabelStyle: const TextStyle(
                                                         color: onFocusColor),
-                                                    borderRadius:
-                                                    BorderRadius.circular(12),
-                                                  ),
-                                                  labelText: 'Start Time*',
-                                                  floatingLabelStyle: const TextStyle(
-                                                      color: onFocusColor),
-                                                  fillColor: onFocusColor),
+                                                    fillColor: onFocusColor),
+                                              ),
                                             ),
-                                          ),
-                                          const SizedBox(
-                                            width: 8,
-                                          ),
-                                          Expanded(
-                                            child: TextFormField(
-                                              controller: activity6EndTime,
-                                              cursorColor: onFocusColor,
-                                              onTap: () async {
-                                                activity6EndTime.text =
-                                                await selectTime6(Get.context!);
-                                              },
-                                              style: const TextStyle(color: onFocusColor),
-                                              decoration: InputDecoration(
-                                                  border: OutlineInputBorder(
-                                                    borderRadius:
-                                                    BorderRadius.circular(12),
-                                                  ),
-                                                  focusedBorder: OutlineInputBorder(
-                                                    borderSide: const BorderSide(
+                                            const SizedBox(
+                                              width: 8,
+                                            ),
+                                            Expanded(
+                                              child: TextFormField(
+                                                controller: activity6EndTime,
+                                                cursorColor: onFocusColor,
+                                                onTap: () async {
+                                                  activity6EndTime.text =
+                                                  await selectTime6(Get.context!);
+                                                },
+                                                style: const TextStyle(color: onFocusColor),
+                                                decoration: InputDecoration(
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                      BorderRadius.circular(12),
+                                                    ),
+                                                    focusedBorder: OutlineInputBorder(
+                                                      borderSide: const BorderSide(
+                                                          color: onFocusColor),
+                                                      borderRadius:
+                                                      BorderRadius.circular(12),
+                                                    ),
+                                                    labelText: 'End Time',
+                                                    floatingLabelStyle: const TextStyle(
                                                         color: onFocusColor),
-                                                    borderRadius:
-                                                    BorderRadius.circular(12),
-                                                  ),
-                                                  labelText: 'End Time',
-                                                  floatingLabelStyle: const TextStyle(
-                                                      color: onFocusColor),
-                                                  fillColor: onFocusColor),
+                                                    fillColor: onFocusColor),
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        height: 16,
-                                      ),
-                                      TextFormField(
-                                        controller: activity6Text,
-                                        cursorColor: onFocusColor,
-                                        inputFormatters: [
-                                          LengthLimitingTextInputFormatter(
-                                              150),
-                                        ],
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Field wajib diisi!';
-                                          }
-                                          return null;
-                                        },
-                                        style: const TextStyle(color: onFocusColor),
-                                        decoration: InputDecoration(
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide:
-                                              const BorderSide(color: onFocusColor),
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            labelText: 'Activity*',
-                                            floatingLabelStyle:
-                                            const TextStyle(color: onFocusColor),
-                                            fillColor: onFocusColor),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  if (_formKey.currentState!.validate()) {
-                                    if (editActivityMode.value == false) {
-                                      addActivity6();
-                                    } else {
-                                      editActivity6(editActivityIndex.value);
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 16,
+                                        ),
+                                        TextFormField(
+                                          controller: activity6Text,
+                                          cursorColor: onFocusColor,
+                                          inputFormatters: [
+                                            LengthLimitingTextInputFormatter(
+                                                150),
+                                          ],
+                                          validator: (value) {
+                                            if (value == null || value.isEmpty) {
+                                              return 'Field wajib diisi!';
+                                            }
+                                            return null;
+                                          },
+                                          style: const TextStyle(color: onFocusColor),
+                                          decoration: InputDecoration(
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide:
+                                                const BorderSide(color: onFocusColor),
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              labelText: 'Activity*',
+                                              floatingLabelStyle:
+                                              const TextStyle(color: onFocusColor),
+                                              fillColor: onFocusColor),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      if (editActivityMode.value == false) {
+                                        addActivity6();
+                                      } else {
+                                        editActivity6(editActivityIndex.value);
+                                      }
                                     }
-                                  }
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(right: 8),
-                                  height: 42,
-                                  width: 42,
-                                  decoration: BoxDecoration(
-                                      color: primaryColor,
-                                      borderRadius: BorderRadius.circular(8)),
-                                  child: Center(
-                                    child: Icon(
-                                      editActivityMode.value == false
-                                          ? Icons.add
-                                          : Icons.check,
-                                      color: Colors.white,
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.only(right: 8),
+                                    height: 42,
+                                    width: 42,
+                                    decoration: BoxDecoration(
+                                        color: primaryColor,
+                                        borderRadius: BorderRadius.circular(8)),
+                                    child: Center(
+                                      child: Icon(
+                                        editActivityMode.value == false
+                                            ? Icons.add
+                                            : Icons.check,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              activity6List.value.isNotEmpty
-                                  ? ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount: activity6List.value
-                                      .map((item) {
-                                    return item.transDate;
-                                  })
-                                      .toSet()
-                                      .toList()
-                                      .length,
-                                  itemBuilder: (context, index) {
-                                    var date = activity6List.value
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                activity6List.value.isNotEmpty
+                                    ? ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount: activity6List.value
                                         .map((item) {
                                       return item.transDate;
                                     })
                                         .toSet()
-                                        .toList()[index];
-                                    var activity = activity6List.value[index];
-                                    return Column(
-                                      children: [
-                                        Card(
-                                          color: Colors.white,
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 16,
-                                                right: 16,
-                                                top: 8,
-                                                bottom: 16),
-                                            child: Column(
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 2,
-                                                      child: Text(
-                                                        'Date',
-                                                        style: TextStyle(
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                            FontWeight
-                                                                .w700),
+                                        .toList()
+                                        .length,
+                                    itemBuilder: (context, index) {
+                                      var date = activity6List.value
+                                          .map((item) {
+                                        return item.transDate;
+                                      })
+                                          .toSet()
+                                          .toList()[index];
+                                      var activity = activity6List.value[index];
+                                      return Column(
+                                        children: [
+                                          Card(
+                                            color: Colors.white,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 16,
+                                                  right: 16,
+                                                  top: 8,
+                                                  bottom: 16),
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                        flex: 2,
+                                                        child: Text(
+                                                          'Date',
+                                                          style: TextStyle(
+                                                              fontSize: 11.sp,
+                                                              fontWeight:
+                                                              FontWeight
+                                                                  .w700),
+                                                        ),
                                                       ),
-                                                    ),
-                                                    VerticalDivider(width: 1),
-                                                    SizedBox(width: 16),
-                                                    Expanded(
-                                                      flex: 2,
-                                                      child: Row(
-                                                        children: [
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Text(
+                                                      VerticalDivider(width: 1),
+                                                      SizedBox(width: 16),
+                                                      Expanded(
+                                                        flex: 2,
+                                                        child: Row(
+                                                          children: [
+                                                            Text(
                                                               date ?? '-',
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 11.sp,
                                                               ),
                                                             ),
-                                                          ),
-                                                          InkWell(
-                                                              onTap:
-                                                                  () {
-                                                                removeActivity6ByDateConfirm(date!, index, 6);
-                                                              },
-                                                              child: Icon(
-                                                                Icons
-                                                                    .delete_forever,
-                                                                color: Colors
-                                                                    .red,
-                                                              ))
-                                                        ],
+                                                            const SizedBox(width: 8,),
+                                                            InkWell(
+                                                                onTap:
+                                                                    () {
+                                                                  removeActivity6ByDateConfirm(date!, index, 6);
+                                                                },
+                                                              child: const ImageIcon(
+                                                                  AssetImage("assets/icons/deleteStage.png"),
+                                                                  color: Colors.red,
+                                                                  size: 18
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 16,
+                                                  ),
+                                                  Row(
+                                                    crossAxisAlignment:
+                                                    CrossAxisAlignment
+                                                        .start,
+                                                    children: [
+                                                      Expanded(
+                                                        flex: 1,
+                                                        child: Text(
+                                                          'Activities',
+                                                          style: TextStyle(
+                                                              fontSize:
+                                                              11.sp,
+                                                              fontWeight:
+                                                              FontWeight
+                                                                  .w700),
+                                                        ),
                                                       ),
-                                                    )
-                                                  ],
-                                                ),
-                                                Row(
-                                                  crossAxisAlignment:
-                                                  CrossAxisAlignment
-                                                      .start,
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 1,
-                                                      child: Text(
-                                                        'Activities',
-                                                        style: TextStyle(
-                                                            fontSize:
-                                                            14,
-                                                            fontWeight:
-                                                            FontWeight
-                                                                .w700),
-                                                      ),
-                                                    ),
-                                                    VerticalDivider(
-                                                        width: 1),
-                                                    SizedBox(
-                                                        width: 8),
-                                                    Expanded(
-                                                        child: Column(
-                                                          children: [
-                                                            ListView.builder(
-                                                                shrinkWrap: true,
-                                                                physics:
-                                                                NeverScrollableScrollPhysics(),
-                                                                itemCount: activity.listLabActivity?.length,
-                                                                itemBuilder:
-                                                                    (context, indexItem) {
-                                                                  var activityItem = activity.listLabActivity![indexItem];
-                                                                  if (activity6List
-                                                                      .value[
-                                                                  index]
-                                                                      .transDate ==
-                                                                      date) {
-                                                                    return Row(
-                                                                      crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                      children: [
-                                                                        Expanded(
-                                                                          flex: 1,
-                                                                          child: Text(
-                                                                            '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
-                                                                            style: TextStyle(
-                                                                                fontSize:
-                                                                                14,
-                                                                                fontWeight:
-                                                                                FontWeight
-                                                                                    .w700),
+                                                      VerticalDivider(
+                                                          width: 1),
+                                                      SizedBox(
+                                                          width: 8),
+                                                      Expanded(
+                                                        flex: 3,
+                                                          child: Column(
+                                                            children: [
+                                                              ListView.builder(
+                                                                  shrinkWrap: true,
+                                                                  physics:
+                                                                  NeverScrollableScrollPhysics(),
+                                                                  itemCount: activity.listLabActivity?.length,
+                                                                  itemBuilder:
+                                                                      (context, indexItem) {
+                                                                    var activityItem = activity.listLabActivity![indexItem];
+                                                                    if (activity6List
+                                                                        .value[
+                                                                    index]
+                                                                        .transDate ==
+                                                                        date) {
+                                                                      return Row(
+                                                                        crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                        children: [
+                                                                          Expanded(
+                                                                            flex: 1,
+                                                                            child: Text(
+                                                                              '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
+                                                                              style: TextStyle(
+                                                                                  fontSize:
+                                                                                  10.sp,
+                                                                                  fontWeight:
+                                                                                  FontWeight
+                                                                                      .w700),
+                                                                            ),
                                                                           ),
-                                                                        ),
-                                                                        VerticalDivider(
-                                                                            width: 1),
-                                                                        SizedBox(
-                                                                            width: 8),
-                                                                        Expanded(
-                                                                          flex: 2,
-                                                                          child: Row(
-                                                                            children: [
-                                                                              Expanded(
-                                                                                child: Text(
-                                                                                  activityItem.activity ??
-                                                                                      '-',
-                                                                                  style:
-                                                                                  TextStyle(
-                                                                                    fontSize:
-                                                                                    14,
+                                                                          VerticalDivider(
+                                                                              width: 1),
+                                                                          SizedBox(
+                                                                              width: 8),
+                                                                          Expanded(
+                                                                            flex: 2,
+                                                                            child: Row(
+                                                                              children: [
+                                                                                Expanded(
+                                                                                  child: Text(
+                                                                                    activityItem.activity ??
+                                                                                        '-',
+                                                                                    style:
+                                                                                    TextStyle(
+                                                                                      fontSize:
+                                                                                      11.sp,
+                                                                                    ),
                                                                                   ),
                                                                                 ),
-                                                                              ),
-                                                                              InkWell(
-                                                                                  onTap:
-                                                                                      () {
-                                                                                    toggleEditActivity6(
-                                                                                        index,
-                                                                                        indexItem);
-                                                                                  },
-                                                                                  child:
-                                                                                  Icon(
-                                                                                    Icons
-                                                                                        .mode_edit_outlined,
-                                                                                    color:
-                                                                                    primaryColor,
-                                                                                  )),
-                                                                              InkWell(
-                                                                                  onTap:
-                                                                                      () {
-                                                                                    removeActivity6Confirm(
-                                                                                        date!,
-                                                                                        indexItem,
-                                                                                        index,
-                                                                                        6);
-                                                                                  },
-                                                                                  child:
-                                                                                  Icon(
-                                                                                    Icons
-                                                                                        .delete_forever,
-                                                                                    color:
-                                                                                    Colors.red,
-                                                                                  ))
-                                                                            ],
-                                                                          ),
-                                                                        )
-                                                                      ],
-                                                                    );
-                                                                  } else {
-                                                                    return const SizedBox();
-                                                                  }
-                                                                })
-                                                          ],
-                                                        )
-                                                    )
-                                                  ],
-                                                ),
-                                                const Divider(),
-                                                const SizedBox(
-                                                  height: 16,
-                                                ),
-                                                TextFormField(
-                                                  controller:
-                                                  activity6ListTextController
-                                                      .value[index],
-                                                  onChanged: (value) {
-                                                    debugPrint(value);
-                                                    debugPrint(
-                                                        'text remarks controller : ${activity6ListTextController.value[index].text}');
-                                                    editActivity6Remarks(
-                                                        date!,
-                                                        value,
-                                                        index);
-                                                  },
-                                                  inputFormatters: [
-                                                    LengthLimitingTextInputFormatter(
-                                                        250),
-                                                  ],
-                                                  cursorColor: onFocusColor,
-                                                  style: const TextStyle(
-                                                      color: onFocusColor),
-                                                  decoration: InputDecoration(
-                                                      border:
-                                                      OutlineInputBorder(
-                                                        borderRadius:
-                                                        BorderRadius
-                                                            .circular(12),
-                                                      ),
-                                                      focusedBorder:
-                                                      OutlineInputBorder(
-                                                        borderSide:
-                                                        const BorderSide(
+                                                                                InkWell(
+                                                                                    onTap:
+                                                                                        () {
+                                                                                      toggleEditActivity6(
+                                                                                          index,
+                                                                                          indexItem);
+                                                                                    },
+                                                                                    child: ImageIcon(
+                                                                                        AssetImage("assets/icons/editActivity.png"),
+                                                                                        color: primaryColor,
+                                                                                        size: 12.h
+                                                                                    ),
+                                                                                ),
+                                                                                const SizedBox(width: 8,),
+                                                                                SizedBox(
+                                                                                  height: 12.h,
+                                                                                  width: 12.h,
+                                                                                  child: Ink(
+                                                                                    decoration: ShapeDecoration(
+                                                                                        color: Colors.red,
+                                                                                        shape: RoundedRectangleBorder(
+                                                                                            borderRadius: BorderRadius.circular(4.w)
+                                                                                        )
+                                                                                    ),
+                                                                                    child: InkWell(
+                                                                                        onTap:
+                                                                                            () {
+                                                                                          removeActivity6Confirm(
+                                                                                              date!,
+                                                                                              indexItem,
+                                                                                              index,
+                                                                                              6);
+                                                                                        },
+                                                                                        child:  Icon(
+                                                                                            Icons.remove,
+                                                                                            color: Colors.white,
+                                                                                            size: 10.h
+                                                                                        ),
+                                                                                    ),
+                                                                                  ),
+                                                                                )
+                                                                              ],
+                                                                            ),
+                                                                          )
+                                                                        ],
+                                                                      );
+                                                                    } else {
+                                                                      return const SizedBox();
+                                                                    }
+                                                                  })
+                                                            ],
+                                                          )
+                                                      )
+                                                    ],
+                                                  ),
+                                                  const Divider(),
+                                                  const SizedBox(
+                                                    height: 16,
+                                                  ),
+                                                  TextFormField(
+                                                    controller:
+                                                    activity6ListTextController
+                                                        .value[index],
+                                                    onChanged: (value) {
+                                                      debugPrint(value);
+                                                      debugPrint(
+                                                          'text remarks controller : ${activity6ListTextController.value[index].text}');
+                                                      editActivity6Remarks(
+                                                          date!,
+                                                          value,
+                                                          index);
+                                                    },
+                                                    inputFormatters: [
+                                                      LengthLimitingTextInputFormatter(
+                                                          250),
+                                                    ],
+                                                    cursorColor: onFocusColor,
+                                                    style: const TextStyle(
+                                                        color: onFocusColor),
+                                                    decoration: InputDecoration(
+                                                        border:
+                                                        OutlineInputBorder(
+                                                          borderRadius:
+                                                          BorderRadius
+                                                              .circular(12),
+                                                        ),
+                                                        focusedBorder:
+                                                        OutlineInputBorder(
+                                                          borderSide:
+                                                          const BorderSide(
+                                                              color:
+                                                              onFocusColor),
+                                                          borderRadius:
+                                                          BorderRadius
+                                                              .circular(12),
+                                                        ),
+                                                        labelText: 'Remarks',
+                                                        floatingLabelStyle:
+                                                        const TextStyle(
                                                             color:
                                                             onFocusColor),
-                                                        borderRadius:
-                                                        BorderRadius
-                                                            .circular(12),
-                                                      ),
-                                                      labelText: 'Remarks',
-                                                      floatingLabelStyle:
-                                                      const TextStyle(
-                                                          color:
-                                                          onFocusColor),
-                                                      fillColor:
-                                                      onFocusColor),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  })
-                                  : SizedBox(),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              const Text(
-                                'Attachment',
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.w700),
-                              ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              Text(
-                                  'File lampiran maksimal 5 file dengan ukuran total file maksimal 10 MB. Jenis file yang diperbolehkan hanya PDF/JPG/PNG/JPEG.'),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              activity6Attachments.value.isNotEmpty
-                                  ? GridView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 5,
-                                    mainAxisSpacing: 8,
-                                    crossAxisSpacing: 8,
-                                  ),
-                                  itemCount:
-                                  activity6Attachments.value.length,
-                                  itemBuilder: (content, index) {
-                                    final TDJoLaboratoryAttachment photo = activity6Attachments.value[index];
-                                    final String fileType = checkFileType(photo.pathName!);
-                                    var filename = photo.fileName;
-                                    return fileType == 'image' ? SizedBox(
-                                      width: 54,
-                                      height: 66,
-                                      child: Stack(
-                                        children: [
-                                          SizedBox(
-                                            width: 54,
-                                            height: 54,
-                                            child: InkWell(
-                                              onTap: (){
-                                                controller.previewImageAct6(index, photo.pathName!);
-                                              },
-                                              child: Image.file(
-                                                File(photo.pathName!),
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                          ),
-                                          Align(
-                                            alignment: AlignmentDirectional.topEnd,
-                                            child: SizedBox(
-                                              height: 12,
-                                              child: IconButton(
-                                                  onPressed: (){
-                                                    controller.removeActivity6Files(index);
-                                                  },
-                                                  icon: Icon(Icons.remove_circle,
-                                                    size: 12,
-                                                    color: Colors.red,
-                                                  )
+                                                        fillColor:
+                                                        onFocusColor),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ),
                                         ],
-                                      ),
-                                    ) : fileType == 'doc' ? SizedBox(
-                                      width: 54,
-                                      height: 66,
-                                      child: Stack(
-                                        children: [
-                                          InkWell(
-                                            onTap: (){
-                                              OpenFilex.open(photo.pathName!);
-                                            },
-                                            child: SizedBox(
+                                      );
+                                    })
+                                    : SizedBox(),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                const Text(
+                                  'Attachment',
+                                  style: TextStyle(
+                                      fontSize: 14, fontWeight: FontWeight.w700),
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                Text(
+                                    'File lampiran maksimal 5 file dengan ukuran total file maksimal 10 MB. Jenis file yang diperbolehkan hanya PDF/JPG/PNG/JPEG.'),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                activity6Attachments.value.isNotEmpty
+                                    ? GridView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 5,
+                                      mainAxisSpacing: 8,
+                                      crossAxisSpacing: 8,
+                                    ),
+                                    itemCount:
+                                    activity6Attachments.value.length,
+                                    itemBuilder: (content, index) {
+                                      final TDJoLaboratoryAttachment photo = activity6Attachments.value[index];
+                                      final String fileType = checkFileType(photo.pathName!);
+                                      var filename = photo.fileName;
+                                      return fileType == 'image' ? SizedBox(
+                                        width: 54,
+                                        height: 66,
+                                        child: Stack(
+                                          children: [
+                                            SizedBox(
                                               width: 54,
                                               height: 54,
-                                              child: Center(
-                                                  child: Column(
-                                                    children: [
-                                                      Image.asset('assets/icons/pdfIcon.png', height: 42,),
-                                                      Text(filename!, style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
-                                                    ],
-                                                  )
+                                              child: InkWell(
+                                                onTap: (){
+                                                  controller.previewImageAct6(index, photo.pathName!);
+                                                },
+                                                child: Image.file(
+                                                  File(photo.pathName!),
+                                                  fit: BoxFit.cover,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          Align(
-                                            alignment: AlignmentDirectional.topEnd,
-                                            child: SizedBox(
-                                              height: 12,
-                                              child: IconButton(
-                                                  padding: EdgeInsets.zero,
-                                                  onPressed: (){
-                                                    controller.removeActivity6Files(index);
-                                                  },
-                                                  icon: Icon(Icons.remove_circle,
-                                                    size: 12,
-                                                    color: Colors.red,
-                                                  )
+                                            Align(
+                                              alignment: AlignmentDirectional.topEnd,
+                                              child: SizedBox(
+                                                height: 12,
+                                                child: IconButton(
+                                                    onPressed: (){
+                                                      controller.removeActivity6Files(index);
+                                                    },
+                                                    icon: Icon(Icons.remove_circle,
+                                                      size: 12,
+                                                      color: Colors.red,
+                                                    )
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ) : SizedBox();
-                                  })
-                                  : const SizedBox(),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              SizedBox(
-                                width: 68,
-                                height: 68,
-                                child: ElevatedButton(
-                                    onPressed: () {
-                                      mediaPickerConfirm();
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.white,
-                                        shape: RoundedRectangleBorder(
-                                            side: BorderSide(color: primaryColor),
-                                            borderRadius:
-                                            BorderRadius.circular(12))),
-                                    child: Center(
-                                        child: Icon(
-                                          Icons.folder_rounded,
-                                          color: primaryColor,
-                                        ))),
-                              ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                            ],
+                                          ],
+                                        ),
+                                      ) : fileType == 'doc' ? SizedBox(
+                                        width: 54,
+                                        height: 66,
+                                        child: Stack(
+                                          children: [
+                                            InkWell(
+                                              onTap: (){
+                                                OpenFilex.open(photo.pathName!);
+                                              },
+                                              child: SizedBox(
+                                                width: 54,
+                                                height: 54,
+                                                child: Center(
+                                                    child: Column(
+                                                      children: [
+                                                        Image.asset('assets/icons/pdfIcon.png', height: 42,),
+                                                        Text(filename!, style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
+                                                      ],
+                                                    )
+                                                ),
+                                              ),
+                                            ),
+                                            Align(
+                                              alignment: AlignmentDirectional.topEnd,
+                                              child: SizedBox(
+                                                height: 12,
+                                                child: IconButton(
+                                                    padding: EdgeInsets.zero,
+                                                    onPressed: (){
+                                                      controller.removeActivity6Files(index);
+                                                    },
+                                                    icon: Icon(Icons.remove_circle,
+                                                      size: 12,
+                                                      color: Colors.red,
+                                                    )
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ) : SizedBox();
+                                    })
+                                    : const SizedBox(),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                SizedBox(
+                                  width: 68,
+                                  height: 68,
+                                  child: ElevatedButton(
+                                      onPressed: () {
+                                        mediaPickerConfirm();
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                              side: BorderSide(color: primaryColor),
+                                              borderRadius:
+                                              BorderRadius.circular(12))),
+                                      child: Center(
+                                          child: Icon(
+                                            Icons.folder_rounded,
+                                            color: primaryColor,
+                                          ))),
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  clearActivity6LabForm();
-                                  Get.back();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                        side: BorderSide(color: primaryColor),
-                                        borderRadius: BorderRadius.circular(12)
-                                    )
-                                ),
-                                child: Container(
-                                    padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                                    width: double.infinity,
-                                    child: const Center(
-                                        child: Text(
-                                          'Cancel',
-                                          style: TextStyle(
-                                              color: primaryColor,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
-                                        )
-                                    )
-                                )
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    clearActivity6LabForm();
+                                    Get.back();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                          side: BorderSide(color: primaryColor),
+                                          borderRadius: BorderRadius.circular(12)
+                                      )
+                                  ),
+                                  child: Container(
+                                      padding:
+                                      const EdgeInsets.symmetric(vertical: 12),
+                                      width: double.infinity,
+                                      child: const Center(
+                                          child: Text(
+                                            'Cancel',
+                                            style: TextStyle(
+                                                color: primaryColor,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          )
+                                      )
+                                  )
+                              ),
                             ),
-                          ),
-                          const SizedBox(
-                            width: 16,
-                          ),
-                          Expanded(
-                            child: ElevatedButton(
-                                onPressed: addActivity6StageConfirm,
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: primaryColor,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12)
-                                    )
-                                ),
-                                child: Container(
-                                    padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                                    width: double.infinity,
-                                    child: const Center(
-                                        child: Text(
-                                          'Submit',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
-                                        )
-                                    )
-                                )
+                            const SizedBox(
+                              width: 16,
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                    ],
+                            Expanded(
+                              child: ElevatedButton(
+                                  onPressed: addActivity6StageConfirm,
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: primaryColor,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12)
+                                      )
+                                  ),
+                                  child: Container(
+                                      padding:
+                                      const EdgeInsets.symmetric(vertical: 12),
+                                      width: double.infinity,
+                                      child: const Center(
+                                          child: Text(
+                                            'Submit',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          )
+                                      )
+                                  )
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              )
+                )
+            ),
           ),
         ),
-        isScrollControlled: true);
+        isScrollControlled: true,
+        isDismissible: false,
+        enableDrag: false,
+    );
   }
 
   void clearActivity6LabForm(){
@@ -3958,648 +4031,657 @@ class LabActivityDetailController extends BaseController{
     Get.bottomSheet(
         GetBuilder(
           init: LabActivityDetailController(),
-          builder: (controller) => Container(
-              margin: EdgeInsets.only(top: 48),
-              padding: EdgeInsets.all(24),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(24),
-                      topLeft: Radius.circular(24))),
-              child: Obx(
-                    () => Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Add Stage Inspection',
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: primaryColor),
-                              ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              const Text(
-                                'Stage 6: Report to Client',
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.w700),
-                              ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              TextFormField(
-                                showCursor: true,
-                                readOnly: true,
-                                controller: activity6Date,
-                                cursorColor: onFocusColor,
-                                onTap: () {
-                                  selectDate6(Get.context!);
-                                },
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Field wajib diisi!';
-                                  }
-                                  return null;
-                                },
-                                style: const TextStyle(color: onFocusColor),
-                                decoration: InputDecoration(
-                                    suffixIcon: IconButton(
-                                        onPressed: () {
-                                          selectDate6(Get.context!);
+          builder: (controller) => PopScope(
+            canPop: false,
+            child: Container(
+                margin: EdgeInsets.only(top: 48),
+                padding: EdgeInsets.all(24),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(24),
+                        topLeft: Radius.circular(24))),
+                child: Obx(
+                      () => Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Add Stage Inspection',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: primaryColor),
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                const Text(
+                                  'Stage 6: Report to Client',
+                                  style: TextStyle(
+                                      fontSize: 14, fontWeight: FontWeight.w700),
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                TextFormField(
+                                  showCursor: true,
+                                  readOnly: true,
+                                  controller: activity6Date,
+                                  cursorColor: onFocusColor,
+                                  onTap: () {
+                                    selectDate6(Get.context!);
+                                  },
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Field wajib diisi!';
+                                    }
+                                    return null;
+                                  },
+                                  style: const TextStyle(color: onFocusColor),
+                                  decoration: InputDecoration(
+                                      suffixIcon: IconButton(
+                                          onPressed: () {
+                                            selectDate6(Get.context!);
+                                          },
+                                          icon: const Icon(
+                                              Icons.calendar_today_rounded)),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide:
+                                        const BorderSide(color: onFocusColor),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      labelText: 'Date*',
+                                      floatingLabelStyle:
+                                      const TextStyle(color: onFocusColor),
+                                      fillColor: onFocusColor),
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                Text('Detail Activities'),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextFormField(
+                                        controller: activity6StartTime,
+                                        cursorColor: onFocusColor,
+                                        onTap: () async {
+                                          activity6StartTime.text =
+                                          await selectTime6(Get.context!);
                                         },
-                                        icon: const Icon(
-                                            Icons.calendar_today_rounded)),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide:
-                                      const BorderSide(color: onFocusColor),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    labelText: 'Date*',
-                                    floatingLabelStyle:
-                                    const TextStyle(color: onFocusColor),
-                                    fillColor: onFocusColor),
-                              ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              Text('Detail Activities'),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: TextFormField(
-                                      controller: activity6StartTime,
-                                      cursorColor: onFocusColor,
-                                      onTap: () async {
-                                        activity6StartTime.text =
-                                        await selectTime6(Get.context!);
-                                      },
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Field wajib diisi!';
-                                        }
-                                        return null;
-                                      },
-                                      style: const TextStyle(color: onFocusColor),
-                                      decoration: InputDecoration(
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                            BorderRadius.circular(12),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: const BorderSide(
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Field wajib diisi!';
+                                          }
+                                          return null;
+                                        },
+                                        style: const TextStyle(color: onFocusColor),
+                                        decoration: InputDecoration(
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(12),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: const BorderSide(
+                                                  color: onFocusColor),
+                                              borderRadius:
+                                              BorderRadius.circular(12),
+                                            ),
+                                            labelText: 'Start Time*',
+                                            floatingLabelStyle: const TextStyle(
                                                 color: onFocusColor),
-                                            borderRadius:
-                                            BorderRadius.circular(12),
-                                          ),
-                                          labelText: 'Start Time*',
-                                          floatingLabelStyle: const TextStyle(
-                                              color: onFocusColor),
-                                          fillColor: onFocusColor),
+                                            fillColor: onFocusColor),
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(
-                                    width: 8,
-                                  ),
-                                  Expanded(
-                                    child: TextFormField(
-                                      controller: activity6EndTime,
-                                      cursorColor: onFocusColor,
-                                      onTap: () async {
-                                        activity6EndTime.text = await selectTime6(Get.context!);
-                                      },
-                                      style: const TextStyle(color: onFocusColor),
-                                      decoration: InputDecoration(
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                            BorderRadius.circular(12),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: const BorderSide(
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    Expanded(
+                                      child: TextFormField(
+                                        controller: activity6EndTime,
+                                        cursorColor: onFocusColor,
+                                        onTap: () async {
+                                          activity6EndTime.text = await selectTime6(Get.context!);
+                                        },
+                                        style: const TextStyle(color: onFocusColor),
+                                        decoration: InputDecoration(
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(12),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: const BorderSide(
+                                                  color: onFocusColor),
+                                              borderRadius:
+                                              BorderRadius.circular(12),
+                                            ),
+                                            labelText: 'End Time',
+                                            floatingLabelStyle: const TextStyle(
                                                 color: onFocusColor),
-                                            borderRadius:
-                                            BorderRadius.circular(12),
-                                          ),
-                                          labelText: 'End Time',
-                                          floatingLabelStyle: const TextStyle(
-                                              color: onFocusColor),
-                                          fillColor: onFocusColor),
+                                            fillColor: onFocusColor),
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              TextFormField(
-                                controller: activity6Text,
-                                cursorColor: onFocusColor,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Field wajib diisi!';
-                                  }
-                                  return null;
-                                },
-                                style: const TextStyle(color: onFocusColor),
-                                decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide:
-                                      const BorderSide(color: onFocusColor),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    labelText: 'Activity*',
-                                    floatingLabelStyle:
-                                    const TextStyle(color: onFocusColor),
-                                    fillColor: onFocusColor),
-                              ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  if (editActivityMode.value == false) {
-                                    addActivity6();
-                                  } else {
-                                    editActivity6(editActivityIndex.value);
-                                  }
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(right: 8),
-                                  height: 42,
-                                  width: 42,
-                                  decoration: BoxDecoration(
-                                      color: primaryColor,
-                                      borderRadius: BorderRadius.circular(8)),
-                                  child: Center(
-                                    child: Icon(
-                                      editActivityMode.value == false
-                                          ? Icons.add
-                                          : Icons.check,
-                                      color: Colors.white,
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                TextFormField(
+                                  controller: activity6Text,
+                                  cursorColor: onFocusColor,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Field wajib diisi!';
+                                    }
+                                    return null;
+                                  },
+                                  style: const TextStyle(color: onFocusColor),
+                                  decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide:
+                                        const BorderSide(color: onFocusColor),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      labelText: 'Activity*',
+                                      floatingLabelStyle:
+                                      const TextStyle(color: onFocusColor),
+                                      fillColor: onFocusColor),
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    if (editActivityMode.value == false) {
+                                      addActivity6();
+                                    } else {
+                                      editActivity6(editActivityIndex.value);
+                                    }
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.only(right: 8),
+                                    height: 42,
+                                    width: 42,
+                                    decoration: BoxDecoration(
+                                        color: primaryColor,
+                                        borderRadius: BorderRadius.circular(8)),
+                                    child: Center(
+                                      child: Icon(
+                                        editActivityMode.value == false
+                                            ? Icons.add
+                                            : Icons.check,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              activity6List.value.isNotEmpty
-                                  ? ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount: activity6List.value
-                                      .map((item) {
-                                    return item.transDate;
-                                  })
-                                      .toSet()
-                                      .toList()
-                                      .length,
-                                  itemBuilder: (context, index) {
-                                    var date = activity6List.value
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                activity6List.value.isNotEmpty
+                                    ? ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount: activity6List.value
                                         .map((item) {
                                       return item.transDate;
                                     })
                                         .toSet()
-                                        .toList()[index];
-                                    var activity = activity6List.value[index];
-                                    return Column(
-                                      children: [
-                                        Card(
-                                          color: Colors.white,
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 16,
-                                                right: 16,
-                                                top: 8,
-                                                bottom: 16),
-                                            child: Column(
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Text(
-                                                        'Date',
-                                                        style: TextStyle(
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                            FontWeight
-                                                                .w700),
+                                        .toList()
+                                        .length,
+                                    itemBuilder: (context, index) {
+                                      var date = activity6List.value
+                                          .map((item) {
+                                        return item.transDate;
+                                      })
+                                          .toSet()
+                                          .toList()[index];
+                                      var activity = activity6List.value[index];
+                                      return Column(
+                                        children: [
+                                          Card(
+                                            color: Colors.white,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 16,
+                                                  right: 16,
+                                                  top: 8,
+                                                  bottom: 16),
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                        flex: 2,
+                                                        child: Text(
+                                                          'Date',
+                                                          style: TextStyle(
+                                                              fontSize: 11.sp,
+                                                              fontWeight:
+                                                              FontWeight
+                                                                  .w700),
+                                                        ),
                                                       ),
-                                                    ),
-                                                    VerticalDivider(width: 1),
-                                                    SizedBox(width: 16),
-                                                    Expanded(
-                                                      flex: 2,
-                                                      child: Row(
-                                                        children: [
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Text(
+                                                      VerticalDivider(width: 1),
+                                                      SizedBox(width: 16),
+                                                      Expanded(
+                                                        flex: 2,
+                                                        child: Row(
+                                                          children: [
+                                                            Text(
                                                               date ?? '-',
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 11.sp,
                                                               ),
                                                             ),
-                                                          ),
-                                                          IconButton(
-                                                              onPressed: () {
-                                                                removeActivity6ByDateConfirm(date!, index, 6);
+                                                            const SizedBox(width: 8,),
+                                                            IconButton(
+                                                                onPressed: () {
+                                                                  removeActivity6ByDateConfirm(date!, index, 6);
 
-                                                              },
-                                                              icon: Icon(
-                                                                Icons
-                                                                    .delete_forever,
-                                                                color: Colors
-                                                                    .red,
-                                                              ))
-                                                        ],
+                                                                },
+                                                                icon: const ImageIcon(
+                                                                    AssetImage("assets/icons/deleteStage.png"),
+                                                                    color: Colors.red,
+                                                                    size: 18
+                                                                ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 16,
+                                                  ),
+                                                  Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Expanded(
+                                                        flex: 1,
+                                                        child: Text(
+                                                          'Activities',
+                                                          style: TextStyle(
+                                                              fontSize: 11.sp,
+                                                              fontWeight: FontWeight.w700),
+                                                        ),
                                                       ),
-                                                    )
-                                                  ],
-                                                ),
-                                                Row(
-                                                  crossAxisAlignment:
-                                                  CrossAxisAlignment
-                                                      .start,
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 1,
-                                                      child: Text(
-                                                        'Activities',
-                                                        style: TextStyle(
-                                                            fontSize:
-                                                            14,
-                                                            fontWeight:
-                                                            FontWeight
-                                                                .w700),
-                                                      ),
-                                                    ),
-                                                    VerticalDivider(
-                                                        width: 1),
-                                                    SizedBox(
-                                                        width: 8),
-                                                    Expanded(
-                                                      child: Column(
-                                                          children: [
-                                                            ListView.builder(
-                                                                shrinkWrap: true,
-                                                                physics:
-                                                                NeverScrollableScrollPhysics(),
-                                                                itemCount: activity.listLabActivity?.length,
-                                                                itemBuilder:
-                                                                    (context, indexItem) {
-                                                                  var activityItem = activity.listLabActivity![indexItem];
-                                                                  if (activity.transDate ==
-                                                                      date) {
-                                                                    return Row(
-                                                                      crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                      children: [
-                                                                        SizedBox(
-                                                                            width: 8),
-                                                                        Expanded(
-                                                                          flex: 1,
-                                                                          child: Text(
-                                                                            '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
-                                                                            style: TextStyle(
-                                                                                fontSize:
-                                                                                14,
-                                                                                fontWeight:
-                                                                                FontWeight
-                                                                                    .w700),
+                                                      VerticalDivider(width: 1),
+                                                      SizedBox(width: 8),
+                                                      Expanded(
+                                                        flex: 3,
+                                                        child: Column(
+                                                            children: [
+                                                              ListView.builder(
+                                                                  shrinkWrap: true,
+                                                                  physics:
+                                                                  NeverScrollableScrollPhysics(),
+                                                                  itemCount: activity.listLabActivity?.length,
+                                                                  itemBuilder:
+                                                                      (context, indexItem) {
+                                                                    var activityItem = activity.listLabActivity![indexItem];
+                                                                    if (activity.transDate ==
+                                                                        date) {
+                                                                      return Row(
+                                                                        crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                        children: [
+                                                                          SizedBox(
+                                                                              width: 8),
+                                                                          Expanded(
+                                                                            flex: 1,
+                                                                            child: Text(
+                                                                              '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
+                                                                              style: TextStyle(
+                                                                                  fontSize:
+                                                                                  10.sp,
+                                                                                  fontWeight:
+                                                                                  FontWeight
+                                                                                      .w700),
+                                                                            ),
                                                                           ),
-                                                                        ),
-                                                                        VerticalDivider(
-                                                                            width: 1),
-                                                                        SizedBox(
-                                                                            width: 8),
-                                                                        Expanded(
-                                                                          flex: 2,
-                                                                          child: Row(
-                                                                            children: [
-                                                                              Expanded(
-                                                                                child: Text(
-                                                                                  activityItem.activity ??
-                                                                                      '-',
-                                                                                  style:
-                                                                                  TextStyle(
-                                                                                    fontSize:
-                                                                                    14,
+                                                                          VerticalDivider(
+                                                                              width: 1),
+                                                                          SizedBox(
+                                                                              width: 8),
+                                                                          Expanded(
+                                                                            flex: 2,
+                                                                            child: Row(
+                                                                              children: [
+                                                                                Expanded(
+                                                                                  child: Text(
+                                                                                    activityItem.activity ??
+                                                                                        '-',
+                                                                                    style:
+                                                                                    TextStyle(
+                                                                                      fontSize:
+                                                                                      11.sp,
+                                                                                    ),
                                                                                   ),
                                                                                 ),
-                                                                              ),
-                                                                              InkWell(
-                                                                                  onTap:
-                                                                                      () {
-                                                                                    toggleEditActivity6(
-                                                                                        index,
-                                                                                        indexItem);
-                                                                                  },
-                                                                                  child:
-                                                                                  Icon(
-                                                                                    Icons
-                                                                                        .mode_edit_outlined,
-                                                                                    color:
-                                                                                    primaryColor,
-                                                                                  )),
-                                                                              InkWell(
-                                                                                  onTap:
-                                                                                      () {
-                                                                                    removeActivity6Confirm(date!, indexItem, index, 6);
-                                                                                  },
-                                                                                  child:
-                                                                                  Icon(
-                                                                                    Icons
-                                                                                        .delete_forever,
-                                                                                    color:
-                                                                                    Colors.red,
-                                                                                  ))
-                                                                            ],
-                                                                          ),
-                                                                        )
-                                                                      ],
-                                                                    );
-                                                                  } else {
-                                                                    return const SizedBox();
-                                                                  }
-                                                                })
-                                                          ]
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                                const Divider(),
-                                                const SizedBox(
-                                                  height: 16,
-                                                ),
-                                                TextFormField(
-                                                  controller:
-                                                  activity6ListTextController
-                                                      .value[index],
-                                                  onChanged: (value) {
-                                                    debugPrint(value);
-                                                    debugPrint(
-                                                        'text remarks controller : ${activity6ListTextController.value[index].text}');
-                                                    editActivity6Remarks(
-                                                        date!,
-                                                        value,
-                                                        index);
-                                                  },
-                                                  cursorColor: onFocusColor,
-                                                  style: const TextStyle(
-                                                      color: onFocusColor),
-                                                  decoration: InputDecoration(
-                                                      border:
-                                                      OutlineInputBorder(
-                                                        borderRadius:
-                                                        BorderRadius
-                                                            .circular(12),
-                                                      ),
-                                                      focusedBorder:
-                                                      OutlineInputBorder(
-                                                        borderSide:
-                                                        const BorderSide(
+                                                                                InkWell(
+                                                                                    onTap: () {
+                                                                                      toggleEditActivity6(index, indexItem);
+                                                                                    },
+                                                                                    child: ImageIcon(
+                                                                                        AssetImage("assets/icons/editActivity.png"),
+                                                                                        color: primaryColor,
+                                                                                        size: 12.h
+                                                                                    ),
+                                                                                ),
+                                                                                const SizedBox(width: 8,),
+                                                                                SizedBox(
+                                                                                  height: 12.h,
+                                                                                  width: 12.h,
+                                                                                  child: Ink(
+                                                                                    decoration: ShapeDecoration(
+                                                                                        color: Colors.red,
+                                                                                        shape: RoundedRectangleBorder(
+                                                                                            borderRadius: BorderRadius.circular(4.w)
+                                                                                        )
+                                                                                    ),
+                                                                                    child: InkWell(
+                                                                                        onTap: () {
+                                                                                          removeActivity6Confirm(date!, indexItem, index, 6);
+                                                                                        },
+                                                                                        child:  Icon(
+                                                                                            Icons.remove,
+                                                                                            color: Colors.white,
+                                                                                            size: 10.h
+                                                                                        ),
+                                                                                    ),
+                                                                                  ),
+                                                                                )
+                                                                              ],
+                                                                            ),
+                                                                          )
+                                                                        ],
+                                                                      );
+                                                                    } else {
+                                                                      return const SizedBox();
+                                                                    }
+                                                                  })
+                                                            ]
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                  const Divider(),
+                                                  const SizedBox(
+                                                    height: 16,
+                                                  ),
+                                                  TextFormField(
+                                                    controller:
+                                                    activity6ListTextController
+                                                        .value[index],
+                                                    onChanged: (value) {
+                                                      debugPrint(value);
+                                                      debugPrint(
+                                                          'text remarks controller : ${activity6ListTextController.value[index].text}');
+                                                      editActivity6Remarks(
+                                                          date!,
+                                                          value,
+                                                          index);
+                                                    },
+                                                    cursorColor: onFocusColor,
+                                                    style: const TextStyle(
+                                                        color: onFocusColor),
+                                                    decoration: InputDecoration(
+                                                        border:
+                                                        OutlineInputBorder(
+                                                          borderRadius:
+                                                          BorderRadius
+                                                              .circular(12),
+                                                        ),
+                                                        focusedBorder:
+                                                        OutlineInputBorder(
+                                                          borderSide:
+                                                          const BorderSide(
+                                                              color:
+                                                              onFocusColor),
+                                                          borderRadius:
+                                                          BorderRadius
+                                                              .circular(12),
+                                                        ),
+                                                        labelText: 'Remarks',
+                                                        floatingLabelStyle:
+                                                        const TextStyle(
                                                             color:
                                                             onFocusColor),
-                                                        borderRadius:
-                                                        BorderRadius
-                                                            .circular(12),
-                                                      ),
-                                                      labelText: 'Remarks',
-                                                      floatingLabelStyle:
-                                                      const TextStyle(
-                                                          color:
-                                                          onFocusColor),
-                                                      fillColor:
-                                                      onFocusColor),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  })
-                                  : SizedBox(),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              const Text(
-                                'Attachment',
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.w700),
-                              ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              Text(
-                                  'File lampiran maksimal 5 file dengan ukuran total file maksimal 10 MB. Jenis file yang diperbolehkan hanya PDF/JPG/PNG/JPEG.'),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              activity6Attachments.value.isNotEmpty
-                                  ? GridView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 5,
-                                    mainAxisSpacing: 8,
-                                    crossAxisSpacing: 8,
-                                  ),
-                                  itemCount:
-                                  activity6Attachments.value.length,
-                                  itemBuilder: (content, index) {
-                                    final TDJoLaboratoryAttachment photo = activity6Attachments.value[index];
-                                    final String fileType = checkFileType(photo.pathName!);
-                                    var filename = photo.fileName;
-                                    return fileType == 'image' ? SizedBox(
-                                      width: 54,
-                                      height: 66,
-                                      child: Stack(
-                                        children: [
-                                          SizedBox(
-                                            width: 54,
-                                            height: 54,
-                                            child: InkWell(
-                                              onTap: (){
-                                                controller.previewImageAct6(index, photo.pathName!);
-                                              },
-                                              child: Image.file(
-                                                File(photo.pathName!),
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                          ),
-                                          Align(
-                                            alignment: AlignmentDirectional.topEnd,
-                                            child: SizedBox(
-                                              height: 12,
-                                              child: IconButton(
-                                                  onPressed: (){
-                                                    controller.removeActivity6Files(index);
-                                                  },
-                                                  icon: Icon(Icons.remove_circle,
-                                                    size: 12,
-                                                    color: Colors.red,
-                                                  )
+                                                        fillColor:
+                                                        onFocusColor),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ),
                                         ],
-                                      ),
-                                    ) : fileType == 'doc' ? SizedBox(
-                                      width: 54,
-                                      height: 66,
-                                      child: Stack(
-                                        children: [
-                                          InkWell(
-                                            onTap: (){
-                                              OpenFilex.open(photo.pathName!);
-                                            },
-                                            child: SizedBox(
+                                      );
+                                    })
+                                    : SizedBox(),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                const Text(
+                                  'Attachment',
+                                  style: TextStyle(
+                                      fontSize: 14, fontWeight: FontWeight.w700),
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                Text(
+                                    'File lampiran maksimal 5 file dengan ukuran total file maksimal 10 MB. Jenis file yang diperbolehkan hanya PDF/JPG/PNG/JPEG.'),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                activity6Attachments.value.isNotEmpty
+                                    ? GridView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 5,
+                                      mainAxisSpacing: 8,
+                                      crossAxisSpacing: 8,
+                                    ),
+                                    itemCount:
+                                    activity6Attachments.value.length,
+                                    itemBuilder: (content, index) {
+                                      final TDJoLaboratoryAttachment photo = activity6Attachments.value[index];
+                                      final String fileType = checkFileType(photo.pathName!);
+                                      var filename = photo.fileName;
+                                      return fileType == 'image' ? SizedBox(
+                                        width: 54,
+                                        height: 66,
+                                        child: Stack(
+                                          children: [
+                                            SizedBox(
                                               width: 54,
                                               height: 54,
-                                              child: Center(
-                                                  child: Column(
-                                                    children: [
-                                                      Image.asset('assets/icons/pdfIcon.png', height: 42,),
-                                                      Text(filename!, style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
-                                                    ],
-                                                  )
+                                              child: InkWell(
+                                                onTap: (){
+                                                  controller.previewImageAct6(index, photo.pathName!);
+                                                },
+                                                child: Image.file(
+                                                  File(photo.pathName!),
+                                                  fit: BoxFit.cover,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          Align(
-                                            alignment: AlignmentDirectional.topEnd,
-                                            child: SizedBox(
-                                              height: 12,
-                                              child: IconButton(
-                                                  padding: EdgeInsets.zero,
-                                                  onPressed: (){
-                                                    controller.removeActivity6Files(index);
-                                                  },
-                                                  icon: Icon(Icons.remove_circle,
-                                                    size: 12,
-                                                    color: Colors.red,
-                                                  )
+                                            Align(
+                                              alignment: AlignmentDirectional.topEnd,
+                                              child: SizedBox(
+                                                height: 12,
+                                                child: IconButton(
+                                                    onPressed: (){
+                                                      controller.removeActivity6Files(index);
+                                                    },
+                                                    icon: Icon(Icons.remove_circle,
+                                                      size: 12,
+                                                      color: Colors.red,
+                                                    )
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ) : SizedBox();
-                                  })
-                                  : const SizedBox(),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              SizedBox(
-                                width: 68,
-                                height: 68,
-                                child: ElevatedButton(
-                                    onPressed: () {
-                                      mediaPickerConfirm();
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.white,
-                                        shape: RoundedRectangleBorder(
-                                            side: BorderSide(color: primaryColor),
-                                            borderRadius:
-                                            BorderRadius.circular(12))),
-                                    child: Center(
-                                        child: Icon(
-                                          Icons.folder_rounded,
-                                          color: primaryColor,
-                                        ))),
-                              ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                            ],
+                                          ],
+                                        ),
+                                      ) : fileType == 'doc' ? SizedBox(
+                                        width: 54,
+                                        height: 66,
+                                        child: Stack(
+                                          children: [
+                                            InkWell(
+                                              onTap: (){
+                                                OpenFilex.open(photo.pathName!);
+                                              },
+                                              child: SizedBox(
+                                                width: 54,
+                                                height: 54,
+                                                child: Center(
+                                                    child: Column(
+                                                      children: [
+                                                        Image.asset('assets/icons/pdfIcon.png', height: 42,),
+                                                        Text(filename!, style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
+                                                      ],
+                                                    )
+                                                ),
+                                              ),
+                                            ),
+                                            Align(
+                                              alignment: AlignmentDirectional.topEnd,
+                                              child: SizedBox(
+                                                height: 12,
+                                                child: IconButton(
+                                                    padding: EdgeInsets.zero,
+                                                    onPressed: (){
+                                                      controller.removeActivity6Files(index);
+                                                    },
+                                                    icon: Icon(Icons.remove_circle,
+                                                      size: 12,
+                                                      color: Colors.red,
+                                                    )
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ) : SizedBox();
+                                    })
+                                    : const SizedBox(),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                SizedBox(
+                                  width: 68,
+                                  height: 68,
+                                  child: ElevatedButton(
+                                      onPressed: () {
+                                        mediaPickerConfirm();
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                              side: BorderSide(color: primaryColor),
+                                              borderRadius:
+                                              BorderRadius.circular(12))),
+                                      child: Center(
+                                          child: Icon(
+                                            Icons.folder_rounded,
+                                            color: primaryColor,
+                                          ))),
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  clearActivity6LabForm();
-                                  Get.back();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                        side: BorderSide(color: primaryColor),
-                                        borderRadius: BorderRadius.circular(12))),
-                                child: Container(
-                                    padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                                    width: double.infinity,
-                                    child: Center(
-                                        child: Text(
-                                          'Cancel',
-                                          style: TextStyle(
-                                              color: primaryColor,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
-                                        )))),
-                          ),
-                          const SizedBox(
-                            width: 16,
-                          ),
-                          Expanded(
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  editActivity6StageConfirm();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: primaryColor,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12))),
-                                child: Container(
-                                    padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                                    width: double.infinity,
-                                    child: Center(
-                                        child: Text(
-                                          'Submit',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
-                                        )))),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                    ],
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    clearActivity6LabForm();
+                                    Get.back();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                          side: BorderSide(color: primaryColor),
+                                          borderRadius: BorderRadius.circular(12))),
+                                  child: Container(
+                                      padding:
+                                      const EdgeInsets.symmetric(vertical: 12),
+                                      width: double.infinity,
+                                      child: Center(
+                                          child: Text(
+                                            'Cancel',
+                                            style: TextStyle(
+                                                color: primaryColor,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          )))),
+                            ),
+                            const SizedBox(
+                              width: 16,
+                            ),
+                            Expanded(
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    editActivity6StageConfirm();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: primaryColor,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12))),
+                                  child: Container(
+                                      padding:
+                                      const EdgeInsets.symmetric(vertical: 12),
+                                      width: double.infinity,
+                                      child: Center(
+                                          child: Text(
+                                            'Submit',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          )))),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              )),
+                )),
+          ),
         ),
-        isScrollControlled: true);
+        isScrollControlled: true,
+        isDismissible: false,
+        enableDrag: false,
+    );
   }
 
   Future<String?> editActivity6Stages() async {
