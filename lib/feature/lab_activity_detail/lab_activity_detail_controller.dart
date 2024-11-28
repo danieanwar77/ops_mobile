@@ -7,6 +7,7 @@ import 'package:external_path/external_path.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -975,7 +976,7 @@ class LabActivityDetailController extends BaseController{
                                                 child: Text(
                                                   'Date',
                                                   style: TextStyle(
-                                                      fontSize: 14,
+                                                      fontSize: 11.sp,
                                                       fontWeight:
                                                       FontWeight
                                                           .w700),
@@ -992,7 +993,7 @@ class LabActivityDetailController extends BaseController{
                                                       child: Text(
                                                         date ?? '-',
                                                         style: TextStyle(
-                                                          fontSize: 14,
+                                                          fontSize: 11.sp,
                                                         ),
                                                       ),
                                                     ),
@@ -1001,12 +1002,12 @@ class LabActivityDetailController extends BaseController{
                                                             () {
                                                           removeActivityByDateConfirm(date!, index, activityLabStage);
                                                         },
-                                                        child: Icon(
-                                                          Icons
-                                                              .delete_forever,
-                                                          color: Colors
-                                                              .red,
-                                                        ))
+                                                        child: const ImageIcon(
+                                                            AssetImage("assets/icons/deleteStage.png"),
+                                                            color: Colors.red,
+                                                            size: 18
+                                                        ),
+                                                    )
                                                   ],
                                                 ),
                                               )
@@ -1020,7 +1021,7 @@ class LabActivityDetailController extends BaseController{
                                                 child: Text(
                                                   'Activities',
                                                   style: TextStyle(
-                                                      fontSize: 14,
+                                                      fontSize: 11.sp,
                                                       fontWeight:
                                                       FontWeight
                                                           .w700),
@@ -1029,6 +1030,7 @@ class LabActivityDetailController extends BaseController{
                                               VerticalDivider(width: 1),
                                               SizedBox(width: 8),
                                               Expanded(
+                                                flex: 3,
                                                   child: Column(
                                                     children: [
                                                       ListView.builder(
@@ -1046,7 +1048,7 @@ class LabActivityDetailController extends BaseController{
                                                                     child: Text(
                                                                       '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
                                                                       style: TextStyle(
-                                                                          fontSize: 14,
+                                                                          fontSize: 10.sp,
                                                                           fontWeight:
                                                                           FontWeight
                                                                               .w700),
@@ -1062,7 +1064,7 @@ class LabActivityDetailController extends BaseController{
                                                                           child: Text(
                                                                             activityItem.activity ?? '-',
                                                                             style: TextStyle(
-                                                                              fontSize: 14,
+                                                                              fontSize: 11.sp,
                                                                             ),
                                                                           ),
                                                                         ),
@@ -1070,22 +1072,37 @@ class LabActivityDetailController extends BaseController{
                                                                             onTap: () {
                                                                               toggleEditActivity(index, indexItem);
                                                                             },
-                                                                            child: Icon(
-                                                                              Icons
-                                                                                  .mode_edit_outlined,
-                                                                              color:
-                                                                              primaryColor,
-                                                                            )),
-                                                                        InkWell(
-                                                                            onTap: () {
-                                                                              removeActivityConfirm(date!, indexItem, index, activityLabStage); //check tambahkan activity yang mau dihapus
-                                                                            },
-                                                                            child: Icon(
-                                                                              Icons
-                                                                                  .delete_forever,
-                                                                              color: Colors
-                                                                                  .red,
-                                                                            ))
+                                                                            child: ImageIcon(
+                                                                                AssetImage("assets/icons/editActivity.png"),
+                                                                                color: primaryColor,
+                                                                                size: 12.h
+                                                                            ),
+                                                                        ),
+                                                                        const SizedBox(
+                                                                          width: 6,
+                                                                        ),
+                                                                        SizedBox(
+                                                                          height: 12.h,
+                                                                          width: 12.h,
+                                                                          child: Ink(
+                                                                            decoration: ShapeDecoration(
+                                                                                color: Colors.red,
+                                                                                shape: RoundedRectangleBorder(
+                                                                                    borderRadius: BorderRadius.circular(4.w)
+                                                                                )
+                                                                            ),
+                                                                            child: InkWell(
+                                                                                onTap: () {
+                                                                                  removeActivityConfirm(date!, indexItem, index, activityLabStage); //check tambahkan activity yang mau dihapus
+                                                                                },
+                                                                                child: Icon(
+                                                                                    Icons.remove,
+                                                                                    color: Colors.white,
+                                                                                    size: 10.h
+                                                                                )
+                                                                            ),
+                                                                          ),
+                                                                        )
                                                                       ],
                                                                     ),
                                                                   )
@@ -1644,7 +1661,7 @@ class LabActivityDetailController extends BaseController{
                                                 child: Text(
                                                   'Date',
                                                   style: TextStyle(
-                                                      fontSize: 14,
+                                                      fontSize: 11.sp,
                                                       fontWeight:
                                                       FontWeight
                                                           .w700),
@@ -1661,7 +1678,7 @@ class LabActivityDetailController extends BaseController{
                                                       child: Text(
                                                         date ?? '-',
                                                         style: TextStyle(
-                                                          fontSize: 14,
+                                                          fontSize: 11.sp,
                                                         ),
                                                       ),
                                                     ),
@@ -1670,12 +1687,12 @@ class LabActivityDetailController extends BaseController{
                                                             () {
                                                           removeActivityByDateConfirm(date!, index, activityLabStage);
                                                         },
-                                                        icon: Icon(
-                                                          Icons
-                                                              .delete_forever,
-                                                          color: Colors
-                                                              .red,
-                                                        ))
+                                                        icon: const ImageIcon(
+                                                            AssetImage("assets/icons/deleteStage.png"),
+                                                            color: Colors.red,
+                                                            size: 18
+                                                        ),
+                                                    )
                                                   ],
                                                 ),
                                               )
@@ -1689,7 +1706,7 @@ class LabActivityDetailController extends BaseController{
                                                 child: Text(
                                                   'Activities',
                                                   style: TextStyle(
-                                                      fontSize: 14,
+                                                      fontSize: 11.sp,
                                                       fontWeight:
                                                       FontWeight
                                                           .w700),
@@ -1698,6 +1715,7 @@ class LabActivityDetailController extends BaseController{
                                               VerticalDivider(width: 1),
                                               SizedBox(width: 8),
                                               Expanded(
+                                                flex: 3,
                                                   child: Column(
                                                     children: [
                                                       ListView.builder(
@@ -1715,7 +1733,7 @@ class LabActivityDetailController extends BaseController{
                                                                     child: Text(
                                                                       '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
                                                                       style: TextStyle(
-                                                                          fontSize: 14,
+                                                                          fontSize: 10.sp,
                                                                           fontWeight:
                                                                           FontWeight
                                                                               .w700),
@@ -1731,7 +1749,7 @@ class LabActivityDetailController extends BaseController{
                                                                           child: Text(
                                                                             activityItem.activity ?? '-',
                                                                             style: TextStyle(
-                                                                              fontSize: 14,
+                                                                              fontSize: 11.sp,
                                                                             ),
                                                                           ),
                                                                         ),
@@ -1744,13 +1762,30 @@ class LabActivityDetailController extends BaseController{
                                                                               color: primaryColor,
                                                                             )
                                                                         ),
-                                                                        InkWell(
-                                                                            onTap: () {
-                                                                              removeActivityConfirm(date!, indexItem, index, activityLabStage);
-                                                                            },
-                                                                            child: const Icon(Icons.delete_forever,
-                                                                              color: Colors.red,
-                                                                            )
+                                                                        const SizedBox(
+                                                                          width: 6,
+                                                                        ),
+                                                                        SizedBox(
+                                                                          height: 12.h,
+                                                                          width: 12.h,
+                                                                          child: Ink(
+                                                                            decoration: ShapeDecoration(
+                                                                                color: Colors.red,
+                                                                                shape: RoundedRectangleBorder(
+                                                                                    borderRadius: BorderRadius.circular(4.w)
+                                                                                )
+                                                                            ),
+                                                                            child: InkWell(
+                                                                                onTap: () {
+                                                                                  removeActivityConfirm(date!, indexItem, index, activityLabStage);
+                                                                                },
+                                                                                child: Icon(
+                                                                                    Icons.remove,
+                                                                                    color: Colors.white,
+                                                                                    size: 10.h
+                                                                                )
+                                                                            ),
+                                                                          ),
                                                                         )
                                                                       ],
                                                                     ),
@@ -3408,7 +3443,7 @@ class LabActivityDetailController extends BaseController{
                                                       child: Text(
                                                         'Date',
                                                         style: TextStyle(
-                                                            fontSize: 14,
+                                                            fontSize: 11.sp,
                                                             fontWeight:
                                                             FontWeight
                                                                 .w700),
@@ -3425,19 +3460,19 @@ class LabActivityDetailController extends BaseController{
                                                             child: Text(
                                                               date ?? '-',
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 11.sp,
                                                               ),
                                                             ),
                                                           ),
                                                           InkWell(
                                                               onTap: () {removeActivity6ByDateConfirm(date!, index, 6);
                                                               },
-                                                              child: Icon(
-                                                                Icons
-                                                                    .delete_forever,
-                                                                color: Colors
-                                                                    .red,
-                                                              ))
+                                                              child: const ImageIcon(
+                                                                  AssetImage("assets/icons/deleteStage.png"),
+                                                                  color: Colors.red,
+                                                                  size: 18
+                                                              ),
+                                                          )
                                                         ],
                                                       ),
                                                     )
@@ -3454,7 +3489,7 @@ class LabActivityDetailController extends BaseController{
                                                         'Activities',
                                                         style: TextStyle(
                                                             fontSize:
-                                                            14,
+                                                            11.sp,
                                                             fontWeight:
                                                             FontWeight
                                                                 .w700),
@@ -3465,6 +3500,7 @@ class LabActivityDetailController extends BaseController{
                                                     SizedBox(
                                                         width: 8),
                                                     Expanded(
+                                                      flex: 3,
                                                         child: Column(
                                                           children: [
                                                             ListView.builder(
@@ -3491,7 +3527,7 @@ class LabActivityDetailController extends BaseController{
                                                                             '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
                                                                             style: TextStyle(
                                                                                 fontSize:
-                                                                                14,
+                                                                                10.sp,
                                                                                 fontWeight:
                                                                                 FontWeight
                                                                                     .w700),
@@ -3512,7 +3548,7 @@ class LabActivityDetailController extends BaseController{
                                                                                   style:
                                                                                   TextStyle(
                                                                                     fontSize:
-                                                                                    14,
+                                                                                    11.sp,
                                                                                   ),
                                                                                 ),
                                                                               ),
@@ -3523,29 +3559,42 @@ class LabActivityDetailController extends BaseController{
                                                                                         index,
                                                                                         indexItem);
                                                                                   },
-                                                                                  child:
-                                                                                  Icon(
-                                                                                    Icons
-                                                                                        .mode_edit_outlined,
-                                                                                    color:
-                                                                                    primaryColor,
-                                                                                  )),
-                                                                              InkWell(
-                                                                                  onTap:
-                                                                                      () {
-                                                                                    removeActivity6Confirm(
-                                                                                        date!,
-                                                                                        indexItem,
-                                                                                        index,
-                                                                                        6);
-                                                                                  },
-                                                                                  child:
-                                                                                  Icon(
-                                                                                    Icons
-                                                                                        .delete_forever,
-                                                                                    color:
-                                                                                    Colors.red,
-                                                                                  ))
+                                                                                  child: ImageIcon(
+                                                                                      AssetImage("assets/icons/editActivity.png"),
+                                                                                      color: primaryColor,
+                                                                                      size: 12.h
+                                                                                  ),
+                                                                              ),
+                                                                              const SizedBox(
+                                                                                width: 6,
+                                                                              ),
+                                                                              SizedBox(
+                                                                                height: 12.h,
+                                                                                width: 12.h,
+                                                                                child: Ink(
+                                                                                  decoration: ShapeDecoration(
+                                                                                      color: Colors.red,
+                                                                                      shape: RoundedRectangleBorder(
+                                                                                          borderRadius: BorderRadius.circular(4.w)
+                                                                                      )
+                                                                                  ),
+                                                                                  child: InkWell(
+                                                                                      onTap:
+                                                                                          () {
+                                                                                        removeActivity6Confirm(
+                                                                                            date!,
+                                                                                            indexItem,
+                                                                                            index,
+                                                                                            6);
+                                                                                      },
+                                                                                      child: Icon(
+                                                                                          Icons.remove,
+                                                                                          color: Colors.white,
+                                                                                          size: 10.h
+                                                                                      )
+                                                                                  ),
+                                                                                ),
+                                                                              )
                                                                             ],
                                                                           ),
                                                                         )
@@ -3650,13 +3699,14 @@ class LabActivityDetailController extends BaseController{
                                     final String fileType = checkFileType(photo.pathName!);
                                     var filename = photo.fileName;
                                     return fileType == 'image' ? SizedBox(
-                                      width: 54,
-                                      height: 66,
+                                      width: 68,
+                                      height: 68,
                                       child: Stack(
                                         children: [
-                                          SizedBox(
-                                            width: 54,
-                                            height: 54,
+                                          Container(
+                                            margin: const EdgeInsets.only(top: 5),
+                                            width: 63,
+                                            height: 63,
                                             child: InkWell(
                                               onTap: (){
                                                 controller.previewImageAct6(index, photo.pathName!);
@@ -3667,35 +3717,34 @@ class LabActivityDetailController extends BaseController{
                                               ),
                                             ),
                                           ),
-                                          Align(
-                                            alignment: AlignmentDirectional.topEnd,
-                                            child: SizedBox(
-                                              height: 12,
+                                          SizedBox(
+                                            width: 68,
+                                            height: 68,
+                                            child: Align(
+                                              alignment: Alignment.topRight,
                                               child: IconButton(
                                                   onPressed: (){
                                                     controller.removeActivity6Files(index);
                                                   },
-                                                  icon: Icon(Icons.remove_circle,
-                                                    size: 12,
-                                                    color: Colors.red,
-                                                  )
+                                                  icon: Image.asset('assets/icons/close.png', width: 24)
                                               ),
                                             ),
                                           ),
                                         ],
                                       ),
                                     ) : fileType == 'doc' ? SizedBox(
-                                      width: 54,
-                                      height: 66,
+                                      width: 68,
+                                      height: 68,
                                       child: Stack(
                                         children: [
                                           InkWell(
                                             onTap: (){
                                               OpenFilex.open(photo.pathName!);
                                             },
-                                            child: SizedBox(
-                                              width: 54,
-                                              height: 54,
+                                            child: Container(
+                                              margin: const EdgeInsets.only(top: 5),
+                                              width: 63,
+                                              height: 63,
                                               child: Center(
                                                   child: Column(
                                                     children: [
@@ -3706,19 +3755,16 @@ class LabActivityDetailController extends BaseController{
                                               ),
                                             ),
                                           ),
-                                          Align(
-                                            alignment: AlignmentDirectional.topEnd,
-                                            child: SizedBox(
-                                              height: 12,
-                                              child: IconButton(
-                                                  padding: EdgeInsets.zero,
-                                                  onPressed: (){
+                                          SizedBox(
+                                            width: 68,
+                                            height: 68,
+                                            child: Align(
+                                              alignment: Alignment.topRight,
+                                              child: InkWell(
+                                                  onTap: (){
                                                     controller.removeActivity6Files(index);
                                                   },
-                                                  icon: Icon(Icons.remove_circle,
-                                                    size: 12,
-                                                    color: Colors.red,
-                                                  )
+                                                  child: Image.asset('assets/icons/close.png', width: 24)
                                               ),
                                             ),
                                           ),
@@ -4202,7 +4248,7 @@ class LabActivityDetailController extends BaseController{
                                                       child: Text(
                                                         'Date',
                                                         style: TextStyle(
-                                                            fontSize: 14,
+                                                            fontSize: 11.sp,
                                                             fontWeight:
                                                             FontWeight
                                                                 .w700),
@@ -4219,7 +4265,7 @@ class LabActivityDetailController extends BaseController{
                                                             child: Text(
                                                               date ?? '-',
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 11.sp,
                                                               ),
                                                             ),
                                                           ),
@@ -4228,12 +4274,12 @@ class LabActivityDetailController extends BaseController{
                                                                 removeActivity6ByDateConfirm(date!, index, 6);
 
                                                               },
-                                                              icon: Icon(
-                                                                Icons
-                                                                    .delete_forever,
-                                                                color: Colors
-                                                                    .red,
-                                                              ))
+                                                              icon: const ImageIcon(
+                                                                  AssetImage("assets/icons/deleteStage.png"),
+                                                                  color: Colors.red,
+                                                                  size: 18
+                                                              ),
+                                                          )
                                                         ],
                                                       ),
                                                     )
@@ -4261,6 +4307,7 @@ class LabActivityDetailController extends BaseController{
                                                     SizedBox(
                                                         width: 8),
                                                     Expanded(
+                                                      flex: 3,
                                                       child: Column(
                                                           children: [
                                                             ListView.builder(
@@ -4286,7 +4333,7 @@ class LabActivityDetailController extends BaseController{
                                                                             '${activityItem.startActivityTime ?? '-'} - ${activityItem.endActivityTime ?? '-'}',
                                                                             style: TextStyle(
                                                                                 fontSize:
-                                                                                14,
+                                                                                10.sp,
                                                                                 fontWeight:
                                                                                 FontWeight
                                                                                     .w700),
@@ -4307,7 +4354,7 @@ class LabActivityDetailController extends BaseController{
                                                                                   style:
                                                                                   TextStyle(
                                                                                     fontSize:
-                                                                                    14,
+                                                                                    11.sp,
                                                                                   ),
                                                                                 ),
                                                                               ),
@@ -4324,19 +4371,34 @@ class LabActivityDetailController extends BaseController{
                                                                                         .mode_edit_outlined,
                                                                                     color:
                                                                                     primaryColor,
-                                                                                  )),
-                                                                              InkWell(
-                                                                                  onTap:
-                                                                                      () {
-                                                                                    removeActivity6Confirm(date!, indexItem, index, 6);
-                                                                                  },
-                                                                                  child:
-                                                                                  Icon(
-                                                                                    Icons
-                                                                                        .delete_forever,
-                                                                                    color:
-                                                                                    Colors.red,
-                                                                                  ))
+                                                                                  )
+                                                                              ),
+                                                                              const SizedBox(
+                                                                                width: 6,
+                                                                              ),
+                                                                              SizedBox(
+                                                                                height: 12.h,
+                                                                                width: 12.h,
+                                                                                child: Ink(
+                                                                                  decoration: ShapeDecoration(
+                                                                                      color: Colors.red,
+                                                                                      shape: RoundedRectangleBorder(
+                                                                                          borderRadius: BorderRadius.circular(4.w)
+                                                                                      )
+                                                                                  ),
+                                                                                  child: InkWell(
+                                                                                      onTap:
+                                                                                          () {
+                                                                                        removeActivity6Confirm(date!, indexItem, index, 6);
+                                                                                      },
+                                                                                      child: Icon(
+                                                                                          Icons.remove,
+                                                                                          color: Colors.white,
+                                                                                          size: 10.h
+                                                                                      )
+                                                                                  ),
+                                                                                ),
+                                                                              )
                                                                             ],
                                                                           ),
                                                                         )
@@ -4437,13 +4499,14 @@ class LabActivityDetailController extends BaseController{
                                     final String fileType = checkFileType(photo.pathName!);
                                     var filename = photo.fileName;
                                     return fileType == 'image' ? SizedBox(
-                                      width: 54,
-                                      height: 66,
+                                      width: 68,
+                                      height: 68,
                                       child: Stack(
                                         children: [
-                                          SizedBox(
-                                            width: 54,
-                                            height: 54,
+                                          Container(
+                                            margin: const EdgeInsets.only(top: 5),
+                                            width: 63,
+                                            height: 63,
                                             child: InkWell(
                                               onTap: (){
                                                 controller.previewImageAct6(index, photo.pathName!);
@@ -4454,35 +4517,34 @@ class LabActivityDetailController extends BaseController{
                                               ),
                                             ),
                                           ),
-                                          Align(
-                                            alignment: AlignmentDirectional.topEnd,
-                                            child: SizedBox(
-                                              height: 12,
-                                              child: IconButton(
-                                                  onPressed: (){
+                                          SizedBox(
+                                            width: 68,
+                                            height: 68,
+                                            child: Align(
+                                              alignment: Alignment.topRight,
+                                              child: InkWell(
+                                                  onTap: (){
                                                     controller.removeActivity6Files(index);
                                                   },
-                                                  icon: Icon(Icons.remove_circle,
-                                                    size: 12,
-                                                    color: Colors.red,
-                                                  )
+                                                  child: Image.asset('assets/icons/close.png', width: 24)
                                               ),
                                             ),
                                           ),
                                         ],
                                       ),
                                     ) : fileType == 'doc' ? SizedBox(
-                                      width: 54,
-                                      height: 66,
+                                      width: 68,
+                                      height: 68,
                                       child: Stack(
                                         children: [
                                           InkWell(
                                             onTap: (){
                                               OpenFilex.open(photo.pathName!);
                                             },
-                                            child: SizedBox(
-                                              width: 54,
-                                              height: 54,
+                                            child: Container(
+                                              margin: const EdgeInsets.only(top: 5),
+                                              width: 63,
+                                              height: 63,
                                               child: Center(
                                                   child: Column(
                                                     children: [
@@ -4493,19 +4555,16 @@ class LabActivityDetailController extends BaseController{
                                               ),
                                             ),
                                           ),
-                                          Align(
-                                            alignment: AlignmentDirectional.topEnd,
-                                            child: SizedBox(
-                                              height: 12,
-                                              child: IconButton(
-                                                  padding: EdgeInsets.zero,
-                                                  onPressed: (){
+                                          SizedBox(
+                                            width: 68,
+                                            height: 68,
+                                            child: Align(
+                                              alignment: Alignment.topRight,
+                                              child: InkWell(
+                                                  onTap: (){
                                                     controller.removeActivity6Files(index);
                                                   },
-                                                  icon: Icon(Icons.remove_circle,
-                                                    size: 12,
-                                                    color: Colors.red,
-                                                  )
+                                                  child: Image.asset('assets/icons/close.png', width: 24)
                                               ),
                                             ),
                                           ),
@@ -4517,7 +4576,7 @@ class LabActivityDetailController extends BaseController{
                               const SizedBox(
                                 height: 16,
                               ),
-                              SizedBox(
+                              activity6Attachments.value.length < 5 ? SizedBox(
                                 width: 68,
                                 height: 68,
                                 child: ElevatedButton(
@@ -4535,7 +4594,7 @@ class LabActivityDetailController extends BaseController{
                                           Icons.folder_rounded,
                                           color: primaryColor,
                                         ))),
-                              ),
+                              ) : const SizedBox(),
                               const SizedBox(
                                 height: 16,
                               ),
