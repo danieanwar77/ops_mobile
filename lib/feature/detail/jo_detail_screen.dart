@@ -25,7 +25,7 @@ class JoDetailScreen extends StatelessWidget {
               child: Scaffold(
                   appBar: AppBar(
                     actions: [
-                      controller.activityStage == 6 && (controller.joRx.value.inspectionFinishedDate != null && controller.joRx.value.inspectionFinishedDate.toString().length == 0)
+                      controller.activityStage == 6 && controller.isReportClient.value && (controller.joRx.value.inspectionFinishedDate == null || controller.joRx.value.inspectionFinishedDate.toString().length == 0)
                           ? IconButton(
                               onPressed: (){
                                 controller.finishStageActivityConfirm();
@@ -1740,7 +1740,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       child: Text(controller.stageList.length == 0 ? "None" : controller.activityStages[controller.activityStage - 1], style: TextStyle(fontSize: 12.sp, color: Colors.white)))
                                                       : const SizedBox(),
                                                   Spacer(),
-                                                  (controller.dataJoDetail.value.detail?.statusJo == 'Assigned' || controller.dataJoDetail.value.detail?.statusJo == 'On Progres' ) &&  (controller.activityStage != 6)
+                                                  (controller.dataJoDetail.value.detail?.statusJo == 'Assigned' || controller.dataJoDetail.value.detail?.statusJo == 'On Progres' ) &&  (controller.joRx.value.inspectionFinishedDate != null && controller.joRx.value.inspectionFinishedDate.length == 0 && !controller.isReportClient.value)
                                                       ? IconButton(
                                                       onPressed: () {
                                                         if (controller.activitySubmitted.value == true) {

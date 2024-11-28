@@ -3961,7 +3961,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 thickness: 0.4),
                                                             Row(
                                                               children: [
-                                                                Expanded(
+                                                                const Expanded(
                                                                   child: Text(
                                                                     'Activity Date',
                                                                     style: TextStyle(
@@ -3971,18 +3971,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                                         FontWeight.w700),
                                                                   ),
                                                                 ),
-                                                                VerticalDivider(
-                                                                    width: 1),
-                                                                SizedBox(
-                                                                    width: 16),
+                                                                VerticalDivider(width: 1),
+                                                                SizedBox(width: 16),
                                                                 Expanded(
                                                                   child: Text(
-                                                                    controller
-                                                                        .dataJoDetail
-                                                                        .value
-                                                                        .detail!
-                                                                        .uomName ??
-                                                                        '-',
+                                                                    controller.dataJoDetail.value.detail!.uomName ?? '-',
                                                                     style:
                                                                     TextStyle(
                                                                       fontSize:
@@ -4163,7 +4156,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                             SizedBox(width: 16),
                                                                             Expanded(
                                                                               child: Text(
-                                                                                controller.activity5ListStages.value.first.transhipment![index].deliveryQty ?? '-',
+                                                                                '0',
                                                                                 style: TextStyle(
                                                                                   fontSize: 12.sp,
                                                                                 ),

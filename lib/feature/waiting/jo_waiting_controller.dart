@@ -664,36 +664,36 @@ class JoWaitingController extends BaseController {
     }
   }
 
-  Future<void> getJoDailyActivity5() async {
-    var response =
-        await repository.getJoListDailyActivity5(id) ?? JoListDailyActivity5();
-    debugPrint('JO Daily Activity 5: ${jsonEncode(response)}');
-    if (response.data!.detail!.isNotEmpty) {
-      dataListActivity5.value = response?.data ?? DataListActivity5();
-      var data = dataListActivity5.value;
-      var dataBarge = data.barge!.map((item) {
-        return Barge(barge: item.barge);
-      }).toList();
-      var dataTranshipment = data.transhipment!.map((item) {
-        return Transhipment(
-          jetty: item.jetty,
-          initialDate: item.initialDate,
-          finalDate: item.finalDate,
-          deliveryQty: item.deliveryQty.toString(),
-        );
-      }).toList();
-      activity5ListStages.value.add(FormDataArray(
-          tHJoId: id,
-          mStatusinspectionstagesId: 5,
-          uomId: 3,
-          transDate: data.detail!.first.transDate,
-          actualQty: data.detail!.first.actualQty.toString(),
-          createdBy: 0,
-          vessel: data.detail!.first.vessel,
-          barge: dataBarge,
-          transhipment: dataTranshipment));
-    }
-  }
+  // Future<void> getJoDailyActivity5() async {
+  //   var response =
+  //       await repository.getJoListDailyActivity5(id) ?? JoListDailyActivity5();
+  //   debugPrint('JO Daily Activity 5: ${jsonEncode(response)}');
+  //   if (response.data!.detail!.isNotEmpty) {
+  //     dataListActivity5.value = response?.data ?? DataListActivity5();
+  //     var data = dataListActivity5.value;
+  //     var dataBarge = data.barge!.map((item) {
+  //       return Barge(barge: item.barge);
+  //     }).toList();
+  //     var dataTranshipment = data.transhipment!.map((item) {
+  //       return Transhipment(
+  //         jetty: item.jetty,
+  //         initialDate: item.initialDate,
+  //         finalDate: item.finalDate,
+  //         deliveryQty: item.deliveryQty.toString(),
+  //       );
+  //     }).toList();
+  //     activity5ListStages.value.add(FormDataArray(
+  //         tHJoId: id,
+  //         mStatusinspectionstagesId: 5,
+  //         uomId: 3,
+  //         transDate: data.detail!.first.transDate,
+  //         actualQty: data.detail!.first.actualQty.toString(),
+  //         createdBy: 0,
+  //         vessel: data.detail!.first.vessel,
+  //         barge: dataBarge,
+  //         transhipment: dataTranshipment));
+  //   }
+  // }
 
   Future<void> getJoDailyActivity6() async {
     var response =
