@@ -815,7 +815,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                                   SizedBox(width:16),
                                                                   Expanded(
                                                                     child:
-                                                                    Text('${Helper.formatToHourMinuteFromDate(activity.createdAt ?? '')}',
+                                                                    Text(Helper.formatToHourMinuteFromDate(activity.updatedAt == null ? (activity.createdAt ?? '') : (activity.updatedAt ?? '')),
                                                                       style: TextStyle(
                                                                         fontSize: 14,
                                                                       ),

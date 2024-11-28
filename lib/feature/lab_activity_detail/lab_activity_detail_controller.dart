@@ -139,6 +139,7 @@ class LabActivityDetailController extends BaseController{
     );
     //try{
       activityLabListStages.value.clear();
+      activity5LabListStages.value.clear();
       activity6ListStages.value.clear();
       var response = await SqlHelper.getDetailActivityLaboratory(id,userData.value!.id!.toInt(), labId);
       var text = '';
@@ -248,6 +249,7 @@ class LabActivityDetailController extends BaseController{
                           // update();
                         }
                         if (stageItem['progress_id'] == 6) {
+                          debugPrint('print stageItem 6 activity ${stageItem['activity']}');
                           if ((stageItem['activity'] != null || stageItem['activity'] != '') && activityItems.where((item) => item.code == stageItem['activity_code']).isEmpty) {
                             activityItems.add(TDJoLaboratoryActivity.fromJson({
                               "id": stageItem['activity_id'],
@@ -1896,7 +1898,7 @@ class LabActivityDetailController extends BaseController{
               color: primaryColor
           ),
         ),
-        content: Text('Apakah benar anda akan menyimpan perubahan stage sample on delivery ini? pastikan data yg anda input benar.'),
+        content: Text('Apakah benar anda akan menyimpan perubahan stage ${labStagesName[activityLabStage - 1]} ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
             child: const Text("Close"),
@@ -1977,9 +1979,7 @@ class LabActivityDetailController extends BaseController{
       isActive: 1,
       isUpload: 0,
       createdBy: userData.value?.id ?? 0,
-      createdAt: DateFormat('yyyy-MM-dd HH:mm:ss')
-          .format(DateTime.now())
-          .toString(),
+      createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()).toString(),
       listLabActivity: [
         TDJoLaboratoryActivity(
           tDJoLaboratoryId: joLabId,
@@ -2319,6 +2319,9 @@ class LabActivityDetailController extends BaseController{
       isUpload: 0,
       createdBy: userData.value?.id ?? 0,
       createdAt: DateFormat('yyyy-MM-dd HH:mm:ss')
+          .format(DateTime.now())
+          .toString(),
+      updatedAt: DateFormat('yyyy-MM-dd HH:mm:ss')
           .format(DateTime.now())
           .toString(),
       listLabActivity: [
@@ -2827,24 +2830,25 @@ class LabActivityDetailController extends BaseController{
   }
 
   Future<void> removeActivity6(int index, int indexitem, int stage)async {
+    debugPrint("print index ${index} index item ${indexitem}");
     var stageItem = activity6List.value[index].listLabActivity![indexitem];
-
     if(stageItem.id != null){
-      activity6List.value[index].listLabActivity![indexitem] = TDJoLaboratoryActivity(
-        id: stageItem.id,
-        tDJoLaboratoryActivityStagesId: stageItem.tDJoLaboratoryActivityStagesId,
-        tDJoLaboratoryId: stageItem.tDJoLaboratoryId,
-        startActivityTime: stageItem.startActivityTime,
-        endActivityTime: stageItem.endActivityTime,
-        activity: stageItem.activity,
-        code: stageItem.code,
-        isActive: 0,
-        isUpload: stageItem.isUpload,
-        createdBy: stageItem.createdBy,
-        updatedBy: stageItem.updatedBy,
-        createdAt: stageItem.createdAt,
-        updatedAt: stageItem.updatedAt,
-      );
+      // activity6List.value[index].listLabActivity![indexitem] = TDJoLaboratoryActivity(
+      //   id: stageItem.id,
+      //   tDJoLaboratoryActivityStagesId: stageItem.tDJoLaboratoryActivityStagesId,
+      //   tDJoLaboratoryId: stageItem.tDJoLaboratoryId,
+      //   startActivityTime: stageItem.startActivityTime,
+      //   endActivityTime: stageItem.endActivityTime,
+      //   activity: stageItem.activity,
+      //   code: stageItem.code,
+      //   isActive: 0,
+      //   isUpload: stageItem.isUpload,
+      //   createdBy: stageItem.createdBy,
+      //   updatedBy: stageItem.updatedBy,
+      //   createdAt: stageItem.createdAt,
+      //   updatedAt: stageItem.updatedAt,
+      // );
+      activity6List.value[index].listLabActivity!.removeAt(indexitem);
     } else {
       activity6List.value[index].listLabActivity!.removeAt(indexitem);
     }
@@ -2854,32 +2858,35 @@ class LabActivityDetailController extends BaseController{
       activity6List.value.removeAt(index);
     }
 
+    update();
   }
 
   Future<void> removeActivity6ByDate(String date, int indexDate, int stageProgress)async{
+    debugPrint("print date ${date} ${indexDate} stage ${stageProgress}");
     var stage = activity6List.value.where((item) => item.transDate == date && item.mStatuslaboratoryprogresId == 6).first;
     var indexStage = activity6List.value.indexWhere((item) => item.transDate == date && item.mStatuslaboratoryprogresId == 6);
     if(stage.id != null){
-      activity6List.value[indexStage] = TDJoLaboratoryActivityStages(
-        id : stage.id,
-        dJoLaboratoryId : stage.dJoLaboratoryId,
-        tHJoId : stage.tHJoId,
-        mStatuslaboratoryprogresId : stage.mStatuslaboratoryprogresId,
-        transDate : stage.transDate,
-        remarks : stage.remarks,
-        createdBy : stage.createdBy,
-        updatedBy : stage.updatedBy,
-        createdAt : stage.createdAt,
-        updatedAt : stage.updatedAt,
-        totalSampleReceived : stage.totalSampleReceived,
-        totalSampleAnalyzed : stage.totalSampleAnalyzed,
-        totalSamplePreparation : stage.totalSamplePreparation,
-        code : stage.code,
-        isActive : 0,
-        isUpload : 0,
-        listLabActivity: stage.listLabActivity,
-        listLabAttachment: stage.listLabAttachment,
-      );
+      // activity6List.value[indexStage] = TDJoLaboratoryActivityStages(
+      //   id : stage.id,
+      //   dJoLaboratoryId : stage.dJoLaboratoryId,
+      //   tHJoId : stage.tHJoId,
+      //   mStatuslaboratoryprogresId : stage.mStatuslaboratoryprogresId,
+      //   transDate : stage.transDate,
+      //   remarks : stage.remarks,
+      //   createdBy : stage.createdBy,
+      //   updatedBy : stage.updatedBy,
+      //   createdAt : stage.createdAt,
+      //   updatedAt : stage.updatedAt,
+      //   totalSampleReceived : stage.totalSampleReceived,
+      //   totalSampleAnalyzed : stage.totalSampleAnalyzed,
+      //   totalSamplePreparation : stage.totalSamplePreparation,
+      //   code : stage.code,
+      //   isActive : 0,
+      //   isUpload : 0,
+      //   listLabActivity: stage.listLabActivity,
+      //   listLabAttachment: stage.listLabAttachment,
+      // );
+      activity6List.value.removeAt(indexStage);
     } else {
       activity6List.value.removeAt(indexStage);
     }
@@ -3423,9 +3430,7 @@ class LabActivityDetailController extends BaseController{
                                                             ),
                                                           ),
                                                           InkWell(
-                                                              onTap:
-                                                                  () {
-                                                                removeActivity6ByDateConfirm(date!, index, 6);
+                                                              onTap: () {removeActivity6ByDateConfirm(date!, index, 6);
                                                               },
                                                               child: Icon(
                                                                 Icons
@@ -4606,20 +4611,14 @@ class LabActivityDetailController extends BaseController{
     if (activity6List.value.where((data) => data.mStatuslaboratoryprogresId == activityLabStage).toList().isNotEmpty) {
       final createdBy = userData.value!.id;
       final db = await SqlHelper.db();
-      debugPrint('print data activity 6 ${jsonEncode(activity6List)}');
-      var attachment =  activity6Attachments.value;
-      debugPrint("print lab attahment ${attachment}");
 
+      var attachment =  activity6Attachments.value;
+      await db.update("t_d_jo_laboratory_activity_stages", {"is_active": 0},where: "m_statuslaboratoryprogres_id=? and d_jo_laboratory_id= ?",whereArgs: [6,joLabId]);
       for(int i = 0; i < activity6List.length; i++) {
         TDJoLaboratoryActivityStages labActStage = activity6List[i];
-        if(labActStage.id != null){
-          await db.update("t_d_jo_laboratory_activity_stages", {"is_active": 0},where: "id=?",whereArgs: [labActStage.id]);
-        }
-        debugPrint('print data  ${labActStage.toJson()}');
         if(labActStage.id == null){
-          debugPrint('print data id is null ${labActStage.toJson()}');
           TDJoLaboratoryActivityStages dataStage = TDJoLaboratoryActivityStages(
-              code: 'JOLAS-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+              code: 'JOLAS-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
               dJoLaboratoryId: activity6List[i].dJoLaboratoryId,
               tHJoId: activity6List[i].tHJoId,
               mStatuslaboratoryprogresId: activity6List[i].mStatuslaboratoryprogresId,
@@ -4642,7 +4641,7 @@ class LabActivityDetailController extends BaseController{
                 createdBy: createdBy,
                 isActive: 1,
                 isUpload: 0,
-                code: "JOLA-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+                code: "JOLA-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
             );
             int rsltAct = await db.insert("t_d_jo_laboratory_activity", dataAct.toInsert());
           }
@@ -4666,13 +4665,13 @@ class LabActivityDetailController extends BaseController{
                 endActivityTime: actStage[j].endActivityTime,
                 activity: actStage[j].activity,
                 tDJoLaboratoryActivityStagesId: dataStage.id,
-                tDJoLaboratoryId: labId,
+                tDJoLaboratoryId: joLabId,
                 createdBy: createdBy,
                 isActive: 1,
                 isUpload: 0,
-                code: "JOLA-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+                code: "JOLA-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
             );
-
+            debugPrint('print data TDJoLaboratoryActivity  ${jsonEncode(dataAct.toJson())}');
             if(dataAct.id == null){
               int rsltAct = await db.insert("t_d_jo_laboratory_activity", dataAct.toInsert());
             }else{
