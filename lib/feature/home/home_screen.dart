@@ -43,9 +43,14 @@ class HomeScreen extends StatelessWidget{
                           children: [
                             Row(
                               children: [
-                                CircleAvatar(
-                                  radius: 32,
-                                  child: Image.asset('assets/icons/user.png'),
+                                InkWell(
+                                  onTap:(){
+                                    controller.versionSyncDialog();
+                                  },
+                                  child: CircleAvatar(
+                                    radius: 32,
+                                    child: Image.asset('assets/icons/user.png'),
+                                  ),
                                 ),
                                 const SizedBox(width: 18,),
                                 Obx(()=> Expanded(

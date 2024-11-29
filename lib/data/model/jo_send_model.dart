@@ -1,3 +1,5 @@
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages_transhipment.dart';
+
 /// t_h_jo_id : 7
 /// m_statusinspectionstages_id : 4
 /// trans_date : "2024-08-31"
@@ -391,7 +393,7 @@ class FormDataArray {
     num? createdBy,
     String? vessel,
     List<Barge>? barge,
-    List<Transhipment>? transhipment,}){
+    List<TDJoInspectionActivityStagesTranshipment>? transhipment,}){
     _tHJoId = tHJoId;
     _mStatusinspectionstagesId = mStatusinspectionstagesId;
     _uomId = uomId;
@@ -420,7 +422,7 @@ class FormDataArray {
     if (json['transhipment'] != null) {
       _transhipment = [];
       json['transhipment'].forEach((v) {
-        _transhipment?.add(Transhipment.fromJson(v));
+        _transhipment?.add(TDJoInspectionActivityStagesTranshipment.fromJson(v));
       });
     }
   }
@@ -432,7 +434,7 @@ class FormDataArray {
   num? _createdBy;
   String? _vessel;
   List<Barge>? _barge;
-  List<Transhipment>? _transhipment;
+  List<TDJoInspectionActivityStagesTranshipment>? _transhipment;
   FormDataArray copyWith({  num? tHJoId,
     num? mStatusinspectionstagesId,
     num? uomId,
@@ -441,7 +443,7 @@ class FormDataArray {
     num? createdBy,
     String? vessel,
     List<Barge>? barge,
-    List<Transhipment>? transhipment,
+    List<TDJoInspectionActivityStagesTranshipment>? transhipment,
   }) => FormDataArray(  tHJoId: tHJoId ?? _tHJoId,
     mStatusinspectionstagesId: mStatusinspectionstagesId ?? _mStatusinspectionstagesId,
     uomId: uomId ?? _uomId,
@@ -460,7 +462,7 @@ class FormDataArray {
   num? get createdBy => _createdBy;
   String? get vessel => _vessel;
   List<Barge>? get barge => _barge;
-  List<Transhipment>? get transhipment => _transhipment;
+  List<TDJoInspectionActivityStagesTranshipment>? get transhipment => _transhipment;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -489,10 +491,12 @@ class FormDataArray {
 
 class Transhipment {
   Transhipment({
+    int? id,
     String? jetty,
     String? initialDate,
     String? finalDate,
     String? deliveryQty,}){
+    _id = id;
     _jetty = jetty;
     _initialDate = initialDate;
     _finalDate = finalDate;
@@ -505,6 +509,7 @@ class Transhipment {
     _finalDate = json['final_date'];
     _deliveryQty = json['delivery_qty'];
   }
+  int? _id;
   String? _jetty;
   String? _initialDate;
   String? _finalDate;
@@ -518,6 +523,7 @@ class Transhipment {
     finalDate: finalDate ?? _finalDate,
     deliveryQty: deliveryQty ?? _deliveryQty,
   );
+  int? get id => _id;
   String? get jetty => _jetty;
   String? get initialDate => _initialDate;
   String? get finalDate => _finalDate;
@@ -526,6 +532,7 @@ class Transhipment {
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['jetty'] = _jetty;
+    map['id'] = _id;
     map['initial_date'] = _initialDate;
     map['final_date'] = _finalDate;
     map['delivery_qty'] = _deliveryQty;

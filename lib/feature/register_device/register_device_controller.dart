@@ -78,6 +78,7 @@ class RegisterDeviceController extends BaseController{
     debugPrint('base url:${AppConstant.BASE_URL}');
     try{
       var response = await repository.registerDevice(employeeIdText.text, uuid) ?? ResponseRegisterDevice();
+      loadingProgressDialog();
       if(response.code == 200 && response.message == 'Registrasi Device Berhasil'){
         var setting = {
           'internet_url' : internetUrlText.text,
@@ -88,11 +89,41 @@ class RegisterDeviceController extends BaseController{
         await StorageCore().storage.write('settings', setting);
         await writeSettings(jsonEncode(setting));
         update();
+        Get.back();
         openDialog('Success', 'Berhasil register perangkat');
+      }else{
+        openDialog('Success', response.message ?? 'Register perangkat gagal');
       }
     } catch(e){
       openDialog('Failed', 'Register perangkat gagal: $e');
     }
+  }
+
+  void loadingProgressDialog() {
+    Get.dialog(
+      AlertDialog(
+        title: Text(
+          'Loading Register',
+          style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
+        ),
+        content: SizedBox(
+          width: double.infinity,
+          height: 84,
+          child: Column(
+            children: [
+              SizedBox(
+                  width: 84,
+                  height: 84,
+                  child: CircularProgressIndicator()
+              ),
+            ],
+          ),
+        ),
+        actions: [],
+      ),
+      barrierDismissible: false
+    );
   }
 
   Future<void> writeSettings(String text) async {
@@ -108,6 +139,11 @@ class RegisterDeviceController extends BaseController{
       final File file = File('${directory}/settings.txt');
       text = await file.readAsString();
       debugPrint('setting txt: ${jsonDecode(text)}');
+      var data = jsonDecode(text);
+      employeeIdText.text = data['e_number'];
+      internetUrlText.text = data['internet_url'];
+      localUrlText.text = data['local_url'];
+      update();
     } catch (e) {
       print("Couldn't read file");
       text = '';
