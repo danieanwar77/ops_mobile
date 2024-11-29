@@ -4893,7 +4893,7 @@ class JoWaitingScreen extends StatelessWidget {
                               child: Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: Column(children: [
-                                  controller.statusId == 4
+                                  controller.statusId == 4 && controller.laboratoryDocuments.value.isEmpty
                                       ? Row(children: [
                                     Spacer(),
                                     IconButton(
