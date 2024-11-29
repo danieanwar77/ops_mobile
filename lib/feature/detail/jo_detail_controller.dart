@@ -2135,14 +2135,14 @@ class JoDetailController extends BaseController {
 
         var transhipmentCount = 0;
         for (var transhipment in item!.transhipment!) {
+          debugPrint('print data transhipment ${transhipment.toJson()}');
           if (transhipment.deliveryQty != null && transhipment.deliveryQty != "" && transhipment.jetty != null && transhipment.jetty != "") {
-            transhipmentCount++;
             TDJoInspectionActivityStagesTranshipment dTranshipment = TDJoInspectionActivityStagesTranshipment(
               uomId: item.uomId,
               tDInspectionStagesId: rawStage,
               tDJoInspectionActivityId: rawAct,
-              initialDate: transhipment.initialDate,
-              finalDate: transhipment.finalDate,
+              initialDate: initialDateActivity5ListTextController.value[transhipmentCount].text,
+              finalDate: finalDateActivity5ListTextController.value[transhipmentCount].text,
               jetty: transhipment.jetty,
               deliveryQty: double.parse(transhipment!.deliveryQty!.toString()),
               code: "JOIAT-${item.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${transhipmentCount}",
@@ -2151,6 +2151,7 @@ class JoDetailController extends BaseController {
               createdBy: createdBy,
               createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
             );
+            transhipmentCount++;
             await db.insert("t_d_jo_inspection_activity_stages_transhipment", dTranshipment.toInsert());
           }
         }
@@ -2766,12 +2767,11 @@ class JoDetailController extends BaseController {
       for (var transhipment in item!.transhipment!) {
         debugPrint('print data transhipment ${transhipment.toJson()}');
         if (transhipment.deliveryQty != null && transhipment.deliveryQty != "" && transhipment.jetty != null && transhipment.jetty != "") {
-          transhipmentCount++;
           TDJoInspectionActivityStagesTranshipment dTranshipment = TDJoInspectionActivityStagesTranshipment(
             tDInspectionStagesId: idJoActStage,
             tDJoInspectionActivityId: idJoAct,
-            initialDate: transhipment.initialDate,
-            finalDate: transhipment.finalDate,
+            initialDate: initialDateActivity5ListTextController.value[transhipmentCount].text,
+            finalDate: finalDateActivity5ListTextController.value[transhipmentCount].text,
             jetty: transhipment.jetty,
             deliveryQty: double.parse(transhipment!.deliveryQty!.toString()),
             code: "JOIAT-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${transhipmentCount}",
@@ -2783,6 +2783,7 @@ class JoDetailController extends BaseController {
             updatedBy: createdBy.toString(),
             updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
           );
+          transhipmentCount++;
           if (dTranshipment.id == null) {
             await db.insert("t_d_jo_inspection_activity_stages_transhipment", dTranshipment.toInsert());
           } else {
