@@ -1464,9 +1464,9 @@ class JoDetailController extends BaseController {
                         onPressed: () async {
                           Get.back();
                           var file = await pickImage();
-                          dailyActivityPhotos.value[index] = file;
+                          //dailyActivityPhotos.value[index] = file;
                           activityPreviewFoto.value = file;
-                          updateActivityDailyPhoto(file, int.parse(dataJoDailyPhotos.value[index].id!.toString()), dailyActivityPhotosDescEdit.value.text);
+                          //updateActivityDailyPhoto(file, int.parse(dataJoDailyPhotos.value[index].id!.toString()), dailyActivityPhotosDescEdit.value.text);
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white, shape: RoundedRectangleBorder(side: const BorderSide(color: primaryColor), borderRadius: BorderRadius.circular(12))),
