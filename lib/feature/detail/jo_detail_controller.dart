@@ -1226,6 +1226,102 @@ class JoDetailController extends BaseController {
     );
   }
 
+  void previewImageDetail(int index, String photo, String desc, TDJoInspectionPict pict) async {
+    dailyActivityPhotosDescEdit.value.text = desc;
+    activityPreviewFoto.value = await File(photo);
+    Get.dialog(
+      GetBuilder(
+          init: JoDetailController(),
+          builder: (controller) {
+            var photoPreview = activityPreviewFoto.value;
+            return AlertDialog(
+              title: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Photo and Description ${index + 1}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.sp,
+                        color: primaryColor,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    icon: const Icon(Icons.close),
+                  )
+                ],
+              ),
+              content: Obx(
+                    () => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(Get.context!).viewInsets.bottom != 0 ? 100.h : 200.h,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            InkWell(
+                              onTap: () async {
+                                await inspectionMediaPreviewPickerConfirmEdit(index);
+                                photoPreview = activityPreviewFoto.value;
+                                update();
+                              },
+                              child: Center(
+                                child: SizedBox(
+                                  height: MediaQuery.of(Get.context!).viewInsets.bottom != 0 ? 66.h : 180.h,
+                                  width: MediaQuery.sizeOf(Get.context!).width.w,
+                                  child: Image.file(
+                                    photoPreview,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 16.h,
+                            ),
+                            SizedBox(
+                              height: 16.h,
+                            ),
+                            SizedBox(
+                              child: TextFormField(
+                                controller: dailyActivityPhotosDescEdit.value,
+                                cursorColor: onFocusColor,
+                                readOnly: true,
+                                style: const TextStyle(color: onFocusColor),
+                                inputFormatters: [
+                                  new LengthLimitingTextInputFormatter(150),
+                                ],
+                                decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(color: onFocusColor),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    labelText: 'Description',
+                                    floatingLabelStyle: const TextStyle(color: onFocusColor),
+                                    fillColor: onFocusColor),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            );
+          }),
+    );
+  }
+
   void updateActivityConfirm(File foto, int index, String desc) {
     if (desc.length == 0) {
       openDialog("Attention", "Photo descriksi tidak boleh kosong");
@@ -2039,7 +2135,7 @@ class JoDetailController extends BaseController {
 
         var transhipmentCount = 0;
         for (var transhipment in item!.transhipment!) {
-          if (transhipment.deliveryQty != null && transhipment.deliveryQty != "") {
+          if (transhipment.deliveryQty != null && transhipment.deliveryQty != "" && transhipment.jetty != null && transhipment.jetty != "") {
             transhipmentCount++;
             TDJoInspectionActivityStagesTranshipment dTranshipment = TDJoInspectionActivityStagesTranshipment(
               uomId: item.uomId,
@@ -2354,7 +2450,7 @@ class JoDetailController extends BaseController {
                                               ),
                                               Row(
                                                 children: [
-                                                  InkWell(
+                                                  (activity5TranshipmentList.value.length - 1 == index) ? InkWell(
                                                     onTap: () {
                                                       addActivity5Form();
                                                     },
@@ -2370,8 +2466,8 @@ class JoDetailController extends BaseController {
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                  index > 0
+                                                  ) : const SizedBox(),
+                                                  (activity5TranshipmentList.value.length > 1 && activity5TranshipmentList.value.length - 1 == index)
                                                       ? InkWell(
                                                           onTap: removeActivity5Form,
                                                           child: Container(
@@ -2398,6 +2494,9 @@ class JoDetailController extends BaseController {
                                           TextFormField(
                                             controller: jettyListTextController.value[index],
                                             cursorColor: onFocusColor,
+                                            validator: (value){
+                                              return validationTranshipment(index,value,0);
+                                            },
                                             onChanged: (value) {
                                               editActivity5Transhipment(index);
                                             },
@@ -2424,6 +2523,9 @@ class JoDetailController extends BaseController {
                                             controller: initialDateActivity5ListTextController.value[index],
                                             cursorColor: onFocusColor,
                                             readOnly: true,
+                                            validator: (value){
+                                              return validationTranshipment(index,value,1);
+                                            },
                                             onTap: () {
                                               selectInitialDate5(context, index);
                                             },
@@ -2450,6 +2552,9 @@ class JoDetailController extends BaseController {
                                             controller: finalDateActivity5ListTextController.value[index],
                                             cursorColor: onFocusColor,
                                             readOnly: true,
+                                            validator: (value){
+                                              return validationTranshipment(index,value,2);
+                                            },
                                             onTap: () {
                                               selectFinalDate5(context, index);
                                             },
@@ -2483,6 +2588,9 @@ class JoDetailController extends BaseController {
                                             cursorColor: onFocusColor,
                                             onChanged: (value) {
                                               editActivity5Transhipment(index);
+                                            },
+                                            validator: (value){
+                                              return validationTranshipment(index,value,3);
                                             },
                                             style: const TextStyle(color: onFocusColor),
                                             decoration: InputDecoration(
@@ -2657,7 +2765,7 @@ class JoDetailController extends BaseController {
       var transhipmentCount = 0;
       for (var transhipment in item!.transhipment!) {
         debugPrint('print data transhipment ${transhipment.toJson()}');
-        if (transhipment.deliveryQty != null && transhipment.deliveryQty != "") {
+        if (transhipment.deliveryQty != null && transhipment.deliveryQty != "" && transhipment.jetty != null && transhipment.jetty != "") {
           transhipmentCount++;
           TDJoInspectionActivityStagesTranshipment dTranshipment = TDJoInspectionActivityStagesTranshipment(
             tDInspectionStagesId: idJoActStage,
@@ -2790,6 +2898,7 @@ class JoDetailController extends BaseController {
                                     child: TextFormField(
                                       controller: activityStartTime,
                                       cursorColor: onFocusColor,
+                                      readOnly: true,
                                       onTap: () async {
                                         pickedTime = activityStartTime.text;
                                         update();
@@ -2822,6 +2931,7 @@ class JoDetailController extends BaseController {
                                     child: TextFormField(
                                       controller: activityEndTime,
                                       cursorColor: onFocusColor,
+                                      readOnly: true,
                                       onTap: () async {
                                         pickedTime = activityEndTime.text;
                                         update();
@@ -3604,6 +3714,7 @@ class JoDetailController extends BaseController {
                                       child: TextFormField(
                                         controller: activityStartTime,
                                         cursorColor: activityStartTimeValidate == true ? onFocusColor : Colors.red,
+                                        readOnly: true,
                                         onTap: () async {
                                           activityStartTime.text = await selectTime(Get.context!);
                                         },
@@ -3984,6 +4095,8 @@ class JoDetailController extends BaseController {
   }
 
   void drawerDailyActivity() {
+    stageListModal.value = [];
+    update();
     Get.bottomSheet(
         GetBuilder(
           init: JoDetailController(),
@@ -4074,6 +4187,7 @@ class JoDetailController extends BaseController {
                                           }
                                           return null;
                                         },
+                                        readOnly: true,
                                         style: const TextStyle(color: onFocusColor),
                                         decoration: InputDecoration(
                                             border: OutlineInputBorder(
@@ -4464,10 +4578,7 @@ class JoDetailController extends BaseController {
       activityListTextController.value.add(TextEditingController(text: item.remarks));
     });
     stageListModal.value = filteredStages;
-
     update();
-    debugPrint('data yang mau di edit: ${filteredStages}');
-    debugPrint('data yang mau di edit: ${jsonEncode(stageListModal.value)}');
     Get.bottomSheet(
         GetBuilder(
           init: JoDetailController(),
@@ -4549,6 +4660,7 @@ class JoDetailController extends BaseController {
                                       child: TextFormField(
                                         controller: activityStartTime,
                                         cursorColor: onFocusColor,
+                                        readOnly: true,
                                         onTap: () async {
                                           activityStartTime.text = await selectTime(Get.context!);
                                         },
@@ -5323,7 +5435,7 @@ class JoDetailController extends BaseController {
                                               ),
                                               Row(
                                                 children: [
-                                                  InkWell(
+                                                  (activity5TranshipmentList.value.length - 1 == index) ? InkWell(
                                                     onTap: () {
                                                       addActivity5Form();
                                                     },
@@ -5339,8 +5451,8 @@ class JoDetailController extends BaseController {
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                  index > 0
+                                                  ) : const SizedBox(),
+                                                  (activity5TranshipmentList.value.length > 1 && activity5TranshipmentList.value.length - 1 == index)
                                                       ? InkWell(
                                                           onTap: () {
                                                             removeActivity5Form();
@@ -6204,6 +6316,7 @@ class JoDetailController extends BaseController {
                                         return null;
                                       },
                                       style: const TextStyle(color: onFocusColor),
+                                      readOnly: true,
                                       decoration: InputDecoration(
                                           border: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(12),

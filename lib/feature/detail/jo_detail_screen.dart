@@ -1660,11 +1660,14 @@ class JoDetailScreen extends StatelessWidget {
                                                     ),
                                                     itemCount: controller.dailyActivityPhotosV2.value.length,
                                                     itemBuilder: (content, index) {
-                                                      //final File photo = controller.dailyActivityPhotosV2.value[index];
                                                       TDJoInspectionPict pict = controller.dailyActivityPhotosV2.value[index];
                                                       return InkWell(
                                                         onTap: () {
-                                                          controller.previewImage(index, pict!.pathPhoto!, pict!.keterangan!, pict);
+                                                          if(controller.joRx.value.inspectionFinishedDate.toString().length > 0){
+                                                            controller.previewImageDetail(index, pict!.pathPhoto!, pict!.keterangan!, pict);
+                                                          }else{
+                                                            controller.previewImage(index, pict!.pathPhoto!, pict!.keterangan!, pict);
+                                                          }
                                                         },
                                                         child: SizedBox(
                                                           width: 54,
