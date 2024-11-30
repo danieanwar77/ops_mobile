@@ -635,7 +635,7 @@ class JoWaitingController extends BaseController {
         // Add activityResult to the current stage
         stage['listactivity'] = activityResult;
         stage['listactivitybarge'] = activityBarge;
-        stage['listactivitystagetranshipment'] = activityStageTranshipment;
+        stage['listactivitytranshipment'] = activityStageTranshipment;
         if (activityVessel.length > 0) {
           stage['activityvesel'] = activityVessel[0]; //first index
         } else {

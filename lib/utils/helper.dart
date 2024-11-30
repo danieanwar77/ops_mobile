@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:intl/intl.dart';
 
@@ -30,6 +32,38 @@ class Helper {
 
       return double.parse(number).toInt().toString();
     } catch(e){
+      return '';
+    }
+  }
+
+  static Future<String> convertPhotosToBase64(String path) async {
+    if (path.isEmpty) {
+      return '';
+    }
+
+    try {
+      final file = File(path);
+      // Periksa apakah file ada
+      if (await file.exists()) {
+        // Baca file menjadi byte array
+        final fileBytes = await file.readAsBytes();
+
+        // Konversi byte array ke base64
+        return base64Encode(fileBytes);
+      } else {
+        // Jika file tidak ditemukan, kembalikan string kosong
+        return '';
+      }
+    } catch (e) {
+      // Tangani error dengan mengembalikan string kosong
+      return '';
+    }
+  }
+
+  static String baseUrl(){
+    try{
+      return 'https://tbi-ops-dev.intishaka.com';
+    }catch(e){
       return '';
     }
   }

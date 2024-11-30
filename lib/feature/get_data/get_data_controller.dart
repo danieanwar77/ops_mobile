@@ -38,6 +38,7 @@ class GetDataController extends BaseController{
   late PermissionStatus storagePermission;
   // String token = '';
 
+
   @override
   void onInit()async{
     selectedValue.value = items.first;
@@ -79,8 +80,9 @@ class GetDataController extends BaseController{
 
   Future<void> getGenData(String token,String apkVersion,String platform)async{
     try{
+      isLoading.value = true;
       var response = await repository.getGenData(settingsData['e_number'], token, apkVersion,platform);
-      loadingProgressDialog();
+      isLoading.value = true;
         if(response.file != null){
           await createFileFromBase64Str(response.file!);
           await readZip();
@@ -92,6 +94,7 @@ class GetDataController extends BaseController{
           openDialog('Failed', 'Data gagal diambil',(){});
         }
     } catch(e) {
+      isLoading.value = true;
       openDialog('Failed', '$e', (){});
     }
   }

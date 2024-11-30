@@ -1,17 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
-import 'package:ops_mobile/core/core/constant/app_constant.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/core/core/services/background_service.dart';
 import 'package:ops_mobile/data/model/jo_daily_photo.dart';
@@ -25,14 +22,17 @@ import 'package:ops_mobile/data/model/jo_list_model.dart';
 import 'package:ops_mobile/data/model/jo_pic_model.dart';
 import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_pict.dart';
 import 'package:ops_mobile/data/model/t_h_jo.dart';
-import 'package:ops_mobile/data/network.dart';
 import 'package:ops_mobile/data/respository/repository.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/login/login_screen.dart';
+import 'package:ops_mobile/utils/helper.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:path/path.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_ios/path_provider_ios.dart';
 
@@ -344,52 +344,95 @@ class HomeController extends BaseController{
 
   @pragma('vm:entry-point')
   static Future<void> onStartBG(ServiceInstance service) async {
-    // Timer untuk mengirim data setiap 15 menit
-    Timer.periodic(const Duration(seconds: 60 ), (timer) async {
+    Timer.periodic(const Duration(seconds: 10 ), (timer) async {
      // NetworkCore networkCore = Get.find<NetworkCore>();
-      final db = await SqlHelper.db();
-      final sqlActStage = 'select * from t_d_jo_activity_inspection_activity_stages where is_upload=1 order by id';
-     // List<Map<String,dynamic>> result  = await db.rawQuery(sqlActStage);
-      //if(result.length > 0 ){
-        //ambil data pertama saja
-        //THJo hJoSend = THJo.fromJson(result[0]);
-
-
-
+      sendDataInpectionPhoto();
+      //sendDataInspection();
+      //sendDataLaboratory();
       //}
-      // if (service is AndroidServiceInstance) {
-      //   timer.cancel();
-      //   return;
-      // }
-
-      // Data yang akan dikirim ke API
-      // Map<String, dynamic> requestData = {
-      //   "key1": "value1",
-      //   "key2": "value2",
-      // };
-      //
-      // var data = Activity.fromJson({
-      //   "t_h_jo_id" : 7,
-      //   "m_statusinspectionstages_id" : 4,
-      //   "trans_date" : "2024-08-31",
-      //   "start_activity_time" : "15:00:00",
-      //   "end_activity_time" : "16:00:00",
-      //   "activity" : "Menunggu Kedatangan Kapal",
-      //   "created_by" : 0,
-      //   "remarks" : "testing"
-      // });
-      // print('data yang dikirim background service: ${jsonEncode(data)}');
-      // await sendJoActivityInspection(data);
-      //
-      // // Opsional: Update notifikasi
-      // if (service is AndroidServiceInstance) {
-      //   service.setForegroundNotificationInfo(
-      //     title: "Background Service",
-      //     content: "Last sent at ${DateTime.now()}",
-      //   );
-      // }
       debugPrint('test background service');
     });
+  }
+
+  static void sendDataInspection() async{
+    debugPrint('print function sendDataInspection ');
+    THJo dataActivity = await THJo.getJoActivitySend();
+    debugPrint('print data jo acitivty send ${jsonEncode(dataActivity.toSend())}');
+    List<TDJoInspectionActivityStages> stages = dataActivity.inspectionActivityStages ?? [];
+    for(int i = 0; i < stages.length; i++){
+      debugPrint("json encode activity ${jsonEncode(stages[i].listActivity)}");
+      debugPrint("json encode barge ${jsonEncode(stages[i].listActivityBarge)}");
+      debugPrint("json encode transhipment ${jsonEncode(stages[i].listActivityStageTranshipment)}");
+      debugPrint("json encode vessel ${jsonEncode(stages[i].listActivityVessel)}");
+    }
+    debugPrint('print data jo ${dataActivity.id.isNull}');
+    // if(!dataActivity.id.isNull && dataActivity.id != null && Helper.baseUrl().isNotEmpty){
+    //   //send data
+    //   final response = await http.post(
+    //       Uri.parse('${Helper.baseUrl()}/api/v1/inspection/activity'),
+    //       headers: {'Content-Type': 'application/json'},
+    //       body: jsonEncode(dataActivity.toSend())
+    //   );
+    //   debugPrint('print response kirim data jo  ${response.body}');
+    //   if(response.statusCode == 200){
+    //     final Map<String, dynamic> responseData = jsonDecode(response.body);
+    //     final data = responseData['data'];
+    //     THJo  thJo = THJo.fromJson(data);
+    //     debugPrint('print data jo yang berhasil terkirim ${jsonEncode(data)}');
+    //     List<TDJoInspectionActivityStages> stageSend = thJo.inspectionActivityStages ?? [];
+    //     for(int s = 0; s < stageSend.length; s++){
+    //       TDJoInspectionActivityStages dataStage = stageSend[s];
+    //       await TDJoInspectionActivityStages.updateUploaded(dataStage.code ?? '');
+    //       if(dataStage.listActivity != null){
+    //         List<TDJoInspectionActivity> dataActs = dataStage.listActivity ?? [];
+    //         for(int a= 0; a < dataActs.length; a++){
+    //           TDJoInspectionActivity  dataAct = dataActs[a];
+    //           await TDJoInspectionActivity.updateUploaded(dataAct.code ?? '');
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+  }
+
+  static void sendDataLaboratory() async{
+    debugPrint('print function sendDataLaboratory ');
+    THJo dataActivity = await THJo.getJoLaboratorySend();
+    debugPrint('print data jo acitivty send ${jsonEncode(dataActivity.toSend())}');
+    if(dataActivity.id != null && Helper.baseUrl().isNotEmpty){
+      //send data
+      final response = await http.post(
+          Uri.parse('${Helper.baseUrl()}/api/transaksi/jo'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(dataActivity.toSend()),
+      );
+      debugPrint('Data berhasil dikirim: ${response.body}');
+      if(response.statusCode == 200){
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        final data = responseData['data'];
+        THJo  thJo = THJo.fromJson(data);
+
+      }
+    }
+  }
+
+  static void sendDataInpectionPhoto() async {
+    debugPrint('print sendDataInspectionPhoto ');
+    List<TDJoInspectionPict> dataSend = await TDJoInspectionPict.getSendDataPict();
+    if(dataSend.isNotEmpty){
+      for(TDJoInspectionPict data in dataSend){
+        data.pathPhoto = await Helper.convertPhotosToBase64(data.pathPhoto ?? '');
+      }
+      final response = await http.post(
+          Uri.parse('${Helper.baseUrl()}/api/transaksi/jo'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(dataSend.map((item) => TDJoInspectionPict.fromJson(item)).toList())
+      );
+      debugPrint('Data berhasil dikirim: ${response.body}');
+      if(response.statusCode == 200){
+
+      }
+    }
   }
 
 }

@@ -1,4 +1,11 @@
+import 'package:get/get_common/get_reset.dart';
+import 'package:ops_mobile/data/model/t_d_jo_document_laboratory.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_attachment.dart';
+import 'package:ops_mobile/data/model/t_d_jo_laboratory.dart';
 import 'package:ops_mobile/data/sqlite.dart';
+import 'package:ops_mobile/utils/helper.dart';
 
 /// id : 1
 /// t_so_id : 1
@@ -58,7 +65,10 @@ class THJo {
       num? createdBy, 
       dynamic updatedBy, 
       String? createdAt,
-      dynamic updatedAt,}){
+      dynamic updatedAt,
+      List<TDJoInspectionActivityStages>? inspection_activity_stages,
+    List<TDJoLaboratory>? laboratory,
+  }){
     _id = id;
     _tSoId = tSoId;
     _typeJo = typeJo;
@@ -87,7 +97,40 @@ class THJo {
     _updatedBy = updatedBy;
     _createdAt = createdAt;
     _updatedAt = updatedAt;
+    _inspectionActivityStages = inspection_activity_stages;
+
 }
+
+  num? _id;
+  num? _tSoId;
+  num? _typeJo;
+  String? _tSoDate;
+  String? _joReceiveDate;
+  String? _code;
+  num? _flagLockJo;
+  String? _ettaVessel;
+  String? _startDateOfAttendance;
+  String? _endDateOfAttendance;
+  String? _dateAssigment;
+  num? _lokasiKerja;
+  num? _picInspector;
+  num? _picLaboratory;
+  dynamic _inspectionCompletedDate;
+  dynamic _laboratoryCompletedDate;
+  dynamic _inspectionFinishedDate;
+  dynamic _laboratoryFinishedDate;
+  dynamic _canceledDate;
+  dynamic _reasonCancel;
+  dynamic _flagDocInspection;
+  dynamic _flagDocLab;
+  num? _mKindofserviceId;
+  num? _mStatusjoId;
+  num? _createdBy;
+  dynamic _updatedBy;
+  String? _createdAt;
+  dynamic _updatedAt;
+  List<TDJoInspectionActivityStages>? _inspectionActivityStages;
+  List<TDJoLaboratory>? _laboratory;
 
   THJo.fromJson(dynamic json) {
     _id = json['id'];
@@ -118,35 +161,27 @@ class THJo {
     _updatedBy = json['updated_by'];
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
+    
+    if (json['inspection_activity_stages'] != null) {
+      _inspectionActivityStages = (json['inspection_activity_stages'] as List)
+          .map((e) => TDJoInspectionActivityStages.fromJson(e))
+          .toList();
+    } else {
+      _inspectionActivityStages = [];
+    }
+
+    if (json['listlaboratory'] != null) {
+      _laboratory = (json['listlaboratory'] as List)
+          .map((e) => TDJoLaboratory.fromJson(e))
+          .toList();
+    } else {
+      _laboratory = [];
+    }
+
+
+
   }
-  num? _id;
-  num? _tSoId;
-  num? _typeJo;
-  String? _tSoDate;
-  String? _joReceiveDate;
-  String? _code;
-  num? _flagLockJo;
-  String? _ettaVessel;
-  String? _startDateOfAttendance;
-  String? _endDateOfAttendance;
-  String? _dateAssigment;
-  num? _lokasiKerja;
-  num? _picInspector;
-  num? _picLaboratory;
-  dynamic _inspectionCompletedDate;
-  dynamic _laboratoryCompletedDate;
-  dynamic _inspectionFinishedDate;
-  dynamic _laboratoryFinishedDate;
-  dynamic _canceledDate;
-  dynamic _reasonCancel;
-  dynamic _flagDocInspection;
-  dynamic _flagDocLab;
-  num? _mKindofserviceId;
-  num? _mStatusjoId;
-  num? _createdBy;
-  dynamic _updatedBy;
-  String? _createdAt;
-  dynamic _updatedAt;
+  
 THJo copyWith({  num? id,
   num? tSoId,
   num? typeJo,
@@ -232,6 +267,8 @@ THJo copyWith({  num? id,
   dynamic get updatedBy => _updatedBy;
   String? get createdAt => _createdAt;
   dynamic get updatedAt => _updatedAt;
+  List<TDJoInspectionActivityStages>? get inspectionActivityStages => _inspectionActivityStages;
+  List<TDJoLaboratory>? get laboratory => _laboratory;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -288,6 +325,45 @@ THJo copyWith({  num? id,
     return map;
   }
 
+  Map<String, dynamic> toSend() {
+    final map = <String, dynamic>{};
+    map['id'] = _id;
+    map['t_so_id'] = _tSoId;
+    map['type_jo'] = _typeJo;
+    map['t_so_date'] = _tSoDate;
+    map['jo_receive_date'] = _joReceiveDate;
+    map['code'] = _code;
+    map['flag_lock_jo'] = _flagLockJo;
+    map['etta_vessel'] = _ettaVessel;
+    map['start_date_of_attendance'] = _startDateOfAttendance;
+    map['end_date_of_attendance'] = _endDateOfAttendance;
+    map['date_assigment'] = _dateAssigment;
+    map['lokasi_kerja'] = _lokasiKerja;
+    map['pic_inspector'] = _picInspector;
+    map['pic_laboratory'] = _picLaboratory;
+    map['inspection_completed_date'] = _inspectionCompletedDate;
+    map['laboratory_completed_date'] = _laboratoryCompletedDate;
+    map['inspection_finished_date'] = _inspectionFinishedDate;
+    map['laboratory_finished_date'] = _laboratoryFinishedDate;
+    map['canceled_date'] = _canceledDate;
+    map['reason_cancel'] = _reasonCancel;
+    map['flag_doc_inspection'] = _flagDocInspection;
+    map['flag_doc_lab'] = _flagDocLab;
+    map['m_kindofservice_id'] = _mKindofserviceId;
+    map['m_statusjo_id'] = _mStatusjoId;
+    map['created_by'] = _createdBy;
+    map['updated_by'] = _updatedBy;
+    map['created_at'] = _createdAt;
+    map['updated_at'] = _updatedAt;
+    if (_inspectionActivityStages != null) {
+      map['inspection_activity_stages'] = _inspectionActivityStages?.map((v) => v.toJson()).toList();
+    }
+    if(_laboratory != null){
+      map['listlaboratory'] = _laboratory?.map((v) => v.toJson()).toList();
+    }
+    return map;
+  }
+
   static Future<THJo>getJoById(int id) async{
     final db = await SqlHelper.db();
     var joRslt = await db.rawQuery("SELECT * FROM t_h_jo WHERE id = ?", [id]);
@@ -295,7 +371,95 @@ THJo copyWith({  num? id,
       return THJo.fromJson(joRslt[0]);
     }
     return THJo();
+  }
 
+  static Future<THJo>getJoActivitySend() async{
+    final db = await SqlHelper.db();
+    final sqlActStage = 'SELECT * from t_d_jo_inspection_activity_stages where is_upload = 0';
+    var dataActStage = await db.rawQuery(sqlActStage);
+    if (dataActStage.isNotEmpty) {
+      // Ambil data pertama dari dataActStage
+      var firstStage = Map<String, dynamic>.from(dataActStage[0]);
+
+      // Query untuk mendapatkan data activity
+      final sqlAct = '''SELECT * FROM t_d_jo_inspection_activity WHERE t_d_jo_inspection_activity_stages_id = ? AND is_upload = 0 ''';
+      var dataAct = await db.rawQuery(sqlAct, [firstStage['id']]);
+      var copyDataAct = dataAct.map((item) => Map<String, dynamic>.from(item)).toList();
+
+      if(firstStage['m_statusinspectionstages_id'] == 5){
+        final sqlTranshipment = '''SELECT * from t_d_jo_inspection_activity_stages_transhipment where t_d_inspection_stages_id = ? and is_upload=0 ''';
+        var dataTranshipment = await db.rawQuery(sqlTranshipment, [firstStage['id']]);
+        const sqlBarge = '''SELECT * from t_d_jo_inspection_activity_barge where is_upload  = 0 and t_d_jo_inspection_activity_stages_id = ?;''';
+        var dataBarge = await db.rawQuery(sqlBarge,[firstStage['id']]);
+        firstStage['listactivitybarge'] = dataBarge.map((item) => Map<String,dynamic>.from(item)).toList();
+        firstStage['listactivitytranshipment'] = dataTranshipment.map((item) => Map<String,dynamic>.from(item)).toList();
+        const sqlVesel = '''SELECT * from t_d_jo_inspection_activity_vessel where is_upload = 0 and t_d_jo_inspection_activity_stages_id = ?''';
+        var dataVesel = await db.rawQuery(sqlVesel,[firstStage['id']]);
+        firstStage['listactivityvessel'] = dataVesel.map((item) => Map<String,dynamic>.from(item)).toList();
+      }
+
+      if(firstStage['m_statusinspectionstages_id'] == 6){
+        final sqlAttachment = '''SELECT * from t_d_jo_inspection_attachment where t_h_jo_id =  ? and is_upload  = 0''';
+        var dataAttachment = await db.rawQuery(sqlAttachment,[firstStage['t_h_jo_id']]);
+        for(int a = 0; a < dataAttachment.length; a++){
+          var data = dataAttachment[a];
+          data['path_name'] = await Helper.convertPhotosToBase64(data['path_name'].toString());
+          //masukan data ke result
+        }
+        firstStage['listattachment'] = dataAttachment;
+      }
+
+      // Tambahkan list activity ke dalam firstStage
+      firstStage['listactivity'] = copyDataAct;
+
+      var joResultList = await db.rawQuery(
+          "SELECT * FROM t_h_jo WHERE id = ?",
+          [firstStage['t_h_jo_id']]
+      );
+
+      // Ambil data pertama dari joResultList jika ada
+      var joResult = joResultList.isNotEmpty ? Map<String, dynamic>.from(joResultList.first) : null;
+
+      // Tambahkan inspection_activity_stage ke joResult jika ada
+      if (joResult != null) {
+        joResult['inspection_activity_stages'] = [firstStage];
+        return THJo.fromJson(joResult);
+      }
+    }
+    return THJo();
+  }
+
+  static Future<THJo>getJoLaboratorySend() async{
+    final db = await SqlHelper.db();
+    final sqlLabActStage = 'SELECT * from t_d_jo_laboratory_activity_stages where is_upload = 0;';
+    var dataActStage = await db.rawQuery(sqlLabActStage);
+    if(dataActStage.isNotEmpty){
+      var firstStage = Map<String, dynamic>.from(dataActStage[0]);
+      var joResult = await db.rawQuery("SELECT * FROM t_h_jo WHERE id = ?", [firstStage['t_h_jo_id']]);
+      var joLabResult = await db.rawQuery("SELECT * from t_d_jo_laboratory where id = ?",firstStage['d_jo_laboratory_id']);
+      var joLabAct = await db.rawQuery('SELECT * from t_d_jo_laboratory_activity where t_d_jo_laboratory_activity_stages_id = ? and is_upload  = 0',firstStage['id']);
+      var copyDataAct = joLabAct.map((item) => Map<String, dynamic>.from(item)).toList();
+      var copyJoLabResult = joLabResult.isNotEmpty ? Map<String, dynamic>.from(joLabResult.first) : null;
+      var copyResult = joResult.map((item) => Map<String, dynamic>.from(item)).toList();
+
+      //for (int i = 0; i < joLabAct.length; i++) {
+        //final sqlTranshipment = '''SELECT * FROM t_d_jo_inspection_activity_stages_transhipment WHERE t_d_inspection_stages_id = ? ''';
+        //var dataTranshipment = await db.rawQuery(sqlTranshipment, [firstStage['id']]);
+        //copyDataAct[i]['listtranshipment'] = List<Map<String, dynamic>>.from(dataTranshipment);
+      //}
+      firstStage['list_lab_activity'] = copyDataAct;
+      var thJo = copyResult.isNotEmpty ? Map<String, dynamic>.from(copyResult.first) : null;
+
+      if(thJo != null && copyJoLabResult != null){
+        copyJoLabResult['laboratory_activity_stage'] = [firstStage];
+        thJo['listlaboratory'] = [copyJoLabResult];
+        return THJo.fromJson(thJo);
+      }
+
+
+
+    }
+    return THJo();
   }
 
 }

@@ -81,7 +81,7 @@ class RepositoryImpl implements Repository {
             'e_number': employeeId,
             'firebase_token': firebaseToken,
             'app_version': appVersion,
-            'plafrom': platform
+            'platfrom': platform
           },
           decoder: ResponseGendataFile.fromJson,
           headers: {

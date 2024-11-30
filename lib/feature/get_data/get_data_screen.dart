@@ -154,7 +154,7 @@ class _GetDataScreenState extends State<GetDataScreen> {
                         const Spacer(),
                         ElevatedButton(
                             onPressed: () {
-                              controller.getGenData(tokenFirebase,apkVersion,Platform.isAndroid ? 'Android' : 'IOS');
+                              controller.isLoading.value == true ? null : controller.getGenData(tokenFirebase,apkVersion,Platform.isAndroid ? 'Android' : 'IOS');
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: primaryColor,

@@ -1,7 +1,11 @@
+import 'dart:ui';
+
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_barge.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages_transhipment.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_vessel.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_attachment.dart';
+import 'package:ops_mobile/data/sqlite.dart';
 
 /// id : 1
 /// t_h_jo_id : 1
@@ -38,6 +42,7 @@ class TDJoInspectionActivityStages {
     List<TDJoInspectionActivity>? listActivity,
     List<TDJoInspectionActivityBarge>? listActivityBarge,
     List<TDJoInspectionActivityStagesTranshipment>? listactivityStageTranshipment,
+    List<TDJoInspectionAttachment>? listAttachment,
   }) {
     _id = id;
     _tHJoId = tHJoId;
@@ -57,6 +62,7 @@ class TDJoInspectionActivityStages {
     _listActivity = listActivity ?? [];
     _listActivityBarge = listActivityBarge ?? [];
     _listActivityStageTranshipment = listactivityStageTranshipment ??[];
+    _listAttachment = listAttachment ?? [];
   }
 
   TDJoInspectionActivityStages.fromJson(dynamic json) {
@@ -89,8 +95,8 @@ class TDJoInspectionActivityStages {
     } else {
       _listActivityBarge = [];
     }
-    if (json['listactivitystagetranshipment'] != null) {
-      _listActivityStageTranshipment = (json['listactivitystagetranshipment'] as List)
+    if (json['listactivitytranshipment'] != null) {
+      _listActivityStageTranshipment = (json['listactivitytranshipment'] as List)
           .map((e) => TDJoInspectionActivityStagesTranshipment.fromJson(e))
           .toList();
     } else {
@@ -101,6 +107,22 @@ class TDJoInspectionActivityStages {
       _activityVessel = TDJoInspectionActivityVessel.fromJson(json['activityvesel']);
     } else {
       _activityVessel = null; // atau nilai default sesuai kebutuhan
+    }
+
+    if(json['listactivityvessel'] != null){
+      _listActivityVessel = (json['listactivityvessel'] as List)
+          .map((e) => TDJoInspectionActivityVessel.fromJson(e))
+          .toList();
+    }else{
+      _listActivityVessel = [];
+    }
+
+    if(json['listattachment'] != null){
+      _listAttachment = (json['listattachment'] as List)
+          .map((e) => TDJoInspectionAttachment.fromJson(e))
+          .toList();
+    }else{
+      _listAttachment = [];
     }
   }
 
@@ -123,6 +145,8 @@ class TDJoInspectionActivityStages {
   List<TDJoInspectionActivityBarge>? _listActivityBarge;
   List<TDJoInspectionActivityStagesTranshipment>? _listActivityStageTranshipment;
   TDJoInspectionActivityVessel? _activityVessel;
+  List<TDJoInspectionActivityVessel>? _listActivityVessel;
+  List<TDJoInspectionAttachment>? _listAttachment;
 
   TDJoInspectionActivityStages copyWith({
     num? id,
@@ -180,6 +204,8 @@ class TDJoInspectionActivityStages {
   List<TDJoInspectionActivityBarge>? get listActivityBarge => _listActivityBarge;
   List<TDJoInspectionActivityStagesTranshipment>? get listActivityStageTranshipment => _listActivityStageTranshipment;
   TDJoInspectionActivityVessel? get activityVesel => _activityVessel;
+  List<TDJoInspectionActivityVessel>? get listActivityVessel => _listActivityVessel;
+  List<TDJoInspectionAttachment>? get listAttachment => _listAttachment;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -205,7 +231,14 @@ class TDJoInspectionActivityStages {
       map['listactivitybarge'] = _listActivityBarge?.map((v) => v.toJson()).toList();
     }
     if (_listActivityStageTranshipment != null) {
-      map['listactivitybarge'] = _listActivityStageTranshipment?.map((v) => v.toJson()).toList();
+      map['listactivitytranshipment'] = _listActivityStageTranshipment?.map((v) => v.toJson()).toList();
+    }
+
+    if(_listActivityVessel != null){
+      map['listactivityvessel'] = _listActivityVessel?.map((v) => v.toJson()).toList();
+    }
+    if(_listAttachment != null){
+      map['listattachment'] = _listAttachment?.map((v) => v.toJson()).toList();
     }
 
     return map;
@@ -242,4 +275,11 @@ class TDJoInspectionActivityStages {
     map['updated_at'] = _updatedAt;
     return map;
   }
+
+  static Future<int> updateUploaded(String code) async {
+    final db = await SqlHelper.db();
+    return await db.update("t_d_jo_inspection_activity_stages", {"is_upload": 1},where: "code=?",whereArgs: [code]);
+  }
+
+
 }

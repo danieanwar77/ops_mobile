@@ -499,7 +499,7 @@ class JoDetailController extends BaseController {
         // Add activityResult to the current stage
         stage['listactivity'] = activityResult;
         stage['listactivitybarge'] = activityBarge;
-        stage['listactivitystagetranshipment'] = activityStageTranshipment;
+        stage['listactivitytranshipment'] = activityStageTranshipment;
         if (activityVessel.length > 0) {
           stage['activityvesel'] = activityVessel[0]; //first index
         } else {
@@ -3464,9 +3464,10 @@ class JoDetailController extends BaseController {
       final db = await SqlHelper.db();
       List<TDJoInspectionActivityStages> stages = stageListModal.value;
       final createdBy = userData.value!.id;
+      var stageId = 0;
 
-      stages.asMap().forEach((index, stage) async {
-        debugPrint("data input ${jsonEncode(stage.toJson())}");
+      for(int index = 0; index < stages.length; index++) {
+        TDJoInspectionActivityStages stage = stages[index];
         TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
           tHJoId: id,
           mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
@@ -3479,6 +3480,7 @@ class JoDetailController extends BaseController {
           remarks: activityListTextController.value[index].text,
         );
         int result = await db.insert("t_d_jo_inspection_activity_stages", data.toInsert());
+        stageId = result;
         //dapatkan id yang baru insert
         List<TDJoInspectionActivity> details = stage.listActivity ?? [];
         details.forEach((activity) async {
@@ -3495,11 +3497,10 @@ class JoDetailController extends BaseController {
               createdBy: createdBy);
           await db.insert("t_d_jo_inspection_activity", detail.toInsert());
         });
-      });
-
+      }
       //save file attachment
       //List<TDJoInspectionAttachment> listFile = activity6Attachments.value ?? [];
-      debugPrint("print list file attachment ${activity6Attachments.value}");
+     // debugPrint("print list file attachment ${activity6Attachments.value}");
       var attachmentCount = 0;
       for (var file in activity6Attachments.value) {
         debugPrint('nyang mau di input attachnya: ${jsonEncode(file)}');
@@ -3507,7 +3508,7 @@ class JoDetailController extends BaseController {
         var filename = file.fileName!;
         TDJoInspectionAttachment attach = TDJoInspectionAttachment(
             tHJoId: id,
-            tDJoInspectionActivityStagesId: stages.first.id,
+            tDJoInspectionActivityStagesId: stageId,
             fileName: filename,
             pathName: file.pathName,
             code: 'JOIAF-${activityStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${attachmentCount}',
@@ -3517,68 +3518,6 @@ class JoDetailController extends BaseController {
             createdBy: createdBy);
         await db.insert('t_d_jo_inspection_attachment', attach.toJson());
       }
-
-      // stageListModal.value.asMap().forEach((index, stage) async {
-      //   stageCount++;
-      //   debugPrint("data input ${jsonEncode(stage.toJson())}");
-      //   TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
-      //     tHJoId: id,
-      //     mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
-      //     transDate: stage.transDate,
-      //     code:
-      //         "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${stageCount}",
-      //     isUpload: "0",
-      //     isActive: "1",
-      //     createdBy: userData.value!.id,
-      //     createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-      //     remarks: activityListTextController.value[index].text,
-      //   );
-      //
-      //   int result = await db.insert(
-      //       "t_d_jo_inspection_activity_stages", data.toInsert());
-      //
-      //   //dapatkan id yang baru insert
-      //   List<TDJoInspectionActivity> details = stage.listActivity ?? [];
-      //   var activityCount = 0;
-      //   details.forEach((activity) async {
-      //     activityCount++;
-      //     TDJoInspectionActivity detail = TDJoInspectionActivity(
-      //         tHJoId: id,
-      //         tDJoInspectionActivityStagesId: result,
-      //         startActivityTime: activity.startActivityTime,
-      //         endActivityTime: activity.endActivityTime,
-      //         activity: activity.activity,
-      //         code:
-      //             'JOIAS-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${activityCount}',
-      //         isActive: 1,
-      //         isUpload: 0,
-      //         createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-      //         createdBy: createdBy);
-      //     await db.insert("t_d_jo_inspection_activity", detail.toInsert());
-      //   });
-      //
-      //   //save file attachment
-      //   //List<TDJoInspectionAttachment> listFile = activity6Attachments.value ?? [];
-      //   debugPrint("print list file attachment ${activity6Attachments.value}");
-      //   var attachmentCount = 0;
-      //   for (var file in activity6Attachments.value) {
-      //     debugPrint('nyang mau di input attachnya: ${jsonEncode(file)}');
-      //     attachmentCount++;
-      //     var filename = file.fileName!;
-      //     TDJoInspectionAttachment attach = TDJoInspectionAttachment(
-      //         tHJoId: id,
-      //         tDJoInspectionActivityStagesId: result,
-      //         fileName: filename,
-      //         pathName: file.pathName,
-      //         code:
-      //             'JOIAF-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${attachmentCount}',
-      //         isActive: 1,
-      //         isUpload: 0,
-      //         createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-      //         createdBy: createdBy);
-      //     await db.insert('t_d_jo_inspection_attachment', attach.toJson());
-      //   }
-      // });
       stageListModal.value = [];
       activityListTextController.value = [];
       activitySubmitted.value = true;
@@ -6789,6 +6728,10 @@ class JoDetailController extends BaseController {
       debugPrint("data input edit remarks ${activityListTextController.value}");
 
       stages.asMap().forEach((index, stage) async {
+
+      });
+      for(int index = 0; index < stages.length; index++){
+        TDJoInspectionActivityStages stage = stages[index];
         debugPrint("data input edit ${jsonEncode(stage.toJson())}");
         if (stage.id != null) {
           TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
@@ -6880,7 +6823,7 @@ class JoDetailController extends BaseController {
             await db.insert("t_d_jo_inspection_activity", detail.toInsert());
           });
         }
-      });
+      }
 
       await db.update('t_d_jo_inspection_attachment', {'is_active': 0}, where: 't_h_jo_id = ?', whereArgs: [id]);
       debugPrint("print list file attachment ${activity6Attachments.value}");
@@ -6981,6 +6924,7 @@ class JoDetailController extends BaseController {
                 await getJoDailyActivityLocalV2();
                 await getJoDailyActivity6AttachmentLocal();
               } else {
+                openDialog('Failed','Gagal menyimpan Activity Stage');
                 Get.back();
               }
             },
@@ -7016,6 +6960,7 @@ class JoDetailController extends BaseController {
                 await getJoDailyActivityLocalV2();
                 await getJoDailyActivity6AttachmentLocal();
               } else {
+                openDialog('Failed','Gagal menyimpan Activity Stage');
                 Get.back();
               }
             },

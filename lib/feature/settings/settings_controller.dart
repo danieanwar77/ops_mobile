@@ -21,9 +21,12 @@ class SettingsController extends BaseController{
 
   @override
   void onInit()async{
-    Future.delayed(Duration(milliseconds: 500),(){
-      drawerAddDocument();
-    });
+    if (Get.previousRoute != '/RegisterDeviceScreen') {
+      Future.delayed(Duration(milliseconds: 500), () {
+        drawerAddDocument();
+      });
+    }
+
     settingsData = jsonDecode(await readSettings());
     update();
     debugPrint('settings data: ${settingsData}');
@@ -45,86 +48,103 @@ class SettingsController extends BaseController{
 
   void drawerAddDocument(){
     Get.bottomSheet(
-      GetBuilder(
-        init:SettingsController(),
-        builder: (controller) => Container(
-                padding: EdgeInsets.all(24),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(topRight: Radius.circular(24), topLeft: Radius.circular(24))
-                ),
-                child: Obx(() => Column(
-                  children: [
-                    const SizedBox(
-                      height: 48,
-                    ),
-                    TextFormField(
-                      controller: password,
-                      obscureText: controller.obsecure.value,
-                      cursorColor: onFocusColor,
-                      style: const TextStyle(color: onFocusColor),
-                      decoration: InputDecoration(
-                          prefixIcon:
-                          const Icon(Icons.lock_outline_rounded),
-                          suffixIcon: IconButton(
-                              onPressed: (){
-                                controller.obsecure.value = !controller.obsecure.value;
-                              },
-                              icon: controller.obsecure.value ? Icon(Icons.visibility_off) : Icon(Icons.visibility)
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide:
-                            const BorderSide(color: onFocusColor),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          labelText: 'Password',
-                          floatingLabelStyle:
-                          const TextStyle(color: onFocusColor),
-                          fillColor: onFocusColor),
-                    ),
-                    const Spacer(),
-                    ElevatedButton(
-                        onPressed: () async {
-                          bool loginAdmin = await loginAdminSetting(password.text);
-                          if(loginAdmin == true){
-                            Get.back();
-                            openDialog("Success", "Berhasil login admin.");
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: primaryColor,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12))),
-                        child: Container(
-                            padding:
-                            const EdgeInsets.symmetric(vertical: 12),
-                            width: double.infinity,
-                            child: Center(
-                                child: controller.isLoading == true ? CircularProgressIndicator(
-                                  backgroundColor: Colors.white,
-                                ) : Text(
-                                  'Log In',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
-                                )
-                            )
-                        )
-                    ),
-                  ],
-                ),
+      WillPopScope(
+        onWillPop: () async {
+          // Kembalikan false untuk mencegah dialog hilang saat tombol back ditekan
+          return false;
+        },
+        child: GetBuilder<SettingsController>(
+          init: SettingsController(),
+          builder: (controller) => Container(
+            padding: EdgeInsets.all(24),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(24),
+                topLeft: Radius.circular(24),
+              ),
             ),
-            )
+            child: Obx(
+                  () => Column(
+                children: [
+                  const SizedBox(
+                    height: 48,
+                  ),
+                  TextFormField(
+                    controller: password,
+                    obscureText: controller.obsecure.value,
+                    cursorColor: onFocusColor,
+                    style: const TextStyle(color: onFocusColor),
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.lock_outline_rounded),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          controller.obsecure.value = !controller.obsecure.value;
+                        },
+                        icon: controller.obsecure.value
+                            ? Icon(Icons.visibility_off)
+                            : Icon(Icons.visibility),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: onFocusColor),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      labelText: 'Password',
+                      floatingLabelStyle: const TextStyle(color: onFocusColor),
+                      fillColor: onFocusColor,
+                    ),
+                  ),
+                  const Spacer(),
+                  ElevatedButton(
+                    onPressed: () async {
+                      controller.isLoading = true;
+                      bool loginAdmin = await loginAdminSetting(password.text);
+                      controller.isLoading = false;
+                      if (loginAdmin) {
+                        Get.back();
+                        openDialog("Success", "Berhasil login admin.");
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      width: double.infinity,
+                      child: Center(
+                        child: controller.isLoading
+                            ? const CircularProgressIndicator(
+                          backgroundColor: Colors.white,
+                        )
+                            : const Text(
+                          'Log In',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
+      ),
       isScrollControlled: true,
       isDismissible: false,
       enableDrag: false,
     );
+
   }
 
   Future<bool> loginAdminSetting(String password) async{

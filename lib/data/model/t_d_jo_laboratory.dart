@@ -1,3 +1,6 @@
+import 'package:ops_mobile/data/model/jo_laboratory_send_manual_model.dart';
+import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity_stages.dart';
+
 /// id : 6
 /// t_h_jo_id : 17
 /// laboratorium_id : 6
@@ -25,7 +28,9 @@ class TDJoLaboratory {
       num? createdBy,
       dynamic? updatedBy,
       String? createdAt,
-      String? updatedAt,}){
+      String? updatedAt,
+      List<TDJoLaboratoryActivityStages>? laboratoryActivityStages,
+  }){
     _id = id;
     _tHJoId = tHJoId;
     _laboratoriumId = laboratoriumId;
@@ -38,6 +43,7 @@ class TDJoLaboratory {
     _updatedBy = updatedBy;
     _createdAt = createdAt;
     _updatedAt = updatedAt;
+    _laboratoryActivityStages = laboratoryActivityStages;
 }
 
   TDJoLaboratory.fromJson(dynamic json) {
@@ -54,6 +60,13 @@ class TDJoLaboratory {
     _updatedBy = json['updated_by'];
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
+    if (json['laboratory_activity_stages'] != null) {
+    _laboratoryActivityStages = (json['laboratory_activity_stages'] as List)
+          .map((e) => TDJoLaboratoryActivityStages.fromJson(e))
+          .toList();
+    } else {
+      _laboratoryActivityStages = [];
+    }
   }
   num? _id;
   num? _tHJoId;
@@ -68,6 +81,7 @@ class TDJoLaboratory {
   dynamic? _updatedBy;
   String? _createdAt;
   String? _updatedAt;
+  List<TDJoLaboratoryActivityStages>? _laboratoryActivityStages;
 TDJoLaboratory copyWith({  num? id,
   num? tHJoId,
   num? laboratoriumId,
@@ -122,6 +136,9 @@ TDJoLaboratory copyWith({  num? id,
     map['updated_by'] = _updatedBy;
     map['created_at'] = _createdAt;
     map['updated_at'] = _updatedAt;
+    if (_laboratoryActivityStages != null) {
+      map['laboratory_activity_stages'] = _laboratoryActivityStages?.map((v) => v.toJson()).toList();
+    }
     return map;
   }
 
