@@ -22,6 +22,7 @@ import 'package:ops_mobile/data/model/jo_list_model.dart';
 import 'package:ops_mobile/data/model/jo_pic_model.dart';
 import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
+import 'package:ops_mobile/data/model/t_d_jo_finalize_inspection.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages_transhipment.dart';
@@ -31,6 +32,7 @@ import 'package:ops_mobile/data/model/t_d_jo_inspection_pict.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity_stages.dart';
+import 'package:ops_mobile/data/model/t_d_jo_laboratory_attachment.dart';
 import 'package:ops_mobile/data/model/t_h_jo.dart';
 import 'package:ops_mobile/data/respository/repository.dart';
 import 'package:ops_mobile/data/sqlite.dart';
@@ -352,8 +354,9 @@ class HomeController extends BaseController{
     Timer.periodic(const Duration(seconds: 10 ), (timer) async {
      // NetworkCore networkCore = Get.find<NetworkCore>();
       //sendDataInpectionPhoto();
-      //sendDataInspection();
+      sendDataInspection();
       sendDataLaboratory();
+      sendDataInspectionDocument();
       //}
       debugPrint('test background service');
     });
@@ -371,6 +374,7 @@ class HomeController extends BaseController{
     //   debugPrint("json encode vessel ${jsonEncode(stages[i].listActivityVessel)}");
     // }
     //debugPrint('print data jo ${dataActivity.id.isNull}');
+    bool connection = await Helper.checkConnection();
     if(!dataActivity.id.isNull && dataActivity.id != null && Helper.baseUrl().isNotEmpty){
       //send data
       final response = await http.post(
@@ -423,14 +427,21 @@ class HomeController extends BaseController{
   static void sendDataLaboratory() async{
     THJo dataActivity = await THJo.getJoLaboratorySend();
     debugPrint('print data jo laboratory send ${jsonEncode(dataActivity.toSend())}');
-    //List<TDJoLaboratory> laboratories = dataActivity.laboratory ?? [];
-    // for(int i = 0; i < laboratories.length; i++){
-    //   debugPrint('print data laboratory ${jsonEncode(laboratories[i].laboratoryActivityStages)}');
-    //   List<TDJoLaboratoryActivityStages> stages = laboratories[i].laboratoryActivityStages ?? [];
-    //   for(int s = 0; s < stages.length; s++){
-    //    // debugPrint('print data laboratory activity ${jsonEncode(stages[s].listLabActivity)}');
-    //   }
-    // }
+    List<TDJoLaboratory> laboratories = dataActivity.laboratory ?? [];
+    for(int i = 0; i < laboratories.length; i++){
+      debugPrint('print data laboratory ${jsonEncode(laboratories[i].laboratoryActivityStages)}');
+      List<TDJoLaboratoryActivityStages> stages = laboratories[i].laboratoryActivityStages ?? [];
+      for(int s = 0; s < stages.length; s++){
+        if(stages[s].mStatuslaboratoryprogresId == 6){
+          List<TDJoLaboratoryAttachment> attachments = stages[s].listLabAttachment ?? [];
+          for(int a = 0; a < attachments.length; a++){
+            attachments[a].pathName = await Helper.convertPhotosToBase64(attachments[a].pathName ?? '');
+          }
+        }
+      }
+    }
+    bool connection = await Helper.checkConnection();
+    debugPrint('print data connection ${connection}');
     if(dataActivity.id != null && Helper.baseUrl().isNotEmpty){
       //send data
       final response = await http.post(
@@ -440,22 +451,29 @@ class HomeController extends BaseController{
       );
       if(response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
+        print('print response from api ${jsonEncode(responseData)}');
         if (responseData['status'] != 500) {
           final data = responseData['data'];
-          debugPrint('print data ${jsonEncode(data)}');
           TDJoLaboratory joLaboratory = TDJoLaboratory.fromJson(data);
-          debugPrint('print data jo laboratory ${jsonEncode(joLaboratory)}');
+          debugPrint('print data response jo laboratory ${jsonEncode(joLaboratory)}');
           List<TDJoLaboratoryActivityStages> listLabStage = joLaboratory.laboratoryActivityStages ?? [];
-          debugPrint('print data list lab stage ${jsonEncode(listLabStage)}');
+          debugPrint('print data response list lab stage ${jsonEncode(listLabStage)}');
           for (int s = 0; s < listLabStage.length; s++) {
             TDJoLaboratoryActivityStages stage = listLabStage[s];
-            debugPrint('print data stage ${jsonEncode(stage)}');
+            debugPrint('print data response stage ${jsonEncode(stage)}');
             await TDJoLaboratoryActivityStages.updateUploaded(stage.code.toString());
             List<TDJoLaboratoryActivity> activities = listLabStage[s].listLabActivity ?? [];
             for (int a = 0; a < activities.length; a++) {
               TDJoLaboratoryActivity activity = activities[a];
-              debugPrint('print data activity ${jsonEncode(activity)}');
+              debugPrint('print data response activity ${jsonEncode(activity)}');
               await TDJoLaboratoryActivity.updateUploaded(activity.code ?? '');
+            }
+
+            if(stage.mStatuslaboratoryprogresId == 6){
+              List<TDJoLaboratoryAttachment> attachments = stage.listLabAttachment ?? [];
+              for(int at = 0; at < attachments.length; at++){
+                await TDJoLaboratoryAttachment.updateUploaded(attachments[at].code ?? '');
+              }
             }
           }
         }
@@ -466,6 +484,7 @@ class HomeController extends BaseController{
   static void sendDataInpectionPhoto() async {
     debugPrint('print sendDataInspectionPhoto ');
     List<TDJoInspectionPict> dataSend = await TDJoInspectionPict.getSendDataPict();
+
     if(dataSend.isNotEmpty){
       for(TDJoInspectionPict data in dataSend){
         data.pathPhoto = await Helper.convertPhotosToBase64(data.pathPhoto ?? '');
@@ -480,6 +499,9 @@ class HomeController extends BaseController{
 
       }
     }
+  }
+
+  static void sendDataInspectionDocument() async{
   }
 
 }

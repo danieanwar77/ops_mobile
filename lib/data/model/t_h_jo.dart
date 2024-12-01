@@ -436,7 +436,7 @@ THJo copyWith({  num? id,
 
   static Future<THJo>getJoLaboratorySend() async{
     final db = await SqlHelper.db();
-    final sqlLabActStage = 'SELECT * from t_d_jo_laboratory_activity_stages where is_upload = 0;';
+    final sqlLabActStage = 'SELECT * from t_d_jo_laboratory_activity_stages where is_upload = 0';
     var dataActStage = await db.rawQuery(sqlLabActStage);
     if(dataActStage.isNotEmpty){
       var firstStage = Map<String, dynamic>.from(dataActStage[0]);
@@ -448,7 +448,11 @@ THJo copyWith({  num? id,
       var copyResult = joResult.map((item) => Map<String, dynamic>.from(item)).toList();
       firstStage['list_lab_activity'] = copyDataAct;
       var thJo = copyResult.isNotEmpty ? Map<String, dynamic>.from(copyResult.first) : null;
-
+      if(firstStage['m_statuslaboratoryprogress_id'] == 6){
+        var dataLabAttachment =  await db.rawQuery('select * from t_d_jo_laboratory_attachment where t_d_jo_laboratory = ? and is_upload = 0',[firstStage['d_jo_laboratory_id']]);
+        var copyLabAttach = dataLabAttachment.map((item) => Map<String,dynamic>.from(item)).toList();
+        firstStage['list_lab_attachment'] = copyLabAttach;
+      }
       if(thJo != null && copyJoLabResult != null){
         copyJoLabResult['laboratory_activity_stages'] = [firstStage];
         thJo['list_laboratory'] = [copyJoLabResult];

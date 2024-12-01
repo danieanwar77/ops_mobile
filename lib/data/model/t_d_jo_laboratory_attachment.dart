@@ -1,3 +1,5 @@
+import 'package:ops_mobile/data/sqlite.dart';
+
 /// id : 1
 /// t_d_jo_laboratory_id : 1
 /// m_statuslaboratoryprogres_id : 6
@@ -103,6 +105,8 @@ TDJoLaboratoryAttachment copyWith({  num? id,
   dynamic get createdAt => _createdAt;
   dynamic get updatedAt => _updatedAt;
 
+  set pathName(String? value) => _pathName = value;
+
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = _id;
@@ -152,6 +156,11 @@ TDJoLaboratoryAttachment copyWith({  num? id,
     //map['created_at'] = _createdAt;
     map['updated_at'] = _updatedAt;
     return map;
+  }
+
+  static Future<int> updateUploaded(String code) async {
+    final db = await SqlHelper.db();
+    return await db.update("t_d_jo_laboratory_attachment", {"is_upload": 1},where: "code=?",whereArgs: [code]);
   }
 
 }

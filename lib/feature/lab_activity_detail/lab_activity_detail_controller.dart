@@ -785,6 +785,7 @@ class LabActivityDetailController extends BaseController{
                                       child: TextFormField(
                                         controller: activityStartTime,
                                         cursorColor: onFocusColor,
+                                        readOnly: true,
                                         onTap: () async {
                                           activityStartTime.text = await selectTime(Get.context!);
                                         },
@@ -815,6 +816,7 @@ class LabActivityDetailController extends BaseController{
                                       child: TextFormField(
                                         controller: activityEndTime,
                                         cursorColor: onFocusColor,
+                                        readOnly: true,
                                         onTap: () async {
                                           activityEndTime.text = await selectTime(Get.context!);
                                         },
@@ -1474,6 +1476,7 @@ class LabActivityDetailController extends BaseController{
                                       child: TextFormField(
                                         controller: activityStartTime,
                                         cursorColor: onFocusColor,
+                                        readOnly: true,
                                         onTap: () async {
                                           activityStartTime.text = await selectTime(Get.context!);
                                         },
@@ -1504,6 +1507,7 @@ class LabActivityDetailController extends BaseController{
                                       child: TextFormField(
                                         controller: activityEndTime,
                                         cursorColor: onFocusColor,
+                                        readOnly: true,
                                         onTap: () async {
                                           activityEndTime.text = await selectTime(Get.context!);
                                         },
@@ -1966,27 +1970,15 @@ class LabActivityDetailController extends BaseController{
       isUpload: 0,
       createdBy: userData.value?.id ?? 0,
       createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()).toString(),
-      listLabActivity: [
-        TDJoLaboratoryActivity(
-          tDJoLaboratoryId: joLabId,
-          startActivityTime: '',
-          endActivityTime: '',
-          activity: '',
-          isActive: 1,
-          isUpload: 0,
-          code: 'JOLA-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
-          createdBy: userData.value?.id ?? 0,
-          createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()).toString(),
-        )
-      ],
+      code: 'JOLAS-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
     );
     int result = await db.insert("t_d_jo_laboratory_activity_stages", data.toInsert());
     TDJoLaboratoryActivity detail =  TDJoLaboratoryActivity(
       tDJoLaboratoryActivityStagesId: result,
               tDJoLaboratoryId: joLabId,
-              startActivityTime: '',
+              startActivityTime: DateFormat('HH:mm').format(DateTime.now()).toString(),
               endActivityTime: '',
-              activity: '',
+              activity: '-',
               isActive: 1,
               isUpload: 0,
               code: 'JOLAS-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
@@ -2319,9 +2311,7 @@ class LabActivityDetailController extends BaseController{
           isActive: 1,
           isUpload: 0,
           createdBy: userData.value?.id ?? 0,
-          createdAt: DateFormat('yyyy-MM-dd HH:mm:ss')
-              .format(DateTime.now())
-              .toString(),
+          createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()).toString(),
         )
       ],
     );
@@ -3229,6 +3219,7 @@ class LabActivityDetailController extends BaseController{
                                             child: TextFormField(
                                               controller: activity6StartTime,
                                               cursorColor: onFocusColor,
+                                              readOnly: true,
                                               onTap: () async {
                                                 activity6StartTime.text =
                                                 await selectTime6(Get.context!);
@@ -3264,6 +3255,7 @@ class LabActivityDetailController extends BaseController{
                                             child: TextFormField(
                                               controller: activity6EndTime,
                                               cursorColor: onFocusColor,
+                                              readOnly: true,
                                               onTap: () async {
                                                 activity6EndTime.text =
                                                 await selectTime6(Get.context!);
@@ -4046,6 +4038,7 @@ class LabActivityDetailController extends BaseController{
                                     child: TextFormField(
                                       controller: activity6StartTime,
                                       cursorColor: onFocusColor,
+                                      readOnly: true,
                                       onTap: () async {
                                         activity6StartTime.text =
                                         await selectTime6(Get.context!);
@@ -4081,6 +4074,7 @@ class LabActivityDetailController extends BaseController{
                                     child: TextFormField(
                                       controller: activity6EndTime,
                                       cursorColor: onFocusColor,
+                                      readOnly: true,
                                       onTap: () async {
                                         activity6EndTime.text = await selectTime6(Get.context!);
                                       },

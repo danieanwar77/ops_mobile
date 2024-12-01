@@ -170,7 +170,7 @@ TDJoInspectionAttachment copyWith({
 
   static Future<int> updateUploaded(String code) async {
     final db = await SqlHelper.db();
-    return await db.update("t_d_jo_inspection_attachment", {"is_upload": 1},where: "code=?",whereArgs: [code]);
+    return await db.update("t_d_jo_laboratory_attachment", {"is_upload": 1},where: "code=?",whereArgs: [code]);
   }
 
 }

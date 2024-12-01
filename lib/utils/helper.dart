@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:intl/intl.dart';
 
 class Helper {
@@ -65,6 +66,18 @@ class Helper {
       return 'https://tbi-ops-dev.intishaka.com';
     }catch(e){
       return '';
+    }
+  }
+
+  static Future<bool> checkConnection() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+
+    if (connectivityResult == ConnectivityResult.mobile) {
+      return true;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

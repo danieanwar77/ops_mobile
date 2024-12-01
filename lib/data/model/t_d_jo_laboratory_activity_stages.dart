@@ -71,9 +71,9 @@ class TDJoLaboratoryActivityStages {
     _updatedBy = json['updated_by'];
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
-    _totalSampleReceived = json['total_sample_received'];
-    _totalSampleAnalyzed = json['total_sample_analyzed'];
-    _totalSamplePreparation = json['total_sample_preparation'];
+    _totalSampleReceived = int.tryParse(json['total_sample_received'].toString()) ?? 0;
+    _totalSampleAnalyzed = int.tryParse(json['total_sample_analyzed'].toString()) ?? 0;
+    _totalSamplePreparation = int.tryParse(json['total_sample_preparation'].toString()) ?? 0;
     _code = json['code'];
     _isActive = json['is_active'];
     _isUpload = json['is_upload'];
