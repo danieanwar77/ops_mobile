@@ -1,3 +1,5 @@
+import 'package:ops_mobile/data/sqlite.dart';
+
 /// id : 3
 /// t_h_jo_id : 6
 /// t_d_jo_inspection_activity_stages_id : 37
@@ -164,6 +166,11 @@ TDJoInspectionAttachment copyWith({
     //map['created_at'] = _createdAt;
     map['updated_at'] = _updatedAt;
     return map;
+  }
+
+  static Future<int> updateUploaded(String code) async {
+    final db = await SqlHelper.db();
+    return await db.update("t_d_jo_inspection_attachment", {"is_upload": 1},where: "code=?",whereArgs: [code]);
   }
 
 }

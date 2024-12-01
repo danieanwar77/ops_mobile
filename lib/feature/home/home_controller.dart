@@ -24,7 +24,13 @@ import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages_transhipment.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_vessel.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_attachment.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_pict.dart';
+import 'package:ops_mobile/data/model/t_d_jo_laboratory.dart';
+import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity.dart';
+import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity_stages.dart';
 import 'package:ops_mobile/data/model/t_h_jo.dart';
 import 'package:ops_mobile/data/respository/repository.dart';
 import 'package:ops_mobile/data/sqlite.dart';
@@ -32,7 +38,6 @@ import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/login/login_screen.dart';
 import 'package:ops_mobile/utils/helper.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:path/path.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_ios/path_provider_ios.dart';
 
@@ -346,9 +351,9 @@ class HomeController extends BaseController{
   static Future<void> onStartBG(ServiceInstance service) async {
     Timer.periodic(const Duration(seconds: 10 ), (timer) async {
      // NetworkCore networkCore = Get.find<NetworkCore>();
-      sendDataInpectionPhoto();
+      //sendDataInpectionPhoto();
       //sendDataInspection();
-      //sendDataLaboratory();
+      sendDataLaboratory();
       //}
       debugPrint('test background service');
     });
@@ -357,61 +362,103 @@ class HomeController extends BaseController{
   static void sendDataInspection() async{
     debugPrint('print function sendDataInspection ');
     THJo dataActivity = await THJo.getJoActivitySend();
-    debugPrint('print data jo acitivty send ${jsonEncode(dataActivity.toSend())}');
     List<TDJoInspectionActivityStages> stages = dataActivity.inspectionActivityStages ?? [];
-    for(int i = 0; i < stages.length; i++){
-      debugPrint("json encode activity ${jsonEncode(stages[i].listActivity)}");
-      debugPrint("json encode barge ${jsonEncode(stages[i].listActivityBarge)}");
-      debugPrint("json encode transhipment ${jsonEncode(stages[i].listActivityStageTranshipment)}");
-      debugPrint("json encode vessel ${jsonEncode(stages[i].listActivityVessel)}");
-    }
-    debugPrint('print data jo ${dataActivity.id.isNull}');
-    // if(!dataActivity.id.isNull && dataActivity.id != null && Helper.baseUrl().isNotEmpty){
-    //   //send data
-    //   final response = await http.post(
-    //       Uri.parse('${Helper.baseUrl()}/api/v1/inspection/activity'),
-    //       headers: {'Content-Type': 'application/json'},
-    //       body: jsonEncode(dataActivity.toSend())
-    //   );
-    //   debugPrint('print response kirim data jo  ${response.body}');
-    //   if(response.statusCode == 200){
-    //     final Map<String, dynamic> responseData = jsonDecode(response.body);
-    //     final data = responseData['data'];
-    //     THJo  thJo = THJo.fromJson(data);
-    //     debugPrint('print data jo yang berhasil terkirim ${jsonEncode(data)}');
-    //     List<TDJoInspectionActivityStages> stageSend = thJo.inspectionActivityStages ?? [];
-    //     for(int s = 0; s < stageSend.length; s++){
-    //       TDJoInspectionActivityStages dataStage = stageSend[s];
-    //       await TDJoInspectionActivityStages.updateUploaded(dataStage.code ?? '');
-    //       if(dataStage.listActivity != null){
-    //         List<TDJoInspectionActivity> dataActs = dataStage.listActivity ?? [];
-    //         for(int a= 0; a < dataActs.length; a++){
-    //           TDJoInspectionActivity  dataAct = dataActs[a];
-    //           await TDJoInspectionActivity.updateUploaded(dataAct.code ?? '');
-    //         }
-    //       }
-    //     }
-    //   }
+    // for(int i = 0; i < stages.length; i++){
+    //   debugPrint("json encode stage ${jsonEncode(stages[i])}");
+    //   debugPrint("json encode activity ${jsonEncode(stages[i].listActivity)}");
+    //   debugPrint("json encode barge ${jsonEncode(stages[i].listActivityBarge)}");
+    //   debugPrint("json encode transhipment ${jsonEncode(stages[i].listActivityStageTranshipment)}");
+    //   debugPrint("json encode vessel ${jsonEncode(stages[i].listActivityVessel)}");
     // }
+    //debugPrint('print data jo ${dataActivity.id.isNull}');
+    if(!dataActivity.id.isNull && dataActivity.id != null && Helper.baseUrl().isNotEmpty){
+      //send data
+      final response = await http.post(
+          Uri.parse('${Helper.baseUrl()}/api/v1/inspection/activity'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(dataActivity.toSend())
+      );
+      debugPrint('print response kirim data jo  ${response.body}');
+      if(response.statusCode == 200){
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        if(responseData['status'] != 500){
+          final data = responseData['data'];
+          THJo  thJo = THJo.fromJson(data);
+          debugPrint('print data jo yang berhasil terkirim ${jsonEncode(data)}');
+          List<TDJoInspectionActivityStages> stageSend = thJo.inspectionActivityStages ?? [];
+          for(int s = 0; s < stageSend.length; s++){
+            TDJoInspectionActivityStages dataStage = stageSend[s];
+            await TDJoInspectionActivityStages.updateUploaded(dataStage.code ?? '');
+            if(dataStage.listActivity != null){
+              List<TDJoInspectionActivity> dataActs = dataStage.listActivity ?? [];
+              for(int a= 0; a < dataActs.length; a++){
+                TDJoInspectionActivity  dataAct = dataActs[a];
+                await TDJoInspectionActivity.updateUploaded(dataAct.code ?? '');
+              }
+            }
+            if(dataStage.listAttachment != null){
+              List<TDJoInspectionAttachment> attachments = dataStage.listAttachment ?? [];
+              for(int a=0; a <attachments.length; a++){
+                await TDJoInspectionAttachment.updateUploaded(attachments[a].code ?? '');
+              }
+            }
+            if(dataStage.listActivityVessel != null){
+              List<TDJoInspectionActivityVessel> vessels = dataStage.listActivityVessel ?? [];
+              for(int v = 0; v < vessels.length; v++){
+                await TDJoInspectionActivityVessel.updateUploaded(vessels[v].code ?? '');
+              }
+            }
+            if(dataStage.listActivityStageTranshipment != null){
+              List<TDJoInspectionActivityStagesTranshipment> transhipments = dataStage.listActivityStageTranshipment ?? [];
+              for(int t = 0; t < transhipments.length; t++){
+                await TDJoInspectionActivityStagesTranshipment.updateUploaded(transhipments[t].code ?? '');
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   static void sendDataLaboratory() async{
-    debugPrint('print function sendDataLaboratory ');
     THJo dataActivity = await THJo.getJoLaboratorySend();
-    debugPrint('print data jo acitivty send ${jsonEncode(dataActivity.toSend())}');
+    debugPrint('print data jo laboratory send ${jsonEncode(dataActivity.toSend())}');
+    //List<TDJoLaboratory> laboratories = dataActivity.laboratory ?? [];
+    // for(int i = 0; i < laboratories.length; i++){
+    //   debugPrint('print data laboratory ${jsonEncode(laboratories[i].laboratoryActivityStages)}');
+    //   List<TDJoLaboratoryActivityStages> stages = laboratories[i].laboratoryActivityStages ?? [];
+    //   for(int s = 0; s < stages.length; s++){
+    //    // debugPrint('print data laboratory activity ${jsonEncode(stages[s].listLabActivity)}');
+    //   }
+    // }
     if(dataActivity.id != null && Helper.baseUrl().isNotEmpty){
       //send data
       final response = await http.post(
-          Uri.parse('${Helper.baseUrl()}/api/transaksi/jo'),
+          Uri.parse('${Helper.baseUrl()}/api/v1/laboratory/activity'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(dataActivity.toSend()),
       );
-      debugPrint('Data berhasil dikirim: ${response.body}');
-      if(response.statusCode == 200){
+      if(response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
-        final data = responseData['data'];
-        THJo  thJo = THJo.fromJson(data);
-
+        if (responseData['status'] != 500) {
+          final data = responseData['data'];
+          debugPrint('print data ${jsonEncode(data)}');
+          TDJoLaboratory joLaboratory = TDJoLaboratory.fromJson(data);
+          debugPrint('print data jo laboratory ${jsonEncode(joLaboratory)}');
+          List<TDJoLaboratoryActivityStages> listLabStage = joLaboratory.laboratoryActivityStages ?? [];
+          debugPrint('print data list lab stage ${jsonEncode(listLabStage)}');
+          for (int s = 0; s < listLabStage.length; s++) {
+            TDJoLaboratoryActivityStages stage = listLabStage[s];
+            debugPrint('print data stage ${jsonEncode(stage)}');
+            await TDJoLaboratoryActivityStages.updateUploaded(stage.code.toString());
+            List<TDJoLaboratoryActivity> activities = listLabStage[s].listLabActivity ?? [];
+            for (int a = 0; a < activities.length; a++) {
+              TDJoLaboratoryActivity activity = activities[a];
+              debugPrint('print data activity ${jsonEncode(activity)}');
+              await TDJoLaboratoryActivity.updateUploaded(activity.code ?? '');
+            }
+          }
+        }
       }
     }
   }

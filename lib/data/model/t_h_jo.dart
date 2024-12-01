@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
 import 'package:get/get_common/get_reset.dart';
 import 'package:ops_mobile/data/model/t_d_jo_document_laboratory.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity.dart';
@@ -98,6 +101,7 @@ class THJo {
     _createdAt = createdAt;
     _updatedAt = updatedAt;
     _inspectionActivityStages = inspection_activity_stages;
+    _laboratory = laboratory;
 
 }
 
@@ -170,8 +174,8 @@ class THJo {
       _inspectionActivityStages = [];
     }
 
-    if (json['listlaboratory'] != null) {
-      _laboratory = (json['listlaboratory'] as List)
+    if (json['list_laboratory'] != null) {
+      _laboratory = (json['list_laboratory'] as List)
           .map((e) => TDJoLaboratory.fromJson(e))
           .toList();
     } else {
@@ -359,7 +363,7 @@ THJo copyWith({  num? id,
       map['inspection_activity_stages'] = _inspectionActivityStages?.map((v) => v.toJson()).toList();
     }
     if(_laboratory != null){
-      map['listlaboratory'] = _laboratory?.map((v) => v.toJson()).toList();
+      map['list_laboratory'] = _laboratory?.map((v) => v.toJson()).toList();
     }
     return map;
   }
@@ -401,12 +405,13 @@ THJo copyWith({  num? id,
       if(firstStage['m_statusinspectionstages_id'] == 6){
         final sqlAttachment = '''SELECT * from t_d_jo_inspection_attachment where t_h_jo_id =  ? and is_upload  = 0''';
         var dataAttachment = await db.rawQuery(sqlAttachment,[firstStage['t_h_jo_id']]);
-        for(int a = 0; a < dataAttachment.length; a++){
-          var data = dataAttachment[a];
+        var copyAttachment = dataAttachment.map((item) => Map<String, dynamic>.from(item)).toList();
+        for(int a = 0; a < copyAttachment.length; a++){
+          var data = copyAttachment[a];
           data['path_name'] = await Helper.convertPhotosToBase64(data['path_name'].toString());
           //masukan data ke result
         }
-        firstStage['listattachment'] = dataAttachment;
+        firstStage['listattachment'] = copyAttachment;
       }
 
       // Tambahkan list activity ke dalam firstStage
@@ -436,28 +441,19 @@ THJo copyWith({  num? id,
     if(dataActStage.isNotEmpty){
       var firstStage = Map<String, dynamic>.from(dataActStage[0]);
       var joResult = await db.rawQuery("SELECT * FROM t_h_jo WHERE id = ?", [firstStage['t_h_jo_id']]);
-      var joLabResult = await db.rawQuery("SELECT * from t_d_jo_laboratory where id = ?",firstStage['d_jo_laboratory_id']);
-      var joLabAct = await db.rawQuery('SELECT * from t_d_jo_laboratory_activity where t_d_jo_laboratory_activity_stages_id = ? and is_upload  = 0',firstStage['id']);
+      var joLabResult = await db.rawQuery("SELECT * from t_d_jo_laboratory where id = ?",[firstStage['d_jo_laboratory_id']]);
+      var joLabAct = await db.rawQuery('SELECT * from t_d_jo_laboratory_activity where t_d_jo_laboratory_activity_stages_id = ? and is_upload  = 0',[firstStage['id']]);
       var copyDataAct = joLabAct.map((item) => Map<String, dynamic>.from(item)).toList();
       var copyJoLabResult = joLabResult.isNotEmpty ? Map<String, dynamic>.from(joLabResult.first) : null;
       var copyResult = joResult.map((item) => Map<String, dynamic>.from(item)).toList();
-
-      //for (int i = 0; i < joLabAct.length; i++) {
-        //final sqlTranshipment = '''SELECT * FROM t_d_jo_inspection_activity_stages_transhipment WHERE t_d_inspection_stages_id = ? ''';
-        //var dataTranshipment = await db.rawQuery(sqlTranshipment, [firstStage['id']]);
-        //copyDataAct[i]['listtranshipment'] = List<Map<String, dynamic>>.from(dataTranshipment);
-      //}
       firstStage['list_lab_activity'] = copyDataAct;
       var thJo = copyResult.isNotEmpty ? Map<String, dynamic>.from(copyResult.first) : null;
 
       if(thJo != null && copyJoLabResult != null){
-        copyJoLabResult['laboratory_activity_stage'] = [firstStage];
-        thJo['listlaboratory'] = [copyJoLabResult];
+        copyJoLabResult['laboratory_activity_stages'] = [firstStage];
+        thJo['list_laboratory'] = [copyJoLabResult];
         return THJo.fromJson(thJo);
       }
-
-
-
     }
     return THJo();
   }

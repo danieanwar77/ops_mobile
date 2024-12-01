@@ -120,6 +120,7 @@ TDJoLaboratory copyWith({  num? id,
   dynamic? get updatedBy => _updatedBy;
   String? get createdAt => _createdAt;
   String? get updatedAt => _updatedAt;
+  List<TDJoLaboratoryActivityStages>? get laboratoryActivityStages => _laboratoryActivityStages;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};

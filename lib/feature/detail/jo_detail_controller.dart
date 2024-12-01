@@ -1599,9 +1599,8 @@ class JoDetailController extends BaseController {
         builder: (context, childWidget) {
           return MediaQuery(
               data: MediaQuery.of(context).copyWith(
-                // Using 24-Hour format
-                  alwaysUse24HourFormat: true),
-              // If you want 12-Hour format, just change alwaysUse24HourFormat to false or remove all the builder argument
+                  alwaysUse24HourFormat: true
+              ),
               child: childWidget!);
         }
     );
@@ -1774,7 +1773,7 @@ class JoDetailController extends BaseController {
         isUpload: "0",
         isActive: "1",
         createdBy: userData.value!.id,
-        createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+        createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
         remarks: activityListTextController.value[index].text,
       );
       int result = await db.insert("t_d_jo_inspection_activity_stages", data.toInsert());
@@ -1790,7 +1789,7 @@ class JoDetailController extends BaseController {
             code: 'JOIAS-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
             isActive: 1,
             isUpload: 0,
-            createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+            createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
             createdBy: createdBy);
         await db.insert("t_d_jo_inspection_activity", detail.toInsert());
       });
@@ -1824,7 +1823,7 @@ class JoDetailController extends BaseController {
               isUpload: "0",
               isActive: "1",
               updatedBy: userData.value!.id.toString(),
-              updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+              updatedAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
               remarks: activityListTextController.value[index].text);
 
           int updated = await db.update(
@@ -1851,7 +1850,7 @@ class JoDetailController extends BaseController {
                   activity: activity.activity,
                   isActive: 1,
                   isUpload: 0,
-                  updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+                  updatedAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
                   updatedBy: createdBy.toString());
               update();
               debugPrint('data yang update nya : ${jsonEncode(detail)}');
@@ -1874,7 +1873,7 @@ class JoDetailController extends BaseController {
                   code: 'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
                   isActive: 1,
                   isUpload: 0,
-                  createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+                  createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
                   createdBy: createdBy);
               int raw = await db.insert("t_d_jo_inspection_activity", detail.toInsert());
               debugPrint("Print Edit ${activity.id} ${raw}");
@@ -1890,7 +1889,7 @@ class JoDetailController extends BaseController {
             isActive: "1",
             createdBy: userData.value!.id,
             remarks: activityListTextController.value[index].text,
-            createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+            createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
           );
           int result = await db.insert("t_d_jo_inspection_activity_stages", data.toInsert());
           List<TDJoInspectionActivity> details = stage.listActivity ?? [];
@@ -1904,7 +1903,7 @@ class JoDetailController extends BaseController {
                 code: 'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
                 isActive: 1,
                 isUpload: 0,
-                createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+                createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
                 createdBy: createdBy);
             await db.insert("t_d_jo_inspection_activity", detail.toInsert());
           });
@@ -1935,7 +1934,7 @@ class JoDetailController extends BaseController {
             pathPhoto: photo.path,
             keterangan: desc.text.toString(),
             code: "JOIP-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now()).toString()}",
-            createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+            createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
             isActive: 1,
             isUpload: 1);
         int result = await db.insert("t_d_jo_inspection_pict", pict.toJson());
@@ -2085,7 +2084,7 @@ class JoDetailController extends BaseController {
             isUpload: "0",
             isActive: "1",
             createdBy: userData.value!.id,
-            createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+            createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
             uomId: item.uomId.toString(),
             actualQty: item.actualQty);
         int rawStage = await db.insert("t_d_jo_inspection_activity_stages", data.toInsert());
@@ -2096,7 +2095,7 @@ class JoDetailController extends BaseController {
             isActive: 1,
             isUpload: 0,
             activity: '-',
-            createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+            createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
             createdBy: createdBy);
         int rawAct = await db.insert("t_d_jo_inspection_activity", detail.toInsert());
 
@@ -2108,7 +2107,7 @@ class JoDetailController extends BaseController {
           isUpload: 0,
           isActive: 1,
           createdBy: createdBy,
-          createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+          createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
         );
 
         int rawVesel = await db.insert("t_d_jo_inspection_activity_vessel", dVesel.toInsert());
@@ -2126,7 +2125,7 @@ class JoDetailController extends BaseController {
               isUpload: 0,
               isActive: 1,
               createdBy: createdBy,
-              createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+              createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
             );
 
             await db.insert("t_d_jo_inspection_activity_barge", dBarge.toInsert());
@@ -2149,7 +2148,7 @@ class JoDetailController extends BaseController {
               isUpload: 0,
               isActive: 1,
               createdBy: createdBy,
-              createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+              createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
             );
             transhipmentCount++;
             await db.insert("t_d_jo_inspection_activity_stages_transhipment", dTranshipment.toInsert());
@@ -2708,7 +2707,7 @@ class JoDetailController extends BaseController {
           isUpload: "0",
           isActive: "1",
           updatedBy: createdBy.toString(),
-          updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+          updatedAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
           uomId: item.uomId.toString(),
           actualQty: item.actualQty);
       int updated = await db.update(
@@ -2727,7 +2726,7 @@ class JoDetailController extends BaseController {
         isUpload: 0,
         activity: '-',
         updatedBy: createdBy.toString(),
-        updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+        updatedAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
       );
       int rawAct = await db.update("t_d_jo_inspection_activity", detail.toEdit(), where: 't_h_jo_id = ? and t_d_jo_inspection_activity_stages_id = ?', whereArgs: [detail.tHJoId, idJoActStage]);
       debugPrint("print updated t_d_jo_inspection_activity ${rawAct}");
@@ -2740,7 +2739,7 @@ class JoDetailController extends BaseController {
         isUpload: 0,
         isActive: 1,
         createdBy: createdBy,
-        createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+        createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
       );
 
       int rawVesel =
@@ -2757,8 +2756,8 @@ class JoDetailController extends BaseController {
           isActive: 1,
           createdBy: createdBy,
           updatedBy: createdBy.toString(),
-          createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
-          updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+          createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
+          updatedAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
         );
         int rawBarge = await db.insert("t_d_jo_inspection_activity_barge", dBarge.toInsert());
       }
@@ -2779,9 +2778,9 @@ class JoDetailController extends BaseController {
             isActive: 1,
             createdBy: createdBy,
             uomId: item.uomId,
-            createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+            createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
             updatedBy: createdBy.toString(),
-            updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+            updatedAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
           );
           transhipmentCount++;
           if (dTranshipment.id == null) {
@@ -3476,7 +3475,7 @@ class JoDetailController extends BaseController {
           isUpload: "0",
           isActive: "1",
           createdBy: userData.value!.id,
-          createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+          createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
           remarks: activityListTextController.value[index].text,
         );
         int result = await db.insert("t_d_jo_inspection_activity_stages", data.toInsert());
@@ -3493,7 +3492,7 @@ class JoDetailController extends BaseController {
               code: 'JOIAS-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
               isActive: 1,
               isUpload: 0,
-              createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+              createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
               createdBy: createdBy);
           await db.insert("t_d_jo_inspection_activity", detail.toInsert());
         });
@@ -3514,7 +3513,7 @@ class JoDetailController extends BaseController {
             code: 'JOIAF-${activityStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${attachmentCount}',
             isActive: 1,
             isUpload: 0,
-            createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+            createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
             createdBy: createdBy);
         await db.insert('t_d_jo_inspection_attachment', attach.toJson());
       }
@@ -6738,7 +6737,7 @@ class JoDetailController extends BaseController {
               isUpload: "0",
               isActive: "1",
               updatedBy: userData.value!.id.toString(),
-              updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+              updatedAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
               remarks: activityListTextController.value[index].text);
 
           int updated = await db.update(
@@ -6765,7 +6764,7 @@ class JoDetailController extends BaseController {
                   activity: activity.activity,
                   isActive: 1,
                   isUpload: 0,
-                  updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+                  updatedAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
                   updatedBy: createdBy.toString());
               update();
               debugPrint('data yang update nya : ${jsonEncode(detail)}');
@@ -6788,7 +6787,7 @@ class JoDetailController extends BaseController {
                   code: 'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
                   isActive: 1,
                   isUpload: 0,
-                  createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+                  createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
                   createdBy: createdBy);
               int raw = await db.insert("t_d_jo_inspection_activity", detail.toInsert());
               debugPrint("Print Edit ${activity.id} ${raw}");
@@ -6804,7 +6803,7 @@ class JoDetailController extends BaseController {
             isActive: "1",
             createdBy: userData.value!.id,
             remarks: activityListTextController.value[index].text,
-            createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+            createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
           );
           int result = await db.insert("t_d_jo_inspection_activity_stages", data.toInsert());
           List<TDJoInspectionActivity> details = stage.listActivity ?? [];
@@ -6818,7 +6817,7 @@ class JoDetailController extends BaseController {
                 code: 'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
                 isActive: 1,
                 isUpload: 0,
-                createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+                createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
                 createdBy: createdBy);
             await db.insert("t_d_jo_inspection_activity", detail.toInsert());
           });
@@ -6833,7 +6832,7 @@ class JoDetailController extends BaseController {
         attachmentCount++;
         if (file.id != null) {
           // var filename = file.fileName!;
-          TDJoInspectionAttachment attach = file.copyWith(tDJoInspectionActivityStagesId: stages.first.id, updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()), updatedBy: createdBy);
+          TDJoInspectionAttachment attach = file.copyWith(tDJoInspectionActivityStagesId: stages.first.id, updatedAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()), updatedBy: createdBy);
           TDJoInspectionAttachment(
               tHJoId: file.tHJoId,
               tDJoInspectionActivityStagesId: stages.first.id,
@@ -6842,7 +6841,7 @@ class JoDetailController extends BaseController {
               code: file.code,
               isActive: 1,
               isUpload: 0,
-              updatedAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+              updatedAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
               updatedBy: createdBy);
           debugPrint('debug attach nya: ${jsonEncode(attach.toEdit())}');
           await db.update('t_d_jo_inspection_attachment', attach.toEdit(), where: 'id = ?', whereArgs: [file.id]);
@@ -6856,7 +6855,7 @@ class JoDetailController extends BaseController {
               code: 'JOIAF-${activityStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${attachmentCount}',
               isActive: 1,
               isUpload: 0,
-              createdAt: DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()),
+              createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
               createdBy: createdBy);
           await db.insert('t_d_jo_inspection_attachment', attach.toJson());
         }

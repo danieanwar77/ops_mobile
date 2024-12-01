@@ -1,3 +1,5 @@
+import 'package:ops_mobile/data/sqlite.dart';
+
 /// id : 4
 /// t_d_inspection_stages_id : 38
 /// t_d_jo_inspection_activity_id : 64
@@ -60,7 +62,7 @@ class TDJoInspectionActivityStagesTranshipment {
     _initialDate = json['initial_date'];
     _finalDate = json['final_date'];
     _dateArrive = json['date_arrive'];
-    _deliveryQty = json['delivery_qty'];
+    _deliveryQty = (json['delivery_qty'] != null ? double.tryParse(json['delivery_qty'].toString()) : null);
     _uomId = json['uom_id'];
     _uomName = json['uom_name'];
     _createdBy = json['created_by'];
@@ -202,6 +204,11 @@ TDJoInspectionActivityStagesTranshipment copyWith({
     //map['created_at'] = _createdAt;
     map['updated_at'] = _updatedAt;
     return map;
+  }
+
+  static Future<int> updateUploaded(String code) async {
+    final db = await SqlHelper.db();
+    return await db.update("t_d_jo_inspection_activity_stages_transhipment", {"is_upload": 1},where: "code=?",whereArgs: [code]);
   }
 
 }

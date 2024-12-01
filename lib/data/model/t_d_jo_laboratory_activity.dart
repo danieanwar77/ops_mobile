@@ -1,3 +1,5 @@
+import 'package:ops_mobile/data/sqlite.dart';
+
 /// id : 60
 /// t_d_jo_laboratory_activity_stages_id : 88
 /// t_d_jo_laboratory_id : 0
@@ -159,6 +161,10 @@ TDJoLaboratoryActivity copyWith({  num? id,
     map['updated_by'] = _updatedBy;
     map['updated_at'] = _updatedAt;
     return map;
+  }
+  static Future<int> updateUploaded(String code) async {
+    final db = await SqlHelper.db();
+    return await db.update("t_d_jo_laboratory_activity", {"is_upload": 1},where: "code=?",whereArgs: [code]);
   }
 
 }

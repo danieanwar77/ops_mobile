@@ -489,7 +489,7 @@ class LabActivityDetailController extends BaseController{
   Future<String> selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialEntryMode: TimePickerEntryMode.input,
+      initialEntryMode: TimePickerEntryMode.dialOnly,
       initialTime: TimeOfDay.now(),
     );
     if (picked != null) {

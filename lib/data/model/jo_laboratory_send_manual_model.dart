@@ -1,3 +1,5 @@
+import 'package:ops_mobile/data/sqlite.dart';
+
 /// laboratory_activity : [{"t_d_jo_laboratory_activity_stages":{"id":0,"code":"","t_d_jo_laboratory_id":0,"t_h_jo_id":0,"m_statuslaboratoryprogres_id":0,"trans_date":"","remarks":"","is_active":0,"is_upload":0,"created_by":0,"created_at":"","updated_by":0,"updated_at":""},"t_d_jo_laboratory_activity":[{"id":0,"code":"","t_d_jo_laboratory_id":0,"t_d_jo_laboratory_activity_stages_id":0,"t_h_jo_id":0,"start_activity_time":"","end_activity_time":"","activity":"","is_active":0,"is_upload":0,"created_by":0,"created_at":"","updated_by":0,"updated_at":""}],"issued_analyzed_result":{"t_d_jo_laboratory_activity_stages_id":0,"t_d_jo_laboratory_id":0,"activity_date":"","activity_time":"","total_sample_received":0,"total_sample_analyzed":0,"total_sample_preparation":0},"attachment":[{"id":0,"t_h_jo_id":0,"t_d_jo_laboratory_id":0,"t_d_jo_laboratory_activity_stages_id":0,"path_name":"","file_name":"","description":"","code":"","is_active":0,"is_upload":0,"created_by":0,"created_at":"","updated_by":0,"updated_at":""}]}]
 /// finalize_laboratory : [{"id":0,"no_report":"","date_report":"","no_blanko_certificate":"","lhv_number":"","ls_number":"","documents":[{"id":0,"path_file":"","file_name":""}]}]
 
@@ -985,5 +987,7 @@ TdJoLaboratoryActivityStages copyWith({  num? id,
     map['updated_at'] = _updatedAt;
     return map;
   }
+
+
 
 }

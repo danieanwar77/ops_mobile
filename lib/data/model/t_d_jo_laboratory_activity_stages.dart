@@ -1,5 +1,6 @@
 import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory_attachment.dart';
+import 'package:ops_mobile/data/sqlite.dart';
 
 /// id : 21
 /// d_jo_laboratory_id : 6
@@ -236,5 +237,10 @@ class TDJoLaboratoryActivityStages {
     map['is_active'] = _isActive;
     map['is_upload'] = _isUpload;
     return map;
+  }
+
+  static Future<int> updateUploaded(String code) async {
+    final db = await SqlHelper.db();
+    return await db.update("t_d_jo_laboratory_activity_stages", {"is_upload": 1},where: "code=?",whereArgs: [code]);
   }
 }
