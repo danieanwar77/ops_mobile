@@ -1086,7 +1086,7 @@ class JoDetailController extends BaseController {
                 "OK",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              onPressed: () {
+              onPressed: () async {
                 sendActivityDailyPhotoV2();
                 Get.back();
                 Get.back();
@@ -1938,7 +1938,7 @@ class JoDetailController extends BaseController {
             code: "JOIP-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now()).toString()}",
             createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
             isActive: 1,
-            isUpload: 1);
+            isUpload: 0);
         int result = await db.insert("t_d_jo_inspection_pict", pict.toJson());
 
         if (result > 0) {
@@ -2018,7 +2018,7 @@ class JoDetailController extends BaseController {
   Future<String> deletePhotoV2(int id) async {
     final db = await SqlHelper.db();
 
-    int result = await db.update('t_d_jo_inspection_pict', {"is_active": 0}, where: "id = ?", whereArgs: [id]);
+    int result = await db.update('t_d_jo_inspection_pict', {"is_active": 0,"is_upload": 0}, where: "id = ?", whereArgs: [id]);
 
     if (result == 0) {
       return 'failed';
@@ -2064,7 +2064,7 @@ class JoDetailController extends BaseController {
   void editPhotoActivityDescV2(int index, int idEdit, String desc) async {
     final db = await SqlHelper.db();
 
-    int result = await db.update('t_d_jo_inspection_pict', {"path_photo": activityPreviewFoto.value.path, "keterangan": desc}, where: "id = ?", whereArgs: [idEdit]);
+    int result = await db.update('t_d_jo_inspection_pict', {"path_photo": activityPreviewFoto.value.path, "keterangan": desc,"is_upload": 0}, where: "id = ?", whereArgs: [idEdit]);
     if (result > 0) {
       await getJoDailyPhotoV2();
     }

@@ -163,7 +163,7 @@ class SqlHelper extends BaseController {
   static Future<List<Map<String, dynamic>>> getLogin(String id) async {
     final db = await SqlHelper.db();
     return db.rawQuery('''select id, password_aes  from user
-        where username = $id''');
+        where username = ? ''',[id]);
   }
 
   // static Future<List<Map<String, dynamic>>> decryptPassword(String id) async {

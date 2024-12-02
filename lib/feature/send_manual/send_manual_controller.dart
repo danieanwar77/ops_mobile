@@ -17,6 +17,10 @@ import 'package:ops_mobile/data/model/jo_list_model.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
 import 'package:ops_mobile/data/model/send_manual_model.dart';
 import 'package:ops_mobile/data/model/send_manual_v2.dart';
+import 'package:ops_mobile/data/model/t_d_jo_document_inspection_v2.dart';
+import 'package:ops_mobile/data/model/t_d_jo_document_laboratory_v2.dart';
+import 'package:ops_mobile/data/model/t_d_jo_finalize_inspection_v2.dart';
+import 'package:ops_mobile/data/model/t_d_jo_finalize_laboratory_v2.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages_transhipment.dart';
@@ -650,6 +654,7 @@ class SendManualController extends BaseController{
 
   Future<bool> sendSingleData(SendManualV2 sendData) async{
     int type = sendData.type == null ? 0 : sendData!.type!.toInt();
+    debugPrint("print type send manual ${type}");
     switch(type){
       case 1: {
         return sendInspectionActivity(sendData);
@@ -657,18 +662,73 @@ class SendManualController extends BaseController{
       case 2: {
         return sendInspectionPhoto(sendData);
       }
+      case 3:{
+        return sendInspectionFinalize(sendData);
+      }
       default: {
         return false;
       }
     }
   }
+  
+  Future<bool> sendInspectionFinalize(SendManualV2 sendata) async{
+    try{
+      int id = sendata.idTrans ==  null ? 0 : sendata.idTrans!.toInt();
+      TDJoFinalizeInspectionV2? dataFinalize = await TDJoFinalizeInspectionV2.getSendDataById(id);
+      debugPrint("print data finalize inspection ${jsonEncode(dataFinalize)}");
+      if(dataFinalize != null){
+        TDJoFinalizeInspectionV2 item = dataFinalize;
+        List<TDJoDocumentInspectionV2> details = item.listDocument ?? [];
+        for(int d = 0; d< details.length; d++){
+          TDJoDocumentInspectionV2 detail = details[d];
+          final filename = detail.fileName ?? ''; // contoh data asdasdasdasd.adasdasd.asdasdasd.pdf
+          final fileType = RegExp(r'\.([a-zA-Z0-9]+)$').firstMatch(filename)?.group(1) ?? '';
+          final base64 = await Helper.convertPhotosToBase64(detail.pathFile ?? '');
+          detail.pathFile = '${base64}';
+        }
+
+        final response = await http.post(
+            Uri.parse('${Helper.baseUrl()}/api/v1/inspection/document'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(dataFinalize)
+        );
+        if(response.statusCode == 200){
+          final Map<String, dynamic> responseData = jsonDecode(response.body);
+          print('print response from api ${jsonEncode(responseData)}');
+          if(responseData['status'] != 500){
+            dynamic dataList = responseData['data'];
+            TDJoFinalizeInspectionV2 data = TDJoFinalizeInspectionV2.fromJson(dataList as Map<String, dynamic>);
+            await TDJoFinalizeInspectionV2.updateUploaded(data.code ?? '');
+            List<TDJoDocumentInspectionV2> documents = data.listDocument ?? [];
+            for(int d = 0; d < documents.length; d++){
+              TDJoDocumentInspectionV2 document = documents[d];
+              await TDJoDocumentInspectionV2.updateUploaded(document.code ?? '');
+            }
+            return true;
+          }else{
+            return false;
+          }
+        }else{
+          return false;
+        }
+      }
+      return true;
+    }catch(e){
+      debugPrint("print failed send data finalize inspection ${e}");
+      return false;
+    }
+  }
 
   Future<bool> sendInspectionActivity(SendManualV2 sendata) async{
     try{
-      debugPrint('print function sendDataInspection ');
+      debugPrint('print function sendDataInspection manual ');
       int id = sendata.idTrans ==  null ? 0 : sendata.idTrans!.toInt();
       THJo dataActivity = await THJo.getJoActivitySendById(id);
       List<TDJoInspectionActivityStages> stages = dataActivity.inspectionActivityStages ?? [];
+      for(int s = 0; s < stages.length; s++){
+        TDJoInspectionActivityStages stage = stages[s];
+        debugPrint("debug print stage ${jsonEncode(stage)}");
+      }
       bool connection = await Helper.checkConnection();
       if(!dataActivity.id.isNull && dataActivity.id != null && Helper.baseUrl().isNotEmpty){
         final response = await http.post(

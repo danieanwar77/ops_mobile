@@ -174,4 +174,17 @@ TDJoFinalizeInspectionV2 copyWith({  num? id,
     return TDJoFinalizeInspectionV2.fromJson(copyResult);
   }
 
+  static Future<TDJoFinalizeInspectionV2?> getSendDataById(int id) async{
+    final db = await SqlHelper.db();
+    final sql = '''SELECT * from t_d_jo_finalize_inspection where is_upload  = 0 and id=?''';
+    var result = await db.rawQuery(sql,[id]);
+    if (result.isEmpty) {
+      return null; // Jika tidak ada data, kembalikan null
+    }
+    var copyResult = Map<String, dynamic>.from(result.first);
+
+    copyResult['list_document'] = await TDJoDocumentInspectionV2.getDataSend(copyResult['id'] ?? 0);
+    return TDJoFinalizeInspectionV2.fromJson(copyResult);
+  }
+
 }

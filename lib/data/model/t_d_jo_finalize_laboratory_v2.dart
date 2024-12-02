@@ -167,7 +167,22 @@ TDJoFinalizeLaboratoryV2 copyWith({
     var result = await db.rawQuery(sql);
 
     if (result.isEmpty) {
-      return null; // Jika tidak ada data, kembalikan null
+      return null;
+    }
+
+    var copyResult = Map<String, dynamic>.from(result.first); // Ambil elemen pertama
+    copyResult['list_document'] = await TDJoDocumentLaboratoryV2.getDataSend(copyResult['id'] ?? 0);
+
+    return TDJoFinalizeLaboratoryV2.fromJson(copyResult);
+  }
+
+  static Future<TDJoFinalizeLaboratoryV2?> getSendDataById(id) async{
+    final db = await SqlHelper.db();
+    final sql = '''SELECT * from t_d_jo_finalize_laboratory where is_upload  = 0 and id = ?''';
+    var result = await db.rawQuery(sql,[id]);
+
+    if (result.isEmpty) {
+      return null;
     }
 
     var copyResult = Map<String, dynamic>.from(result.first); // Ambil elemen pertama

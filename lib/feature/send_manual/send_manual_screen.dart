@@ -22,18 +22,18 @@ class SendManualScreen extends StatelessWidget{
               ),
             ),
             actions: [
-              IconButton(
-                  onPressed: ()async{
-                    controller.dataJoList.value = controller.joSendManualList.value;
-                    controller.loadingDialog();
-                    Future.delayed(const Duration(seconds: 3),(){
-                      Get.back<void>();
-                      controller.makeAFile();
-                      controller.openDialog('Attention', 'Data berhasil dikirim');
-                    });
-                  },
-                  icon: Image.asset('assets/icons/sendall.png')
-              )
+              // IconButton(
+              //     onPressed: ()async{
+              //       controller.dataJoList.value = controller.joSendManualList.value;
+              //       controller.loadingDialog();
+              //       Future.delayed(const Duration(seconds: 3),(){
+              //         Get.back<void>();
+              //         controller.makeAFile();
+              //         controller.openDialog('Attention', 'Data berhasil dikirim');
+              //       });
+              //     },
+              //     icon: Image.asset('assets/icons/sendall.png')
+              // )
             ],
           ),
           body: SafeArea(
@@ -87,14 +87,22 @@ class SendManualScreen extends StatelessWidget{
                                             ),
                                           ),
                                           IconButton(
-                                              onPressed: (){
-                                                // listData.add(data);
+                                              onPressed: () async {
                                                 controller.loadingDialog();
-                                                Future.delayed(const Duration(seconds: 3),(){
-                                                  Get.back<void>();
-                                                  controller.makeAFile();
-                                                  //controller.openDialog('Attention', 'Data berhasil dikirim');
-                                                });
+                                                final result = await controller.sendSingleData(joItem);
+                                                if(result){
+                                                  Future.delayed(const Duration(seconds: 1),()async{
+                                                    Get.back<void>();
+                                                    controller.openDialog('Attention', 'Data berhasil dikirim');
+                                                    await controller.getData();
+                                                  });
+                                                }else{
+                                                  Future.delayed(const Duration(seconds: 1),() async {
+                                                    Get.back<void>();
+                                                    controller.openDialog('Attention', 'Data gagal dikirim');
+                                                    await controller.getData();
+                                                  });
+                                                }
                                               },
                                               icon: Image.asset('assets/icons/send.png', height: 32,)
                                           )
@@ -111,7 +119,6 @@ class SendManualScreen extends StatelessWidget{
                     ),
                   ],
                 ),
-
           ),
         )
     );
