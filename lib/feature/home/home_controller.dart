@@ -20,9 +20,11 @@ import 'package:ops_mobile/data/model/jo_list_daily_activity_lab.dart';
 import 'package:ops_mobile/data/model/jo_list_daily_activity_lab5.dart';
 import 'package:ops_mobile/data/model/jo_list_model.dart';
 import 'package:ops_mobile/data/model/jo_pic_model.dart';
-import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
-import 'package:ops_mobile/data/model/t_d_jo_finalize_inspection.dart';
+import 'package:ops_mobile/data/model/t_d_jo_document_inspection_v2.dart';
+import 'package:ops_mobile/data/model/t_d_jo_document_laboratory_v2.dart';
+import 'package:ops_mobile/data/model/t_d_jo_finalize_inspection_v2.dart';
+import 'package:ops_mobile/data/model/t_d_jo_finalize_laboratory_v2.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages_transhipment.dart';
@@ -34,7 +36,6 @@ import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity_stages.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory_attachment.dart';
 import 'package:ops_mobile/data/model/t_h_jo.dart';
-import 'package:ops_mobile/data/respository/repository.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/login/login_screen.dart';
@@ -104,6 +105,7 @@ class HomeController extends BaseController{
 
     // connectivityResult = await (Connectivity().checkConnectivity());
     //await getJO();
+    syncMaster();
     super.onInit();
   }
 
@@ -193,59 +195,6 @@ class HomeController extends BaseController{
     );
   }
 
-  Future<void> sendJoActivityInspection(Activity data) async {
-    try{
-      var response = await repository.insertActivityInspection(data);
-      print('response send activity inspection : ${response.message}');
-    } catch(e){
-      print('response error send activity inspection : ${jsonEncode(e)}');
-    }
-  }
-
-  Future<void> sendJoActivity5Inspection(List<FormDataArray> data) async {
-    try{
-      var response = await repository.insertActivityInspection5(data);
-      print('response send activity 5 inspection : ${response.message}');
-    } catch(e){
-      print('response error send activity 5 inspection : ${jsonEncode(e)}');
-    }
-  }
-
-  Future<void> sendJoActivity6Inspection(List<FormDataArray6> data) async {
-    try{
-      var response = await repository.insertActivityInspection6(data);
-      print('response send activity 6 inspection : ${response.message}');
-    } catch(e){
-      print('response error send activity 6 inspection : ${jsonEncode(e)}');
-    }
-  }
-
-  Future<void> sendJoActivityLaboratory(List<ActivityLab> data) async {
-    try{
-      var response = await repository.insertActivityLab(data);
-      print('response send activity laboratory : ${response.message}');
-    } catch(e){
-      print('response error send activity laboratory : ${jsonEncode(e)}');
-    }
-  }
-
-  Future<void> sendJoActivity5Laboratory(List<ActivityAct5Lab> data) async {
-    try{
-      var response = await repository.insertActivity5Lab(data);
-      print('response send activity 5 laboratory : ${response.message}');
-    } catch(e){
-      print('response error send activity 5 laboratory : ${jsonEncode(e)}');
-    }
-  }
-
-  Future<void> sendJoActivity6Laboratory(List<FormDataArrayLab6> data) async {
-    try{
-      var response = await repository.insertActivity6Lab(data);
-      print('response send activity 6 laboratory : ${response.message}');
-    } catch(e){
-      print('response error send activity 6 laboratory : ${jsonEncode(e)}');
-    }
-  }
 
   void loadingDialog(){
     Get.dialog(
@@ -352,13 +301,14 @@ class HomeController extends BaseController{
   @pragma('vm:entry-point')
   static Future<void> onStartBG(ServiceInstance service) async {
     Timer.periodic(const Duration(seconds: 10 ), (timer) async {
-     // NetworkCore networkCore = Get.find<NetworkCore>();
       //sendDataInpectionPhoto();
-      sendDataInspection();
-      sendDataLaboratory();
-      sendDataInspectionDocument();
+      //sendDataInspection();
+      //sendDataLaboratory();
+      //sendDataFinalizeLaboratory();
+      //sendDataFinalizeInspection();
+
       //}
-      debugPrint('test background service');
+      //debugPrint('test background service');
     });
   }
 
@@ -487,33 +437,147 @@ class HomeController extends BaseController{
 
     if(dataSend.isNotEmpty){
       for(TDJoInspectionPict data in dataSend){
-        data.pathPhoto = await Helper.convertPhotosToBase64(data.pathPhoto ?? '');
+        final base64 = await Helper.convertPhotosToBase64(data.pathPhoto ?? '');//
+        data.pathPhoto = 'data:image/png;base64,${base64}';
       }
+      debugPrint('print payload inspection photo yang dikirim ${jsonEncode(dataSend)}');
       final response = await http.post(
-          Uri.parse('${Helper.baseUrl()}/api/transaksi/jo'),
+          Uri.parse('${Helper.baseUrl()}/api/v1/inspection/photo'),
           headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(dataSend.map((item) => TDJoInspectionPict.fromJson(item)).toList())
+          body: jsonEncode(dataSend)
       );
       debugPrint('Data berhasil dikirim: ${response.body}');
       if(response.statusCode == 200){
-
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        print('print response from api ${jsonEncode(responseData)}');
+        if(responseData['status'] != 500){
+          List<dynamic> dataList = responseData['data'];
+          List<TDJoInspectionPict> data = dataList
+              .map((item) => TDJoInspectionPict.fromJson(item as Map<String, dynamic>))
+              .toList();
+          for(int p = 0; p < data.length; p++){
+            TDJoInspectionPict item = data[p];
+            await TDJoInspectionPict.updateUploaded(item.code ?? '');
+          }
+        }
       }
     }
   }
 
-  static void sendDataInspectionDocument() async{
+  static void sendDataFinalizeLaboratory() async{
+    List<TDJoFinalizeLaboratoryV2> dataLaboratory = await TDJoFinalizeLaboratoryV2.getSendData();
+    if(dataLaboratory.isNotEmpty){
+      debugPrint('print data finalize laboratory sebelum encode ${jsonEncode(dataLaboratory)}');
+      for(int i = 0; i < dataLaboratory.length; i++){
+        TDJoFinalizeLaboratoryV2 item = dataLaboratory[i];
+        List<TDJoDocumentLaboratoryV2> details = item.listDocument ?? [];
+        for(int d = 0; d< details.length; d++){
+          TDJoDocumentLaboratoryV2 detail = details[d];
+          final filename = detail.fileName ?? ''; // contoh data asdasdasdasd.adasdasd.asdasdasd.pdf
+          final fileType = RegExp(r'\.([a-zA-Z0-9]+)$').firstMatch(filename)?.group(1) ?? '';
+          final base64 = await Helper.convertPhotosToBase64(detail.pathFile ?? '');
+          if(fileType == "pdf"){
+            detail.pathFile = 'data:image/png;base64,${base64}';
+          }else{
+            detail.pathFile = 'data:application/pdf;base64,${base64}';
+          }
+        }
+      }
+      debugPrint('print data finalize laboratory ${jsonEncode(dataLaboratory)}');
+      final response = await http.post(
+          Uri.parse('${Helper.baseUrl()}/api/v1/laboratory/document'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(dataLaboratory)
+      );
+      if(response.statusCode == 200){
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        print('print response from api ${jsonEncode(responseData)}');
+        if(responseData['status'] != 500){
+          List<dynamic> dataList = responseData['data'];
+          List<TDJoFinalizeLaboratoryV2> data = dataList
+              .map((item) => TDJoFinalizeLaboratoryV2.fromJson(item as Map<String, dynamic>))
+              .toList();
+          for(int p = 0; p < data.length; p++){
+            TDJoFinalizeLaboratoryV2 item = data[p];
+            await TDJoFinalizeLaboratoryV2.updateUploaded(item.code ?? '');
+            List<TDJoDocumentLaboratoryV2> documents = item.listDocument ?? [];
+            for(int d = 0; d < documents.length; d++){
+              TDJoDocumentLaboratoryV2 document = documents[d];
+              await TDJoDocumentLaboratoryV2.updateUploaded(document.code ?? '');
+            }
+          }
+        }
+      }
+
+    }
   }
 
-}
+  static void sendDataFinalizeInspection() async{
+    List<TDJoFinalizeInspectionV2> dataFinalize = await TDJoFinalizeInspectionV2.getSendData();
+    if(dataFinalize.length > 0){
+      for(int i = 0; i < dataFinalize.length; i++){
+        TDJoFinalizeInspectionV2 item = dataFinalize[i];
+        List<TDJoDocumentInspectionV2> details = item.listDocument ?? [];
+        for(int d = 0; d< details.length; d++){
+          TDJoDocumentInspectionV2 detail = details[d];
+          final filename = detail.fileName ?? ''; // contoh data asdasdasdasd.adasdasd.asdasdasd.pdf
+          final fileType = RegExp(r'\.([a-zA-Z0-9]+)$').firstMatch(filename)?.group(1) ?? '';
+          final base64 = await Helper.convertPhotosToBase64(detail.pathFile ?? '');
+          if(fileType == "pdf"){
+            detail.pathFile = 'data:image/png;base64,${base64}';
+          }else{
+            detail.pathFile = 'data:application/pdf;base64,${base64}';
+          }
+        }
 
+        final response = await http.post(
+            Uri.parse('${Helper.baseUrl()}/api/v1/inspection/document'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(dataFinalize)
+        );
+        if(response.statusCode == 200){
+          final Map<String, dynamic> responseData = jsonDecode(response.body);
+          print('print response from api ${jsonEncode(responseData)}');
+          if(responseData['status'] != 500){
+            List<dynamic> dataList = responseData['data'];
+            List<TDJoFinalizeInspectionV2> data = dataList
+                .map((item) => TDJoFinalizeInspectionV2.fromJson(item as Map<String, dynamic>))
+                .toList();
+            for(int p = 0; p < data.length; p++){
+              TDJoFinalizeInspectionV2 item = data[p];
+              await TDJoFinalizeInspectionV2.updateUploaded(item.code ?? '');
+              List<TDJoDocumentInspectionV2> documents = item.listDocument ?? [];
+              for(int d = 0; d < documents.length; d++){
+                TDJoDocumentInspectionV2 document = documents[d];
+                await TDJoDocumentInspectionV2.updateUploaded(document.code ?? '');
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 
+  void syncMaster() async{
+    final response = await http.post(
+        Uri.parse('${Helper.baseUrl()}/api/v1/sync/master'),
+        headers: {'Content-Type': 'application/json'},
+    );
+    if(response.statusCode == 200){
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      var data = responseData['data'];
+      var mapJo = data['listjo'];
+      //convert mapjo ke List<THjo>
+      List<THJo> thJoies = (mapJo as List)
+          .map((jo) => THJo.fromJson(jo as Map<String, dynamic>))
+          .toList();
+      for(int t=0; t < thJoies.length; t++){
+        THJo item =thJoies[t];
+        if(item.id != null){
+          await THJo.syncData(item);
+        }
+      }
 
-Future<void> sendJoActivityInspection(Activity data) async {
-  final repositoryBackground = Get.find<Repository>();
-  try {
-    var response = await repositoryBackground.insertActivityInspection(data);
-    print('response background service : ${response.message}');
-  } catch (e) {
-    print('response error background service : ${jsonEncode(e)}');
+    }
   }
 }

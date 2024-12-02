@@ -149,8 +149,8 @@ class THJo {
     _endDateOfAttendance = json['end_date_of_attendance'];
     _dateAssigment = json['date_assigment'];
     _lokasiKerja = json['lokasi_kerja'];
-    //_picInspector = json['pic_inspector'];
-    //_picLaboratory = num.tryParse(json['pic_laboratory']);
+    _picInspector = json['pic_inspector'];
+    _picLaboratory = json['pic_laboratory'];
     _inspectionCompletedDate = json['inspection_completed_date'];
     _laboratoryCompletedDate = json['laboratory_completed_date'];
     _inspectionFinishedDate = json['inspection_finished_date'];
@@ -303,6 +303,72 @@ THJo copyWith({  num? id,
     map['created_by'] = _createdBy;
     map['updated_by'] = _updatedBy;
     map['created_at'] = _createdAt;
+    map['updated_at'] = _updatedAt;
+    return map;
+  }
+
+  Map<String, dynamic> toInsert() {
+    final map = <String, dynamic>{};
+    map['id'] = _id;
+    map['t_so_id'] = _tSoId;
+    map['type_jo'] = _typeJo;
+    map['t_so_date'] = _tSoDate;
+    map['jo_receive_date'] = _joReceiveDate;
+    map['code'] = _code;
+    map['flag_lock_jo'] = _flagLockJo;
+    map['etta_vessel'] = _ettaVessel;
+    map['start_date_of_attendance'] = _startDateOfAttendance;
+    map['end_date_of_attendance'] = _endDateOfAttendance;
+    map['date_assigment'] = _dateAssigment;
+    map['lokasi_kerja'] = _lokasiKerja;
+    map['pic_inspector'] = _picInspector;
+    map['pic_laboratory'] = _picLaboratory;
+    map['inspection_completed_date'] = _inspectionCompletedDate;
+    map['laboratory_completed_date'] = _laboratoryCompletedDate;
+    map['inspection_finished_date'] = _inspectionFinishedDate;
+    map['laboratory_finished_date'] = _laboratoryFinishedDate;
+    map['canceled_date'] = _canceledDate;
+    map['reason_cancel'] = _reasonCancel;
+    map['flag_doc_inspection'] = _flagDocInspection;
+    map['flag_doc_lab'] = _flagDocLab;
+    map['m_kindofservice_id'] = _mKindofserviceId;
+    map['m_statusjo_id'] = _mStatusjoId;
+    map['created_by'] = _createdBy;
+    map['updated_by'] = _updatedBy;
+    map['created_at'] = _createdAt;
+    map['updated_at'] = _updatedAt;
+    return map;
+  }
+
+  Map<String, dynamic> toUpdate() {
+    final map = <String, dynamic>{};
+    //map['id'] = _id;
+    //map['t_so_id'] = _tSoId;
+    //map['type_jo'] = _typeJo;
+    //map['t_so_date'] = _tSoDate;
+    map['jo_receive_date'] = _joReceiveDate;
+    map['code'] = _code;
+    //map['flag_lock_jo'] = _flagLockJo;
+    map['etta_vessel'] = _ettaVessel;
+    //map['start_date_of_attendance'] = _startDateOfAttendance;
+    //map['end_date_of_attendance'] = _endDateOfAttendance;
+    //map['date_assigment'] = _dateAssigment;
+    //map['lokasi_kerja'] = _lokasiKerja;
+    map['pic_inspector'] = _picInspector;
+    map['pic_laboratory'] = _picLaboratory;
+    map['inspection_completed_date'] = _inspectionCompletedDate;
+    map['laboratory_completed_date'] = _laboratoryCompletedDate;
+    map['inspection_finished_date'] = _inspectionFinishedDate;
+    map['laboratory_finished_date'] = _laboratoryFinishedDate;
+    map['canceled_date'] = _canceledDate;
+    map['reason_cancel'] = _reasonCancel;
+    //map['flag_doc_inspection'] = _flagDocInspection;
+    //map['flag_doc_lab'] = _flagDocLab;
+    //map['m_kindofservice_id'] = _mKindofserviceId;
+    map['m_statusjo_id'] = _mStatusjoId;
+    //map['created_by'] = _createdBy;
+    map['updated_by'] = _updatedBy;
+    //map['created_at'] = _createdAt;
     map['updated_at'] = _updatedAt;
     return map;
   }
@@ -460,6 +526,19 @@ THJo copyWith({  num? id,
       }
     }
     return THJo();
+  }
+
+  static Future<void> syncData(THJo thjo) async{
+    final db = await SqlHelper.db();
+    var existing = await db.rawQuery('select * from t_h_jo where id = ?',[thjo.id]);
+    if(existing.isEmpty){
+      int idInsert =await db.insert('t_h_jo', thjo.toJson());
+      debugPrint('print data id insert ${idInsert}');
+    }else {
+      int updated = await db.update('t_h_jo', thjo.toUpdate(), whereArgs: [thjo.id], where: 'id=?');
+      debugPrint('print data jo update ${jsonEncode(thjo.toUpdate())}');
+      //debugPrint('print data row updated ${updated}');
+    }
   }
 
 }
