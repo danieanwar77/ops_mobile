@@ -382,8 +382,9 @@ class DocumentsScreen extends StatelessWidget{
                                 'Apakah benar anda akan submit finalisasi JO Inspection ini? pastikan data yg anda  input benar karena jika anda submit, JO  akan dicomplete-kan.',
                                     () => {
                                   controller.submitDocumentInspec(),
-                                  Get.back()
-                                });
+                                      Get.back(),
+                                      Get.back()
+                                    });
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: primaryColor,

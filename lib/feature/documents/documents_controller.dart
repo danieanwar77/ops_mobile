@@ -1316,7 +1316,11 @@ class DocumentsController extends BaseController {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            onPressed: callback,
+            onPressed: (){
+              Future.delayed(Duration(milliseconds: 100), () {
+                callback(); // Eksekusi setelah dialog ditutup
+              });
+            },
           ),
         ],
       ),
