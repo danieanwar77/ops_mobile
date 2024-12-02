@@ -1688,7 +1688,7 @@ class JoDetailScreen extends StatelessWidget {
                                     controller.dataJoDetail.value.detail?.statusJo == 'Assigned' || controller.dataJoDetail.value.detail?.statusJo == 'On Progres'
                                         ? Column(children: [
                                       const SizedBox(height: 16),
-                                      controller.joRx.value.inspectionFinishedDate.toString().length == 0 ?
+                                      (controller.joRx.value.inspectionFinishedDate == null || controller.joRx.value.inspectionFinishedDate == "") ?
                                       Row(
                                         children: [
                                           Expanded(
@@ -1702,7 +1702,7 @@ class JoDetailScreen extends StatelessWidget {
                                                   border: Border.all(width: 1, color: primaryColor),
                                                   borderRadius: BorderRadius.circular(20),
                                                 ),
-                                                child:  Row(
+                                                child:  const Row(
                                                     children: [
                                                       Icon(Icons.camera_alt_sharp, color: primaryColor),
                                                   Expanded(
@@ -1743,7 +1743,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       child: Text(controller.stageList.length == 0 ? "None" : controller.activityStages[controller.activityStage - 1], style: TextStyle(fontSize: 12.sp, color: Colors.white)))
                                                       : const SizedBox(),
                                                   Spacer(),
-                                                  (controller.dataJoDetail.value.detail?.statusJo == 'Assigned' || controller.dataJoDetail.value.detail?.statusJo == 'On Progres' ) &&  (controller.joRx.value.inspectionFinishedDate != null && controller.joRx.value.inspectionFinishedDate.length == 0 && !controller.isReportClient.value)
+                                                  (controller.dataJoDetail.value.detail?.statusJo == 'Assigned' || controller.dataJoDetail.value.detail?.statusJo == 'On Progres' ) &&  (controller.joRx.value.inspectionFinishedDate == null && !controller.isReportClient.value)
                                                       ? IconButton(
                                                       onPressed: () {
                                                         if (controller.activitySubmitted.value == true) {

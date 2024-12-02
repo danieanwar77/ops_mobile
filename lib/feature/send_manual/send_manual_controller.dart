@@ -16,10 +16,19 @@ import 'package:ops_mobile/data/model/jo_laboratory_send_manual_model.dart';
 import 'package:ops_mobile/data/model/jo_list_model.dart';
 import 'package:ops_mobile/data/model/login_data_model.dart';
 import 'package:ops_mobile/data/model/send_manual_model.dart';
+import 'package:ops_mobile/data/model/send_manual_v2.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages_transhipment.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_vessel.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_attachment.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_pict.dart';
+import 'package:ops_mobile/data/model/t_h_jo.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
+import 'package:ops_mobile/utils/helper.dart';
 import 'package:path_provider_android/path_provider_android.dart';
+import 'package:http/http.dart' as http;
 
 class SendManualController extends BaseController{
 
@@ -44,6 +53,7 @@ class SendManualController extends BaseController{
 
   RxList<SendManualModel> joSendManualList = RxList();
   RxList<File> activityAttachments = RxList();
+  RxList<SendManualV2> dataSendList = RxList();
 
   @override
   void onInit()async{
@@ -150,21 +160,10 @@ class SendManualController extends BaseController{
   }
 
   Future<void> getData()async{
-    await getListJo();
-    // if(dataJoList.value.isNotEmpty) {
-    //   dataJoList.value.forEach((list) async {
-    //     await getJoInspectionActivity(list.joId ?? 0);
-    //     if(inspectionActivityList.value.isNotEmpty) {
-    //       inspectionActivityList.value.where((act) => act.mStatusinspectionstagesId == 1).toList();
-    //       var activity = inspectionActivityList.value.where((act) => act.mStatusinspectionstagesId != 5 ).toList();
-    //       var activity5 = inspectionActivityList.value.where((act) => act.mStatusinspectionstagesId == 5 ).toList();
-    //       var activity6 = activity.where((act) => act.mStatusinspectionstagesId == 6 ).toList();
-    //       debugPrint('inspection activity : ${jsonEncode(activity)}');
-    //       debugPrint('inspection activity 5 : ${jsonEncode(activity5)}');
-    //       debugPrint('inspection activity 6 : ${jsonEncode(activity6)}');
-    //     }
-    //   });
-    // }
+    List<SendManualV2> data = await SendManualV2.dataPending();
+    debugPrint('print data send manual ${jsonEncode(data)}');
+    dataSendList.value = data;
+    update();
   }
 
   Future<void> getListJo()async{
@@ -649,8 +648,123 @@ class SendManualController extends BaseController{
     dataJoList.value = [];
   }
 
-  Future<void> getDetailJo(int id)async{
+  Future<bool> sendSingleData(SendManualV2 sendData) async{
+    int type = sendData.type == null ? 0 : sendData!.type!.toInt();
+    switch(type){
+      case 1: {
+        return sendInspectionActivity(sendData);
+      }
+      case 2: {
+        return sendInspectionPhoto(sendData);
+      }
+      default: {
+        return false;
+      }
+    }
+  }
 
+  Future<bool> sendInspectionActivity(SendManualV2 sendata) async{
+    try{
+      debugPrint('print function sendDataInspection ');
+      int id = sendata.idTrans ==  null ? 0 : sendata.idTrans!.toInt();
+      THJo dataActivity = await THJo.getJoActivitySendById(id);
+      List<TDJoInspectionActivityStages> stages = dataActivity.inspectionActivityStages ?? [];
+      bool connection = await Helper.checkConnection();
+      if(!dataActivity.id.isNull && dataActivity.id != null && Helper.baseUrl().isNotEmpty){
+        final response = await http.post(
+            Uri.parse('${Helper.baseUrl()}/api/v1/inspection/activity'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(dataActivity.toSend())
+        );
+        debugPrint('print response kirim data jo  ${response.body}');
+        if(response.statusCode == 200){
+          final Map<String, dynamic> responseData = jsonDecode(response.body);
+          if(responseData['status'] != 500){
+            final data = responseData['data'];
+            THJo  thJo = THJo.fromJson(data);
+            debugPrint('print data jo yang berhasil terkirim ${jsonEncode(data)}');
+            List<TDJoInspectionActivityStages> stageSend = thJo.inspectionActivityStages ?? [];
+            for(int s = 0; s < stageSend.length; s++){
+              TDJoInspectionActivityStages dataStage = stageSend[s];
+              await TDJoInspectionActivityStages.updateUploaded(dataStage.code ?? '');
+              if(dataStage.listActivity != null){
+                List<TDJoInspectionActivity> dataActs = dataStage.listActivity ?? [];
+                for(int a= 0; a < dataActs.length; a++){
+                  TDJoInspectionActivity  dataAct = dataActs[a];
+                  await TDJoInspectionActivity.updateUploaded(dataAct.code ?? '');
+                }
+              }
+              if(dataStage.listAttachment != null){
+                List<TDJoInspectionAttachment> attachments = dataStage.listAttachment ?? [];
+                for(int a=0; a <attachments.length; a++){
+                  await TDJoInspectionAttachment.updateUploaded(attachments[a].code ?? '');
+                }
+              }
+              if(dataStage.listActivityVessel != null){
+                List<TDJoInspectionActivityVessel> vessels = dataStage.listActivityVessel ?? [];
+                for(int v = 0; v < vessels.length; v++){
+                  await TDJoInspectionActivityVessel.updateUploaded(vessels[v].code ?? '');
+                }
+              }
+              if(dataStage.listActivityStageTranshipment != null){
+                List<TDJoInspectionActivityStagesTranshipment> transhipments = dataStage.listActivityStageTranshipment ?? [];
+                for(int t = 0; t < transhipments.length; t++){
+                  await TDJoInspectionActivityStagesTranshipment.updateUploaded(transhipments[t].code ?? '');
+                }
+              }
+            }
+          }else{
+            return false;
+          }
+        }else{
+          return false;
+        }
+      }
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  Future<bool> sendInspectionPhoto(SendManualV2 sendData) async{
+    try{
+      debugPrint('print sendDatamanual ');
+      int id = sendData.idTrans == null ? 0 : sendData.idTrans!.toInt();
+      List<TDJoInspectionPict> dataSend = await TDJoInspectionPict.getSendDataPictById(id);
+
+      if(dataSend.isNotEmpty){
+        for(TDJoInspectionPict data in dataSend){
+          final base64 = await Helper.convertPhotosToBase64(data.pathPhoto ?? '');//
+          data.pathPhoto = 'data:image/png;base64,${base64}';
+        }
+        debugPrint('print payload inspection photo yang dikirim ${jsonEncode(dataSend)}');
+        final response = await http.post(
+            Uri.parse('${Helper.baseUrl()}/api/v1/inspection/photo'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(dataSend)
+        );
+        debugPrint('Data berhasil dikirim: ${response.body}');
+        if(response.statusCode == 200){
+          final Map<String, dynamic> responseData = jsonDecode(response.body);
+          print('print response from api ${jsonEncode(responseData)}');
+          if(responseData['status'] != 500){
+            List<dynamic> dataList = responseData['data'];
+            List<TDJoInspectionPict> data = dataList
+                .map((item) => TDJoInspectionPict.fromJson(item as Map<String, dynamic>))
+                .toList();
+            for(int p = 0; p < data.length; p++){
+              TDJoInspectionPict item = data[p];
+              await TDJoInspectionPict.updateUploaded(item.code ?? '');
+            }
+          }else{
+            return false;
+          }
+        }
+      }
+      return true;
+    }catch(e){
+      return false;
+    }
   }
 
   Future<void> getJoDailyActivity6AttachmentLocal(int id) async {
@@ -674,18 +788,6 @@ class SendManualController extends BaseController{
 
     activityAttachments.value = attachments;
     update();
-  }
-
-  Future<void> getJoLaboratoryActivity()async{
-
-  }
-
-  Future<void> getJoInspectionDocuments()async{
-
-  }
-
-  Future<void> getJoLaboratoryDocuments()async{
-
   }
 
 }

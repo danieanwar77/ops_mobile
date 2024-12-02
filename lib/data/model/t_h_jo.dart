@@ -500,6 +500,63 @@ THJo copyWith({  num? id,
     return THJo();
   }
 
+  static Future<THJo>getJoActivitySendById(int id) async{
+    final db = await SqlHelper.db();
+    final sqlActStage = 'SELECT * from t_d_jo_inspection_activity_stages where is_upload = 0 and id = ?';
+    var dataActStage = await db.rawQuery(sqlActStage,[id]);
+    if (dataActStage.isNotEmpty) {
+      // Ambil data pertama dari dataActStage
+      var firstStage = Map<String, dynamic>.from(dataActStage[0]);
+
+      // Query untuk mendapatkan data activity
+      final sqlAct = '''SELECT * FROM t_d_jo_inspection_activity WHERE t_d_jo_inspection_activity_stages_id = ? AND is_upload = 0 ''';
+      var dataAct = await db.rawQuery(sqlAct, [firstStage['id']]);
+      var copyDataAct = dataAct.map((item) => Map<String, dynamic>.from(item)).toList();
+
+      if(firstStage['m_statusinspectionstages_id'] == 5){
+        final sqlTranshipment = '''SELECT * from t_d_jo_inspection_activity_stages_transhipment where t_d_inspection_stages_id = ? and is_upload=0 ''';
+        var dataTranshipment = await db.rawQuery(sqlTranshipment, [firstStage['id']]);
+        const sqlBarge = '''SELECT * from t_d_jo_inspection_activity_barge where is_upload  = 0 and t_d_jo_inspection_activity_stages_id = ?;''';
+        var dataBarge = await db.rawQuery(sqlBarge,[firstStage['id']]);
+        firstStage['listactivitybarge'] = dataBarge.map((item) => Map<String,dynamic>.from(item)).toList();
+        firstStage['listactivitytranshipment'] = dataTranshipment.map((item) => Map<String,dynamic>.from(item)).toList();
+        const sqlVesel = '''SELECT * from t_d_jo_inspection_activity_vessel where is_upload = 0 and t_d_jo_inspection_activity_stages_id = ?''';
+        var dataVesel = await db.rawQuery(sqlVesel,[firstStage['id']]);
+        firstStage['listactivityvessel'] = dataVesel.map((item) => Map<String,dynamic>.from(item)).toList();
+      }
+
+      if(firstStage['m_statusinspectionstages_id'] == 6){
+        final sqlAttachment = '''SELECT * from t_d_jo_inspection_attachment where t_h_jo_id =  ? and is_upload  = 0''';
+        var dataAttachment = await db.rawQuery(sqlAttachment,[firstStage['t_h_jo_id']]);
+        var copyAttachment = dataAttachment.map((item) => Map<String, dynamic>.from(item)).toList();
+        for(int a = 0; a < copyAttachment.length; a++){
+          var data = copyAttachment[a];
+          data['path_name'] = await Helper.convertPhotosToBase64(data['path_name'].toString());
+          //masukan data ke result
+        }
+        firstStage['listattachment'] = copyAttachment;
+      }
+
+      // Tambahkan list activity ke dalam firstStage
+      firstStage['listactivity'] = copyDataAct;
+
+      var joResultList = await db.rawQuery(
+          "SELECT * FROM t_h_jo WHERE id = ?",
+          [firstStage['t_h_jo_id']]
+      );
+
+      // Ambil data pertama dari joResultList jika ada
+      var joResult = joResultList.isNotEmpty ? Map<String, dynamic>.from(joResultList.first) : null;
+
+      // Tambahkan inspection_activity_stage ke joResult jika ada
+      if (joResult != null) {
+        joResult['inspection_activity_stages'] = [firstStage];
+        return THJo.fromJson(joResult);
+      }
+    }
+    return THJo();
+  }
+
   static Future<THJo>getJoLaboratorySend() async{
     final db = await SqlHelper.db();
     final sqlLabActStage = 'SELECT * from t_d_jo_laboratory_activity_stages where is_upload = 0';

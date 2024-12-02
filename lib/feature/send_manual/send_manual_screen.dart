@@ -45,73 +45,65 @@ class SendManualScreen extends StatelessWidget{
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
                             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                            itemCount: controller.listStatus.length,
+                            itemCount: controller.dataSendList.length,
                             itemBuilder: (context, index){
-                              final String listJo = controller.listStatus[index];
+                              var joItem = controller.dataSendList[index];
                               return Container(
-                                child:
-                                  controller.joSendManualList.value.where((item) => item.status == index + 1).isNotEmpty ?
-                                      Column(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('${joItem.module}',
+                                      style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8,),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(20),
+                                          boxShadow: const [
+                                            BoxShadow(
+                                                color: Colors.black26,
+                                                spreadRadius: 0.1,
+                                                blurRadius: 7,
+                                                offset: Offset(0,8)
+                                            )
+                                          ]
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          for(var joItem in controller.joSendManualList.value.where((item) => item.status!.toInt() == index + 1).toList())
-                                            Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text('${joItem.jo ?? ''} - ${listJo}',
-                                                  style: const TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight: FontWeight.bold
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 8,),
-                                                Container(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                                  width: double.infinity,
-                                                  decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius: BorderRadius.circular(20),
-                                                      boxShadow: const [
-                                                        BoxShadow(
-                                                            color: Colors.black26,
-                                                            spreadRadius: 0.1,
-                                                            blurRadius: 7,
-                                                            offset: Offset(0,8)
-                                                        )
-                                                      ]
-                                                  ),
-                                                  child: Row(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Expanded(
-                                                        child: SizedBox(
-                                                          height: 48,
-                                                          child: Align(
-                                                            alignment: Alignment.centerLeft,
-                                                            child: Text(joItem.transDate ?? '-'),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      IconButton(
-                                                          onPressed: (){
-                                                            // listData.add(data);
-                                                            controller.dataJoList.value.add(joItem);
-                                                            controller.loadingDialog();
-                                                            Future.delayed(const Duration(seconds: 3),(){
-                                                              Get.back<void>();
-                                                              controller.makeAFile();
-                                                              controller.openDialog('Attention', 'Data berhasil dikirim');
-                                                            });
-                                                          },
-                                                          icon: Image.asset('assets/icons/send.png', height: 32,)
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 24,)
-                                              ],
+                                          Expanded(
+                                            child: SizedBox(
+                                              height: 48,
+                                              child: Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(joItem.transDate),
+                                              ),
                                             ),
-                                      ],
-                                      ) : const SizedBox(),
+                                          ),
+                                          IconButton(
+                                              onPressed: (){
+                                                // listData.add(data);
+                                                controller.loadingDialog();
+                                                Future.delayed(const Duration(seconds: 3),(){
+                                                  Get.back<void>();
+                                                  controller.makeAFile();
+                                                  //controller.openDialog('Attention', 'Data berhasil dikirim');
+                                                });
+                                              },
+                                              icon: Image.asset('assets/icons/send.png', height: 32,)
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24,)
+                                  ],
+                                )
                               );
                             }
                         ),

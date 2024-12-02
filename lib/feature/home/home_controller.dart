@@ -105,7 +105,7 @@ class HomeController extends BaseController{
 
     // connectivityResult = await (Connectivity().checkConnectivity());
     //await getJO();
-    syncMaster();
+   // syncMaster();
     super.onInit();
   }
 
@@ -305,8 +305,7 @@ class HomeController extends BaseController{
       //sendDataInspection();
       //sendDataLaboratory();
       //sendDataFinalizeLaboratory();
-      //sendDataFinalizeInspection();
-
+      sendDataFinalizeInspection();
       //}
       //debugPrint('test background service');
     });
@@ -465,22 +464,20 @@ class HomeController extends BaseController{
   }
 
   static void sendDataFinalizeLaboratory() async{
-    List<TDJoFinalizeLaboratoryV2> dataLaboratory = await TDJoFinalizeLaboratoryV2.getSendData();
-    if(dataLaboratory.isNotEmpty){
+    TDJoFinalizeLaboratoryV2? dataLaboratory = await TDJoFinalizeLaboratoryV2.getSendData();
+    if(dataLaboratory != null){
       debugPrint('print data finalize laboratory sebelum encode ${jsonEncode(dataLaboratory)}');
-      for(int i = 0; i < dataLaboratory.length; i++){
-        TDJoFinalizeLaboratoryV2 item = dataLaboratory[i];
-        List<TDJoDocumentLaboratoryV2> details = item.listDocument ?? [];
-        for(int d = 0; d< details.length; d++){
-          TDJoDocumentLaboratoryV2 detail = details[d];
-          final filename = detail.fileName ?? ''; // contoh data asdasdasdasd.adasdasd.asdasdasd.pdf
-          final fileType = RegExp(r'\.([a-zA-Z0-9]+)$').firstMatch(filename)?.group(1) ?? '';
-          final base64 = await Helper.convertPhotosToBase64(detail.pathFile ?? '');
-          if(fileType == "pdf"){
-            detail.pathFile = 'data:image/png;base64,${base64}';
-          }else{
-            detail.pathFile = 'data:application/pdf;base64,${base64}';
-          }
+      List<TDJoDocumentLaboratoryV2> details = dataLaboratory.listDocument ?? [];
+      for(int d = 0; d< details.length; d++){
+        TDJoDocumentLaboratoryV2 detail = details[d];
+        final filename = detail.fileName ?? ''; // contoh data asdasdasdasd.adasdasd.asdasdasd.pdf
+        final fileType = RegExp(r'\.([a-zA-Z0-9]+)$').firstMatch(filename)?.group(1) ?? '';
+        final base64 = await Helper.convertPhotosToBase64(detail.pathFile ?? '');
+        if(fileType == "pdf"){
+          detail.pathFile = 'data:image/png;base64,${base64}';
+        }else{
+          //detail.pathFile = 'data:application/pdf;base64,${base64}';
+          detail.pathFile = '${base64}';
         }
       }
       debugPrint('print data finalize laboratory ${jsonEncode(dataLaboratory)}');
@@ -493,65 +490,53 @@ class HomeController extends BaseController{
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         print('print response from api ${jsonEncode(responseData)}');
         if(responseData['status'] != 500){
-          List<dynamic> dataList = responseData['data'];
-          List<TDJoFinalizeLaboratoryV2> data = dataList
-              .map((item) => TDJoFinalizeLaboratoryV2.fromJson(item as Map<String, dynamic>))
-              .toList();
-          for(int p = 0; p < data.length; p++){
-            TDJoFinalizeLaboratoryV2 item = data[p];
-            await TDJoFinalizeLaboratoryV2.updateUploaded(item.code ?? '');
-            List<TDJoDocumentLaboratoryV2> documents = item.listDocument ?? [];
-            for(int d = 0; d < documents.length; d++){
-              TDJoDocumentLaboratoryV2 document = documents[d];
-              await TDJoDocumentLaboratoryV2.updateUploaded(document.code ?? '');
-            }
+          dynamic dataList = responseData['data'];
+          TDJoFinalizeLaboratoryV2 item = TDJoFinalizeLaboratoryV2.fromJson(dataList as Map<String, dynamic>);
+          await TDJoFinalizeLaboratoryV2.updateUploaded(item.code ?? '');
+          List<TDJoDocumentLaboratoryV2> documents = item.listDocument ?? [];
+          for(int d = 0; d < documents.length; d++){
+            TDJoDocumentLaboratoryV2 document = documents[d];
+            await TDJoDocumentLaboratoryV2.updateUploaded(document.code ?? '');
           }
         }
       }
-
     }
   }
 
   static void sendDataFinalizeInspection() async{
-    List<TDJoFinalizeInspectionV2> dataFinalize = await TDJoFinalizeInspectionV2.getSendData();
-    if(dataFinalize.length > 0){
-      for(int i = 0; i < dataFinalize.length; i++){
-        TDJoFinalizeInspectionV2 item = dataFinalize[i];
-        List<TDJoDocumentInspectionV2> details = item.listDocument ?? [];
-        for(int d = 0; d< details.length; d++){
-          TDJoDocumentInspectionV2 detail = details[d];
-          final filename = detail.fileName ?? ''; // contoh data asdasdasdasd.adasdasd.asdasdasd.pdf
-          final fileType = RegExp(r'\.([a-zA-Z0-9]+)$').firstMatch(filename)?.group(1) ?? '';
-          final base64 = await Helper.convertPhotosToBase64(detail.pathFile ?? '');
-          if(fileType == "pdf"){
-            detail.pathFile = 'data:image/png;base64,${base64}';
-          }else{
-            detail.pathFile = 'data:application/pdf;base64,${base64}';
-          }
+    TDJoFinalizeInspectionV2? dataFinalize = await TDJoFinalizeInspectionV2.getSendData();
+    if(dataFinalize != null){
+      TDJoFinalizeInspectionV2 item = dataFinalize;
+      List<TDJoDocumentInspectionV2> details = item.listDocument ?? [];
+      for(int d = 0; d< details.length; d++){
+        TDJoDocumentInspectionV2 detail = details[d];
+        final filename = detail.fileName ?? ''; // contoh data asdasdasdasd.adasdasd.asdasdasd.pdf
+        final fileType = RegExp(r'\.([a-zA-Z0-9]+)$').firstMatch(filename)?.group(1) ?? '';
+        final base64 = await Helper.convertPhotosToBase64(detail.pathFile ?? '');
+        if(fileType == "pdf"){
+          detail.pathFile = 'data:image/png;base64,${base64}';
+        }else{
+          //detail.pathFile = 'data:application/pdf;base64,${base64}';
+          detail.pathFile = '${base64}';
         }
+      }
 
-        final response = await http.post(
-            Uri.parse('${Helper.baseUrl()}/api/v1/inspection/document'),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode(dataFinalize)
-        );
-        if(response.statusCode == 200){
-          final Map<String, dynamic> responseData = jsonDecode(response.body);
-          print('print response from api ${jsonEncode(responseData)}');
-          if(responseData['status'] != 500){
-            List<dynamic> dataList = responseData['data'];
-            List<TDJoFinalizeInspectionV2> data = dataList
-                .map((item) => TDJoFinalizeInspectionV2.fromJson(item as Map<String, dynamic>))
-                .toList();
-            for(int p = 0; p < data.length; p++){
-              TDJoFinalizeInspectionV2 item = data[p];
-              await TDJoFinalizeInspectionV2.updateUploaded(item.code ?? '');
-              List<TDJoDocumentInspectionV2> documents = item.listDocument ?? [];
-              for(int d = 0; d < documents.length; d++){
-                TDJoDocumentInspectionV2 document = documents[d];
-                await TDJoDocumentInspectionV2.updateUploaded(document.code ?? '');
-              }
-            }
+      final response = await http.post(
+          Uri.parse('${Helper.baseUrl()}/api/v1/inspection/document'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(dataFinalize)
+      );
+      if(response.statusCode == 200){
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        print('print response from api ${jsonEncode(responseData)}');
+        if(responseData['status'] != 500){
+          dynamic dataList = responseData['data'];
+          TDJoFinalizeInspectionV2 data = TDJoFinalizeInspectionV2.fromJson(dataList as Map<String, dynamic>);
+          await TDJoFinalizeInspectionV2.updateUploaded(data.code ?? '');
+          List<TDJoDocumentInspectionV2> documents = data.listDocument ?? [];
+          for(int d = 0; d < documents.length; d++){
+            TDJoDocumentInspectionV2 document = documents[d];
+            await TDJoDocumentInspectionV2.updateUploaded(document.code ?? '');
           }
         }
       }

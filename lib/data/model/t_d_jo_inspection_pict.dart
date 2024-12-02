@@ -116,6 +116,13 @@ TDJoInspectionPict copyWith({  num? id,
     return  joPicts;
   }
 
+  static Future<List<TDJoInspectionPict>> getSendDataPictById(int id) async{
+    final db = await SqlHelper.db();
+    var result = await db.rawQuery('select * from t_d_jo_inspection_pict where is_upload=0 and id = ?',[id]);
+    List<TDJoInspectionPict> joPicts = result.map((item) => TDJoInspectionPict.fromJson(item)).toList();
+    return  joPicts;
+  }
+
   static Future<int> updateUploaded(String code) async {
     final db = await SqlHelper.db();
     return await db.update("t_d_jo_inspection_pict", {"is_upload": 1},where: "code=?",whereArgs: [code]);

@@ -161,16 +161,17 @@ TDJoFinalizeInspectionV2 copyWith({  num? id,
     return await db.update("t_d_jo_finalize_inspection", {"is_upload": 1},where: "code=?",whereArgs: [code]);
   }
 
-  static Future<List<TDJoFinalizeInspectionV2>> getSendData() async{
+  static Future<TDJoFinalizeInspectionV2?> getSendData() async{
     final db = await SqlHelper.db();
     final sql = '''SELECT * from t_d_jo_finalize_inspection where is_upload  = 0''';
     var result = await db.rawQuery(sql);
-    var copyResult = result.map(Map<String,dynamic>.from).toList();
-    for(int i= 0; i < copyResult.length; i++){
-      final item = copyResult[i];
-      copyResult[i]['list_document'] = await TDJoDocumentInspectionV2.getDataSend(item['id'] ?? 0);
+    if (result.isEmpty) {
+      return null; // Jika tidak ada data, kembalikan null
     }
-    return copyResult.map((e) => TDJoFinalizeInspectionV2.fromJson(e)).toList();
+    var copyResult = Map<String, dynamic>.from(result.first);
+
+    copyResult['list_document'] = await TDJoDocumentInspectionV2.getDataSend(copyResult['id'] ?? 0);
+    return TDJoFinalizeInspectionV2.fromJson(copyResult);
   }
 
 }

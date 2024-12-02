@@ -436,7 +436,7 @@ class JoDetailController extends BaseController {
     final db = await SqlHelper.db();
 
     THJo joRslt = await THJo.getJoById(id);
-    debugPrint("print data jo ${joRslt.toJson()}");
+    debugPrint("print data jo from rx ${joRslt.toJson()}");
     joRx.value = joRslt;
 
     // Retrieve data from the database
@@ -518,6 +518,8 @@ class JoDetailController extends BaseController {
       }
 
       debugPrint("print stage list 1559  ${jsonEncode(stagesList)}");
+      debugPrint("print rx jo finish ${joRslt.inspectionFinishedDate}");
+      debugPrint("print rx jo report client ${isReportClient.value}");
     } catch (e) {
       debugPrint(e.toString());
     } finally {

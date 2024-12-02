@@ -185,8 +185,10 @@ class GetDataController extends BaseController{
           TextButton(
             child: const Text("Close"),
             onPressed: () {
-              func;
               Get.back();
+              Future.delayed(Duration(milliseconds: 100), () {
+                func(); // Eksekusi setelah dialog ditutup
+              });
             },
 
           ),
