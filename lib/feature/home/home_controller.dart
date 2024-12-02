@@ -105,7 +105,7 @@ class HomeController extends BaseController{
 
     // connectivityResult = await (Connectivity().checkConnectivity());
     //await getJO();
-   // syncMaster();
+    syncMaster();
     super.onInit();
   }
 
@@ -304,7 +304,7 @@ class HomeController extends BaseController{
       //sendDataInpectionPhoto();
       //sendDataInspection();
       //sendDataLaboratory();
-      //sendDataFinalizeLaboratory();
+      sendDataFinalizeLaboratory();
       sendDataFinalizeInspection();
       //}
       //debugPrint('test background service');
@@ -473,12 +473,12 @@ class HomeController extends BaseController{
         final filename = detail.fileName ?? ''; // contoh data asdasdasdasd.adasdasd.asdasdasd.pdf
         final fileType = RegExp(r'\.([a-zA-Z0-9]+)$').firstMatch(filename)?.group(1) ?? '';
         final base64 = await Helper.convertPhotosToBase64(detail.pathFile ?? '');
-        if(fileType == "pdf"){
-          detail.pathFile = 'data:image/png;base64,${base64}';
-        }else{
-          //detail.pathFile = 'data:application/pdf;base64,${base64}';
+        //if(fileType == "pdf"){
           detail.pathFile = '${base64}';
-        }
+        //}else{
+          //detail.pathFile = 'data:application/pdf;base64,${base64}';
+          //detail.pathFile = '${base64}';
+        //}
       }
       debugPrint('print data finalize laboratory ${jsonEncode(dataLaboratory)}');
       final response = await http.post(
@@ -513,12 +513,7 @@ class HomeController extends BaseController{
         final filename = detail.fileName ?? ''; // contoh data asdasdasdasd.adasdasd.asdasdasd.pdf
         final fileType = RegExp(r'\.([a-zA-Z0-9]+)$').firstMatch(filename)?.group(1) ?? '';
         final base64 = await Helper.convertPhotosToBase64(detail.pathFile ?? '');
-        if(fileType == "pdf"){
-          detail.pathFile = 'data:image/png;base64,${base64}';
-        }else{
-          //detail.pathFile = 'data:application/pdf;base64,${base64}';
-          detail.pathFile = '${base64}';
-        }
+        detail.pathFile = '${base64}';
       }
 
       final response = await http.post(
@@ -552,7 +547,6 @@ class HomeController extends BaseController{
       final Map<String, dynamic> responseData = jsonDecode(response.body);
       var data = responseData['data'];
       var mapJo = data['listjo'];
-      //convert mapjo ke List<THjo>
       List<THJo> thJoies = (mapJo as List)
           .map((jo) => THJo.fromJson(jo as Map<String, dynamic>))
           .toList();
