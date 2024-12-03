@@ -76,10 +76,32 @@ class HomeScreen extends StatelessWidget{
                                   ),
                                 ),
                                 IconButton(
-                                    onPressed: (){
-                                      Get.to<void>(() => const NotificationsScreen());
-                                    },
-                                    icon: const Icon(Icons.notifications, color: Colors.white)
+                                  onPressed: () {
+                                    Get.to<void>(() => const NotificationsScreen());
+                                  },
+                                  icon: Stack(
+                                    alignment: Alignment.center, // Menempatkan angka di tengah ikon
+                                    children: [
+                                      const Icon(Icons.notifications, color: Colors.white), // Ikon dasar
+                                      controller.message == 0 ? const SizedBox() : Positioned(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.red, // Warna latar belakang angka
+                                            shape: BoxShape.circle, // Membuat angka dalam lingkaran
+                                          ),
+                                          padding: const EdgeInsets.all(3), // Padding untuk angka
+                                          child: Text(
+                                            controller.message.string, // Jumlah notifikasi
+                                            style: TextStyle(
+                                              color: Colors.white, // Warna teks
+                                              fontSize:8, // Ukuran font angka
+                                              fontWeight: FontWeight.bold, // Tebal teks
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 IconButton(
                                     onPressed: (){

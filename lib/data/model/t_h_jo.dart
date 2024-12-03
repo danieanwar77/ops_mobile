@@ -149,8 +149,8 @@ class THJo {
     _endDateOfAttendance = json['end_date_of_attendance'];
     _dateAssigment = json['date_assigment'];
     _lokasiKerja = json['lokasi_kerja'];
-    _picInspector = json['pic_inspector'];
-    _picLaboratory = json['pic_laboratory'];
+    _picInspector = json['pic_inspector'] is int ? json['pic_inspector'] : null;
+    _picLaboratory = json['pic_laboratory'] is int ? json['pic_laboratory'] : null;
     _inspectionCompletedDate = json['inspection_completed_date'];
     _laboratoryCompletedDate = json['laboratory_completed_date'];
     _inspectionFinishedDate = json['inspection_finished_date'];
@@ -278,7 +278,7 @@ THJo copyWith({  num? id,
     final map = <String, dynamic>{};
     map['id'] = _id;
     map['t_so_id'] = _tSoId;
-    map['type_jo'] = _typeJo;
+    //map['type_jo'] = _typeJo;
     map['t_so_date'] = _tSoDate;
     map['jo_receive_date'] = _joReceiveDate;
     map['code'] = _code;
@@ -437,6 +437,7 @@ THJo copyWith({  num? id,
   static Future<THJo>getJoById(int id) async{
     final db = await SqlHelper.db();
     var joRslt = await db.rawQuery("SELECT * FROM t_h_jo WHERE id = ?", [id]);
+    debugPrint('print jo result ${joRslt}');
     if(joRslt.length > 0){
       return THJo.fromJson(joRslt[0]);
     }
@@ -585,16 +586,61 @@ THJo copyWith({  num? id,
     return THJo();
   }
 
+  static Future<THJo>getJoLaboratorySendById(int id) async{
+    final db = await SqlHelper.db();
+    final sqlLabActStage = 'SELECT * from t_d_jo_laboratory_activity_stages where is_upload = 0 and id=?';
+    var dataActStage = await db.rawQuery(sqlLabActStage);
+    if(dataActStage.isNotEmpty){
+      var firstStage = Map<String, dynamic>.from(dataActStage[0]);
+      var joResult = await db.rawQuery("SELECT * FROM t_h_jo WHERE id = ?", [firstStage['t_h_jo_id']]);
+      var joLabResult = await db.rawQuery("SELECT * from t_d_jo_laboratory where id = ?",[firstStage['d_jo_laboratory_id']]);
+      var joLabAct = await db.rawQuery('SELECT * from t_d_jo_laboratory_activity where t_d_jo_laboratory_activity_stages_id = ? and is_upload  = 0',[firstStage['id']]);
+      var copyDataAct = joLabAct.map((item) => Map<String, dynamic>.from(item)).toList();
+      var copyJoLabResult = joLabResult.isNotEmpty ? Map<String, dynamic>.from(joLabResult.first) : null;
+      var copyResult = joResult.map((item) => Map<String, dynamic>.from(item)).toList();
+      firstStage['list_lab_activity'] = copyDataAct;
+      var thJo = copyResult.isNotEmpty ? Map<String, dynamic>.from(copyResult.first) : null;
+      if(firstStage['m_statuslaboratoryprogress_id'] == 6){
+        var dataLabAttachment =  await db.rawQuery('select * from t_d_jo_laboratory_attachment where t_d_jo_laboratory = ? and is_upload = 0',[firstStage['d_jo_laboratory_id']]);
+        var copyLabAttach = dataLabAttachment.map((item) => Map<String,dynamic>.from(item)).toList();
+        firstStage['list_lab_attachment'] = copyLabAttach;
+      }
+      if(thJo != null && copyJoLabResult != null){
+        copyJoLabResult['laboratory_activity_stages'] = [firstStage];
+        thJo['list_laboratory'] = [copyJoLabResult];
+        return THJo.fromJson(thJo);
+      }
+    }
+    return THJo();
+  }
+
   static Future<void> syncData(THJo thjo) async{
     final db = await SqlHelper.db();
     var existing = await db.rawQuery('select * from t_h_jo where id = ?',[thjo.id]);
     if(existing.isEmpty){
       int idInsert =await db.insert('t_h_jo', thjo.toJson());
-      debugPrint('print data id insert ${idInsert}');
+      List<TDJoLaboratory> laboratory = thjo.laboratory ?? [];
+      for(int l = 0; l < laboratory.length; l++){
+        var labItem = laboratory[l];
+        var labExsis = await db.rawQuery('select * from t_d_jo_laboratory where id=?',[labItem.id]);
+        if(labExsis.isEmpty){
+          await db.insert('t_d_jo_laboratory', labItem.toJson());
+        }else{
+          await db.update('t_d_jo_laboratory', labItem.toUpdate(),where: 'id=?', whereArgs: [labItem.id]);
+        }
+      }
     }else {
       int updated = await db.update('t_h_jo', thjo.toUpdate(), whereArgs: [thjo.id], where: 'id=?');
-      debugPrint('print data jo update ${jsonEncode(thjo.toUpdate())}');
-      //debugPrint('print data row updated ${updated}');
+      List<TDJoLaboratory> laboratory = thjo.laboratory ?? [];
+      for(int l = 0; l < laboratory.length; l++){
+        var labItem = laboratory[l];
+        var labExsis = await db.rawQuery('select * from t_d_jo_laboratory where id=?',[labItem.id]);
+        if(labExsis.isEmpty){
+          await db.insert('t_d_jo_laboratory', labItem.toJson());
+        }else{
+          await db.update('t_d_jo_laboratory', labItem.toUpdate(),where: 'id=?', whereArgs: [labItem.id]);
+        }
+      }
     }
   }
 

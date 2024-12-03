@@ -178,10 +178,8 @@ class SqlHelper extends BaseController {
     final db = await SqlHelper.db();
     return db.rawQuery('''
       select e.id, e.fullname, e.e_number, e.jabatan_id, j.jabatan, e.division_id,  e.superior_id from employee e
-      join user u on u.username  = e.e_number
       join jabatan j on j.id = e.jabatan_id
-      
-      where e.e_number = "$id"
+      where e.e_number = '$id'
     ''');
   }
 

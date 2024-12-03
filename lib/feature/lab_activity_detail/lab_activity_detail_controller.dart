@@ -1216,7 +1216,7 @@ class LabActivityDetailController extends BaseController{
         content: Text('Apakah benar anda akan submit stage ${labStagesName[activityLabStage - 1]} ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -1252,7 +1252,7 @@ class LabActivityDetailController extends BaseController{
         content: Text('Apakah anda ingin menghapus activity date $date'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -1281,7 +1281,7 @@ class LabActivityDetailController extends BaseController{
         content: Text('Apakah anda ingin menghapus activity date $date'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -1930,7 +1930,7 @@ class LabActivityDetailController extends BaseController{
         content: Text('Apakah anda ingin melanjutkan ke stage berikutnya? jika Ya, anda tidak bisa mengubah stage sebelumnya. Pastikan data yang anda input benar.'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -2253,7 +2253,7 @@ class LabActivityDetailController extends BaseController{
         content: Text('Apakah benar anda akan submit stage issued analyzed result ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -2653,7 +2653,7 @@ class LabActivityDetailController extends BaseController{
   Future<String> selectTime6(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialEntryMode: TimePickerEntryMode.input,
+      initialEntryMode: TimePickerEntryMode.dialOnly,
       initialTime: TimeOfDay.now(),
     );
     if (picked != null) {
@@ -2882,7 +2882,7 @@ class LabActivityDetailController extends BaseController{
         content: Text('Apakah anda ingin menghapus activity date $date'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -4788,7 +4788,7 @@ class LabActivityDetailController extends BaseController{
             'Apakah benar anda akan submit stage report to client ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(

@@ -72,9 +72,9 @@ class Helper {
   static Future<bool> checkConnection() async {
     var connectivityResult = await Connectivity().checkConnectivity();
 
-    if (connectivityResult == ConnectivityResult.mobile) {
+    if (connectivityResult[0] == ConnectivityResult.mobile) {
       return true;
-    } else if (connectivityResult == ConnectivityResult.wifi) {
+    } else if (connectivityResult[0] == ConnectivityResult.wifi) {
       return true;
     } else {
       return false;

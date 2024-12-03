@@ -742,8 +742,15 @@ class JoDetailController extends BaseController {
     File? image;
     try {
       final XFile? pic = await picker.pickImage(source: ImageSource.camera, imageQuality: 15);
-      final imageTemp = File(pic!.path);
-      image = imageTemp;
+      var basePath = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
+      var pathPhoto = '${basePath}/ops/photo';
+      final String fileName = DateTime.now().millisecondsSinceEpoch.toString() + '.jpg';
+      final Directory directory = Directory(pathPhoto);
+      if (!await directory.exists()) {
+        await directory.create(recursive: true);
+      }
+      final File newImage = await File(pic!.path).copy('$pathPhoto/$fileName');
+      image = newImage;
       update();
       return image;
     } on PlatformException catch (e) {
@@ -755,8 +762,15 @@ class JoDetailController extends BaseController {
     File? image;
     try {
       final XFile? pic = await picker.pickImage(source: ImageSource.gallery, imageQuality: 15);
-      final imageTemp = File(pic!.path);
-      image = imageTemp;
+      var basePath = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
+      var pathPhoto = '${basePath}/ops/photo';
+      final String fileName = DateTime.now().millisecondsSinceEpoch.toString() + '.jpg';
+      final Directory directory = Directory(pathPhoto);
+      if (!await directory.exists()) {
+        await directory.create(recursive: true);
+      }
+      final File newImage = await File(pic!.path).copy('$pathPhoto/$fileName');
+      image = newImage;
       update();
       return image;
     } on PlatformException catch (e) {
@@ -944,7 +958,7 @@ class JoDetailController extends BaseController {
                                                 borderSide: const BorderSide(color: onFocusColor),
                                                 borderRadius: BorderRadius.circular(12),
                                               ),
-                                              labelText: 'Description',
+                                              labelText: 'Photo Description ${index + 1}',
                                               floatingLabelStyle: const TextStyle(color: onFocusColor),
                                               fillColor: onFocusColor),
                                         ),
@@ -1191,7 +1205,7 @@ class JoDetailController extends BaseController {
                                             borderSide: const BorderSide(color: onFocusColor),
                                             borderRadius: BorderRadius.circular(12),
                                           ),
-                                          labelText: 'Description',
+                                          labelText: 'Photo Description ${index + 1} *',
                                           floatingLabelStyle: const TextStyle(color: onFocusColor),
                                           fillColor: onFocusColor),
                                     ),
@@ -1307,7 +1321,7 @@ class JoDetailController extends BaseController {
                                       borderSide: const BorderSide(color: onFocusColor),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
-                                    labelText: 'Description',
+                                    labelText: 'Photo Description ${index + 1} *',
                                     floatingLabelStyle: const TextStyle(color: onFocusColor),
                                     fillColor: onFocusColor),
                               ),
@@ -1596,7 +1610,7 @@ class JoDetailController extends BaseController {
   Future<String> selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialEntryMode: TimePickerEntryMode.input,
+      initialEntryMode: TimePickerEntryMode.dialOnly,
       initialTime: pickedTime != '' ? TimeOfDay(hour:int.parse(pickedTime.split(":")[0]),minute: int.parse(pickedTime.split(":")[1])) : TimeOfDay.now(),
         builder: (context, childWidget) {
           return MediaQuery(
@@ -2959,6 +2973,9 @@ class JoDetailController extends BaseController {
                                 height: 16,
                               ),
                               TextFormField(
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(150),
+                                ],
                                 controller: activityText,
                                 cursorColor: onFocusColor,
                                 validator: (value) {
@@ -4037,6 +4054,7 @@ class JoDetailController extends BaseController {
 
   void drawerDailyActivity() {
     stageListModal.value = [];
+    activityListTextController.value = [];
     update();
     Get.bottomSheet(
         GetBuilder(
@@ -4455,7 +4473,7 @@ class JoDetailController extends BaseController {
         content: Text('Apakah benar anda akan submit stage ${activityStages[activityStage - 1]} ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -4970,7 +4988,7 @@ class JoDetailController extends BaseController {
         content: Text('Apakah anda ingin menghapus activity time ${start} - ${end} ?'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -4998,7 +5016,7 @@ class JoDetailController extends BaseController {
         content: Text('Apakah anda ingin menghapus activity date $date ?'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -5018,7 +5036,7 @@ class JoDetailController extends BaseController {
 
   void cleanActivity() {
     //activityList.value = [];
-    //activityListTextController.value = [];
+    activityListTextController.value = [];
     //stageListModal.value = [];
     editActivityMode.value = false;
     enabledDate.value = true;
@@ -5639,7 +5657,7 @@ class JoDetailController extends BaseController {
         content: const Text('Apakah benar anda akan submit stage work complete ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -5761,7 +5779,7 @@ class JoDetailController extends BaseController {
   Future<String> selectTime6(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialEntryMode: TimePickerEntryMode.input,
+      initialEntryMode: TimePickerEntryMode.dialOnly,
       initialTime: pickedTime != '' ?
       TimeOfDay(hour:int.parse(pickedTime.split(":")[0]),minute: int.parse(pickedTime.split(":")[1]))
           : TimeOfDay.now(),
@@ -6304,6 +6322,9 @@ class JoDetailController extends BaseController {
                                 height: 16,
                               ),
                               TextFormField(
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(150),
+                                ],
                                 controller: activityText,
                                 cursorColor: onFocusColor,
                                 validator: (value) {
@@ -6905,7 +6926,7 @@ class JoDetailController extends BaseController {
         content: const Text('Apakah benar anda akan submit stage report to client ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(

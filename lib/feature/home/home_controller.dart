@@ -36,6 +36,8 @@ import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity_stages.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory_attachment.dart';
 import 'package:ops_mobile/data/model/t_h_jo.dart';
+import 'package:ops_mobile/data/model/t_m_notif.dart';
+import 'package:ops_mobile/data/model/t_m_notif_v2.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/login/login_screen.dart';
@@ -73,6 +75,7 @@ class HomeController extends BaseController{
   var status = [1,2,3,4,5,6,7];
   int indexItem = 0;
   late List<ConnectivityResult> connectivityResult;
+  Rx<int> message = 0.obs;
 
 
   @override
@@ -89,6 +92,7 @@ class HomeController extends BaseController{
     var user = jsonDecode(await StorageCore().storage.read('login'));
     debugPrint('data user: ${user}');
     var data = await SqlHelper.getUserDetail(user['e_number'].toString());
+    debugPrint('print data user login ${data}');
     userData.value = Data(
       id : data.first['id'],
       fullname: data.first['fullname'],
@@ -106,6 +110,7 @@ class HomeController extends BaseController{
     // connectivityResult = await (Connectivity().checkConnectivity());
     //await getJO();
     syncMaster();
+    countNotif();
     super.onInit();
   }
 
@@ -300,19 +305,16 @@ class HomeController extends BaseController{
 
   @pragma('vm:entry-point')
   static Future<void> onStartBG(ServiceInstance service) async {
-    Timer.periodic(const Duration(seconds: 60 ), (timer) async {
+    Timer.periodic(const Duration(seconds: 10 ), (timer) async {
       sendDataInpectionPhoto();
       sendDataInspection();
       sendDataLaboratory();
       sendDataFinalizeLaboratory();
       sendDataFinalizeInspection();
-      //}
-      //debugPrint('test background service');
     });
   }
 
   static void sendDataInspection() async{
-    debugPrint('print function sendDataInspection ');
     THJo dataActivity = await THJo.getJoActivitySend();
     List<TDJoInspectionActivityStages> stages = dataActivity.inspectionActivityStages ?? [];
     // for(int i = 0; i < stages.length; i++){
@@ -324,7 +326,7 @@ class HomeController extends BaseController{
     // }
     //debugPrint('print data jo ${dataActivity.id.isNull}');
     bool connection = await Helper.checkConnection();
-    if(!dataActivity.id.isNull && dataActivity.id != null && Helper.baseUrl().isNotEmpty){
+    if(!dataActivity.id.isNull && dataActivity.id != null && Helper.baseUrl().isNotEmpty && connection){
       //send data
       final response = await http.post(
           Uri.parse('${Helper.baseUrl()}/api/v1/inspection/activity'),
@@ -375,10 +377,8 @@ class HomeController extends BaseController{
 
   static void sendDataLaboratory() async{
     THJo dataActivity = await THJo.getJoLaboratorySend();
-    debugPrint('print data jo laboratory send ${jsonEncode(dataActivity.toSend())}');
     List<TDJoLaboratory> laboratories = dataActivity.laboratory ?? [];
     for(int i = 0; i < laboratories.length; i++){
-      debugPrint('print data laboratory ${jsonEncode(laboratories[i].laboratoryActivityStages)}');
       List<TDJoLaboratoryActivityStages> stages = laboratories[i].laboratoryActivityStages ?? [];
       for(int s = 0; s < stages.length; s++){
         if(stages[s].mStatuslaboratoryprogresId == 6){
@@ -390,8 +390,7 @@ class HomeController extends BaseController{
       }
     }
     bool connection = await Helper.checkConnection();
-    debugPrint('print data connection ${connection}');
-    if(dataActivity.id != null && Helper.baseUrl().isNotEmpty){
+    if(dataActivity.id != null && Helper.baseUrl().isNotEmpty && connection){
       //send data
       final response = await http.post(
           Uri.parse('${Helper.baseUrl()}/api/v1/laboratory/activity'),
@@ -431,10 +430,9 @@ class HomeController extends BaseController{
   }
 
   static void sendDataInpectionPhoto() async {
-    debugPrint('print sendDataInspectionPhoto ');
     List<TDJoInspectionPict> dataSend = await TDJoInspectionPict.getSendDataPict();
-
-    if(dataSend.isNotEmpty){
+    bool connection = await Helper.checkConnection();
+    if(dataSend.isNotEmpty && connection){
       for(TDJoInspectionPict data in dataSend){
         final base64 = await Helper.convertPhotosToBase64(data.pathPhoto ?? '');//
         data.pathPhoto = 'data:image/png;base64,${base64}';
@@ -465,7 +463,8 @@ class HomeController extends BaseController{
 
   static void sendDataFinalizeLaboratory() async{
     TDJoFinalizeLaboratoryV2? dataLaboratory = await TDJoFinalizeLaboratoryV2.getSendData();
-    if(dataLaboratory != null){
+    bool connection = await Helper.checkConnection();
+    if(dataLaboratory != null && connection){
       debugPrint('print data finalize laboratory sebelum encode ${jsonEncode(dataLaboratory)}');
       List<TDJoDocumentLaboratoryV2> details = dataLaboratory.listDocument ?? [];
       for(int d = 0; d< details.length; d++){
@@ -505,7 +504,8 @@ class HomeController extends BaseController{
 
   static void sendDataFinalizeInspection() async{
     TDJoFinalizeInspectionV2? dataFinalize = await TDJoFinalizeInspectionV2.getSendData();
-    if(dataFinalize != null){
+    bool connection = await Helper.checkConnection();
+    if(dataFinalize != null && connection){
       TDJoFinalizeInspectionV2 item = dataFinalize;
       List<TDJoDocumentInspectionV2> details = item.listDocument ?? [];
       for(int d = 0; d< details.length; d++){
@@ -539,24 +539,46 @@ class HomeController extends BaseController{
   }
 
   void syncMaster() async{
-    final response = await http.post(
+    try{
+      var connectivityResult = await Connectivity().checkConnectivity();
+      debugPrint('print connectionresult ${connectivityResult}');
+      if (connectivityResult[0] == ConnectivityResult.none) {
+        throw Exception('No Internet Connection');
+      }
+      final response = await http.post(
         Uri.parse('${Helper.baseUrl()}/api/v1/sync/master'),
         headers: {'Content-Type': 'application/json'},
-    );
-    if(response.statusCode == 200){
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
-      var data = responseData['data'];
-      var mapJo = data['listjo'];
-      List<THJo> thJoies = (mapJo as List)
-          .map((jo) => THJo.fromJson(jo as Map<String, dynamic>))
-          .toList();
-      for(int t=0; t < thJoies.length; t++){
-        THJo item =thJoies[t];
-        if(item.id != null){
-          await THJo.syncData(item);
+      );
+      if(response.statusCode == 200){
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        var data = responseData['data'];
+        var mapJo = data['listjo'];
+        var listNotifikasi = data['listnotifikasi'];
+        List<THJo> thJoies = (mapJo as List)
+            .map((jo) => THJo.fromJson(jo as Map<String, dynamic>))
+            .toList();
+        List<TMNotifV2> tMotifs = (listNotifikasi as List)
+            .map((notif) => TMNotifV2.fromJson(notif as Map<String,dynamic>))
+            .toList();
+        for(int t=0; t < thJoies.length; t++){
+          THJo item =thJoies[t];
+          if(item.id != null){
+            await THJo.syncData(item);
+          }
         }
+        await TMNotifV2.syncNotif(tMotifs);
+        countNotif();
       }
+    }catch(e){
+      debugPrint('error ${e}');
+    }
+  }
 
+  void countNotif() async {
+    if(userData.value != null){
+      message.value = await TMNotifV2.countNotif(userData.value!.id!.toInt());
+      debugPrint('print total pesan yang belum dibaca ${message.value}');
+      update();
     }
   }
 }

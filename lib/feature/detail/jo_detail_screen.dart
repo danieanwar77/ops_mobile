@@ -1663,7 +1663,9 @@ class JoDetailScreen extends StatelessWidget {
                                                       TDJoInspectionPict pict = controller.dailyActivityPhotosV2.value[index];
                                                       return InkWell(
                                                         onTap: () {
-                                                          if(controller.joRx.value.inspectionFinishedDate.toString().length > 0){
+                                                          debugPrint(" print data inspection date ${controller.joRx.value.inspectionFinishedDate.toString()}");
+                                                          debugPrint(" print data inspection date ${controller.joRx.value.inspectionFinishedDate.toString().length > 0}");
+                                                          if( controller.joRx.value.inspectionFinishedDate != null){
                                                             controller.previewImageDetail(index, pict!.pathPhoto!, pict!.keterangan!, pict);
                                                           }else{
                                                             controller.previewImage(index, pict!.pathPhoto!, pict!.keterangan!, pict);

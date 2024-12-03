@@ -27,6 +27,10 @@ import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages_tranship
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_vessel.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_attachment.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_pict.dart';
+import 'package:ops_mobile/data/model/t_d_jo_laboratory.dart';
+import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity.dart';
+import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity_stages.dart';
+import 'package:ops_mobile/data/model/t_d_jo_laboratory_attachment.dart';
 import 'package:ops_mobile/data/model/t_h_jo.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
@@ -654,26 +658,84 @@ class SendManualController extends BaseController{
 
   Future<bool> sendSingleData(SendManualV2 sendData) async{
     int type = sendData.type == null ? 0 : sendData!.type!.toInt();
-    debugPrint("print type send manual ${type}");
-    switch(type){
-      case 1: {
-        return sendInspectionActivity(sendData);
-      }
-      case 2: {
-        return sendInspectionPhoto(sendData);
-      }
-      case 3:{
-        return sendInspectionFinalize(sendData);
-      }
-      default: {
-        return false;
+    bool connection = await Helper.checkConnection();
+    if(connection){
+      openDialog("Attenction", "Periksa koneksi ada");
+      return false;
+    }else{
+      switch(type){
+        case 1: {
+          return await sendInspectionActivity(sendData);
+        }
+        case 2: {
+          return await sendInspectionPhoto(sendData);
+        }
+        case 3:{
+          return await  sendInspectionFinalize(sendData);
+        }
+        case 4: {
+          return await sendLaboratoryActivity(sendData);
+        }
+        case 5: {
+          return await sendLaboratoryFinalize(sendData);
+        }
+        default: {
+          return false;
+        }
       }
     }
   }
-  
-  Future<bool> sendInspectionFinalize(SendManualV2 sendata) async{
+
+  Future<bool> sendLaboratoryFinalize(SendManualV2 sendData) async {
     try{
-      int id = sendata.idTrans ==  null ? 0 : sendata.idTrans!.toInt();
+      int id = sendData.idTrans ==  null ? 0 : sendData.idTrans!.toInt();
+      TDJoFinalizeLaboratoryV2? dataLaboratory = await TDJoFinalizeLaboratoryV2.getSendDataById(id);
+      bool connection = await Helper.checkConnection();
+      if(dataLaboratory != null && connection){
+        List<TDJoDocumentLaboratoryV2> details = dataLaboratory.listDocument ?? [];
+        for(int d = 0; d< details.length; d++){
+          TDJoDocumentLaboratoryV2 detail = details[d];
+          final filename = detail.fileName ?? ''; // contoh data asdasdasdasd.adasdasd.asdasdasd.pdf
+          final fileType = RegExp(r'\.([a-zA-Z0-9]+)$').firstMatch(filename)?.group(1) ?? '';
+          final base64 = await Helper.convertPhotosToBase64(detail.pathFile ?? '');
+          detail.pathFile = '${base64}';
+        }
+        debugPrint('print data finalize laboratory ${jsonEncode(dataLaboratory)}');
+        final response = await http.post(
+            Uri.parse('${Helper.baseUrl()}/api/v1/laboratory/document'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(dataLaboratory)
+        );
+        if(response.statusCode == 200){
+          final Map<String, dynamic> responseData = jsonDecode(response.body);
+          print('print response from api ${jsonEncode(responseData)}');
+          if(responseData['status'] != 500){
+            dynamic dataList = responseData['data'];
+            TDJoFinalizeLaboratoryV2 item = TDJoFinalizeLaboratoryV2.fromJson(dataList as Map<String, dynamic>);
+            await TDJoFinalizeLaboratoryV2.updateUploaded(item.code ?? '');
+            List<TDJoDocumentLaboratoryV2> documents = item.listDocument ?? [];
+            for(int d = 0; d < documents.length; d++){
+              TDJoDocumentLaboratoryV2 document = documents[d];
+              await TDJoDocumentLaboratoryV2.updateUploaded(document.code ?? '');
+            }
+          }else{
+            return false;
+          }
+        }else{
+          return false;
+        }
+      }else{
+        return false;
+      }
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+  
+  Future<bool> sendInspectionFinalize(SendManualV2 sendData) async{
+    try{
+      int id = sendData.idTrans ==  null ? 0 : sendData.idTrans!.toInt();
       TDJoFinalizeInspectionV2? dataFinalize = await TDJoFinalizeInspectionV2.getSendDataById(id);
       debugPrint("print data finalize inspection ${jsonEncode(dataFinalize)}");
       if(dataFinalize != null){
@@ -719,10 +781,10 @@ class SendManualController extends BaseController{
     }
   }
 
-  Future<bool> sendInspectionActivity(SendManualV2 sendata) async{
+  Future<bool> sendInspectionActivity(SendManualV2 sendData) async{
     try{
       debugPrint('print function sendDataInspection manual ');
-      int id = sendata.idTrans ==  null ? 0 : sendata.idTrans!.toInt();
+      int id = sendData.idTrans ==  null ? 0 : sendData.idTrans!.toInt();
       THJo dataActivity = await THJo.getJoActivitySendById(id);
       List<TDJoInspectionActivityStages> stages = dataActivity.inspectionActivityStages ?? [];
       for(int s = 0; s < stages.length; s++){
@@ -822,6 +884,69 @@ class SendManualController extends BaseController{
         }
       }
       return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  Future<bool> sendLaboratoryActivity(SendManualV2 sendData) async{
+    try{
+        int id = sendData.idTrans ==  null ? 0 : sendData.idTrans!.toInt();
+        THJo dataActivity = await THJo.getJoLaboratorySend();
+        List<TDJoLaboratory> laboratories = dataActivity.laboratory ?? [];
+        for(int i = 0; i < laboratories.length; i++){
+          List<TDJoLaboratoryActivityStages> stages = laboratories[i].laboratoryActivityStages ?? [];
+          for(int s = 0; s < stages.length; s++){
+            if(stages[s].mStatuslaboratoryprogresId == 6){
+              List<TDJoLaboratoryAttachment> attachments = stages[s].listLabAttachment ?? [];
+              for(int a = 0; a < attachments.length; a++){
+                attachments[a].pathName = await Helper.convertPhotosToBase64(attachments[a].pathName ?? '');
+              }
+            }
+          }
+        }
+        if(dataActivity.id != null && Helper.baseUrl().isNotEmpty){
+          //send data
+          final response = await http.post(
+            Uri.parse('${Helper.baseUrl()}/api/v1/laboratory/activity'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(dataActivity.toSend()),
+          );
+          if(response.statusCode == 200) {
+            final Map<String, dynamic> responseData = jsonDecode(response.body);
+            print('print response from api ${jsonEncode(responseData)}');
+            if (responseData['status'] != 500) {
+              final data = responseData['data'];
+              TDJoLaboratory joLaboratory = TDJoLaboratory.fromJson(data);
+              debugPrint('print data response jo laboratory ${jsonEncode(joLaboratory)}');
+              List<TDJoLaboratoryActivityStages> listLabStage = joLaboratory.laboratoryActivityStages ?? [];
+              debugPrint('print data response list lab stage ${jsonEncode(listLabStage)}');
+              for (int s = 0; s < listLabStage.length; s++) {
+                TDJoLaboratoryActivityStages stage = listLabStage[s];
+                debugPrint('print data response stage ${jsonEncode(stage)}');
+                await TDJoLaboratoryActivityStages.updateUploaded(stage.code.toString());
+                List<TDJoLaboratoryActivity> activities = listLabStage[s].listLabActivity ?? [];
+                for (int a = 0; a < activities.length; a++) {
+                  TDJoLaboratoryActivity activity = activities[a];
+                  debugPrint('print data response activity ${jsonEncode(activity)}');
+                  await TDJoLaboratoryActivity.updateUploaded(activity.code ?? '');
+                }
+
+                if(stage.mStatuslaboratoryprogresId == 6){
+                  List<TDJoLaboratoryAttachment> attachments = stage.listLabAttachment ?? [];
+                  for(int at = 0; at < attachments.length; at++){
+                    await TDJoLaboratoryAttachment.updateUploaded(attachments[at].code ?? '');
+                  }
+                }
+              }
+            }else{
+              return false;
+            }
+          }else{
+            return false;
+          }
+        }
+        return true;
     }catch(e){
       return false;
     }

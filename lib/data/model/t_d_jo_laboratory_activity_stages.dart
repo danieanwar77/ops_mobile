@@ -68,7 +68,7 @@ class TDJoLaboratoryActivityStages {
     _transDate = json['trans_date'];
     _remarks = json['remarks'];
     _createdBy = json['created_by'];
-    _updatedBy = json['updated_by'];
+    _updatedBy = json['updated_by'] is int ? json['updated_by'] : null;
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
     _totalSampleReceived = int.tryParse(json['total_sample_received'].toString()) ?? 0;

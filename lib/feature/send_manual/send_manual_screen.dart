@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
-import 'package:ops_mobile/data/model/send_manual_model.dart';
 import 'package:ops_mobile/feature/send_manual/send_manual_controller.dart';
 
 class SendManualScreen extends StatelessWidget{
@@ -43,7 +42,7 @@ class SendManualScreen extends StatelessWidget{
                       child: SingleChildScrollView(
                         child: ListView.builder(
                             shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
+                            physics: const NeverScrollableScrollPhysics(),
                             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                             itemCount: controller.dataSendList.length,
                             itemBuilder: (context, index){
