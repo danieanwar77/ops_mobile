@@ -185,7 +185,7 @@ class SqlHelper extends BaseController {
 
   static Future<List<Map<String, dynamic>>> getListJo(int id, int status) async {
     final db = await SqlHelper.db();
-    return db.rawQuery('''SELECT 
+    final sql = '''SELECT 
       a.id as jo_id, 
       a.code, 
       b.id as id_h_so, 
@@ -207,7 +207,9 @@ class SqlHelper extends BaseController {
       LEFT JOIN m_kos AS g ON a.m_kindofservice_id = g.id 
       WHERE a.m_statusjo_id = $status
       AND (a.pic_inspector = $id OR a.pic_laboratory = $id)
-    ''');
+    ''';
+    debugPrint('print data sql ${sql}');
+    return db.rawQuery(sql);
   }
 
   static Future<List<Map<String, dynamic>>> getDetailJo(int idJo) async {

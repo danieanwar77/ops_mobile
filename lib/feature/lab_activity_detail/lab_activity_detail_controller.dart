@@ -30,6 +30,8 @@ import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/utils/helper.dart';
 
 import 'package:ops_mobile/data/model/login_data_model.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 
 class LabActivityDetailController extends BaseController{
 
@@ -127,6 +129,39 @@ class LabActivityDetailController extends BaseController{
   }
 
   // Get Data
+
+  Rx<bool> loadingSpk = false.obs;
+  Future<void> downloadSpk()async{
+    try{
+      loadingSpk.value = true;
+      bool coneection = await Helper.checkConnection();
+      if(coneection){
+        final  idJo = id;
+        final response = await http.get(
+            Uri.parse('${Helper.baseUrl()}/api/v1/pdf/assignment/$idJo'),
+            headers: {'Content-Type': 'application/json'}
+        );
+        if(response.statusCode ==200){
+          final Map<String, dynamic> responseData = jsonDecode(response.body);
+          final urlDoc = responseData['data'];
+          await launchUrl(Uri.parse(urlDoc), mode: LaunchMode.externalApplication);
+          // if (await canLaunchUrl(Uri.parse(urlDoc))) {
+          //
+          // } else {
+          //   openDialog('Attenction', 'Gagal  menampilkan document');
+          // }
+        }else{
+          openDialog('Attenction', 'Gagal  mendownload document');
+        }
+      }else{
+        openDialog('Attenction', 'Periksa koneksi Internet Anda');
+      }
+      loadingSpk.value = false;
+    }catch(e){
+      loadingSpk.value = false;
+      openDialog('Attenction', 'Periksa koneksi Internet Anda');
+    }
+  }
 
   Future<void> getData() async{
 
@@ -702,6 +737,8 @@ class LabActivityDetailController extends BaseController{
   }
 
   void drawerDailyActivityLab(){
+    activityLabListTextController.value= [];
+    activityLabList.value = [];
     Get.bottomSheet(
         GetBuilder(
           init: LabActivityDetailController(),
@@ -1047,7 +1084,7 @@ class LabActivityDetailController extends BaseController{
                                                                               ),
                                                                               child: InkWell(
                                                                                   onTap: () {
-                                                                                    removeActivityConfirm("${activityItem.startActivityTime}", indexItem, index, activityLabStage); //check tambahkan activity yang mau dihapus
+                                                                                    removeActivityConfirm("${activityItem.startActivityTime} - ${activityItem.endActivityTime}", indexItem, index, activityLabStage); //check tambahkan activity yang mau dihapus
                                                                                   },
                                                                                   child: Icon(
                                                                                       Icons.remove,
@@ -1249,7 +1286,7 @@ class LabActivityDetailController extends BaseController{
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Apakah anda ingin menghapus activity date $date'),
+        content: Text('Apakah anda ingin menghapus activity date $date ?'),
         actions: [
           TextButton(
             child: const Text("Cancel"),
@@ -1278,7 +1315,7 @@ class LabActivityDetailController extends BaseController{
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Apakah anda ingin menghapus activity date $date'),
+        content: Text('Apakah anda ingin menghapus activity date $date ?'),
         actions: [
           TextButton(
             child: const Text("Cancel"),
@@ -1732,7 +1769,7 @@ class LabActivityDetailController extends BaseController{
                                                                             ),
                                                                             child: InkWell(
                                                                                 onTap: () {
-                                                                                  removeActivityConfirm("${activityItem.startActivityTime}", indexItem, index, activityLabStage);
+                                                                                  removeActivityConfirm("${activityItem.startActivityTime} - ${activityItem.endActivityTime}", indexItem, index, activityLabStage);
                                                                                 },
                                                                                 child: Icon(
                                                                                     Icons.remove,
@@ -1891,7 +1928,7 @@ class LabActivityDetailController extends BaseController{
         content: Text('Apakah benar anda akan menyimpan perubahan stage ${labStagesName[activityLabStage - 1]} ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -2214,7 +2251,7 @@ class LabActivityDetailController extends BaseController{
                                   width: double.infinity,
                                   child: Center(
                                       child: Text(
-                                        'Save',
+                                        'Submit',
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 16,
@@ -2388,7 +2425,7 @@ class LabActivityDetailController extends BaseController{
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Add Stage Laboratory',
+                            Text('Edit Stage Laboratory',
                               style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
@@ -2579,7 +2616,7 @@ class LabActivityDetailController extends BaseController{
         content: Text('Apakah benar anda akan menyimpan perubahan stage issued analyzed result ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -2806,33 +2843,36 @@ class LabActivityDetailController extends BaseController{
   }
 
   Future<void> removeActivity6(int index, int indexitem, int stage)async {
-    debugPrint("print index ${index} index item ${indexitem}");
-    var stageItem = activity6List.value[index].listLabActivity![indexitem];
-    if(stageItem.id != null){
-      // activity6List.value[index].listLabActivity![indexitem] = TDJoLaboratoryActivity(
-      //   id: stageItem.id,
-      //   tDJoLaboratoryActivityStagesId: stageItem.tDJoLaboratoryActivityStagesId,
-      //   tDJoLaboratoryId: stageItem.tDJoLaboratoryId,
-      //   startActivityTime: stageItem.startActivityTime,
-      //   endActivityTime: stageItem.endActivityTime,
-      //   activity: stageItem.activity,
-      //   code: stageItem.code,
-      //   isActive: 0,
-      //   isUpload: stageItem.isUpload,
-      //   createdBy: stageItem.createdBy,
-      //   updatedBy: stageItem.updatedBy,
-      //   createdAt: stageItem.createdAt,
-      //   updatedAt: stageItem.updatedAt,
-      // );
-      activity6List.value[index].listLabActivity!.removeAt(indexitem);
-    } else {
-      activity6List.value[index].listLabActivity!.removeAt(indexitem);
-    }
+    // debugPrint("print index ${index} index item ${indexitem}");
+    // var stageItem = activity6List.value[index].listLabActivity![indexitem];
+    // if(stageItem.id != null){
+    //   // activity6List.value[index].listLabActivity![indexitem] = TDJoLaboratoryActivity(
+    //   //   id: stageItem.id,
+    //   //   tDJoLaboratoryActivityStagesId: stageItem.tDJoLaboratoryActivityStagesId,
+    //   //   tDJoLaboratoryId: stageItem.tDJoLaboratoryId,
+    //   //   startActivityTime: stageItem.startActivityTime,
+    //   //   endActivityTime: stageItem.endActivityTime,
+    //   //   activity: stageItem.activity,
+    //   //   code: stageItem.code,
+    //   //   isActive: 0,
+    //   //   isUpload: stageItem.isUpload,
+    //   //   createdBy: stageItem.createdBy,
+    //   //   updatedBy: stageItem.updatedBy,
+    //   //   createdAt: stageItem.createdAt,
+    //   //   updatedAt: stageItem.updatedAt,
+    //   // );
+    //   activity6List.value[index].listLabActivity!.removeAt(indexitem);
+    // } else {
+    //   activity6List.value[index].listLabActivity!.removeAt(indexitem);
+    // }
+    //
+    // if(activity6List.value[index].listLabActivity!.isEmpty){
+    //   activity6ListTextController.value.removeAt(index);
+    //   activity6List.value.removeAt(index);
+    // }
 
-    if(activity6List.value[index].listLabActivity!.isEmpty){
-      activity6ListTextController.value.removeAt(index);
-      activity6List.value.removeAt(index);
-    }
+    var stageItem = activity6List.value[index].listLabActivity![indexitem];
+    activity6List.value[index].listLabActivity!.removeAt(indexitem);
 
     update();
   }
@@ -2879,7 +2919,7 @@ class LabActivityDetailController extends BaseController{
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Apakah anda ingin menghapus activity date $date'),
+        content: Text('Apakah anda ingin menghapus activity date $date ?'),
         actions: [
           TextButton(
             child: const Text("Cancel"),
@@ -2908,11 +2948,14 @@ class LabActivityDetailController extends BaseController{
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Apakah anda ingin menghapus activity date $date'),
+        content: Text('Apakah anda ingin menghapus activity date $date ?'),
         actions: [
           TextButton(
             child: const Text("Close"),
-            onPressed: () => Get.back(),
+            onPressed: () async {
+              Get.back();
+            }
+
           ),
           TextButton(
             child: const Text(
@@ -3091,22 +3134,26 @@ class LabActivityDetailController extends BaseController{
           allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf']);
       if (attach != null) {
         final List<XFile> xFiles = attach.xFiles;
-        xFiles.forEach((data) async {
-          final fileTemp = File(data!.path);
-          final File file = fileTemp;
-          final fileName = file.path.split('/').last;
-          final dir = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
-          bool exists = await Directory('$dir/ops/files/').exists();
+        if((activity6Attachments.value.length + xFiles.length) > 5 ){
+          openDialog("Attenction", "File attachment maksimal 5");
+        }else{
+          xFiles.forEach((data) async {
+            final fileTemp = File(data!.path);
+            final File file = fileTemp;
+            final fileName = file.path.split('/').last;
+            final dir = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
+            bool exists = await Directory('$dir/ops/files/').exists();
 
-          if(exists == false){
-            Directory('$dir/ops/files/').create();
-          }
+            if(exists == false){
+              Directory('$dir/ops/files/').create();
+            }
 
-          file.rename('$dir/ops/files/$fileName');
-          update();
-          addActivity6Files(file.path);
-        });
-        openDialog('Success', 'Berhasil menambahkan file.');
+            file.rename('$dir/ops/files/$fileName');
+            update();
+            addActivity6Files(file.path);
+          });
+          openDialog('Success', 'Berhasil menambahkan file.');
+        }
       }
     } on PlatformException catch (e) {
       openDialog('Failed', e.message ?? 'Gagal menambahkan file.');
@@ -3170,6 +3217,7 @@ class LabActivityDetailController extends BaseController{
                               Column(
                                 children: [
                                   Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       TextFormField(
                                         showCursor: true,
@@ -3524,11 +3572,7 @@ class LabActivityDetailController extends BaseController{
                                                                                   child: InkWell(
                                                                                       onTap:
                                                                                           () {
-                                                                                        removeActivity6Confirm(
-                                                                                            date!,
-                                                                                            indexItem,
-                                                                                            index,
-                                                                                            6);
+                                                                                        removeActivity6Confirm(date!, indexItem, index, 6);
                                                                                       },
                                                                                       child: Icon(
                                                                                           Icons.remove,
@@ -3719,7 +3763,7 @@ class LabActivityDetailController extends BaseController{
                               const SizedBox(
                                 height: 16,
                               ),
-                              SizedBox(
+                              activity6Attachments.value.length < 5 ? SizedBox(
                                 width: 68,
                                 height: 68,
                                 child: ElevatedButton(
@@ -3737,7 +3781,7 @@ class LabActivityDetailController extends BaseController{
                                           Icons.folder_rounded,
                                           color: primaryColor,
                                         ))),
-                              ),
+                              ): const SizedBox(),
                               const SizedBox(
                                 height: 16,
                               ),
@@ -3749,9 +3793,10 @@ class LabActivityDetailController extends BaseController{
                         children: [
                           Expanded(
                             child: ElevatedButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   clearActivity6LabForm();
                                   Get.back();
+                                  await getData();
                                 },
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
@@ -3841,15 +3886,15 @@ class LabActivityDetailController extends BaseController{
                   fontSize: 16,
                   color: primaryColor),
             ),
-            InkWell(
-              onTap: () {
-                removeActivity6Files(index);
-              },
-              child: Icon(
-                Icons.delete_forever,
-                color: Colors.red,
-              ),
-            ),
+            // InkWell(
+            //   onTap: () {
+            //     removeActivity6Files(index);
+            //   },
+            //   child: Icon(
+            //     Icons.delete_forever,
+            //     color: Colors.red,
+            //   ),
+            // ),
             Spacer(),
             IconButton(
               onPressed: () {
@@ -4334,7 +4379,7 @@ class LabActivityDetailController extends BaseController{
                                                                                   child: InkWell(
                                                                                       onTap:
                                                                                           () {
-                                                                                        removeActivity6Confirm(date!, indexItem, index, 6);
+                                                                                            removeActivity6Confirm(date!, indexItem, index, 6);
                                                                                       },
                                                                                       child: Icon(
                                                                                           Icons.remove,
@@ -4551,9 +4596,10 @@ class LabActivityDetailController extends BaseController{
                         children: [
                           Expanded(
                             child: ElevatedButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   clearActivity6LabForm();
                                   Get.back();
+                                  await getData();
                                 },
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
@@ -4824,7 +4870,7 @@ class LabActivityDetailController extends BaseController{
             'Apakah benar anda akan menyimpan perubahan stage report to client ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -4871,7 +4917,7 @@ class LabActivityDetailController extends BaseController{
             'Apakah benar anda ingin Finish JO Lab ini? pastikan data yg anda input benar, karena anda tidak bisa mengubah data setelah Finish JO'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -4939,7 +4985,7 @@ class LabActivityDetailController extends BaseController{
         content: const Text("Apakah benar anda ingin Finish JO Lab ini? pastikan data yg anda input benar, karena anda tidak bisa mengubah data setelah Finish JO"),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(

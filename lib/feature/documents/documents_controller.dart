@@ -160,6 +160,35 @@ class DocumentsController extends BaseController {
     }
   }
 
+  void fileDocumentEdit(int index) async {
+    try {
+      final FilePickerResult? attach = await FilePicker.platform.pickFiles(
+          allowMultiple: false,
+          type: FileType.custom,
+          //allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf']);
+          allowedExtensions: ['pdf']);
+      if (attach != null) {
+        final List<XFile> xFiles = attach.xFiles;
+        xFiles.forEach((data) async {
+          final fileTemp = File(data!.path);
+          final File file = fileTemp;
+          final fileBytes = await File(data!.path).readAsBytes();
+          debugPrint('size filenya: ${fileBytes.lengthInBytes}');
+          if(fileBytes.lengthInBytes > 2000000){
+            openDialog("Attention", 'File lebih dari 2 MB!');
+          } else {
+            documentAttachments.value[0] = file.path;
+            update();
+          }
+
+        });
+        //openDialog('Success', 'Berhasil menambahkan file.');
+      }
+    } on PlatformException catch (e) {
+      openDialog('Failed', e.message ?? 'Gagal menambahkan file.');
+    }
+  }
+
   String checkFileType(String path) {
     final mimeType = lookupMimeType(path);
 
@@ -651,6 +680,7 @@ class DocumentsController extends BaseController {
     documentCertificateLhv.text = documents.value[index]['certLhv'];
     documentCertificateLs.text = documents.value[index]['certLs'];
     documentAttachments.value.add(documentsAttachments.value[index]);
+    debugPrint("print data document attachment ${jsonEncode(documentsAttachments)}");
     Get.bottomSheet(
       GetBuilder(
         init: DocumentsController(),
@@ -857,7 +887,7 @@ class DocumentsController extends BaseController {
                           const SizedBox(
                             height: 16,
                           ),
-                          documentAttachments.value.isNotEmpty
+                          (documentAttachments.value.isNotEmpty && documentAttachments.value[0] != "")
                               ? GridView.builder(
                                   shrinkWrap: true,
                                   physics: NeverScrollableScrollPhysics(),
@@ -867,10 +897,10 @@ class DocumentsController extends BaseController {
                                     mainAxisSpacing: 8,
                                     crossAxisSpacing: 8,
                                   ),
-                                  itemCount: documentAttachments.value.length,
+                                  itemCount: 1,
                                   itemBuilder: (content, index) {
                                     final String photo =
-                                        documentAttachments.value[index];
+                                        documentAttachments.value[0];
                                     final String fileType =
                                         checkFileType(photo);
                                     var filenameArr = photo.split("/");
@@ -965,12 +995,12 @@ class DocumentsController extends BaseController {
                           const SizedBox(
                             height: 16,
                           ),
-                          documentAttachments.value.isEmpty ? SizedBox(
+                          (documentAttachments.value.isNotEmpty &&  documentAttachments.value[0] == "") ? SizedBox(
                             width: 68,
                             height: 68,
                             child: ElevatedButton(
                                 onPressed: () {
-                                  fileDocument();
+                                  fileDocumentEdit(index);
                                 },
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
@@ -1065,17 +1095,20 @@ class DocumentsController extends BaseController {
         documentCertificateDate.text != '' &&
         documentCertificateBlanko.text != '' &&
         documentCertificateLhv.text != '' &&
-        documentCertificateLs.text != '' &&
-        documentAttachments.value.isNotEmpty) {
+        documentCertificateLs.text != '' /*&& documentAttachments.value.isNotEmpty*/) {
       documents.value.add(<String, String>{
         'id': DateTime.now().millisecondsSinceEpoch.toString(),
         'certNumber': documentCertificateNumber.value.text,
         'certDate': documentCertificateDate.value.text,
         'certBlanko': documentCertificateBlanko.value.text,
         'certLhv': documentCertificateLhv.value.text,
-        'certLs': documentCertificateLs.value.text
+        'certLs': documentCertificateLs.value.text,
       });
-      documentsAttachments.value.add(documentAttachments.value.first);
+      if(documentAttachments.value.isNotEmpty){
+        documentsAttachments.value.add(documentAttachments.value.first);
+      }else{
+        documentsAttachments.value.add("");//empty string
+      }
     }
     documentAttachments.value = [];
     documentCertificateNumber.text = '';
@@ -1099,7 +1132,8 @@ class DocumentsController extends BaseController {
         'certDate': documentCertificateDate.value.text,
         'certBlanko': documentCertificateBlanko.value.text,
         'certLhv': documentCertificateLhv.value.text,
-        'certLs': documentCertificateLs.value.text
+        'certLs': documentCertificateLs.value.text,
+        'id': DateTime.now().millisecondsSinceEpoch.toString(),
       };
       documentsAttachments.value[index] = documentAttachments.value.first;
     }
@@ -1125,7 +1159,7 @@ class DocumentsController extends BaseController {
         content: Text('Apakah benar anda ingin menghapus data finalisasi JO ini?'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -1204,7 +1238,7 @@ class DocumentsController extends BaseController {
             'Apakah benar anda akan submit finalisasi JO Inspection ini? pastikan data yg anda input benar karena jika anda submit, JO akan dicomplete-kan.'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -1270,7 +1304,9 @@ class DocumentsController extends BaseController {
   void removeFiles(int index) {
     debugPrint('documents attach before remove : ${jsonEncode(documentsAttachments.value)}');
     debugPrint('document attach before remove : ${jsonEncode(documentAttachments.value)}');
-    documentAttachments.value.removeAt(index);
+    final copiedAttachments = List<String>.from(documentAttachments.value);
+    copiedAttachments[index] = "";
+    documentAttachments.value = copiedAttachments;
     update();
     debugPrint('documents attach after remove : ${jsonEncode(documentsAttachments.value)}');
     debugPrint('document attach after remove : ${jsonEncode(documentAttachments.value)}');
@@ -1367,10 +1403,7 @@ class DocumentsController extends BaseController {
           noBlankoCertificate: document['certBlanko'],
           lhvNumber: document['certLhv'],
           lsNumber: document['certLs'],
-          code: "JDOI-${employeeId}-${DateTime
-              .now()
-              .millisecondsSinceEpoch
-              .toString()}",
+          code: "JDOI-${employeeId}-${DateTime.now().millisecondsSinceEpoch.toString()}",
           isActive: 1,
           isUpload: 0,
           createdBy: employeeId,
@@ -1386,27 +1419,28 @@ class DocumentsController extends BaseController {
             tdJoDocumentInspect.toJson()
         );
 
-        var fileName = documentsAttachments.value[index].split('/').last;
+        if(documentsAttachments.value[index] != null && documentsAttachments.value[index] != ""){
+          var fileName = documentsAttachments.value[index].split('/').last;
 
-        var attachment = {
-          't_d_jo_finalize_inspection_id' : result,
-          'path_file': documentsAttachments.value[index],
-          'file_name': fileName,
-          'code': "JDOIA-${employeeId}-${DateTime
-            .now()
-            .millisecondsSinceEpoch
-            .toString()}",
-          'is_active': 1,
-          'is_upload': 0,
-          'created_by': employeeId,
-          'created_at': DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString(),
-        };
+          var attachment = {
+            't_d_jo_finalize_inspection_id' : result,
+            'path_file': documentsAttachments.value[index],
+            'file_name': fileName,
+            'code': "JDOIA-${employeeId}-${DateTime
+                .now()
+                .millisecondsSinceEpoch
+                .toString()}",
+            'is_active': 1,
+            'is_upload': 0,
+            'created_by': employeeId,
+            'created_at': DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString(),
+          };
 
-        await db.insert(
-            't_d_jo_document_inspection',  // Nama tabel
-            attachment
-        );
-
+          await db.insert(
+              't_d_jo_document_inspection',  // Nama tabel
+              attachment
+          );
+        }
       } else {
         tdJoDocumentLab = TDJoFinalizeLaboratory(
             tDJoLabId: int.parse(idJo.value),
@@ -1435,26 +1469,28 @@ class DocumentsController extends BaseController {
             tdJoDocumentLab.toJson()
         );
 
-        var fileName = documentsAttachments.value[index].split('/').last;
+        if(documentsAttachments.value[index] != null && documentsAttachments.value[index] != ""){
+          var fileName = documentsAttachments.value[index].split('/').last;
 
-        var attachment = {
-          't_d_jo_finalize_laboratory_id' : result,
-          'path_file': documentsAttachments.value[index],
-          'file_name': fileName,
-          'code': "JDOLA-${employeeId}-${DateTime
-              .now()
-              .millisecondsSinceEpoch
-              .toString()}",
-          'is_active': 1,
-          'is_upload': 0,
-          'created_by': employeeId,
-          'created_at': DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString(),
-        };
+          var attachment = {
+            't_d_jo_finalize_laboratory_id' : result,
+            'path_file': documentsAttachments.value[index],
+            'file_name': fileName,
+            'code': "JDOLA-${employeeId}-${DateTime
+                .now()
+                .millisecondsSinceEpoch
+                .toString()}",
+            'is_active': 1,
+            'is_upload': 0,
+            'created_by': employeeId,
+            'created_at': DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString(),
+          };
 
-        await db.insert(
-            't_d_jo_document_laboratory',  // Nama tabel
-            attachment
-        );
+          await db.insert(
+              't_d_jo_document_laboratory',  // Nama tabel
+              attachment
+          );
+        }
       }
 
     }

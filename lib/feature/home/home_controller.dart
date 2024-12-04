@@ -109,7 +109,7 @@ class HomeController extends BaseController{
 
     // connectivityResult = await (Connectivity().checkConnectivity());
     //await getJO();
-    syncMaster();
+    //syncMaster(); dimatikan dulu datanya nagcou
     countNotif();
     super.onInit();
   }
@@ -306,11 +306,11 @@ class HomeController extends BaseController{
   @pragma('vm:entry-point')
   static Future<void> onStartBG(ServiceInstance service) async {
     Timer.periodic(const Duration(seconds: 10 ), (timer) async {
-      sendDataInpectionPhoto();
-      sendDataInspection();
-      sendDataLaboratory();
-      sendDataFinalizeLaboratory();
-      sendDataFinalizeInspection();
+      // sendDataInpectionPhoto();
+      // sendDataInspection();
+      // sendDataLaboratory();
+      // sendDataFinalizeLaboratory();
+      // sendDataFinalizeInspection();
     });
   }
 

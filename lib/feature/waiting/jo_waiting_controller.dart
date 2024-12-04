@@ -39,7 +39,9 @@ import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/documents/documents_screen.dart';
 import 'package:ops_mobile/feature/lab_activity_detail/lab_activity_detail_screen.dart';
+import 'package:ops_mobile/utils/helper.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class JoWaitingController extends BaseController {
   // Data User
@@ -214,6 +216,39 @@ class JoWaitingController extends BaseController {
   }
 
   // Get Data
+
+  Rx<bool> loadingSpk = false.obs;
+  Future<void> downloadSpk()async{
+    try{
+      loadingSpk.value = true;
+      bool coneection = await Helper.checkConnection();
+      if(coneection){
+        final  idJo = id;
+        final response = await http.get(
+            Uri.parse('${Helper.baseUrl()}/api/v1/pdf/assignment/$idJo'),
+            headers: {'Content-Type': 'application/json'}
+        );
+        if(response.statusCode ==200){
+          final Map<String, dynamic> responseData = jsonDecode(response.body);
+          final urlDoc = responseData['data'];
+          await launchUrl(Uri.parse(urlDoc), mode: LaunchMode.externalApplication);
+          // if (await canLaunchUrl(Uri.parse(urlDoc))) {
+          //
+          // } else {
+          //   openDialog('Attenction', 'Gagal  menampilkan document');
+          // }
+        }else{
+          openDialog('Attenction', 'Gagal  mendownload document');
+        }
+      }else{
+        openDialog('Attenction', 'Periksa koneksi Internet Anda');
+      }
+      loadingSpk.value = false;
+    }catch(e){
+      loadingSpk.value = false;
+      openDialog('Attenction', 'Periksa koneksi Internet Anda');
+    }
+  }
 
   Future<void> getJoDetailLocal() async {
     final data = await SqlHelper.getDetailJo(id);

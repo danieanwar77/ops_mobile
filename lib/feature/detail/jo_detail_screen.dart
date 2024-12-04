@@ -34,9 +34,9 @@ class JoDetailScreen extends StatelessWidget {
                           : const SizedBox(),
                       Padding(
                         padding: const EdgeInsets.only(right: 8.0),
-                        child: IconButton(
-                          onPressed: (){
-
+                        child: controller.loadingSpk.value ? const CircularProgressIndicator() : IconButton(
+                          onPressed: () async {
+                            await controller.downloadSpk();
                           },
                           icon: CircleAvatar(
                               backgroundColor: Color(0xffFF5C70),

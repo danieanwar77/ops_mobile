@@ -277,7 +277,7 @@ class DocumentsScreen extends StatelessWidget{
                                         ],
                                       ),
                                     ),
-                                    SizedBox(
+                                    controller.documentsAttachments.value[index].isNotEmpty ? SizedBox(
                                       width: 54,
                                       height: 66,
                                       child: Stack(
@@ -301,7 +301,7 @@ class DocumentsScreen extends StatelessWidget{
                                           ),
                                         ],
                                       ),
-                                    ),
+                                    ) :const SizedBox(),
                                     const Divider(
                                         thickness: 0.4
                                     ),

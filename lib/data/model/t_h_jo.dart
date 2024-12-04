@@ -624,7 +624,7 @@ THJo copyWith({  num? id,
         var labItem = laboratory[l];
         var labExsis = await db.rawQuery('select * from t_d_jo_laboratory where id=?',[labItem.id]);
         if(labExsis.isEmpty){
-          await db.insert('t_d_jo_laboratory', labItem.toJson());
+          await db.insert('t_d_jo_laboratory', labItem.toInsert());
         }else{
           await db.update('t_d_jo_laboratory', labItem.toUpdate(),where: 'id=?', whereArgs: [labItem.id]);
         }
@@ -636,7 +636,7 @@ THJo copyWith({  num? id,
         var labItem = laboratory[l];
         var labExsis = await db.rawQuery('select * from t_d_jo_laboratory where id=?',[labItem.id]);
         if(labExsis.isEmpty){
-          await db.insert('t_d_jo_laboratory', labItem.toJson());
+          await db.insert('t_d_jo_laboratory', labItem.toInsert());
         }else{
           await db.update('t_d_jo_laboratory', labItem.toUpdate(),where: 'id=?', whereArgs: [labItem.id]);
         }

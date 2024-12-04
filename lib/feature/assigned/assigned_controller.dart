@@ -28,28 +28,18 @@ class AssignedController extends BaseController{
     searchText.addListener(searchJo);
     update();
 
-    final data = await SqlHelper.getListJo(employeeId.value,statusJo.value);
-    debugPrint('status selected: ${statusJo.value}');
-    debugPrint('data list : ${jsonEncode(data)}');
-    // getJoList();
+    //final data = await SqlHelper.getListJo(employeeId.value,statusJo.value);
+    //debugPrint('status selected: ${statusJo.value}');
+    //debugPrint('data list : ${jsonEncode(data)}');
     await getJoListLocal();
     super.onInit();
   }
 
-  void getJoList() async {
-    var response = await repository.getJoList(statusJo.value, employeeId.value) ?? JoListModel();
-    if(response.data!.data!.isNotEmpty){
-      response.data!.data!.forEach((value){
-        dataJoList.value.add(DataJo.fromJson(jsonDecode(jsonEncode(value))));
-        dataJoListTemp.value.add(DataJo.fromJson(jsonDecode(jsonEncode(value))));
-      });
-    }
-    debugPrint("JO List: ${jsonEncode(dataJoList.value)}");
-    update();
-  }
 
   Future<void> getJoListLocal() async{
     final data = await SqlHelper.getListJo(employeeId.value,statusJo.value);
+    debugPrint('status selected: ${statusJo.value}');
+    debugPrint('data list : ${jsonEncode(data)}');
     data.forEach((value){
       dataJoList.value.add(DataJo.fromJson(jsonDecode(jsonEncode(value))));
       dataJoListTemp.value.add(DataJo.fromJson(jsonDecode(jsonEncode(value))));

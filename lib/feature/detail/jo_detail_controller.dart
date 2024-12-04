@@ -38,6 +38,7 @@ import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/lab_activity_detail/lab_activity_detail_screen.dart';
 import 'package:ops_mobile/utils/helper.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class JoDetailController extends BaseController {
   // Data User
@@ -1351,7 +1352,7 @@ class JoDetailController extends BaseController {
           content: const Text('Apakah benar anda ingin menyimpan perubahan foto JO ini?'),
           actions: [
             TextButton(
-              child: const Text("Close"),
+              child: const Text("Cancel"),
               onPressed: () => Get.back(),
             ),
             TextButton(
@@ -1611,21 +1612,12 @@ class JoDetailController extends BaseController {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialEntryMode: TimePickerEntryMode.dialOnly,
-      initialTime: pickedTime != '' ? TimeOfDay(hour:int.parse(pickedTime.split(":")[0]),minute: int.parse(pickedTime.split(":")[1])) : TimeOfDay.now(),
-        builder: (context, childWidget) {
-          return MediaQuery(
-              data: MediaQuery.of(context).copyWith(
-                  alwaysUse24HourFormat: true
-              ),
-              child: childWidget!);
-        }
+      initialTime: TimeOfDay.now(),
     );
     if (picked != null) {
-      //debugPrint('hasil pick time:${picked.hour}:${picked.minute}');
-      final String time = '${picked.hour}:${picked.minute}';
-      // List timeSplit = picked.format(context).split(' ');
-      // final String formattedTime = timeSplit[0];
-      // final String time = formattedTime;
+      List timeSplit = picked.format(context).split(' ');
+      String formattedTime = timeSplit[0];
+      String time = '$formattedTime';
       return time;
     } else {
       return '';
@@ -1633,6 +1625,39 @@ class JoDetailController extends BaseController {
   }
 
   // START V2
+
+  Rx<bool> loadingSpk = false.obs;
+  Future<void> downloadSpk()async{
+   try{
+     loadingSpk.value = true;
+     bool coneection = await Helper.checkConnection();
+     if(coneection){
+       final  idJo = id;
+       final response = await http.get(
+           Uri.parse('${Helper.baseUrl()}/api/v1/pdf/assignment/$idJo'),
+           headers: {'Content-Type': 'application/json'}
+       );
+       if(response.statusCode ==200){
+         final Map<String, dynamic> responseData = jsonDecode(response.body);
+         final urlDoc = responseData['data'];
+         await launchUrl(Uri.parse(urlDoc), mode: LaunchMode.externalApplication);
+         // if (await canLaunchUrl(Uri.parse(urlDoc))) {
+         //
+         // } else {
+         //   openDialog('Attenction', 'Gagal  menampilkan document');
+         // }
+       }else{
+         openDialog('Attenction', 'Gagal  mendownload document');
+       }
+     }else{
+       openDialog('Attenction', 'Periksa koneksi Internet Anda');
+     }
+     loadingSpk.value = false;
+   }catch(e){
+     loadingSpk.value = false;
+     openDialog('Attenction', 'Periksa koneksi Internet Anda');
+   }
+  }
 
   void addActivityV2() {
     TDJoInspectionActivity activity = new TDJoInspectionActivity(
@@ -4955,7 +4980,7 @@ class JoDetailController extends BaseController {
         content: Text('Apakah benar anda akan menyimpan perubahan stage ${activityStages[activityStage - 1]} ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -5036,7 +5061,7 @@ class JoDetailController extends BaseController {
 
   void cleanActivity() {
     //activityList.value = [];
-    activityListTextController.value = [];
+    //activityListTextController.value = [];
     //stageListModal.value = [];
     editActivityMode.value = false;
     enabledDate.value = true;
@@ -5741,7 +5766,7 @@ class JoDetailController extends BaseController {
         content: const Text('Apakah benar anda akan menyimpan perubahan stage work complete ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -5780,23 +5805,12 @@ class JoDetailController extends BaseController {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialEntryMode: TimePickerEntryMode.dialOnly,
-      initialTime: pickedTime != '' ?
-      TimeOfDay(hour:int.parse(pickedTime.split(":")[0]),minute: int.parse(pickedTime.split(":")[1]))
-          : TimeOfDay.now(),
-        builder: (context, childWidget) {
-          return MediaQuery(
-              data: MediaQuery.of(context).copyWith(
-                // Using 24-Hour format
-                  alwaysUse24HourFormat: true),
-              // If you want 12-Hour format, just change alwaysUse24HourFormat to false or remove all the builder argument
-              child: childWidget!);
-        }
+      initialTime: TimeOfDay.now(),
     );
     if (picked != null) {
-      final String time = '${picked.hour}:${picked.minute}';
-      // List timeSplit = picked.format(context).split(' ');
-      // final String formattedTime = timeSplit[0];
-      // final String time = formattedTime;
+      List timeSplit = picked.format(context).split(' ');
+      String formattedTime = timeSplit[0];
+      String time = '$formattedTime';
       return time;
     } else {
       return '';
@@ -6966,7 +6980,7 @@ class JoDetailController extends BaseController {
         content: const Text('Apakah benar anda akan menyimpan perubahan stage report to client ini? pastikan data yg anda input benar.'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -7002,7 +7016,7 @@ class JoDetailController extends BaseController {
         content: const Text('Apakah benar anda ingin Finish JO Inspection ini? pastikan data yg anda input benar, karena anda tidak bisa mengubah data setelah Finish JO'),
         actions: [
           TextButton(
-            child: const Text("Close"),
+            child: const Text("Cancel"),
             onPressed: () => Get.back(),
           ),
           TextButton(

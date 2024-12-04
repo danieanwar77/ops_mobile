@@ -148,7 +148,7 @@ TDJoLaboratory copyWith({  num? id,
     //map['id'] = _id;
     map['t_h_jo_id'] = _tHJoId;
     map['laboratorium_id'] = _laboratoriumId;
-    map['laboratorium_name'] = _laboratoriumName;
+   //map['laboratorium_name'] = _laboratoriumName;
     map['prelim_date'] = _prelimDate;
     map['TAT'] = _tat;
     map['code'] = _code;
@@ -169,7 +169,6 @@ TDJoLaboratory copyWith({  num? id,
     //map['id'] = _id;
     map['t_h_jo_id'] = _tHJoId;
     map['laboratorium_id'] = _laboratoriumId;
-    map['laboratorium_name'] = _laboratoriumName;
     map['prelim_date'] = _prelimDate;
     map['TAT'] = _tat;
     map['code'] = _code;
@@ -179,9 +178,6 @@ TDJoLaboratory copyWith({  num? id,
     map['updated_by'] = _updatedBy;
     map['created_at'] = _createdAt;
     map['updated_at'] = _updatedAt;
-    // if (_laboratoryActivityStages != null) {
-    //   map['laboratory_activity_stages'] = _laboratoryActivityStages?.map((v) => v.toJson()).toList();
-    // }
     return map;
   }
 

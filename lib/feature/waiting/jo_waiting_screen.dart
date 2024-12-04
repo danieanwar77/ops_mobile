@@ -25,14 +25,18 @@ class JoWaitingScreen extends StatelessWidget {
                 length: controller.joWaitingTab.length,
                 child: Scaffold(
                     appBar: AppBar(
-                      actions: const [
-                        CircleAvatar(
-                            backgroundColor: Color(0xffFF5C70),
-                            child: Icon(
-                              Icons.description,
-                              color: Colors.white,
-                              size: 21,
-                            ))
+                      actions: [ controller.loadingSpk.value ? const CircularProgressIndicator() : IconButton(
+                        onPressed: () async {
+                          await controller.downloadSpk();
+                          },
+                          icon: const CircleAvatar(
+                              backgroundColor: Color(0xffFF5C70),
+                              child: Icon(
+                                Icons.description,
+                                color: Colors.white,
+                                size: 21,
+                              )),
+                        ),
                       ],
                       centerTitle: false,
                       backgroundColor: primaryColor,
@@ -4834,13 +4838,13 @@ class JoWaitingScreen extends StatelessWidget {
                                                                           },
                                                                           child: SizedBox(
                                                                             width: 54,
-                                                                            height: 54,
+                                                                            height: 58,
                                                                             child: Center(
                                                                                 child: Column(
                                                                                   children: [
                                                                                     Image.asset(
                                                                                       'assets/icons/pdfIcon.png',
-                                                                                      height: 34,
+                                                                                      height: 30,
                                                                                     ),
                                                                                     Text(filename, style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
                                                                                   ],
