@@ -1286,7 +1286,7 @@ class LabActivityDetailController extends BaseController{
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Apakah anda ingin menghapus activity date $date ?'),
+        content: Text('Apakah anda ingin menghapus activity date $date?'),
         actions: [
           TextButton(
             child: const Text("Cancel"),
@@ -1315,7 +1315,7 @@ class LabActivityDetailController extends BaseController{
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Apakah anda ingin menghapus activity date $date ?'),
+        content: Text('Apakah anda ingin menghapus activity date $date?'),
         actions: [
           TextButton(
             child: const Text("Cancel"),
@@ -2581,7 +2581,7 @@ class LabActivityDetailController extends BaseController{
                                   width: double.infinity,
                                   child: Center(
                                       child: Text(
-                                        'Save',
+                                        'Submit',
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 16,
@@ -2919,7 +2919,7 @@ class LabActivityDetailController extends BaseController{
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Apakah anda ingin menghapus activity date $date ?'),
+        content: Text('Apakah anda ingin menghapus activity date $date?'),
         actions: [
           TextButton(
             child: const Text("Cancel"),
@@ -2948,7 +2948,7 @@ class LabActivityDetailController extends BaseController{
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Apakah anda ingin menghapus activity date $date ?'),
+        content: Text('Apakah anda ingin menghapus activity date $date?'),
         actions: [
           TextButton(
             child: const Text("Close"),
@@ -3696,7 +3696,8 @@ class LabActivityDetailController extends BaseController{
                                             height: 63,
                                             child: InkWell(
                                               onTap: (){
-                                                controller.previewImageAct6(index, photo.pathName!);
+                                                //controller.previewImageAct6(index, photo.pathName!);
+                                                mediaPickerEditConfirm(index);
                                               },
                                               child: Image.file(
                                                 File(photo.pathName!),
@@ -4499,7 +4500,8 @@ class LabActivityDetailController extends BaseController{
                                             height: 63,
                                             child: InkWell(
                                               onTap: (){
-                                                controller.previewImageAct6(index, photo.pathName!);
+                                                //controller.previewImageAct6(index, photo.pathName!);
+                                                mediaPickerEditConfirm(index);
                                               },
                                               child: Image.file(
                                                 File(photo.pathName!),
@@ -5003,4 +5005,147 @@ class LabActivityDetailController extends BaseController{
       ),
     );
   }
+
+
+  void mediaPickerEditConfirm(int index) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text(
+          'File Attachment',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
+        ),
+        content: const Text('Pilih sumber file yang ingin dilampirkan.'),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: Center(
+                  child: SizedBox(
+                    width: 68,
+                    height: 67,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Get.back();
+                          cameraImageActivity6Update(index);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white, shape: RoundedRectangleBorder(side: const BorderSide(color: primaryColor), borderRadius: BorderRadius.circular(12))),
+                        child: const Center(
+                            child: Icon(
+                              Icons.camera_alt,
+                              color: primaryColor,
+                            ))),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: SizedBox(
+                    width: 68,
+                    height: 68,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Get.back();
+                          fileActivity6Update(index);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white, shape: RoundedRectangleBorder(side: const BorderSide(color: primaryColor), borderRadius: BorderRadius.circular(12))),
+                        child: const Center(
+                            child: Icon(
+                              Icons.folder_rounded,
+                              color: primaryColor,
+                            ))),
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  void cameraImageActivity6Update(int index) async {
+    var total = 0;
+
+    activity6Attachments.value.forEach((item) async {
+      final fileBytes = await File(item.pathName!).readAsBytes();
+      total = total + fileBytes.lengthInBytes;
+      update();
+    });
+    File? image;
+    try {
+      final XFile? pic = await picker.pickImage(source: ImageSource.camera, imageQuality: 10);
+      if (pic != null) {
+        final imageTemp = File(pic!.path);
+        image = imageTemp;
+        final imageFileBytes = await File(image.path).readAsBytes();
+
+        if (total + imageFileBytes.lengthInBytes > 10000000) {
+          openDialog("Attention", 'Total File lebih dari 10 MB!');
+          update();
+        } else {
+          final imageName = image.path.split('/').last;
+          final dir = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
+          bool exists = await Directory('$dir/ops/files/').exists();
+
+          if (exists == false) {
+            Directory('$dir/ops/files/').create();
+          }
+
+          image.rename('$dir/ops/files/$imageName');
+          update();
+          editActivity6Files(image.path, index);
+        }
+      }
+    } on PlatformException catch (e) {
+      openDialog('Failed', e.message ?? 'Gagal menambahkan file');
+    }
+  }
+
+  void fileActivity6Update(int index) async {
+    var total = 0;
+    activity6Attachments.value.forEach((item) async {
+      final fileBytes = await File(item.pathName!).readAsBytes();
+      total = total + fileBytes.lengthInBytes;
+      update();
+    });
+
+    try {
+      final FilePickerResult? attach =
+      await FilePicker.platform.pickFiles(allowCompression: true, compressionQuality: 10, allowMultiple: true, type: FileType.custom, allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf']);
+      if (attach != null) {
+        final List<XFile> xFiles = attach.xFiles;
+        xFiles.forEach((data) async {
+          final fileTemp = File(data!.path);
+          final File file = fileTemp;
+          final checkFileBytes = await File(file.path).readAsBytes();
+          if (total + checkFileBytes.lengthInBytes > 10000000) {
+            openDialog("Attention", 'Total File lebih dari 10 MB!');
+            return;
+          } else {
+            editActivity6Files(file.path, index);
+          }
+          update();
+        });
+        //openDialog('Success', 'Berhasil menambahkan file.');
+      }
+    } on PlatformException catch (e) {
+      openDialog('Failed', e.message ?? 'Gagal menambahkan file.');
+    }
+  }
+
+  void editActivity6Files(String path, index) {
+    activity6Attachments.value[index] = TDJoLaboratoryAttachment(
+      tDJoLaboratoryId: id,
+      pathName: path,
+      fileName: path.split('/').last,
+      isActive: 1,
+      isUpload: 0,
+      createdBy: userData.value?.id ?? 0,
+      createdAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString(),
+    );
+    debugPrint('file yangdi edit: ${jsonEncode(activity6Attachments.value.last)}');
+  }
+
 }
