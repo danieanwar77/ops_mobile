@@ -5,6 +5,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:ops_mobile/base/component/custom_text.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_attachment.dart';
@@ -1622,10 +1623,9 @@ class JoDetailScreen extends StatelessWidget {
                                                 ),
                                                 Row(
                                                   children: [
-                                                    Expanded(
-                                                      child: Text(
-                                                        'Order Start - End Date',
-                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                    const Expanded(
+                                                      child: CustomText(
+                                                        content:'Order Start - End Date',
                                                       ),
                                                     ),
                                                     const VerticalDivider(width: 1),
@@ -1643,10 +1643,7 @@ class JoDetailScreen extends StatelessWidget {
                                                   ],
                                                 ),
                                                 const Divider(thickness: 0.4),
-                                                Text(
-                                                  'Photos',
-                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                ),
+                                                const CustomText(content: 'Photo'),
                                                 const Divider(thickness: 0.4),
                                                 controller.isLoadingJOImage == false
                                                     ? controller.dailyActivityPhotosV2.value.isNotEmpty

@@ -5,6 +5,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:ops_mobile/base/component/custom_image.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_pict.dart';
@@ -1653,10 +1654,11 @@ class JoWaitingScreen extends StatelessWidget {
                                                                 child: SizedBox(
                                                                   width: 54,
                                                                   height: 54,
-                                                                  child: Image.file(
-                                                                    File(pict!.pathPhoto!),
-                                                                    fit: BoxFit.cover,
-                                                                  ),
+                                                                  child: CustomImage(path: pict!.pathPhoto!),
+                                                                  // child: Image.file(
+                                                                  //   File(pict!.pathPhoto!),
+                                                                  //   fit: BoxFit.cover,
+                                                                  // ),
                                                                 ),
                                                               );
                                                             })
@@ -1671,605 +1673,55 @@ class JoWaitingScreen extends StatelessWidget {
                                         child: Card(
                                       color: Colors.white,
                                       child: Padding(
-                                          padding: EdgeInsets.all(16),
+                                          padding: EdgeInsets.all(4),
                                           child: Column(children: [
                                             Row(children: [
-                                              Text(
-                                                'Daily Activity',
-                                                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w700, color: primaryColor),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              controller.dataJoDetail.value.detail?.statusJo != ''
-                                                  ? Container(
-                                                      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                                                      decoration: BoxDecoration(
-                                                        color: primaryColor,
-                                                        borderRadius: BorderRadius.circular(6),
+                                              SizedBox(
+                                                width: MediaQuery.sizeOf(context).width - 55,
+                                                child: ExpansionTile(
+                                                  shape: Border.all(color: Colors.transparent),
+                                                  title: Row(
+                                                    children: [
+                                                      Text(
+                                                        'Daily Activity',
+                                                        style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w700, color: primaryColor),
                                                       ),
-                                                      child: Text(controller.stageList.length == 0 ? "None" : controller.activityStages[controller.activityStage - 1],
-                                                          style: TextStyle(color: Colors.white)))
-                                                  : const SizedBox(),
-                                              Spacer(),
-                                            ]),
-                                            const SizedBox(height: 16),
-                                            controller.stageList.value.isNotEmpty
-                                                ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                    controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 1).isNotEmpty
+                                                      const SizedBox(width: 4),
+                                                      controller.dataJoDetail.value.detail?.statusJo != ''
+                                                          ? Container(
+                                                              padding: EdgeInsets.symmetric(vertical: 0),
+                                                              decoration: BoxDecoration(
+                                                                color: primaryColor,
+                                                                borderRadius: BorderRadius.circular(6),
+                                                              ),
+                                                              child: Text(controller.stageList.length == 0 ? "None" : controller.activityStages[controller.activityStage - 1],
+                                                                  style: TextStyle(color: Colors.white)))
+                                                          : const SizedBox(),
+                                                    ],
+                                                  ),
+                                                  childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
+                                                  children: <Widget>[
+                                                    controller.stageList.value.isNotEmpty
                                                         ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                            Row(
-                                                              children: [
-                                                                Text(
-                                                                  'Stage 1: Waiting For Arrival',
-                                                                  style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            const SizedBox(height: 8),
-                                                            //controller.stageList.value
-                                                            for (var progressActivity in controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 1))
-                                                              Column(children: [
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Date',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity.transDate ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                                ListView.builder(
-                                                                  shrinkWrap: true,
-                                                                  physics: NeverScrollableScrollPhysics(),
-                                                                  itemCount: progressActivity.listActivity?.length ?? 0,
-                                                                  itemBuilder: (context, index) {
-                                                                    final activity = progressActivity.listActivity?[index];
-                                                                    return Row(
-                                                                      children: [
-                                                                        Expanded(
-                                                                          flex: 1,
-                                                                          child: Text(
-                                                                            'Activities',
-                                                                            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                          ),
-                                                                        ),
-                                                                        VerticalDivider(width: 1),
-                                                                        SizedBox(width: 8),
-                                                                        Expanded(
-                                                                          flex: 1,
-                                                                          child: Text(
-                                                                            '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                          ),
-                                                                        ),
-                                                                        VerticalDivider(width: 1),
-                                                                        SizedBox(width: 8),
-                                                                        Expanded(
-                                                                          flex: 2,
-                                                                          child: Text(
-                                                                            activity?.activity ?? '-',
-                                                                            style: TextStyle(
-                                                                              fontSize: 12.sp,
-                                                                            ),
-                                                                          ),
-                                                                        )
-                                                                      ],
-                                                                    );
-                                                                  },
-                                                                ),
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Remarks',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity.remarks ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                              ]),
-                                                          ])
-                                                        : const SizedBox(),
-                                                    controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 2).isNotEmpty
-                                                        ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                            Row(
-                                                              children: [
-                                                                Text(
-                                                                  'Stage 2: Ship Arrived',
-                                                                  style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                ),
-                                                                const SizedBox(width: 8),
-                                                              ],
-                                                            ),
-                                                            const SizedBox(height: 8),
-                                                            for (var progressActivity in controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 2))
-                                                              Column(children: [
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Date',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity.transDate ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                                ListView.builder(
-                                                                  shrinkWrap: true,
-                                                                  physics: NeverScrollableScrollPhysics(),
-                                                                  itemCount: progressActivity.listActivity?.length ?? 0,
-                                                                  itemBuilder: (context, index) {
-                                                                    final activity = progressActivity.listActivity?[index];
-                                                                    return Row(
-                                                                      children: [
-                                                                        Expanded(
-                                                                          flex: 1,
-                                                                          child: Text(
-                                                                            'Activities',
-                                                                            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                          ),
-                                                                        ),
-                                                                        VerticalDivider(width: 1),
-                                                                        SizedBox(width: 8),
-                                                                        Expanded(
-                                                                          flex: 1,
-                                                                          child: Text(
-                                                                            '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                          ),
-                                                                        ),
-                                                                        VerticalDivider(width: 1),
-                                                                        SizedBox(width: 8),
-                                                                        Expanded(
-                                                                          flex: 2,
-                                                                          child: Text(
-                                                                            activity?.activity ?? '-',
-                                                                            style: TextStyle(
-                                                                              fontSize: 12.sp,
-                                                                            ),
-                                                                          ),
-                                                                        )
-                                                                      ],
-                                                                    );
-                                                                  },
-                                                                ),
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Remarks',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity.remarks ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                              ]),
-                                                          ])
-                                                        : const SizedBox(),
-                                                    controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 3).isNotEmpty
-                                                        ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                            Row(
-                                                              children: [
-                                                                Text(
-                                                                  'Stage 3: Ship Berthing',
-                                                                  style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                ),
-                                                                const SizedBox(width: 8),
-                                                              ],
-                                                            ),
-                                                            const SizedBox(height: 8),
-                                                            for (var progressActivity in controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 3))
-                                                              Column(children: [
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Date',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity.transDate ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                                ListView.builder(
-                                                                  shrinkWrap: true,
-                                                                  physics: NeverScrollableScrollPhysics(),
-                                                                  itemCount: progressActivity.listActivity?.length ?? 0,
-                                                                  itemBuilder: (context, index) {
-                                                                    final activity = progressActivity.listActivity?[index];
-                                                                    return Row(
-                                                                      children: [
-                                                                        Expanded(
-                                                                          flex: 1,
-                                                                          child: Text(
-                                                                            'Activities',
-                                                                            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                          ),
-                                                                        ),
-                                                                        VerticalDivider(width: 1),
-                                                                        SizedBox(width: 8),
-                                                                        Expanded(
-                                                                          flex: 1,
-                                                                          child: Text(
-                                                                            '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                          ),
-                                                                        ),
-                                                                        VerticalDivider(width: 1),
-                                                                        SizedBox(width: 8),
-                                                                        Expanded(
-                                                                          flex: 2,
-                                                                          child: Text(
-                                                                            activity?.activity ?? '-',
-                                                                            style: TextStyle(
-                                                                              fontSize: 12.sp,
-                                                                            ),
-                                                                          ),
-                                                                        )
-                                                                      ],
-                                                                    );
-                                                                  },
-                                                                ),
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Remarks',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity.remarks ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                              ]),
-                                                          ])
-                                                        : const SizedBox(),
-                                                    controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 4).isNotEmpty
-                                                        ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                            Row(
-                                                              children: [
-                                                                Text(
-                                                                  'Stage 4: Work Commence',
-                                                                  style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                ),
-                                                                const SizedBox(width: 8),
-                                                              ],
-                                                            ),
-                                                            const SizedBox(height: 8),
-                                                            for (var progressActivity in controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 4))
-                                                              Column(children: [
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Date',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity.transDate ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                                ListView.builder(
-                                                                  shrinkWrap: true,
-                                                                  physics: NeverScrollableScrollPhysics(),
-                                                                  itemCount: progressActivity.listActivity?.length ?? 0,
-                                                                  itemBuilder: (context, index) {
-                                                                    final activity = progressActivity.listActivity?[index];
-                                                                    return Row(
-                                                                      children: [
-                                                                        Expanded(
-                                                                          flex: 1,
-                                                                          child: Text(
-                                                                            'Activities',
-                                                                            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                          ),
-                                                                        ),
-                                                                        VerticalDivider(width: 1),
-                                                                        SizedBox(width: 8),
-                                                                        Expanded(
-                                                                          flex: 1,
-                                                                          child: Text(
-                                                                            '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                          ),
-                                                                        ),
-                                                                        VerticalDivider(width: 1),
-                                                                        SizedBox(width: 8),
-                                                                        Expanded(
-                                                                          flex: 2,
-                                                                          child: Text(
-                                                                            activity?.activity ?? '-',
-                                                                            style: TextStyle(
-                                                                              fontSize: 12.sp,
-                                                                            ),
-                                                                          ),
-                                                                        )
-                                                                      ],
-                                                                    );
-                                                                  },
-                                                                ),
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Remarks',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity.remarks ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                              ]),
-                                                          ])
-                                                        : const SizedBox(),
-                                                    controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 5).isNotEmpty
-                                                        ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                            Row(
-                                                              children: [
-                                                                Row(
-                                                                  children: [
-                                                                    Text(
-                                                                      'Stage 5: Work Complete',
-                                                                      style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                    ),
-                                                                    const SizedBox(width: 8),
-                                                                  ],
-                                                                ),
-                                                                const SizedBox(width: 8),
-                                                              ],
-                                                            ),
-                                                            for (var progressActivity in controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 5))
-                                                              Column(children: [
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Activity Date',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    const VerticalDivider(width: 1),
-                                                                    const SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity.transDate ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Activity Time',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity.createdAt ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Actual Qty',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    const VerticalDivider(width: 1),
-                                                                    const SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        //double.parse(progressActivity?.actualQty ?? '0').toString(),
-                                                                        progressActivity?.actualQty ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'UOM',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        controller.dataJoDetail.value.detail?.uomName ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Vessel',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity!.activityVesel?.vessel ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                                ListView.builder(
-                                                                  shrinkWrap: true,
-                                                                  physics: NeverScrollableScrollPhysics(),
-                                                                  itemCount: progressActivity.listActivityBarge?.length ?? 0,
-                                                                  itemBuilder: (context, index) {
-                                                                    final activityBarge = progressActivity.listActivityBarge?[index];
-                                                                    return Column(
-                                                                      children: [
-                                                                        Row(
-                                                                          children: [
-                                                                            Expanded(
-                                                                                child: Text(
-                                                                              'Barge ${index + 1}',
-                                                                              style: TextStyle(
-                                                                                fontSize: 12.sp,
-                                                                                fontWeight: FontWeight.w700,
-                                                                              ),
-                                                                            )),
-                                                                            VerticalDivider(
-                                                                              width: 1,
-                                                                            ),
-                                                                            SizedBox(
-                                                                              width: 16,
-                                                                            ),
-                                                                            Expanded(
-                                                                                child: Text(
-                                                                              '${activityBarge!.barge!}',
-                                                                              style: TextStyle(
-                                                                                fontSize: 12.sp,
-                                                                                fontWeight: FontWeight.w700,
-                                                                              ),
-                                                                            ))
-                                                                          ],
-                                                                        ),
-                                                                        const Divider(
-                                                                          thickness: 0.4,
-                                                                        )
-                                                                      ],
-                                                                    );
-                                                                  },
-                                                                ),
-                                                                ListView.builder(
-                                                                  shrinkWrap: true,
-                                                                  physics: NeverScrollableScrollPhysics(),
-                                                                  itemCount: progressActivity.listActivityStageTranshipment?.length ?? 0,
-                                                                  itemBuilder: (context, index) {
-                                                                    final transhipment = progressActivity.listActivityStageTranshipment?[index];
-                                                                    return Column(
-                                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                            controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 1).isNotEmpty
+                                                                ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                                    Row(
                                                                       children: [
                                                                         Text(
-                                                                          'KOS Transhipment ${index + 1}',
-                                                                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                          'Stage 1: Waiting For Arrival',
+                                                                          style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                         ),
-                                                                        const SizedBox(height: 16),
+                                                                      ],
+                                                                    ),
+                                                                    const SizedBox(height: 8),
+                                                                    //controller.stageList.value
+                                                                    for (var progressActivity in controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 1))
+                                                                      Column(children: [
                                                                         Row(
                                                                           children: [
                                                                             Expanded(
                                                                               child: Text(
-                                                                                'Jetty',
+                                                                                'Date',
                                                                                 style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                               ),
                                                                             ),
@@ -2277,7 +1729,403 @@ class JoWaitingScreen extends StatelessWidget {
                                                                             SizedBox(width: 16),
                                                                             Expanded(
                                                                               child: Text(
-                                                                                transhipment!.jetty ?? '-',
+                                                                                progressActivity.transDate ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                        ListView.builder(
+                                                                          shrinkWrap: true,
+                                                                          physics: NeverScrollableScrollPhysics(),
+                                                                          itemCount: progressActivity.listActivity?.length ?? 0,
+                                                                          itemBuilder: (context, index) {
+                                                                            final activity = progressActivity.listActivity?[index];
+                                                                            return Row(
+                                                                              children: [
+                                                                                Expanded(
+                                                                                  flex: 1,
+                                                                                  child: Text(
+                                                                                    'Activities',
+                                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                  ),
+                                                                                ),
+                                                                                VerticalDivider(width: 1),
+                                                                                SizedBox(width: 8),
+                                                                                Expanded(
+                                                                                  flex: 1,
+                                                                                  child: Text(
+                                                                                    '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
+                                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                  ),
+                                                                                ),
+                                                                                VerticalDivider(width: 1),
+                                                                                SizedBox(width: 8),
+                                                                                Expanded(
+                                                                                  flex: 2,
+                                                                                  child: Text(
+                                                                                    activity?.activity ?? '-',
+                                                                                    style: TextStyle(
+                                                                                      fontSize: 12.sp,
+                                                                                    ),
+                                                                                  ),
+                                                                                )
+                                                                              ],
+                                                                            );
+                                                                          },
+                                                                        ),
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                'Remarks',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 16),
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                progressActivity.remarks ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                      ]),
+                                                                  ])
+                                                                : const SizedBox(),
+                                                            controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 2).isNotEmpty
+                                                                ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                                    Row(
+                                                                      children: [
+                                                                        Text(
+                                                                          'Stage 2: Ship Arrived',
+                                                                          style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                        ),
+                                                                        const SizedBox(width: 8),
+                                                                      ],
+                                                                    ),
+                                                                    const SizedBox(height: 8),
+                                                                    for (var progressActivity in controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 2))
+                                                                      Column(children: [
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                'Date',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 16),
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                progressActivity.transDate ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                        ListView.builder(
+                                                                          shrinkWrap: true,
+                                                                          physics: NeverScrollableScrollPhysics(),
+                                                                          itemCount: progressActivity.listActivity?.length ?? 0,
+                                                                          itemBuilder: (context, index) {
+                                                                            final activity = progressActivity.listActivity?[index];
+                                                                            return Row(
+                                                                              children: [
+                                                                                Expanded(
+                                                                                  flex: 1,
+                                                                                  child: Text(
+                                                                                    'Activities',
+                                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                  ),
+                                                                                ),
+                                                                                VerticalDivider(width: 1),
+                                                                                SizedBox(width: 8),
+                                                                                Expanded(
+                                                                                  flex: 1,
+                                                                                  child: Text(
+                                                                                    '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
+                                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                  ),
+                                                                                ),
+                                                                                VerticalDivider(width: 1),
+                                                                                SizedBox(width: 8),
+                                                                                Expanded(
+                                                                                  flex: 2,
+                                                                                  child: Text(
+                                                                                    activity?.activity ?? '-',
+                                                                                    style: TextStyle(
+                                                                                      fontSize: 12.sp,
+                                                                                    ),
+                                                                                  ),
+                                                                                )
+                                                                              ],
+                                                                            );
+                                                                          },
+                                                                        ),
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                'Remarks',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 16),
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                progressActivity.remarks ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                      ]),
+                                                                  ])
+                                                                : const SizedBox(),
+                                                            controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 3).isNotEmpty
+                                                                ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                                    Row(
+                                                                      children: [
+                                                                        Text(
+                                                                          'Stage 3: Ship Berthing',
+                                                                          style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                        ),
+                                                                        const SizedBox(width: 8),
+                                                                      ],
+                                                                    ),
+                                                                    const SizedBox(height: 8),
+                                                                    for (var progressActivity in controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 3))
+                                                                      Column(children: [
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                'Date',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 16),
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                progressActivity.transDate ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                        ListView.builder(
+                                                                          shrinkWrap: true,
+                                                                          physics: NeverScrollableScrollPhysics(),
+                                                                          itemCount: progressActivity.listActivity?.length ?? 0,
+                                                                          itemBuilder: (context, index) {
+                                                                            final activity = progressActivity.listActivity?[index];
+                                                                            return Row(
+                                                                              children: [
+                                                                                Expanded(
+                                                                                  flex: 1,
+                                                                                  child: Text(
+                                                                                    'Activities',
+                                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                  ),
+                                                                                ),
+                                                                                VerticalDivider(width: 1),
+                                                                                SizedBox(width: 8),
+                                                                                Expanded(
+                                                                                  flex: 1,
+                                                                                  child: Text(
+                                                                                    '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
+                                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                  ),
+                                                                                ),
+                                                                                VerticalDivider(width: 1),
+                                                                                SizedBox(width: 8),
+                                                                                Expanded(
+                                                                                  flex: 2,
+                                                                                  child: Text(
+                                                                                    activity?.activity ?? '-',
+                                                                                    style: TextStyle(
+                                                                                      fontSize: 12.sp,
+                                                                                    ),
+                                                                                  ),
+                                                                                )
+                                                                              ],
+                                                                            );
+                                                                          },
+                                                                        ),
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                'Remarks',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 16),
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                progressActivity.remarks ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                      ]),
+                                                                  ])
+                                                                : const SizedBox(),
+                                                            controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 4).isNotEmpty
+                                                                ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                                    Row(
+                                                                      children: [
+                                                                        Text(
+                                                                          'Stage 4: Work Commence',
+                                                                          style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                        ),
+                                                                        const SizedBox(width: 8),
+                                                                      ],
+                                                                    ),
+                                                                    const SizedBox(height: 8),
+                                                                    for (var progressActivity in controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 4))
+                                                                      Column(children: [
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                'Date',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 16),
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                progressActivity.transDate ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                        ListView.builder(
+                                                                          shrinkWrap: true,
+                                                                          physics: NeverScrollableScrollPhysics(),
+                                                                          itemCount: progressActivity.listActivity?.length ?? 0,
+                                                                          itemBuilder: (context, index) {
+                                                                            final activity = progressActivity.listActivity?[index];
+                                                                            return Row(
+                                                                              children: [
+                                                                                Expanded(
+                                                                                  flex: 1,
+                                                                                  child: Text(
+                                                                                    'Activities',
+                                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                  ),
+                                                                                ),
+                                                                                VerticalDivider(width: 1),
+                                                                                SizedBox(width: 8),
+                                                                                Expanded(
+                                                                                  flex: 1,
+                                                                                  child: Text(
+                                                                                    '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
+                                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                  ),
+                                                                                ),
+                                                                                VerticalDivider(width: 1),
+                                                                                SizedBox(width: 8),
+                                                                                Expanded(
+                                                                                  flex: 2,
+                                                                                  child: Text(
+                                                                                    activity?.activity ?? '-',
+                                                                                    style: TextStyle(
+                                                                                      fontSize: 12.sp,
+                                                                                    ),
+                                                                                  ),
+                                                                                )
+                                                                              ],
+                                                                            );
+                                                                          },
+                                                                        ),
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                'Remarks',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 16),
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                progressActivity.remarks ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                      ]),
+                                                                  ])
+                                                                : const SizedBox(),
+                                                            controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 5).isNotEmpty
+                                                                ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                                    Row(
+                                                                      children: [
+                                                                        Row(
+                                                                          children: [
+                                                                            Text(
+                                                                              'Stage 5: Work Complete',
+                                                                              style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                            ),
+                                                                            const SizedBox(width: 8),
+                                                                          ],
+                                                                        ),
+                                                                        const SizedBox(width: 8),
+                                                                      ],
+                                                                    ),
+                                                                    for (var progressActivity in controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 5))
+                                                                      Column(children: [
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                'Activity Date',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            const VerticalDivider(width: 1),
+                                                                            const SizedBox(width: 16),
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                progressActivity.transDate ?? '-',
                                                                                 style: TextStyle(
                                                                                   fontSize: 12.sp,
                                                                                 ),
@@ -2290,7 +2138,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                           children: [
                                                                             Expanded(
                                                                               child: Text(
-                                                                                'Initial Date',
+                                                                                'Activity Time',
                                                                                 style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                               ),
                                                                             ),
@@ -2298,7 +2146,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                             SizedBox(width: 16),
                                                                             Expanded(
                                                                               child: Text(
-                                                                                transhipment!.initialDate ?? '-',
+                                                                                progressActivity.createdAt ?? '-',
                                                                                 style: TextStyle(
                                                                                   fontSize: 12.sp,
                                                                                 ),
@@ -2311,36 +2159,16 @@ class JoWaitingScreen extends StatelessWidget {
                                                                           children: [
                                                                             Expanded(
                                                                               child: Text(
-                                                                                'Final Date',
+                                                                                'Actual Qty',
                                                                                 style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                               ),
                                                                             ),
-                                                                            VerticalDivider(width: 1),
-                                                                            SizedBox(width: 16),
+                                                                            const VerticalDivider(width: 1),
+                                                                            const SizedBox(width: 16),
                                                                             Expanded(
                                                                               child: Text(
-                                                                                transhipment!.finalDate ?? '-',
-                                                                                style: TextStyle(
-                                                                                  fontSize: 12.sp,
-                                                                                ),
-                                                                              ),
-                                                                            )
-                                                                          ],
-                                                                        ),
-                                                                        const Divider(thickness: 0.4),
-                                                                        Row(
-                                                                          children: [
-                                                                            Expanded(
-                                                                              child: Text(
-                                                                                'Delivery Qty',
-                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                              ),
-                                                                            ),
-                                                                            VerticalDivider(width: 1),
-                                                                            SizedBox(width: 16),
-                                                                            Expanded(
-                                                                              child: Text(
-                                                                                double.parse(transhipment!.deliveryQty!.toString()).toInt().toString() ?? '-',
+                                                                                //double.parse(progressActivity?.actualQty ?? '0').toString(),
+                                                                                progressActivity?.actualQty ?? '-',
                                                                                 style: TextStyle(
                                                                                   fontSize: 12.sp,
                                                                                 ),
@@ -2361,7 +2189,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                                             SizedBox(width: 16),
                                                                             Expanded(
                                                                               child: Text(
-                                                                                transhipment!.uomName ?? '-',
+                                                                                controller.dataJoDetail.value.detail?.uomName ?? '-',
                                                                                 style: TextStyle(
                                                                                   fontSize: 12.sp,
                                                                                 ),
@@ -2370,950 +2198,1135 @@ class JoWaitingScreen extends StatelessWidget {
                                                                           ],
                                                                         ),
                                                                         const Divider(thickness: 0.4),
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                'Vessel',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 16),
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                progressActivity!.activityVesel?.vessel ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                        ListView.builder(
+                                                                          shrinkWrap: true,
+                                                                          physics: NeverScrollableScrollPhysics(),
+                                                                          itemCount: progressActivity.listActivityBarge?.length ?? 0,
+                                                                          itemBuilder: (context, index) {
+                                                                            final activityBarge = progressActivity.listActivityBarge?[index];
+                                                                            return Column(
+                                                                              children: [
+                                                                                Row(
+                                                                                  children: [
+                                                                                    Expanded(
+                                                                                        child: Text(
+                                                                                      'Barge ${index + 1}',
+                                                                                      style: TextStyle(
+                                                                                        fontSize: 12.sp,
+                                                                                        fontWeight: FontWeight.w700,
+                                                                                      ),
+                                                                                    )),
+                                                                                    VerticalDivider(
+                                                                                      width: 1,
+                                                                                    ),
+                                                                                    SizedBox(
+                                                                                      width: 16,
+                                                                                    ),
+                                                                                    Expanded(
+                                                                                        child: Text(
+                                                                                      '${activityBarge!.barge!}',
+                                                                                      style: TextStyle(
+                                                                                        fontSize: 12.sp,
+                                                                                        fontWeight: FontWeight.w700,
+                                                                                      ),
+                                                                                    ))
+                                                                                  ],
+                                                                                ),
+                                                                                const Divider(
+                                                                                  thickness: 0.4,
+                                                                                )
+                                                                              ],
+                                                                            );
+                                                                          },
+                                                                        ),
+                                                                        ListView.builder(
+                                                                          shrinkWrap: true,
+                                                                          physics: NeverScrollableScrollPhysics(),
+                                                                          itemCount: progressActivity.listActivityStageTranshipment?.length ?? 0,
+                                                                          itemBuilder: (context, index) {
+                                                                            final transhipment = progressActivity.listActivityStageTranshipment?[index];
+                                                                            return Column(
+                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                              children: [
+                                                                                Text(
+                                                                                  'KOS Transhipment ${index + 1}',
+                                                                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                ),
+                                                                                const SizedBox(height: 16),
+                                                                                Row(
+                                                                                  children: [
+                                                                                    Expanded(
+                                                                                      child: Text(
+                                                                                        'Jetty',
+                                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                      ),
+                                                                                    ),
+                                                                                    VerticalDivider(width: 1),
+                                                                                    SizedBox(width: 16),
+                                                                                    Expanded(
+                                                                                      child: Text(
+                                                                                        transhipment!.jetty ?? '-',
+                                                                                        style: TextStyle(
+                                                                                          fontSize: 12.sp,
+                                                                                        ),
+                                                                                      ),
+                                                                                    )
+                                                                                  ],
+                                                                                ),
+                                                                                const Divider(thickness: 0.4),
+                                                                                Row(
+                                                                                  children: [
+                                                                                    Expanded(
+                                                                                      child: Text(
+                                                                                        'Initial Date',
+                                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                      ),
+                                                                                    ),
+                                                                                    VerticalDivider(width: 1),
+                                                                                    SizedBox(width: 16),
+                                                                                    Expanded(
+                                                                                      child: Text(
+                                                                                        transhipment!.initialDate ?? '-',
+                                                                                        style: TextStyle(
+                                                                                          fontSize: 12.sp,
+                                                                                        ),
+                                                                                      ),
+                                                                                    )
+                                                                                  ],
+                                                                                ),
+                                                                                const Divider(thickness: 0.4),
+                                                                                Row(
+                                                                                  children: [
+                                                                                    Expanded(
+                                                                                      child: Text(
+                                                                                        'Final Date',
+                                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                      ),
+                                                                                    ),
+                                                                                    VerticalDivider(width: 1),
+                                                                                    SizedBox(width: 16),
+                                                                                    Expanded(
+                                                                                      child: Text(
+                                                                                        transhipment!.finalDate ?? '-',
+                                                                                        style: TextStyle(
+                                                                                          fontSize: 12.sp,
+                                                                                        ),
+                                                                                      ),
+                                                                                    )
+                                                                                  ],
+                                                                                ),
+                                                                                const Divider(thickness: 0.4),
+                                                                                Row(
+                                                                                  children: [
+                                                                                    Expanded(
+                                                                                      child: Text(
+                                                                                        'Delivery Qty',
+                                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                      ),
+                                                                                    ),
+                                                                                    VerticalDivider(width: 1),
+                                                                                    SizedBox(width: 16),
+                                                                                    Expanded(
+                                                                                      child: Text(
+                                                                                        double.parse(transhipment!.deliveryQty!.toString()).toInt().toString() ?? '-',
+                                                                                        style: TextStyle(
+                                                                                          fontSize: 12.sp,
+                                                                                        ),
+                                                                                      ),
+                                                                                    )
+                                                                                  ],
+                                                                                ),
+                                                                                const Divider(thickness: 0.4),
+                                                                                Row(
+                                                                                  children: [
+                                                                                    Expanded(
+                                                                                      child: Text(
+                                                                                        'UOM',
+                                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                      ),
+                                                                                    ),
+                                                                                    VerticalDivider(width: 1),
+                                                                                    SizedBox(width: 16),
+                                                                                    Expanded(
+                                                                                      child: Text(
+                                                                                        transhipment!.uomName ?? '-',
+                                                                                        style: TextStyle(
+                                                                                          fontSize: 12.sp,
+                                                                                        ),
+                                                                                      ),
+                                                                                    )
+                                                                                  ],
+                                                                                ),
+                                                                                const Divider(thickness: 0.4),
+                                                                              ],
+                                                                            );
+                                                                          },
+                                                                        )
+                                                                      ]),
+                                                                  ])
+                                                                : const SizedBox(),
+                                                          ])
+                                                        : const SizedBox(),
+                                                    controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 6).isNotEmpty
+                                                        ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                            Row(
+                                                              children: [
+                                                                Text(
+                                                                  'Stage 6: Report to Client',
+                                                                  style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                ),
+                                                                const SizedBox(width: 8),
+                                                              ],
+                                                            ),
+                                                            const SizedBox(height: 16),
+                                                            for (var progressActivity in controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 6))
+                                                              Column(children: [
+                                                                Row(
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child: Text(
+                                                                        'Date',
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                      ),
+                                                                    ),
+                                                                    VerticalDivider(width: 1),
+                                                                    SizedBox(width: 16),
+                                                                    Expanded(
+                                                                      child: Text(
+                                                                        progressActivity.transDate ?? '-',
+                                                                        style: TextStyle(
+                                                                          fontSize: 12.sp,
+                                                                        ),
+                                                                      ),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                                const Divider(thickness: 0.4),
+                                                                ListView.builder(
+                                                                  shrinkWrap: true,
+                                                                  physics: NeverScrollableScrollPhysics(),
+                                                                  itemCount: progressActivity.listActivity?.length ?? 0,
+                                                                  itemBuilder: (context, index) {
+                                                                    final activity = progressActivity.listActivity?[index];
+                                                                    return Row(
+                                                                      children: [
+                                                                        Expanded(
+                                                                          flex: 1,
+                                                                          child: Text(
+                                                                            'Activities',
+                                                                            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                          ),
+                                                                        ),
+                                                                        VerticalDivider(width: 1),
+                                                                        SizedBox(width: 8),
+                                                                        Expanded(
+                                                                          flex: 1,
+                                                                          child: Text(
+                                                                            '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
+                                                                            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                          ),
+                                                                        ),
+                                                                        VerticalDivider(width: 1),
+                                                                        SizedBox(width: 8),
+                                                                        Expanded(
+                                                                          flex: 2,
+                                                                          child: Text(
+                                                                            activity?.activity ?? '-',
+                                                                            style: TextStyle(
+                                                                              fontSize: 12.sp,
+                                                                            ),
+                                                                          ),
+                                                                        )
                                                                       ],
                                                                     );
                                                                   },
-                                                                )
+                                                                ),
+                                                                Row(
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child: Text(
+                                                                        'Remarks',
+                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                      ),
+                                                                    ),
+                                                                    VerticalDivider(width: 1),
+                                                                    SizedBox(width: 16),
+                                                                    Expanded(
+                                                                      child: Text(
+                                                                        progressActivity.remarks ?? '-',
+                                                                        style: TextStyle(
+                                                                          fontSize: 12.sp,
+                                                                        ),
+                                                                      ),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                                const Divider(thickness: 0.4),
                                                               ]),
+                                                            const SizedBox(height: 16),
+                                                            Text(
+                                                              'Attachment',
+                                                              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                            ),
+                                                            const SizedBox(height: 16),
+                                                            controller.activity6Attachments.value.isNotEmpty
+                                                                ? GridView.builder(
+                                                                    shrinkWrap: true,
+                                                                    physics: NeverScrollableScrollPhysics(),
+                                                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                                                      crossAxisCount: 5,
+                                                                      mainAxisSpacing: 8,
+                                                                      crossAxisSpacing: 8,
+                                                                    ),
+                                                                    itemCount: controller.activity6Attachments.value.length,
+                                                                    itemBuilder: (content, index) {
+                                                                      final File attach = controller.activity6Attachments.value[index];
+                                                                      final String fileType = controller.checkFileType(attach.path);
+                                                                      var filenameArr = attach.path.split("/");
+                                                                      var filename = filenameArr.last;
+                                                                      return fileType == 'image'
+                                                                          ? SizedBox(
+                                                                              width: 54,
+                                                                              height: 66,
+                                                                              child: SizedBox(
+                                                                                width: 54,
+                                                                                height: 54,
+                                                                                child: InkWell(
+                                                                                  onTap: () {
+                                                                                    controller.previewImageAct6(index, attach.path);
+                                                                                  },
+                                                                                  child: Image.file(
+                                                                                    File(attach.path),
+                                                                                    fit: BoxFit.cover,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          : fileType == 'doc'
+                                                                              ? SizedBox(
+                                                                                  width: 54,
+                                                                                  height: 66,
+                                                                                  child: InkWell(
+                                                                                    onTap: () {
+                                                                                      OpenFilex.open(attach.path);
+                                                                                    },
+                                                                                    child: SizedBox(
+                                                                                      width: 54,
+                                                                                      height: 54,
+                                                                                      child: Center(
+                                                                                          child: Column(
+                                                                                        children: [
+                                                                                          Image.asset(
+                                                                                            'assets/icons/pdfIcon.png',
+                                                                                            height: 42,
+                                                                                          ),
+                                                                                          Text(filename, style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
+                                                                                        ],
+                                                                                      )),
+                                                                                    ),
+                                                                                  ),
+                                                                                )
+                                                                              : SizedBox();
+                                                                    })
+                                                                : const SizedBox()
                                                           ])
                                                         : const SizedBox(),
-                                                  ])
-                                                : const SizedBox(),
-                                            controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 6).isNotEmpty
-                                                ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                          'Stage 6: Report to Client',
-                                                          style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                        ),
-                                                        const SizedBox(width: 8),
-                                                      ],
-                                                    ),
                                                     const SizedBox(height: 16),
-                                                    for (var progressActivity in controller.stageList.value.where((item) => item.mStatusinspectionstagesId == 6))
-                                                      Column(children: [
-                                                        Row(
-                                                          children: [
-                                                            Expanded(
-                                                              child: Text(
-                                                                'Date',
-                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                              ),
+                                                    controller.activityListStages.value.isNotEmpty
+                                                        ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                            controller.activityListStages.value.where((item) => item.mStatusinspectionstagesId == 1).isNotEmpty
+                                                                ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                                    Text(
+                                                                      'Stage 1: Waiting For Arrival',
+                                                                      style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                    ),
+                                                                    const SizedBox(height: 8),
+                                                                    for (var progressActivity in controller.activityListStages.value.where((item) => item.mStatusinspectionstagesId == 1))
+                                                                      Column(children: [
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                'Date',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 16),
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                progressActivity.transDate ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              flex: 1,
+                                                                              child: Text(
+                                                                                'Activities',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 8),
+                                                                            Expanded(
+                                                                              flex: 1,
+                                                                              child: Text(
+                                                                                '${progressActivity.startActivityTime ?? '-'} - ${progressActivity.endActivityTime ?? '-'}',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 8),
+                                                                            Expanded(
+                                                                              flex: 2,
+                                                                              child: Text(
+                                                                                progressActivity.activity ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                'Remarks',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 16),
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                progressActivity.remarks ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                      ]),
+                                                                  ])
+                                                                : const SizedBox(),
+                                                            controller.activityListStages.value.where((item) => item.mStatusinspectionstagesId == 2).isNotEmpty
+                                                                ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                                    Text(
+                                                                      'Stage 2: Ship Arrived',
+                                                                      style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                    ),
+                                                                    const SizedBox(height: 8),
+                                                                    for (var progressActivity in controller.activityListStages.value.where((item) => item.mStatusinspectionstagesId == 2))
+                                                                      Column(children: [
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                'Date',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 16),
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                progressActivity.transDate ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              flex: 1,
+                                                                              child: Text(
+                                                                                'Activities',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 8),
+                                                                            Expanded(
+                                                                              flex: 1,
+                                                                              child: Text(
+                                                                                '${progressActivity.startActivityTime ?? '-'} - ${progressActivity.endActivityTime ?? '-'}',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 8),
+                                                                            Expanded(
+                                                                              flex: 2,
+                                                                              child: Text(
+                                                                                progressActivity.activity ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                'Remarks',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 16),
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                progressActivity.remarks ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                      ]),
+                                                                  ])
+                                                                : const SizedBox(),
+                                                            controller.activityListStages.value.where((item) => item.mStatusinspectionstagesId == 3).isNotEmpty
+                                                                ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                                    Text(
+                                                                      'Stage 3: Ship Berthing',
+                                                                      style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                    ),
+                                                                    const SizedBox(height: 8),
+                                                                    for (var progressActivity in controller.activityListStages.value.where((item) => item.mStatusinspectionstagesId == 3))
+                                                                      Column(children: [
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                'Date',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 16),
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                progressActivity.transDate ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              flex: 1,
+                                                                              child: Text(
+                                                                                'Activities',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 8),
+                                                                            Expanded(
+                                                                              flex: 1,
+                                                                              child: Text(
+                                                                                '${progressActivity.startActivityTime ?? '-'} - ${progressActivity.endActivityTime ?? '-'}',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 8),
+                                                                            Expanded(
+                                                                              flex: 2,
+                                                                              child: Text(
+                                                                                progressActivity.activity ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                'Remarks',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 16),
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                progressActivity.remarks ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                      ]),
+                                                                  ])
+                                                                : const SizedBox(),
+                                                            controller.activityListStages.value.where((item) => item.mStatusinspectionstagesId == 4).isNotEmpty
+                                                                ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                                    Text(
+                                                                      'Stage 4: Work Commence',
+                                                                      style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                    ),
+                                                                    const SizedBox(height: 8),
+                                                                    for (var progressActivity in controller.activityListStages.value.where((item) => item.mStatusinspectionstagesId == 4))
+                                                                      Column(children: [
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                'Date',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 16),
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                progressActivity.transDate ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              flex: 1,
+                                                                              child: Text(
+                                                                                'Activities',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 8),
+                                                                            Expanded(
+                                                                              flex: 1,
+                                                                              child: Text(
+                                                                                '${progressActivity.startActivityTime ?? '-'} - ${progressActivity.endActivityTime ?? '-'}',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 8),
+                                                                            Expanded(
+                                                                              flex: 2,
+                                                                              child: Text(
+                                                                                progressActivity.activity ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                        Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                'Remarks',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                            ),
+                                                                            VerticalDivider(width: 1),
+                                                                            SizedBox(width: 16),
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                progressActivity.remarks ?? '-',
+                                                                                style: TextStyle(
+                                                                                  fontSize: 12.sp,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                        const Divider(thickness: 0.4),
+                                                                      ]),
+                                                                  ])
+                                                                : const SizedBox(),
+                                                          ])
+                                                        : const SizedBox(),
+                                                    controller.activity5ListStages.value.isNotEmpty
+                                                        ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                            Text(
+                                                              'Stage 5: Work Complete',
+                                                              style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                             ),
-                                                            VerticalDivider(width: 1),
-                                                            SizedBox(width: 16),
-                                                            Expanded(
-                                                              child: Text(
-                                                                progressActivity.transDate ?? '-',
-                                                                style: TextStyle(
-                                                                  fontSize: 12.sp,
-                                                                ),
-                                                              ),
-                                                            )
-                                                          ],
-                                                        ),
-                                                        const Divider(thickness: 0.4),
-                                                        ListView.builder(
-                                                          shrinkWrap: true,
-                                                          physics: NeverScrollableScrollPhysics(),
-                                                          itemCount: progressActivity.listActivity?.length ?? 0,
-                                                          itemBuilder: (context, index) {
-                                                            final activity = progressActivity.listActivity?[index];
-                                                            return Row(
+                                                            const SizedBox(height: 16),
+                                                            Row(
                                                               children: [
                                                                 Expanded(
-                                                                  flex: 1,
                                                                   child: Text(
-                                                                    'Activities',
-                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                    'Activity Date',
+                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                                                                   ),
                                                                 ),
                                                                 VerticalDivider(width: 1),
-                                                                SizedBox(width: 8),
+                                                                SizedBox(width: 16),
                                                                 Expanded(
-                                                                  flex: 1,
                                                                   child: Text(
-                                                                    '${Helper.formatToHourMinute(activity!.startActivityTime!) ?? '-'} - ${Helper.formatToHourMinute(activity!.endActivityTime!) ?? '-'}',
-                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                  ),
-                                                                ),
-                                                                VerticalDivider(width: 1),
-                                                                SizedBox(width: 8),
-                                                                Expanded(
-                                                                  flex: 2,
-                                                                  child: Text(
-                                                                    activity?.activity ?? '-',
+                                                                    controller.activity5ListStages.value.first.transDate ?? '-',
                                                                     style: TextStyle(
-                                                                      fontSize: 12.sp,
+                                                                      fontSize: 14,
                                                                     ),
                                                                   ),
                                                                 )
                                                               ],
-                                                            );
-                                                          },
-                                                        ),
-                                                        Row(
-                                                          children: [
-                                                            Expanded(
-                                                              child: Text(
-                                                                'Remarks',
-                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                              ),
                                                             ),
-                                                            VerticalDivider(width: 1),
-                                                            SizedBox(width: 16),
-                                                            Expanded(
-                                                              child: Text(
-                                                                progressActivity.remarks ?? '-',
-                                                                style: TextStyle(
-                                                                  fontSize: 12.sp,
+                                                            const Divider(thickness: 0.4),
+                                                            Row(
+                                                              children: [
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    'Activity Time',
+                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                            )
-                                                          ],
-                                                        ),
-                                                        const Divider(thickness: 0.4),
-                                                      ]),
-                                                    const SizedBox(height: 16),
-                                                    Text(
-                                                      'Attachment',
-                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                    ),
-                                                    const SizedBox(height: 16),
-                                                    controller.activity6Attachments.value.isNotEmpty
-                                                        ? GridView.builder(
-                                                            shrinkWrap: true,
-                                                            physics: NeverScrollableScrollPhysics(),
-                                                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                                              crossAxisCount: 5,
-                                                              mainAxisSpacing: 8,
-                                                              crossAxisSpacing: 8,
+                                                                VerticalDivider(width: 1),
+                                                                SizedBox(width: 16),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    '-',
+                                                                    style: TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              ],
                                                             ),
-                                                            itemCount: controller.activity6Attachments.value.length,
-                                                            itemBuilder: (content, index) {
-                                                              final File attach = controller.activity6Attachments.value[index];
-                                                              final String fileType = controller.checkFileType(attach.path);
-                                                              var filenameArr = attach.path.split("/");
-                                                              var filename = filenameArr.last;
-                                                              return fileType == 'image'
-                                                                  ? SizedBox(
-                                                                      width: 54,
-                                                                      height: 66,
-                                                                      child: SizedBox(
-                                                                        width: 54,
-                                                                        height: 54,
-                                                                        child: InkWell(
-                                                                          onTap: () {
-                                                                            controller.previewImageAct6(index, attach.path);
-                                                                          },
-                                                                          child: Image.file(
-                                                                            File(attach.path),
-                                                                            fit: BoxFit.cover,
+                                                            const Divider(thickness: 0.4),
+                                                            Row(
+                                                              children: [
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    'Actual Qty',
+                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                  ),
+                                                                ),
+                                                                VerticalDivider(width: 1),
+                                                                SizedBox(width: 16),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    controller.activity5ListStages.value.first.actualQty ?? '-',
+                                                                    style: TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              ],
+                                                            ),
+                                                            const Divider(thickness: 0.4),
+                                                            Row(
+                                                              children: [
+                                                                const Expanded(
+                                                                  child: Text(
+                                                                    'Activity Date',
+                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                  ),
+                                                                ),
+                                                                VerticalDivider(width: 1),
+                                                                SizedBox(width: 16),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    controller.dataJoDetail.value.detail!.uomName ?? '-',
+                                                                    style: TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              ],
+                                                            ),
+                                                            const Divider(thickness: 0.4),
+                                                            Row(
+                                                              children: [
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    'Vessel',
+                                                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                                  ),
+                                                                ),
+                                                                VerticalDivider(width: 1),
+                                                                SizedBox(width: 16),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    controller.activity5ListStages.value.first.vessel ?? '-',
+                                                                    style: TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              ],
+                                                            ),
+                                                            const Divider(thickness: 0.4),
+                                                            controller.activity5ListStages.value.first.barge!.isNotEmpty
+                                                                ? Column(
+                                                                    children: [
+                                                                      ListView.builder(
+                                                                          shrinkWrap: true,
+                                                                          physics: NeverScrollableScrollPhysics(),
+                                                                          itemCount: controller.activity5ListStages.value.first.barge!.length,
+                                                                          itemBuilder: (context, index) {
+                                                                            return Column(children: [
+                                                                              Row(
+                                                                                children: [
+                                                                                  Expanded(
+                                                                                    child: Text(
+                                                                                      'Barge ${index + 1}',
+                                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                    ),
+                                                                                  ),
+                                                                                  VerticalDivider(width: 1),
+                                                                                  SizedBox(width: 16),
+                                                                                  Expanded(
+                                                                                    child: Text(
+                                                                                      controller.activity5ListStages.value.first.barge![index].barge ?? '-',
+                                                                                      style: TextStyle(
+                                                                                        fontSize: 12.sp,
+                                                                                      ),
+                                                                                    ),
+                                                                                  )
+                                                                                ],
+                                                                              ),
+                                                                              const Divider(thickness: 0.4),
+                                                                            ]);
+                                                                          }),
+                                                                    ],
+                                                                  )
+                                                                : const SizedBox(),
+                                                            controller.activity5ListStages.value.first.transhipment!.isNotEmpty
+                                                                ? Column(
+                                                                    children: [
+                                                                      ListView.builder(
+                                                                          shrinkWrap: true,
+                                                                          physics: NeverScrollableScrollPhysics(),
+                                                                          itemCount: controller.activity5ListStages.value.first.transhipment!.length,
+                                                                          itemBuilder: (context, index) {
+                                                                            return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                                              Text(
+                                                                                'KOS Transhipment ${index + 1}',
+                                                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                              ),
+                                                                              const SizedBox(height: 16),
+                                                                              Row(
+                                                                                children: [
+                                                                                  Expanded(
+                                                                                    child: Text(
+                                                                                      'Jetty',
+                                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                    ),
+                                                                                  ),
+                                                                                  VerticalDivider(width: 1),
+                                                                                  SizedBox(width: 16),
+                                                                                  Expanded(
+                                                                                    child: Text(
+                                                                                      controller.activity5ListStages.value.first.transhipment![index].jetty ?? '-',
+                                                                                      style: TextStyle(
+                                                                                        fontSize: 12.sp,
+                                                                                      ),
+                                                                                    ),
+                                                                                  )
+                                                                                ],
+                                                                              ),
+                                                                              const Divider(thickness: 0.4),
+                                                                              Row(
+                                                                                children: [
+                                                                                  Expanded(
+                                                                                    child: Text(
+                                                                                      'Initial Date',
+                                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                    ),
+                                                                                  ),
+                                                                                  VerticalDivider(width: 1),
+                                                                                  SizedBox(width: 16),
+                                                                                  Expanded(
+                                                                                    child: Text(
+                                                                                      controller.activity5ListStages.value.first.transhipment![index].initialDate ?? '-',
+                                                                                      style: TextStyle(
+                                                                                        fontSize: 12.sp,
+                                                                                      ),
+                                                                                    ),
+                                                                                  )
+                                                                                ],
+                                                                              ),
+                                                                              const Divider(thickness: 0.4),
+                                                                              Row(
+                                                                                children: [
+                                                                                  Expanded(
+                                                                                    child: Text(
+                                                                                      'Final Date',
+                                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                    ),
+                                                                                  ),
+                                                                                  VerticalDivider(width: 1),
+                                                                                  SizedBox(width: 16),
+                                                                                  Expanded(
+                                                                                    child: Text(
+                                                                                      controller.activity5ListStages.value.first.transhipment![index].finalDate ?? '-',
+                                                                                      style: TextStyle(
+                                                                                        fontSize: 12.sp,
+                                                                                      ),
+                                                                                    ),
+                                                                                  )
+                                                                                ],
+                                                                              ),
+                                                                              const Divider(thickness: 0.4),
+                                                                              Row(
+                                                                                children: [
+                                                                                  Expanded(
+                                                                                    child: Text(
+                                                                                      'Delivery Qty',
+                                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                    ),
+                                                                                  ),
+                                                                                  VerticalDivider(width: 1),
+                                                                                  SizedBox(width: 16),
+                                                                                  Expanded(
+                                                                                    child: Text(
+                                                                                      '0',
+                                                                                      style: TextStyle(
+                                                                                        fontSize: 12.sp,
+                                                                                      ),
+                                                                                    ),
+                                                                                  )
+                                                                                ],
+                                                                              ),
+                                                                              const Divider(thickness: 0.4),
+                                                                              Row(
+                                                                                children: [
+                                                                                  Expanded(
+                                                                                    child: Text(
+                                                                                      'UOM',
+                                                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                                    ),
+                                                                                  ),
+                                                                                  VerticalDivider(width: 1),
+                                                                                  SizedBox(width: 16),
+                                                                                  Expanded(
+                                                                                    child: Text(
+                                                                                      controller.dataJoDetail.value.detail!.uomName ?? '-',
+                                                                                      style: TextStyle(
+                                                                                        fontSize: 12.sp,
+                                                                                      ),
+                                                                                    ),
+                                                                                  )
+                                                                                ],
+                                                                              ),
+                                                                              const Divider(thickness: 0.4),
+                                                                            ]);
+                                                                          }),
+                                                                    ],
+                                                                  )
+                                                                : const SizedBox(),
+                                                          ])
+                                                        : const SizedBox(),
+                                                    controller.activity6ListStages.value.isNotEmpty
+                                                        ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                            Text(
+                                                              'Stage 6: Report to Client',
+                                                              style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                            ),
+                                                            const SizedBox(height: 16),
+                                                            ListView.builder(
+                                                                shrinkWrap: true,
+                                                                physics: NeverScrollableScrollPhysics(),
+                                                                itemCount: controller.activity6ListStages.value.length,
+                                                                itemBuilder: (context, index) {
+                                                                  Activity act6 = controller.activity6ListStages.value[index];
+                                                                  return Column(children: [
+                                                                    Row(
+                                                                      children: [
+                                                                        Expanded(
+                                                                          child: Text(
+                                                                            'Date',
+                                                                            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                                           ),
                                                                         ),
-                                                                      ),
-                                                                    )
-                                                                  : fileType == 'doc'
-                                                                      ? SizedBox(
-                                                                          width: 54,
-                                                                          height: 66,
-                                                                          child: InkWell(
-                                                                            onTap: () {
-                                                                              OpenFilex.open(attach.path);
-                                                                            },
-                                                                            child: SizedBox(
+                                                                        VerticalDivider(width: 1),
+                                                                        SizedBox(width: 16),
+                                                                        Expanded(
+                                                                          child: Text(
+                                                                            act6.transDate ?? '-',
+                                                                            style: TextStyle(
+                                                                              fontSize: 12.sp,
+                                                                            ),
+                                                                          ),
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                    const Divider(thickness: 0.4),
+                                                                    Row(
+                                                                      children: [
+                                                                        Expanded(
+                                                                          flex: 1,
+                                                                          child: Text(
+                                                                            'Activities',
+                                                                            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                          ),
+                                                                        ),
+                                                                        VerticalDivider(width: 1),
+                                                                        SizedBox(width: 8),
+                                                                        Expanded(
+                                                                          flex: 1,
+                                                                          child: Text(
+                                                                            '${act6.startActivityTime ?? '-'} - ${act6.endActivityTime ?? '-'}',
+                                                                            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                          ),
+                                                                        ),
+                                                                        VerticalDivider(width: 1),
+                                                                        SizedBox(width: 8),
+                                                                        Expanded(
+                                                                          flex: 2,
+                                                                          child: Text(
+                                                                            act6.activity ?? '-',
+                                                                            style: TextStyle(
+                                                                              fontSize: 12.sp,
+                                                                            ),
+                                                                          ),
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                    const Divider(thickness: 0.4),
+                                                                    Row(
+                                                                      children: [
+                                                                        Expanded(
+                                                                          child: Text(
+                                                                            'Remarks',
+                                                                            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                          ),
+                                                                        ),
+                                                                        VerticalDivider(width: 1),
+                                                                        SizedBox(width: 16),
+                                                                        Expanded(
+                                                                          child: Text(
+                                                                            act6.remarks ?? '-',
+                                                                            style: TextStyle(
+                                                                              fontSize: 12.sp,
+                                                                            ),
+                                                                          ),
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                    const Divider(thickness: 0.4),
+                                                                  ]);
+                                                                }),
+                                                            const SizedBox(height: 16),
+                                                            Text(
+                                                              'Attachment',
+                                                              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                            ),
+                                                            const SizedBox(height: 16),
+                                                            controller.activity6Attachments.value.isNotEmpty
+                                                                ? GridView.builder(
+                                                                    shrinkWrap: true,
+                                                                    physics: NeverScrollableScrollPhysics(),
+                                                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                                                      crossAxisCount: 5,
+                                                                      mainAxisSpacing: 8,
+                                                                      crossAxisSpacing: 8,
+                                                                    ),
+                                                                    itemCount: controller.activity6Attachments.value.length,
+                                                                    itemBuilder: (content, index) {
+                                                                      final File attach = controller.activity6Attachments.value[index];
+                                                                      final String fileType = controller.checkFileType(attach.path);
+                                                                      var filenameArr = attach.path.split("/");
+                                                                      var filename = filenameArr.last;
+                                                                      return fileType == 'image'
+                                                                          ? SizedBox(
                                                                               width: 54,
                                                                               height: 54,
-                                                                              child: Center(
-                                                                                  child: Column(
-                                                                                children: [
-                                                                                  Image.asset(
-                                                                                    'assets/icons/pdfIcon.png',
-                                                                                    height: 42,
-                                                                                  ),
-                                                                                  Text(filename, style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
-                                                                                ],
-                                                                              )),
-                                                                            ),
-                                                                          ),
-                                                                        )
-                                                                      : SizedBox();
-                                                            })
-                                                        : const SizedBox()
-                                                  ])
-                                                : const SizedBox(),
-                                            const SizedBox(height: 16),
-                                            controller.activityListStages.value.isNotEmpty
-                                                ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                    controller.activityListStages.value.where((item) => item.mStatusinspectionstagesId == 1).isNotEmpty
-                                                        ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                            Text(
-                                                              'Stage 1: Waiting For Arrival',
-                                                              style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                            ),
-                                                            const SizedBox(height: 8),
-                                                            for (var progressActivity in controller.activityListStages.value.where((item) => item.mStatusinspectionstagesId == 1))
-                                                              Column(children: [
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Date',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity.transDate ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      flex: 1,
-                                                                      child: Text(
-                                                                        'Activities',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 8),
-                                                                    Expanded(
-                                                                      flex: 1,
-                                                                      child: Text(
-                                                                        '${progressActivity.startActivityTime ?? '-'} - ${progressActivity.endActivityTime ?? '-'}',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 8),
-                                                                    Expanded(
-                                                                      flex: 2,
-                                                                      child: Text(
-                                                                        progressActivity.activity ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Remarks',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity.remarks ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                              ]),
-                                                          ])
-                                                        : const SizedBox(),
-                                                    controller.activityListStages.value.where((item) => item.mStatusinspectionstagesId == 2).isNotEmpty
-                                                        ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                            Text(
-                                                              'Stage 2: Ship Arrived',
-                                                              style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                            ),
-                                                            const SizedBox(height: 8),
-                                                            for (var progressActivity in controller.activityListStages.value.where((item) => item.mStatusinspectionstagesId == 2))
-                                                              Column(children: [
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Date',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity.transDate ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      flex: 1,
-                                                                      child: Text(
-                                                                        'Activities',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 8),
-                                                                    Expanded(
-                                                                      flex: 1,
-                                                                      child: Text(
-                                                                        '${progressActivity.startActivityTime ?? '-'} - ${progressActivity.endActivityTime ?? '-'}',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 8),
-                                                                    Expanded(
-                                                                      flex: 2,
-                                                                      child: Text(
-                                                                        progressActivity.activity ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Remarks',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity.remarks ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                              ]),
-                                                          ])
-                                                        : const SizedBox(),
-                                                    controller.activityListStages.value.where((item) => item.mStatusinspectionstagesId == 3).isNotEmpty
-                                                        ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                            Text(
-                                                              'Stage 3: Ship Berthing',
-                                                              style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                            ),
-                                                            const SizedBox(height: 8),
-                                                            for (var progressActivity in controller.activityListStages.value.where((item) => item.mStatusinspectionstagesId == 3))
-                                                              Column(children: [
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Date',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity.transDate ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      flex: 1,
-                                                                      child: Text(
-                                                                        'Activities',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 8),
-                                                                    Expanded(
-                                                                      flex: 1,
-                                                                      child: Text(
-                                                                        '${progressActivity.startActivityTime ?? '-'} - ${progressActivity.endActivityTime ?? '-'}',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 8),
-                                                                    Expanded(
-                                                                      flex: 2,
-                                                                      child: Text(
-                                                                        progressActivity.activity ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Remarks',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity.remarks ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                              ]),
-                                                          ])
-                                                        : const SizedBox(),
-                                                    controller.activityListStages.value.where((item) => item.mStatusinspectionstagesId == 4).isNotEmpty
-                                                        ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                            Text(
-                                                              'Stage 4: Work Commence',
-                                                              style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                            ),
-                                                            const SizedBox(height: 8),
-                                                            for (var progressActivity in controller.activityListStages.value.where((item) => item.mStatusinspectionstagesId == 4))
-                                                              Column(children: [
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Date',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity.transDate ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      flex: 1,
-                                                                      child: Text(
-                                                                        'Activities',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 8),
-                                                                    Expanded(
-                                                                      flex: 1,
-                                                                      child: Text(
-                                                                        '${progressActivity.startActivityTime ?? '-'} - ${progressActivity.endActivityTime ?? '-'}',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 8),
-                                                                    Expanded(
-                                                                      flex: 2,
-                                                                      child: Text(
-                                                                        progressActivity.activity ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        'Remarks',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                    ),
-                                                                    VerticalDivider(width: 1),
-                                                                    SizedBox(width: 16),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        progressActivity.remarks ?? '-',
-                                                                        style: TextStyle(
-                                                                          fontSize: 12.sp,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                                const Divider(thickness: 0.4),
-                                                              ]),
-                                                          ])
-                                                        : const SizedBox(),
-                                                  ])
-                                                : const SizedBox(),
-                                            controller.activity5ListStages.value.isNotEmpty
-                                                ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                    Text(
-                                                      'Stage 5: Work Complete',
-                                                      style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                    ),
-                                                    const SizedBox(height: 16),
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child: Text(
-                                                            'Activity Date',
-                                                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                                                          ),
-                                                        ),
-                                                        VerticalDivider(width: 1),
-                                                        SizedBox(width: 16),
-                                                        Expanded(
-                                                          child: Text(
-                                                            controller.activity5ListStages.value.first.transDate ?? '-',
-                                                            style: TextStyle(
-                                                              fontSize: 14,
-                                                            ),
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    const Divider(thickness: 0.4),
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child: Text(
-                                                            'Activity Time',
-                                                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                                                          ),
-                                                        ),
-                                                        VerticalDivider(width: 1),
-                                                        SizedBox(width: 16),
-                                                        Expanded(
-                                                          child: Text(
-                                                            '-',
-                                                            style: TextStyle(
-                                                              fontSize: 14,
-                                                            ),
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    const Divider(thickness: 0.4),
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child: Text(
-                                                            'Actual Qty',
-                                                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                                                          ),
-                                                        ),
-                                                        VerticalDivider(width: 1),
-                                                        SizedBox(width: 16),
-                                                        Expanded(
-                                                          child: Text(
-                                                            controller.activity5ListStages.value.first.actualQty ?? '-',
-                                                            style: TextStyle(
-                                                              fontSize: 14,
-                                                            ),
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    const Divider(thickness: 0.4),
-                                                    Row(
-                                                      children: [
-                                                        const Expanded(
-                                                          child: Text(
-                                                            'Activity Date',
-                                                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                                                          ),
-                                                        ),
-                                                        VerticalDivider(width: 1),
-                                                        SizedBox(width: 16),
-                                                        Expanded(
-                                                          child: Text(
-                                                            controller.dataJoDetail.value.detail!.uomName ?? '-',
-                                                            style: TextStyle(
-                                                              fontSize: 14,
-                                                            ),
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    const Divider(thickness: 0.4),
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child: Text(
-                                                            'Vessel',
-                                                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                                                          ),
-                                                        ),
-                                                        VerticalDivider(width: 1),
-                                                        SizedBox(width: 16),
-                                                        Expanded(
-                                                          child: Text(
-                                                            controller.activity5ListStages.value.first.vessel ?? '-',
-                                                            style: TextStyle(
-                                                              fontSize: 14,
-                                                            ),
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    const Divider(thickness: 0.4),
-                                                    controller.activity5ListStages.value.first.barge!.isNotEmpty
-                                                        ? Column(
-                                                            children: [
-                                                              ListView.builder(
-                                                                  shrinkWrap: true,
-                                                                  physics: NeverScrollableScrollPhysics(),
-                                                                  itemCount: controller.activity5ListStages.value.first.barge!.length,
-                                                                  itemBuilder: (context, index) {
-                                                                    return Column(children: [
-                                                                      Row(
-                                                                        children: [
-                                                                          Expanded(
-                                                                            child: Text(
-                                                                              'Barge ${index + 1}',
-                                                                              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                            ),
-                                                                          ),
-                                                                          VerticalDivider(width: 1),
-                                                                          SizedBox(width: 16),
-                                                                          Expanded(
-                                                                            child: Text(
-                                                                              controller.activity5ListStages.value.first.barge![index].barge ?? '-',
-                                                                              style: TextStyle(
-                                                                                fontSize: 12.sp,
-                                                                              ),
-                                                                            ),
-                                                                          )
-                                                                        ],
-                                                                      ),
-                                                                      const Divider(thickness: 0.4),
-                                                                    ]);
-                                                                  }),
-                                                            ],
-                                                          )
-                                                        : const SizedBox(),
-                                                    controller.activity5ListStages.value.first.transhipment!.isNotEmpty
-                                                        ? Column(
-                                                            children: [
-                                                              ListView.builder(
-                                                                  shrinkWrap: true,
-                                                                  physics: NeverScrollableScrollPhysics(),
-                                                                  itemCount: controller.activity5ListStages.value.first.transhipment!.length,
-                                                                  itemBuilder: (context, index) {
-                                                                    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                                      Text(
-                                                                        'KOS Transhipment ${index + 1}',
-                                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                      ),
-                                                                      const SizedBox(height: 16),
-                                                                      Row(
-                                                                        children: [
-                                                                          Expanded(
-                                                                            child: Text(
-                                                                              'Jetty',
-                                                                              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                            ),
-                                                                          ),
-                                                                          VerticalDivider(width: 1),
-                                                                          SizedBox(width: 16),
-                                                                          Expanded(
-                                                                            child: Text(
-                                                                              controller.activity5ListStages.value.first.transhipment![index].jetty ?? '-',
-                                                                              style: TextStyle(
-                                                                                fontSize: 12.sp,
-                                                                              ),
-                                                                            ),
-                                                                          )
-                                                                        ],
-                                                                      ),
-                                                                      const Divider(thickness: 0.4),
-                                                                      Row(
-                                                                        children: [
-                                                                          Expanded(
-                                                                            child: Text(
-                                                                              'Initial Date',
-                                                                              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                            ),
-                                                                          ),
-                                                                          VerticalDivider(width: 1),
-                                                                          SizedBox(width: 16),
-                                                                          Expanded(
-                                                                            child: Text(
-                                                                              controller.activity5ListStages.value.first.transhipment![index].initialDate ?? '-',
-                                                                              style: TextStyle(
-                                                                                fontSize: 12.sp,
-                                                                              ),
-                                                                            ),
-                                                                          )
-                                                                        ],
-                                                                      ),
-                                                                      const Divider(thickness: 0.4),
-                                                                      Row(
-                                                                        children: [
-                                                                          Expanded(
-                                                                            child: Text(
-                                                                              'Final Date',
-                                                                              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                            ),
-                                                                          ),
-                                                                          VerticalDivider(width: 1),
-                                                                          SizedBox(width: 16),
-                                                                          Expanded(
-                                                                            child: Text(
-                                                                              controller.activity5ListStages.value.first.transhipment![index].finalDate ?? '-',
-                                                                              style: TextStyle(
-                                                                                fontSize: 12.sp,
-                                                                              ),
-                                                                            ),
-                                                                          )
-                                                                        ],
-                                                                      ),
-                                                                      const Divider(thickness: 0.4),
-                                                                      Row(
-                                                                        children: [
-                                                                          Expanded(
-                                                                            child: Text(
-                                                                              'Delivery Qty',
-                                                                              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                            ),
-                                                                          ),
-                                                                          VerticalDivider(width: 1),
-                                                                          SizedBox(width: 16),
-                                                                          Expanded(
-                                                                            child: Text(
-                                                                              '0',
-                                                                              style: TextStyle(
-                                                                                fontSize: 12.sp,
-                                                                              ),
-                                                                            ),
-                                                                          )
-                                                                        ],
-                                                                      ),
-                                                                      const Divider(thickness: 0.4),
-                                                                      Row(
-                                                                        children: [
-                                                                          Expanded(
-                                                                            child: Text(
-                                                                              'UOM',
-                                                                              style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                            ),
-                                                                          ),
-                                                                          VerticalDivider(width: 1),
-                                                                          SizedBox(width: 16),
-                                                                          Expanded(
-                                                                            child: Text(
-                                                                              controller.dataJoDetail.value.detail!.uomName ?? '-',
-                                                                              style: TextStyle(
-                                                                                fontSize: 12.sp,
-                                                                              ),
-                                                                            ),
-                                                                          )
-                                                                        ],
-                                                                      ),
-                                                                      const Divider(thickness: 0.4),
-                                                                    ]);
-                                                                  }),
-                                                            ],
-                                                          )
-                                                        : const SizedBox(),
-                                                  ])
-                                                : const SizedBox(),
-                                            controller.activity6ListStages.value.isNotEmpty
-                                                ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                    Text(
-                                                      'Stage 6: Report to Client',
-                                                      style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                    ),
-                                                    const SizedBox(height: 16),
-                                                    ListView.builder(
-                                                        shrinkWrap: true,
-                                                        physics: NeverScrollableScrollPhysics(),
-                                                        itemCount: controller.activity6ListStages.value.length,
-                                                        itemBuilder: (context, index) {
-                                                          Activity act6 = controller.activity6ListStages.value[index];
-                                                          return Column(children: [
-                                                            Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  child: Text(
-                                                                    'Date',
-                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                  ),
-                                                                ),
-                                                                VerticalDivider(width: 1),
-                                                                SizedBox(width: 16),
-                                                                Expanded(
-                                                                  child: Text(
-                                                                    act6.transDate ?? '-',
-                                                                    style: TextStyle(
-                                                                      fontSize: 12.sp,
-                                                                    ),
-                                                                  ),
-                                                                )
-                                                              ],
-                                                            ),
-                                                            const Divider(thickness: 0.4),
-                                                            Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  flex: 1,
-                                                                  child: Text(
-                                                                    'Activities',
-                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                  ),
-                                                                ),
-                                                                VerticalDivider(width: 1),
-                                                                SizedBox(width: 8),
-                                                                Expanded(
-                                                                  flex: 1,
-                                                                  child: Text(
-                                                                    '${act6.startActivityTime ?? '-'} - ${act6.endActivityTime ?? '-'}',
-                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                  ),
-                                                                ),
-                                                                VerticalDivider(width: 1),
-                                                                SizedBox(width: 8),
-                                                                Expanded(
-                                                                  flex: 2,
-                                                                  child: Text(
-                                                                    act6.activity ?? '-',
-                                                                    style: TextStyle(
-                                                                      fontSize: 12.sp,
-                                                                    ),
-                                                                  ),
-                                                                )
-                                                              ],
-                                                            ),
-                                                            const Divider(thickness: 0.4),
-                                                            Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  child: Text(
-                                                                    'Remarks',
-                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                                  ),
-                                                                ),
-                                                                VerticalDivider(width: 1),
-                                                                SizedBox(width: 16),
-                                                                Expanded(
-                                                                  child: Text(
-                                                                    act6.remarks ?? '-',
-                                                                    style: TextStyle(
-                                                                      fontSize: 12.sp,
-                                                                    ),
-                                                                  ),
-                                                                )
-                                                              ],
-                                                            ),
-                                                            const Divider(thickness: 0.4),
-                                                          ]);
-                                                        }),
-                                                    const SizedBox(height: 16),
-                                                    Text(
-                                                      'Attachment',
-                                                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
-                                                    ),
-                                                    const SizedBox(height: 16),
-                                                    controller.activity6Attachments.value.isNotEmpty
-                                                        ? GridView.builder(
-                                                            shrinkWrap: true,
-                                                            physics: NeverScrollableScrollPhysics(),
-                                                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                                              crossAxisCount: 5,
-                                                              mainAxisSpacing: 8,
-                                                              crossAxisSpacing: 8,
-                                                            ),
-                                                            itemCount: controller.activity6Attachments.value.length,
-                                                            itemBuilder: (content, index) {
-                                                              final File attach = controller.activity6Attachments.value[index];
-                                                              final String fileType = controller.checkFileType(attach.path);
-                                                              var filenameArr = attach.path.split("/");
-                                                              var filename = filenameArr.last;
-                                                              return fileType == 'image'
-                                                                  ? SizedBox(
-                                                                      width: 54,
-                                                                      height: 54,
-                                                                      child: InkWell(
-                                                                        onTap: () {
-                                                                          controller.previewImage6(index, attach.path, '');
-                                                                        },
-                                                                        child: Image.file(
-                                                                          File(attach.path),
-                                                                          fit: BoxFit.cover,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  : fileType == 'doc'
-                                                                      ? InkWell(
-                                                                          onTap: () {
-                                                                            OpenFilex.open(attach.path);
-                                                                          },
-                                                                          child: SizedBox(
-                                                                            width: 54,
-                                                                            height: 54,
-                                                                            child: Center(
-                                                                                child: Column(
-                                                                              children: [
-                                                                                Image.asset(
-                                                                                  'assets/icons/pdfIcon.png',
-                                                                                  height: 42,
+                                                                              child: InkWell(
+                                                                                onTap: () {
+                                                                                  controller.previewImage6(index, attach.path, '');
+                                                                                },
+                                                                                child: Image.file(
+                                                                                  File(attach.path),
+                                                                                  fit: BoxFit.cover,
                                                                                 ),
-                                                                                Text(filename, style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
-                                                                              ],
-                                                                            )),
-                                                                          ),
-                                                                        )
-                                                                      : SizedBox();
-                                                            })
-                                                        : const SizedBox()
-                                                  ])
-                                                : const SizedBox(),
+                                                                              ),
+                                                                            )
+                                                                          : fileType == 'doc'
+                                                                              ? InkWell(
+                                                                                  onTap: () {
+                                                                                    OpenFilex.open(attach.path);
+                                                                                  },
+                                                                                  child: SizedBox(
+                                                                                    width: 54,
+                                                                                    height: 54,
+                                                                                    child: Center(
+                                                                                        child: Column(
+                                                                                      children: [
+                                                                                        Image.asset(
+                                                                                          'assets/icons/pdfIcon.png',
+                                                                                          height: 42,
+                                                                                        ),
+                                                                                        Text(filename, style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
+                                                                                      ],
+                                                                                    )),
+                                                                                  ),
+                                                                                )
+                                                                              : SizedBox();
+                                                                    })
+                                                                : const SizedBox()
+                                                          ])
+                                                        : const SizedBox(),
+                                                  ],
+                                                ),
+                                              ),
+                                            ]),
                                           ])),
                                     ))
                                   ]),

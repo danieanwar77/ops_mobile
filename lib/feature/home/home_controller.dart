@@ -306,11 +306,11 @@ class HomeController extends BaseController{
   @pragma('vm:entry-point')
   static Future<void> onStartBG(ServiceInstance service) async {
     Timer.periodic(const Duration(seconds: 10 ), (timer) async {
-      // sendDataInpectionPhoto();
-      // sendDataInspection();
-      // sendDataLaboratory();
-      // sendDataFinalizeLaboratory();
-      // sendDataFinalizeInspection();
+      sendDataInpectionPhoto();
+      sendDataInspection();
+      sendDataLaboratory();
+      sendDataFinalizeLaboratory();
+      sendDataFinalizeInspection();
     });
   }
 

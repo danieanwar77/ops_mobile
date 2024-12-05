@@ -12,6 +12,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:ops_mobile/base/component/custom_image.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/core/core/constant/app_constant.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
@@ -853,10 +854,7 @@ class JoWaitingController extends BaseController {
                       child: SizedBox(
                         height: MediaQuery.of(context).viewInsets.bottom != 0 ? 66.h : 180.h,
                         width: MediaQuery.sizeOf(context).width.w,
-                        child: Image.file(
-                          File(activityPreviewFoto.value.path),
-                          fit: BoxFit.cover,
-                        ),
+                        child: CustomImage(path: activityPreviewFoto.value.path),
                       ),
                     ),
                     SizedBox(
