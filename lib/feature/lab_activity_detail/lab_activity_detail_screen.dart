@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:ops_mobile/base/component/custom_text.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory_attachment.dart';
 import 'package:ops_mobile/feature/lab_activity_detail/lab_activity_detail_controller.dart';
@@ -122,28 +123,17 @@ class LabActivityDetailScreen extends StatelessWidget{
                                   ),
                                   Row(
                                     children: [
-                                      Expanded( child:
-                                        Text('TAT',
-                                          style: TextStyle(
-                                              fontSize: 12.sp,
-                                              fontWeight: FontWeight.w700
-                                          ),
-                                        ),
+                                      const Expanded(
+                                          child: CustomText(content: 'TAT')
                                       ),
                                       const VerticalDivider(width: 1),
                                       const SizedBox(width:16),
-                                      Expanded( child:
-                                      Text('${controller.tat.value.toString() ??  '-'} Jam',
-                                        style: TextStyle(
-                                          fontSize: 12.sp,
-                                        ),
-                                      ),
+                                      Expanded(
+                                          child: CustomTextDetail(content:'${controller.tat.value.toString() ??  '-'} Jam')
                                       )
                                     ],
                                   ),
-                                  const Divider(
-                                      thickness: 0.4
-                                  ),
+                                  const Divider(thickness: 0.4),
                                 ],
                               ),
                             )
@@ -159,16 +149,10 @@ class LabActivityDetailScreen extends StatelessWidget{
                                     children: [
                                       Row(
                                           children: [
-                                            Text('Daily Activity',
-                                              style: TextStyle(
-                                                  fontSize: 14.sp,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: primaryColor
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
+                                            const CustomTextH1Primary(content: 'Daily Activity'),
+                                            const SizedBox(width: 4),
                                             (controller.joRx.value.mStatusjoId == 2 || controller.joRx.value.mStatusjoId == 3) ? Container(
-                                                padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                                padding: EdgeInsets.symmetric(horizontal: 1, vertical: 2),
                                                 decoration: BoxDecoration(
                                                   color: primaryColor,
                                                   borderRadius: BorderRadius.circular(6),
@@ -190,7 +174,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                         : controller.drawerDailyActivity6();
                                                   }
                                                 },
-                                                icon: Image.asset('assets/icons/addactivity.png', height: 32,)
+                                                icon: Image.asset('assets/icons/addactivity.png', height: 32,width: 32,)
                                             ) : const SizedBox(),
                                           ]
                                       ),
@@ -203,23 +187,14 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      Text('Stage 1: Sample on Delivery',
-                                                        style: TextStyle(
-                                                            color: green,
-                                                            fontSize: 12.sp,
-                                                            fontWeight: FontWeight.w700
-                                                        ),
-                                                      ),
+                                                      const CustomTextH2Green(content: 'Stage 1: Sample on Delivery'),
                                                       const SizedBox(width: 8),
-                                                      controller.activityLabStage == 1 ? InkWell(
-                                                          onTap: () {
-                                                            controller.drawerDailyActivityLabEdit();
-                                                          },
+                                                      controller.activityLabStage == 1 ?
+                                                      InkWell(
+                                                          onTap:() => {controller.drawerDailyActivityLabEdit()},
                                                           child: const Icon(
-                                                              Icons
-                                                                  .mode_edit_outlined,
-                                                              color:
-                                                              primaryColor,
+                                                              Icons.mode_edit_outlined,
+                                                              color: primaryColor,
                                                               size: 18
                                                           )
                                                       ) : const SizedBox(),
@@ -345,23 +320,14 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      Text('Stage 2: Sample Received',
-                                                        style: TextStyle(
-                                                            color: green,
-                                                            fontSize: 12.sp,
-                                                            fontWeight: FontWeight.w700
-                                                        ),
-                                                      ),
+                                                      const CustomTextH2Green(content: 'Stage 2: Sample Received'),
                                                       const SizedBox(width: 8),
-                                                      controller.activityLabStage == 2 ? InkWell(
-                                                          onTap: () {
-                                                            controller.drawerDailyActivityLabEdit();
-                                                          },
-                                                          child: Icon(
-                                                              Icons
-                                                                  .mode_edit_outlined,
-                                                              color:
-                                                              primaryColor,
+                                                      controller.activityLabStage == 2 ?
+                                                      InkWell(
+                                                          onTap: () {controller.drawerDailyActivityLabEdit();},
+                                                          child: const Icon(
+                                                              Icons.mode_edit_outlined,
+                                                              color: primaryColor,
                                                               size: 18
                                                           )
                                                       ) : const SizedBox(),

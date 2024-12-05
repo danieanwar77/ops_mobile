@@ -3981,6 +3981,7 @@ class JoWaitingScreen extends StatelessWidget {
                 children: [
                   Expanded(child: Center(child: CircularProgressIndicator())),
                 ],
-              ));
+              )
+    );
   }
 }
