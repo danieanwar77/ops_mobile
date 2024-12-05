@@ -1,12 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
-import 'package:get/get_common/get_reset.dart';
-import 'package:ops_mobile/data/model/t_d_jo_document_laboratory.dart';
-import 'package:ops_mobile/data/model/t_d_jo_inspection_activity.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages.dart';
-import 'package:ops_mobile/data/model/t_d_jo_inspection_attachment.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory.dart';
+import 'package:ops_mobile/data/model/t_so.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/utils/helper.dart';
 
@@ -71,6 +68,7 @@ class THJo {
       dynamic updatedAt,
       List<TDJoInspectionActivityStages>? inspection_activity_stages,
     List<TDJoLaboratory>? laboratory,
+    TSo? so,
   }){
     _id = id;
     _tSoId = tSoId;
@@ -102,6 +100,7 @@ class THJo {
     _updatedAt = updatedAt;
     _inspectionActivityStages = inspection_activity_stages;
     _laboratory = laboratory;
+    _tSo = so;
 
 }
 
@@ -135,6 +134,7 @@ class THJo {
   dynamic _updatedAt;
   List<TDJoInspectionActivityStages>? _inspectionActivityStages;
   List<TDJoLaboratory>? _laboratory;
+  TSo? _tSo;
 
   THJo.fromJson(dynamic json) {
     _id = json['id'];
@@ -165,6 +165,8 @@ class THJo {
     _updatedBy = json['updated_by'];
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
+    _tSo = json['so'] != null ? TSo.fromJson(json['so']) : null;
+
     
     if (json['inspection_activity_stages'] != null) {
       _inspectionActivityStages = (json['inspection_activity_stages'] as List)
@@ -176,7 +178,7 @@ class THJo {
 
     if (json['list_laboratory'] != null) {
       _laboratory = (json['list_laboratory'] as List)
-          .map((e) => TDJoLaboratory.fromJson(e))
+          .map(TDJoLaboratory.fromJson)
           .toList();
     } else {
       _laboratory = [];
@@ -273,6 +275,7 @@ THJo copyWith({  num? id,
   dynamic get updatedAt => _updatedAt;
   List<TDJoInspectionActivityStages>? get inspectionActivityStages => _inspectionActivityStages;
   List<TDJoLaboratory>? get laboratory => _laboratory;
+  TSo? get tso => _tSo;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -618,7 +621,7 @@ THJo copyWith({  num? id,
     final db = await SqlHelper.db();
     var existing = await db.rawQuery('select * from t_h_jo where id = ?',[thjo.id]);
     if(existing.isEmpty){
-      int idInsert =await db.insert('t_h_jo', thjo.toJson());
+      await db.insert('t_h_jo', thjo.toJson());
       List<TDJoLaboratory> laboratory = thjo.laboratory ?? [];
       for(int l = 0; l < laboratory.length; l++){
         var labItem = laboratory[l];
@@ -629,8 +632,26 @@ THJo copyWith({  num? id,
           await db.update('t_d_jo_laboratory', labItem.toUpdate(),where: 'id=?', whereArgs: [labItem.id]);
         }
       }
+      TSo? so = thjo.tso;
+      if(so != null){
+        debugPrint("print data tso ${jsonEncode(so)}");
+        var soExsis = await db.rawQuery("select * from t_h_so where id=?",[so.id]);
+        if(soExsis.length == 0){
+          await db.insert("t_h_so", so.toInsert());
+          LeadAccount? leadAccount = so.leadAccount;
+          if(leadAccount != null){
+            debugPrint("print data lead account ${jsonEncode(leadAccount.toInsert())}");
+            final leadExsis = await db.rawQuery("select * from t_h_lead_account where id=?",[leadAccount.id]);
+            if(leadExsis.length == 0){
+              await db.insert("t_h_lead_account", leadAccount.toInsert());
+            }
+
+          }
+        }
+
+      }
     }else {
-      int updated = await db.update('t_h_jo', thjo.toUpdate(), whereArgs: [thjo.id], where: 'id=?');
+      await db.update('t_h_jo', thjo.toUpdate(), whereArgs: [thjo.id], where: 'id=?');
       List<TDJoLaboratory> laboratory = thjo.laboratory ?? [];
       for(int l = 0; l < laboratory.length; l++){
         var labItem = laboratory[l];
@@ -640,6 +661,24 @@ THJo copyWith({  num? id,
         }else{
           await db.update('t_d_jo_laboratory', labItem.toUpdate(),where: 'id=?', whereArgs: [labItem.id]);
         }
+      }
+      TSo? so = thjo.tso;
+      if(so != null){
+        debugPrint("print data tso ${jsonEncode(so)}");
+        var soExsis = await db.rawQuery("select * from t_h_so where id=?",[so.id]);
+        if(soExsis.length == 0){
+          await db.insert("t_h_so", so.toInsert());
+          LeadAccount? leadAccount = so.leadAccount;
+          if(leadAccount != null){
+            debugPrint("print data lead account ${jsonEncode(leadAccount.toInsert())}");
+            final leadExsis = await db.rawQuery("select * from t_h_lead_account where id=?",[leadAccount.id]);
+            if(leadExsis.length == 0){
+              await db.insert("t_h_lead_account", leadAccount.toInsert());
+            }
+
+          }
+        }
+
       }
     }
   }

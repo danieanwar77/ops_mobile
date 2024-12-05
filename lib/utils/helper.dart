@@ -69,6 +69,36 @@ class Helper {
     }
   }
 
+  static String pathFile(String? path){
+    try{
+      if(path == null){
+        return "";
+      }
+      if(path.contains("ops")){
+        return path;
+      }else{
+        return '${baseUrl()}/$path';
+      }
+    }catch(e){
+      return '';
+    }
+  }
+
+  static bool pathLocalOrServer(String? path){
+    try{
+      if(path == null){
+        return false;
+      }
+      if(path.contains("ops")){
+        return true;
+      }else{
+        return false;
+      }
+    }catch(e){
+      return false;
+    }
+  }
+
   static Future<bool> checkConnection() async {
     var connectivityResult = await Connectivity().checkConnectivity();
 

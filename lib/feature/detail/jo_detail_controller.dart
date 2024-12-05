@@ -1162,7 +1162,7 @@ class JoDetailController extends BaseController {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(
-                      height: MediaQuery.of(Get.context!).viewInsets.bottom != 0 ? 100.h : 200.h,
+                      height: MediaQuery.of(Get.context!).viewInsets.bottom != 0 ? 150.h : 250.h,
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
@@ -2715,7 +2715,7 @@ class JoDetailController extends BaseController {
                                       width: double.infinity,
                                       child: const Center(
                                           child: Text(
-                                        'Submit',
+                                        'Save',
                                         style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                                       )))),
                             ),
@@ -3383,7 +3383,7 @@ class JoDetailController extends BaseController {
                                     width: double.infinity,
                                     child: const Center(
                                         child: Text(
-                                      'Submit',
+                                      'Save',
                                       style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                                     )))),
                           ),
@@ -3511,6 +3511,7 @@ class JoDetailController extends BaseController {
 
       for(int index = 0; index < stages.length; index++) {
         TDJoInspectionActivityStages stage = stages[index];
+        debugPrint('print data inspection ${jsonEncode(stage)}');
         TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
           tHJoId: id,
           mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
@@ -3986,7 +3987,7 @@ class JoDetailController extends BaseController {
                                   width: double.infinity,
                                   child: const Center(
                                       child: Text(
-                                    'Submit',
+                                    'Save',
                                     style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                                   )))),
                         ),
@@ -4472,7 +4473,7 @@ class JoDetailController extends BaseController {
                                   width: double.infinity,
                                   child: const Center(
                                       child: Text(
-                                    'Submit',
+                                    'Save',
                                     style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                                   )))),
                         ),
@@ -4954,7 +4955,7 @@ class JoDetailController extends BaseController {
                                   width: double.infinity,
                                   child: const Center(
                                       child: Text(
-                                    'Submit',
+                                    'Save',
                                     style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                                   )))),
                         ),
@@ -5654,7 +5655,7 @@ class JoDetailController extends BaseController {
                                       width: double.infinity,
                                       child: const Center(
                                           child: Text(
-                                        'Submit',
+                                        'Save',
                                         style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                                       )))),
                             ),
@@ -6598,7 +6599,7 @@ class JoDetailController extends BaseController {
                                                         },
                                                         child: Image.file(
                                                           File(photo.pathName!),
-                                                          fit: BoxFit.cover,
+                                                          fit: BoxFit.none,
                                                         ),
                                                       ),
                                                     ),
@@ -6729,7 +6730,7 @@ class JoDetailController extends BaseController {
                                     width: double.infinity,
                                     child: const Center(
                                         child: Text(
-                                      'Submit',
+                                      'Save',
                                       style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                                     )))),
                           ),

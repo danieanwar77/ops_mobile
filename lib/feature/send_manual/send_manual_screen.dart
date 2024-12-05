@@ -89,6 +89,7 @@ class SendManualScreen extends StatelessWidget{
                                               onPressed: () async {
                                                 controller.loadingDialog();
                                                 final result = await controller.sendSingleData(joItem);
+                                                debugPrint("print result ${result}");
                                                 if(result){
                                                   Future.delayed(const Duration(seconds: 1),()async{
                                                     Get.back<void>();
@@ -97,6 +98,7 @@ class SendManualScreen extends StatelessWidget{
                                                   });
                                                 }else{
                                                   Future.delayed(const Duration(seconds: 1),() async {
+                                                    Get.back<void>();
                                                     Get.back<void>();
                                                     controller.openDialog('Attention', 'Data gagal dikirim');
                                                     await controller.getData();

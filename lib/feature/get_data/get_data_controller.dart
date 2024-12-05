@@ -17,6 +17,7 @@ import 'package:ops_mobile/data/model/response_register_device.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/login/login_screen.dart';
+import 'package:ops_mobile/feature/splash/splash_screen.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_ios/path_provider_ios.dart';
@@ -89,10 +90,11 @@ class GetDataController extends BaseController{
           final data = await SqlHelper.getLogin(settingsData['e_number']);
           debugPrint('user data: $data');
           Get.back();
-          openDialog('Success', 'Berhasil ambil data', (){Get.to<void>(LoginScreen());});
+          openDialog('Success', 'Berhasil ambil data', (){Get.to<void>(SplashScreen());});
         } else {
           openDialog('Failed', 'Data gagal diambil',(){});
         }
+        isLoading.value = false;
     } catch(e) {
       isLoading.value = true;
       openDialog('Failed', '$e', (){});

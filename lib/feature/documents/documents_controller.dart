@@ -200,72 +200,74 @@ class DocumentsController extends BaseController {
     return 'unsupported';
   }
 
-  void mediaPickerConfirm() {
-    Get.dialog(
-      AlertDialog(
-        title: Text(
-          'File Attachment',
-          style: TextStyle(
-              fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
-        ),
-        content: Text('Pilih sumber file yang ingin dilampirkan.'),
-        actions: [
-          Row(
-            children: [
-              Expanded(
-                child: Center(
-                  child: SizedBox(
-                    width: 68,
-                    height: 67,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          Get.back();
-                          cameraImageDocument();
-                        },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(color: primaryColor),
-                                borderRadius: BorderRadius.circular(12))),
-                        child: Center(
-                            child: Icon(
-                          Icons.camera_alt,
-                          color: primaryColor,
-                        ))),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: SizedBox(
-                    width: 68,
-                    height: 68,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          Get.back();
-                          fileDocument();
-                        },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(color: primaryColor),
-                                borderRadius: BorderRadius.circular(12))),
-                        child: Center(
-                            child: Icon(
-                          Icons.folder_rounded,
-                          color: primaryColor,
-                        ))),
-                  ),
-                ),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
-  }
+  // void mediaPickerConfirm() {
+  //   Get.dialog(
+  //     AlertDialog(
+  //       title: Text(
+  //         'File Attachment',
+  //         style: TextStyle(
+  //             fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
+  //       ),
+  //       content: Text('Pilih sumber file yang ingin dilampirkan.'),
+  //       actions: [
+  //         Row(
+  //           children: [
+  //             Expanded(
+  //               child: Center(
+  //                 child: SizedBox(
+  //                   width: 68,
+  //                   height: 67,
+  //                   child: ElevatedButton(
+  //                       onPressed: () {
+  //                         Get.back();
+  //                         cameraImageDocument();
+  //                       },
+  //                       style: ElevatedButton.styleFrom(
+  //                           backgroundColor: Colors.white,
+  //                           shape: RoundedRectangleBorder(
+  //                               side: BorderSide(color: primaryColor),
+  //                               borderRadius: BorderRadius.circular(12))),
+  //                       child: Center(
+  //                           child: Icon(
+  //                         Icons.camera_alt,
+  //                         color: primaryColor,
+  //                       ))),
+  //                 ),
+  //               ),
+  //             ),
+  //             Expanded(
+  //               child: Center(
+  //                 child: SizedBox(
+  //                   width: 68,
+  //                   height: 68,
+  //                   child: ElevatedButton(
+  //                       onPressed: () {
+  //                         Get.back();
+  //                         fileDocument();
+  //                       },
+  //                       style: ElevatedButton.styleFrom(
+  //                           backgroundColor: Colors.white,
+  //                           shape: RoundedRectangleBorder(
+  //                               side: BorderSide(color: primaryColor),
+  //                               borderRadius: BorderRadius.circular(12))),
+  //                       child: Center(
+  //                           child: Icon(
+  //                         Icons.folder_rounded,
+  //                         color: primaryColor,
+  //                       ))),
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
 
   void drawerAddDocument(String type) {
+    documentAttachments.value = [];
+    documentAttachments.value.add("");
     Get.bottomSheet(
       GetBuilder(
         init: DocumentsController(),
@@ -471,7 +473,7 @@ class DocumentsController extends BaseController {
                           const SizedBox(
                             height: 16,
                           ),
-                          documentAttachments.value.isNotEmpty
+                          (documentAttachments.value.isNotEmpty && documentAttachments.value[0] != "")
                               ? GridView.builder(
                                   shrinkWrap: true,
                                   physics: NeverScrollableScrollPhysics(),
@@ -481,7 +483,7 @@ class DocumentsController extends BaseController {
                                     mainAxisSpacing: 8,
                                     crossAxisSpacing: 8,
                                   ),
-                                  itemCount: documentAttachments.value.length,
+                                  itemCount: 1,
                                   itemBuilder: (content, index) {
                                     final String photo =
                                         documentAttachments.value[index];
@@ -579,12 +581,12 @@ class DocumentsController extends BaseController {
                           const SizedBox(
                             height: 16,
                           ),
-                          documentAttachments.value.isEmpty ? SizedBox(
+                          (documentAttachments.value.isNotEmpty && documentAttachments.value[0] == "") ? SizedBox(
                             width: 68,
                             height: 68,
                             child: ElevatedButton(
                                 onPressed: () {
-                                  fileDocument();
+                                  fileDocumentEdit(0);
                                 },
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
@@ -1311,6 +1313,7 @@ class DocumentsController extends BaseController {
     debugPrint('documents attach after remove : ${jsonEncode(documentsAttachments.value)}');
     debugPrint('document attach after remove : ${jsonEncode(documentAttachments.value)}');
   }
+
 
   void openDialog(String type, String text) {
     Get.dialog(

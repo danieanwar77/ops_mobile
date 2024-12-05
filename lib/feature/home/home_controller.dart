@@ -109,7 +109,7 @@ class HomeController extends BaseController{
 
     // connectivityResult = await (Connectivity().checkConnectivity());
     //await getJO();
-    //syncMaster(); dimatikan dulu datanya nagcou
+    syncMaster();
     countNotif();
     super.onInit();
   }

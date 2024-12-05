@@ -248,9 +248,9 @@ class SqlHelper extends BaseController {
       d12.`name`as sub_market_segment_name FROM
       `t_h_jo` AS a
       left join m_kos as d1 on d1.id = a.m_kindofservice_id 
-      JOIN t_h_so AS b ON a.t_so_id = b.id
-      JOIN m_statusjo AS c ON a.m_statusjo_id = c.id 
-      join m_sbu as d on b.sbu_id = d.id
+      left JOIN t_h_so AS b ON a.t_so_id = b.id
+      left JOIN m_statusjo AS c ON a.m_statusjo_id = c.id 
+      left join m_sbu as d on b.sbu_id = d.id
       left join m_commodity as e on b.commodity_id = e.id
       left join t_h_lead_account as f on f.id = b.company_acc_id 
       left join m_client_category as g on g.id= b.client_category_id 
@@ -1312,9 +1312,9 @@ WHERE a.id = $id AND b.laboratorium_id = $labId AND a.pic_laboratory = $employee
 
     if(attachment != null){
       Batch batch = db.batch();
-      attachment.forEach((item){
+      for (var item in attachment) {
         batch.insert('t_d_jo_laboratory_attachment',item,conflictAlgorithm: ConflictAlgorithm.replace);
-      });
+      }
       var id = await batch.commit();
       debugPrint('hasil batch: ${id}');
 

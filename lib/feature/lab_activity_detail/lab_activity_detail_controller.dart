@@ -729,10 +729,27 @@ class LabActivityDetailController extends BaseController{
         }
       }
       clearActivityLabForm();
+      await changeStatusJoLocal();
       return 'success';
     }catch(e){
       debugPrint("error insert activity lab ${e}");
       return 'failed';
+    }
+  }
+
+  Future<void> changeStatusJoLocal() async {
+    try {
+      final db = await SqlHelper.db();
+      db.execute('''
+          UPDATE t_h_jo
+          SET m_statusjo_id = 3
+          WHERE id = $id;
+        ''');
+      debugPrint('print id jo yang diupdate $id');
+    } catch (e) {
+      debugPrint(e.toString());
+    } finally {
+      update();
     }
   }
 
@@ -1206,7 +1223,7 @@ class LabActivityDetailController extends BaseController{
                                 width: double.infinity,
                                 child: Center(
                                     child: Text(
-                                      'Submit',
+                                      'Save',
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 16,
@@ -1286,7 +1303,7 @@ class LabActivityDetailController extends BaseController{
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Apakah anda ingin menghapus activity date $date?'),
+        content: Text('Apakah anda ingin menghapus activity time $date?'),
         actions: [
           TextButton(
             child: const Text("Cancel"),
@@ -1449,7 +1466,7 @@ class LabActivityDetailController extends BaseController{
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Add Stage Laboratory',
+                          Text('Edit Stage Laboratory',
                             style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -1893,7 +1910,7 @@ class LabActivityDetailController extends BaseController{
                                 width: double.infinity,
                                 child: const Center(
                                     child: Text(
-                                      'Submit',
+                                      'Save',
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 16,
@@ -2251,7 +2268,7 @@ class LabActivityDetailController extends BaseController{
                                   width: double.infinity,
                                   child: Center(
                                       child: Text(
-                                        'Submit',
+                                        'Save',
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 16,
@@ -2581,7 +2598,7 @@ class LabActivityDetailController extends BaseController{
                                   width: double.infinity,
                                   child: Center(
                                       child: Text(
-                                        'Submit',
+                                        'Save',
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 16,
@@ -2919,7 +2936,7 @@ class LabActivityDetailController extends BaseController{
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
         ),
-        content: Text('Apakah anda ingin menghapus activity date $date?'),
+        content: Text('Apakah anda ingin menghapus activity time $date?'),
         actions: [
           TextButton(
             child: const Text("Cancel"),
@@ -3123,10 +3140,15 @@ class LabActivityDetailController extends BaseController{
     } on PlatformException catch (e) {
       openDialog('Failed', e.message ?? 'Gagal menambahkan file');
     }
-    openDialog('Success', 'Berhasil menambahkan file.');
   }
 
   void fileActivity6() async {
+    var total = 0;
+    activity6Attachments.value.forEach((item) async {
+      final fileBytes = await File(item.pathName!).readAsBytes();
+      total = total + fileBytes.lengthInBytes;
+      update();
+    });
     try {
       final FilePickerResult? attach = await FilePicker.platform.pickFiles(
           allowMultiple: true,
@@ -3141,18 +3163,22 @@ class LabActivityDetailController extends BaseController{
             final fileTemp = File(data!.path);
             final File file = fileTemp;
             final fileName = file.path.split('/').last;
-            final dir = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
-            bool exists = await Directory('$dir/ops/files/').exists();
-
-            if(exists == false){
-              Directory('$dir/ops/files/').create();
+            final checkFileBytes = await File(file.path).readAsBytes();
+            if (total + checkFileBytes.lengthInBytes > 10000000) {
+              openDialog("Attention", 'Total File lebih dari 10 MB!');
+              return;
+            } else {
+              final dir = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
+              bool exists = await Directory('$dir/ops/files/').exists();
+              if(exists == false){
+                Directory('$dir/ops/files/').create();
+              }
+              file.rename('$dir/ops/files/$fileName');
+              addActivity6Files(file.path);
+              update();
             }
 
-            file.rename('$dir/ops/files/$fileName');
-            update();
-            addActivity6Files(file.path);
           });
-          openDialog('Success', 'Berhasil menambahkan file.');
         }
       }
     } on PlatformException catch (e) {
@@ -3605,9 +3631,6 @@ class LabActivityDetailController extends BaseController{
                                                   activity6ListTextController
                                                       .value[index],
                                                   onChanged: (value) {
-                                                    debugPrint(value);
-                                                    debugPrint(
-                                                        'text remarks controller : ${activity6ListTextController.value[index].text}');
                                                     editActivity6Remarks(
                                                         date!,
                                                         value,
@@ -3685,41 +3708,34 @@ class LabActivityDetailController extends BaseController{
                                     final TDJoLaboratoryAttachment photo = activity6Attachments.value[index];
                                     final String fileType = checkFileType(photo.pathName!);
                                     var filename = photo.fileName;
-                                    return fileType == 'image' ? SizedBox(
-                                      width: 68,
-                                      height: 68,
-                                      child: Stack(
-                                        children: [
-                                          Container(
-                                            margin: const EdgeInsets.only(top: 5),
-                                            width: 63,
-                                            height: 63,
+                                    return fileType == 'image' ? Stack(
+                                      children: [
+                                        Container(
+                                          width: 63,
+                                          height: 63,
+                                          child: ClipRect(
                                             child: InkWell(
                                               onTap: (){
-                                                //controller.previewImageAct6(index, photo.pathName!);
                                                 mediaPickerEditConfirm(index);
                                               },
                                               child: Image.file(
                                                 File(photo.pathName!),
-                                                fit: BoxFit.cover,
                                               ),
                                             ),
-                                          ),
-                                          SizedBox(
-                                            width: 68,
-                                            height: 68,
-                                            child: Align(
-                                              alignment: Alignment.topRight,
-                                              child: IconButton(
-                                                  onPressed: (){
-                                                    controller.removeActivity6Files(index);
-                                                  },
-                                                  icon: Image.asset('assets/icons/close.png', width: 24)
-                                              ),
+                                          )
+                                        ),
+                                        Positioned(
+                                          top: 0,
+                                          right: 0,
+                                          child: IconButton(
+                                            onPressed: () {
+                                              controller.removeActivity6Files(index);
+                                            },
+                                            icon: Image.asset('assets/icons/close.png', width: 24,
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ) : fileType == 'doc' ? SizedBox(
                                       width: 68,
                                       height: 68,
@@ -3840,7 +3856,7 @@ class LabActivityDetailController extends BaseController{
                                     width: double.infinity,
                                     child: const Center(
                                         child: Text(
-                                          'Submit',
+                                          'Save',
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16,
@@ -4019,7 +4035,7 @@ class LabActivityDetailController extends BaseController{
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Add Stage Inspection',
+                                'Edit Stage Laboratory',
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
@@ -4150,6 +4166,9 @@ class LabActivityDetailController extends BaseController{
                               TextFormField(
                                 controller: activity6Text,
                                 cursorColor: onFocusColor,
+                                inputFormatters: [
+                                  new LengthLimitingTextInputFormatter(150),
+                                ],
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Field wajib diisi!';
@@ -4378,8 +4397,7 @@ class LabActivityDetailController extends BaseController{
                                                                                       )
                                                                                   ),
                                                                                   child: InkWell(
-                                                                                      onTap:
-                                                                                          () {
+                                                                                      onTap: () {
                                                                                             removeActivity6Confirm(date!, indexItem, index, 6);
                                                                                       },
                                                                                       child: Icon(
@@ -4409,17 +4427,12 @@ class LabActivityDetailController extends BaseController{
                                                   height: 16,
                                                 ),
                                                 TextFormField(
-                                                  controller:
-                                                  activity6ListTextController
-                                                      .value[index],
+                                                  controller: activity6ListTextController.value[index],
+                                                  inputFormatters: [
+                                                    new LengthLimitingTextInputFormatter(250),
+                                                  ],
                                                   onChanged: (value) {
-                                                    debugPrint(value);
-                                                    debugPrint(
-                                                        'text remarks controller : ${activity6ListTextController.value[index].text}');
-                                                    editActivity6Remarks(
-                                                        date!,
-                                                        value,
-                                                        index);
+                                                    editActivity6Remarks(date!, value, index);
                                                   },
                                                   cursorColor: onFocusColor,
                                                   style: const TextStyle(
@@ -4639,7 +4652,7 @@ class LabActivityDetailController extends BaseController{
                                     width: double.infinity,
                                     child: Center(
                                         child: Text(
-                                          'Submit',
+                                          'Save',
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16,
@@ -5119,16 +5132,23 @@ class LabActivityDetailController extends BaseController{
         xFiles.forEach((data) async {
           final fileTemp = File(data!.path);
           final File file = fileTemp;
+          final fileName = file.path.split('/').last;
           final checkFileBytes = await File(file.path).readAsBytes();
           if (total + checkFileBytes.lengthInBytes > 10000000) {
             openDialog("Attention", 'Total File lebih dari 10 MB!');
             return;
-          } else {
+          }else {
+            final dir = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
+            bool exists = await Directory('$dir/ops/files/').exists();
+            if(exists == false){
+              Directory('$dir/ops/files/').create();
+            }
+            file.rename('$dir/ops/files/$fileName');
             editActivity6Files(file.path, index);
+            update();
           }
           update();
         });
-        //openDialog('Success', 'Berhasil menambahkan file.');
       }
     } on PlatformException catch (e) {
       openDialog('Failed', e.message ?? 'Gagal menambahkan file.');

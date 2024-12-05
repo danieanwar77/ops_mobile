@@ -252,7 +252,8 @@ class JoWaitingController extends BaseController {
 
   Future<void> getJoDetailLocal() async {
     final data = await SqlHelper.getDetailJo(id);
-    debugPrint('data detail : ${jsonEncode(data.first)}');
+    debugPrint('print data id jo $id');
+    debugPrint('print data detail : ${jsonEncode(data.first)}');
     final sow = await SqlHelper.getDetailJoSow(id);
     debugPrint('data detail SOW : ${jsonEncode(sow)}');
     final oos = await SqlHelper.getDetailJoOos(id);
@@ -324,7 +325,6 @@ class JoWaitingController extends BaseController {
   }
 
   Future<void> getData() async {
-    //await getJoDetail();
     await getJoDetailLocal();
     debugPrint('data employee pic: ${dataJoDetail.value.detail?.idPicInspector}, ${dataJoDetail.value.detail?.idPicLaboratory}');
     picInspector = int.parse(dataJoDetail.value.detail?.idPicInspector != null
@@ -408,7 +408,7 @@ class JoWaitingController extends BaseController {
       update();
     }
    // await getJoPIC();
-   //  await getJoPICLocal();
+    await getJoPICLocal();
    await getJoDailyPhotoV2();
    //  await getJoDailyPhoto();
    //  await getJoDailyActivity();
@@ -948,17 +948,6 @@ class JoWaitingController extends BaseController {
         ),
       ),
     );
-  }
-
-  void changeStatusJo() async {
-    var response = await repository.changeStatusJo(id.toString(), 3.toString());
-    if (response?.httpCode != 200) {
-      debugPrint('Berhasil ubah status JO.');
-      //openDialog('Success', 'Berhasil ubah status JO.');
-    } else {
-      debugPrint('Gagal ubah status JO');
-      //openDialog('Failed', 'Gagal ubah status JO');
-    }
   }
 
   void cameraImageDocument() async {

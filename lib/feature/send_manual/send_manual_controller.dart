@@ -106,7 +106,7 @@ class SendManualController extends BaseController{
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                               color: Colors.black26,
                               spreadRadius: 0.1,
@@ -150,7 +150,7 @@ class SendManualController extends BaseController{
     Get.dialog(
       AlertDialog(
         title: Text(type,
-          style: TextStyle(
+          style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
               color: primaryColor
@@ -159,8 +159,8 @@ class SendManualController extends BaseController{
         content: Text(text),
         actions: [
           TextButton(
+            onPressed: Get.back,
             child: const Text("Close"),
-            onPressed: () => Get.back(),
           ),
         ],
       ),
@@ -659,7 +659,7 @@ class SendManualController extends BaseController{
   Future<bool> sendSingleData(SendManualV2 sendData) async{
     int type = sendData.type == null ? 0 : sendData!.type!.toInt();
     bool connection = await Helper.checkConnection();
-    if(connection){
+    if(!connection){
       openDialog("Attenction", "Periksa koneksi ada");
       return false;
     }else{

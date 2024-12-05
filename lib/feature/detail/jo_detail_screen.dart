@@ -1665,10 +1665,10 @@ class JoDetailScreen extends StatelessWidget {
                                                         onTap: () {
                                                           debugPrint(" print data inspection date ${controller.joRx.value.inspectionFinishedDate.toString()}");
                                                           debugPrint(" print data inspection date ${controller.joRx.value.inspectionFinishedDate.toString().length > 0}");
-                                                          if( controller.joRx.value.inspectionFinishedDate != null){
-                                                            controller.previewImageDetail(index, pict!.pathPhoto!, pict!.keterangan!, pict);
-                                                          }else{
+                                                          if( controller.joRx.value.inspectionFinishedDate == null || controller.joRx.value.inspectionFinishedDate == ""){
                                                             controller.previewImage(index, pict!.pathPhoto!, pict!.keterangan!, pict);
+                                                          }else{
+                                                            controller.previewImageDetail(index, pict!.pathPhoto!, pict!.keterangan!, pict);
                                                           }
                                                         },
                                                         child: SizedBox(
@@ -1745,7 +1745,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       child: Text(controller.stageList.length == 0 ? "None" : controller.activityStages[controller.activityStage - 1], style: TextStyle(fontSize: 12.sp, color: Colors.white)))
                                                       : const SizedBox(),
                                                   Spacer(),
-                                                  (controller.dataJoDetail.value.detail?.statusJo == 'Assigned' || controller.dataJoDetail.value.detail?.statusJo == 'On Progres' ) &&  (controller.joRx.value.inspectionFinishedDate == null && !controller.isReportClient.value)
+                                                  (controller.dataJoDetail.value.detail?.statusJo == 'Assigned' || controller.dataJoDetail.value.detail?.statusJo == 'On Progres' ) &&  ((controller.joRx.value.inspectionFinishedDate == null || controller.joRx.value.inspectionFinishedDate == "") && !controller.isReportClient.value)
                                                       ? IconButton(
                                                       onPressed: () {
                                                         if (controller.activitySubmitted.value == true) {
@@ -2703,8 +2703,7 @@ class JoDetailScreen extends StatelessWidget {
                                                         final TDJoInspectionAttachment attach = controller.activity6AttachmentsStage.value[index];
                                                         final String fileType = controller.checkFileType(attach.pathName!);
                                                         var filename = attach.fileName!;
-                                                        return fileType == 'image'
-                                                            ? SizedBox(
+                                                        return fileType == 'image' ? SizedBox(
                                                           width: 54,
                                                           height: 66,
                                                           child: SizedBox(
