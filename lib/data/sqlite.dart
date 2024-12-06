@@ -151,7 +151,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getEmployeePassword(String id) async {
-    final db = await SqlHelperV2().database;
+    final db = await SqlHelper.db();
     return db.rawQuery('''
       select u.id, u.password_aes  from employee e 
       join user_profile up on up.employee_id = e.id 
@@ -366,7 +366,7 @@ class SqlHelper extends BaseController {
     LEFT join t_d_jo_laboratory_activity_stages d on d.d_jo_laboratory_id = b.id AND d.t_h_jo_id = a.id
     join m_laboratorium c on c.id = b.laboratorium_id
     where a.id = $idJo
-    group by b.laboratorium_id
+    group by b.laboratorium_id order by d.id desc
     ''');
   }
 

@@ -75,7 +75,7 @@ class SendManualV2 {
     for(var dataAct in inspAct){
       result.add(SendManualV2(
         idTrans: int.tryParse(dataAct['id'].toString()),
-        module: 'JO - ${dataAct['t_h_jo_id']} Activity Inspection',
+        module: 'JO - ${dataAct['t_h_jo_id']} Activity Inspection ${dataAct['m_statusinspectionstages_id']}',
         table: 't_d_jo_inspection_activity_stages',
         transDate: dataAct['created_at'],
         isUpload: 0,
@@ -111,7 +111,7 @@ class SendManualV2 {
     for(var item in labAct){
       result.add(SendManualV2(
           idTrans: int.tryParse(item['id'].toString()),
-          module: 'Activity Lab',
+          module: 'JO - ${item['t_h_jo_id']} Activity Lab Stage ${item['m_statuslaboratoryprogres_id']}',
           table: 't_d_jo_laboratory_activity_stages',
           transDate: item['created_at'],
           isUpload: 0,

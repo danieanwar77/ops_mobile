@@ -17,6 +17,7 @@ import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/core/core/constant/app_constant.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/data/Datatabase2.dart';
+import 'package:ops_mobile/data/model/etta_vessel.dart';
 import 'package:ops_mobile/data/model/jo_daily_photo.dart';
 import 'package:ops_mobile/data/model/jo_detail_model.dart';
 import 'package:ops_mobile/data/model/jo_list_daily_activity.dart';
@@ -34,6 +35,7 @@ import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages_tranship
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_vessel.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_attachment.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_pict.dart';
+import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity_stages.dart';
 import 'package:ops_mobile/data/model/t_h_jo.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
@@ -167,8 +169,24 @@ class JoDetailController extends BaseController {
   Rx<THJo> joRx = THJo().obs;
   Rx<bool> isReportClient = RxBool(false);
 
+  final ScrollController scrollController = ScrollController();
+
+  Future<void> scrollToBottom() async {
+    await Future.delayed(Duration(milliseconds: 100));
+    if (scrollController.hasClients) {
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeOut,
+      );
+      debugPrint('print data scroll bottom');
+    }
+    debugPrint('print data scroll bottom no has clients');
+  }
+
   @override
   Future<void> onInit() async {
+    debugPrint('print data previous route ${Get.previousRoute}');
     final dataUser = jsonDecode(await StorageCore().storage.read('user'));
     userData.value = Data(
         id: dataUser.first['id'],
@@ -180,7 +198,6 @@ class JoDetailController extends BaseController {
         division: dataUser.first['division'].toString(),
         superior: dataUser.first['superior_id'].toString());
     debugPrint('data user: ${jsonEncode(userData.value)}');
-
     final argument = await Get.arguments;
     id = argument['id'];
     statusId = argument['status'];
@@ -189,14 +206,24 @@ class JoDetailController extends BaseController {
     searchLabText.addListener(searchLab);
     update();
     await getData();
-    debugPrint('activity stage now: $activityStage');
     super.onInit();
   }
 
   // Get Data
 
+  Rx<Map<String,dynamic>>  startJo = Rx({});
+  Future<void> getStartJo()async {
+    startJo.value = await TDJoInspectionActivityStages.getStartDate(id);
+  }
+  Rx<Map<String,dynamic>> endJo = Rx({});
+  Future<void> getEndJo() async{
+    endJo.value = await TDJoInspectionActivityStages.getEndData(id);
+  }
+
   Future<void> getData() async {
     //await getJoDetail();
+    await getStartJo();
+    await endJo();
     await getJoDetailLocal();
     picInspector = int.parse(dataJoDetail.value.detail?.idPicInspector != null
         ? dataJoDetail.value.detail!.idPicInspector.toString() == userData.value!.id.toString()
@@ -328,37 +355,16 @@ class JoDetailController extends BaseController {
     //await getJoPIC();
     await getJoPICLocal();
     await getJoDailyPhotoV2();
-    // await getJoDailyActivity();
     // await getJoDailyActivityLocal();
     await getJoDailyActivityLocalV2();
-    // await getJoDailyActivity5();
-    // await getJoDailyActivity6();
-    // await getJoDailyActivityLab();
-    // await getJoDailyActivityLab5();
+
     isLoadingJO = false;
     update();
   }
 
-  Future<void> getJoDetail() async {
-    var response = await repository.getJoDetail(id) ?? JoDetailModel();
-    debugPrint(jsonEncode(response));
-    debugPrint('JO Laboratories: ${jsonEncode(response.data?.laboratory)}');
-    dataJoDetail.value = response?.data ?? DataDetail();
-    var labo = response.data?.laboratory ?? [];
-    barges.value = dataJoDetail.value.detail?.barge?.split('|') ?? [];
-    barges.value.forEach((_) {
-      bargesController.value.add(TextEditingController());
-    });
-    if (labo.isNotEmpty) {
-      labs.value = labo!;
-      labsTemp.value = labo!;
-    }
-    bargesCount = barges.value.length;
-    activity5bargesCount = bargesCount;
-    activity5Barges.value = barges.value;
-    update();
-    debugPrint('barges : ${jsonEncode(barges.value)}');
-  }
+  Rx<bool> canFinishLabJo = false.obs;
+
+
 
   Future<void> getJoDetailLocal() async {
     final data = await SqlHelper.getDetailJo(id);
@@ -407,6 +413,8 @@ class JoDetailController extends BaseController {
       });
     }
     if (labo != null) {
+      labs.value = [];
+      labsTemp.value = [];
       labo.forEach((lab) {
         labs.value.add(Laboratory.fromJson(lab));
         labsTemp.value.add(Laboratory.fromJson(lab));
@@ -437,6 +445,19 @@ class JoDetailController extends BaseController {
     debugPrint("print data jo from rx ${joRslt.toJson()}");
     joRx.value = joRslt;
 
+    if(joRslt.picLaboratory == null || joRslt.picLaboratory == 0){
+      canFinishLabJo.value = false;
+    }else{
+      if(joRslt.picLaboratory == (userData.value!.id) && joRslt.laboratoryFinishedDate == ""){
+        List<TDJoLaboratoryActivityStages> listAct6 =   await TDJoLaboratoryActivityStages.getLabAct6(id);
+        canFinishLabJo.value = listAct6.isNotEmpty;
+      }else{
+        canFinishLabJo.value = false;
+      }
+    }
+
+
+
     // Retrieve data from the database
     try {
       result = await db.rawQuery('''
@@ -444,7 +465,7 @@ class JoDetailController extends BaseController {
          s.*, u.name as uom_name
          FROM t_d_jo_inspection_activity_stages AS s
           LEFT JOIN m_uom AS u ON s.uom_id = u.id
-          WHERE s.t_h_jo_id = $id AND s.is_active = 1
+          WHERE s.t_h_jo_id = $id AND s.is_active = 1 order by s.m_statusinspectionstages_id, s.trans_date
         ''');
 
       /// Buffer the query
@@ -515,9 +536,8 @@ class JoDetailController extends BaseController {
         isReportClient.value = true;
       }
 
-      debugPrint("print stage list 1559  ${jsonEncode(stagesList)}");
-      debugPrint("print rx jo finish ${joRslt.inspectionFinishedDate}");
-      debugPrint("print rx jo report client ${isReportClient.value}");
+
+
     } catch (e) {
       debugPrint(e.toString());
     } finally {
@@ -526,41 +546,12 @@ class JoDetailController extends BaseController {
     }
   }
 
-  Rx<Map<String, dynamic>> dataEttaVessel = Rx<Map<String, dynamic>>({});
+  Rx<EttaVessel> dataEttaVessel = EttaVessel().obs;
   Future<void> getJoPICLocal() async {
     //var response = await repository.getJoPIC(id) ?? JoPicModel();
     var response = await SqlHelper.getDetailJoPicHistory(id);
-    final db = await SqlHelperV2().database;
-    /**
-     *_ettaVessel = json['etta_vessel'];
-        _startDateOfAttendance = json['start_date_of_attendance'];
-        _endDateOfAttendance = json['end_date_of_attendance'];
-        _lokasiKerja = json['lokasi_kerja'];
-        _picLaboratory = json['pic_laboratory'];
-        _picInspector = json['pic_inspector'];
-     */
-    var detail = await db.rawQuery('''
-          SELECT 
-          etta_vessel,
-          start_date_of_attendance || ' - ' || end_date_of_attendance as date_attendance,
-          s.site_office as lokasi_kerja,
-          i.e_number || ' - ' ||  i.fullname || ' - ' || ji.jabatan as pic_inspector,
-          p.e_number || ' - ' ||  p.fullname || ' - '|| jp.jabatan as  pic_laboratory 
-        from 
-          t_h_jo as a
-          left join employee as i on a.pic_inspector  = i.id 
-          left join employee as p on a.pic_laboratory = p.id 
-          left join site_office as s on a.lokasi_kerja = s.id 
-          left join jabatan as ji on ji.id = i.jabatan_id
-          left join jabatan as jp on jp.id = p.jabatan_id 
-        where a.id= ?
-            ''',[id]);
-    debugPrint('print data ${jsonEncode(detail)}');
-    if(detail.length > 0){
-      dataEttaVessel.value = detail[0];
-    }
+    dataEttaVessel.value = await EttaVessel.getDataByIdJo(id);
     if(response.length > 0){
-      debugPrint('JO PIC: ${jsonEncode(response)}');
       dataJoPIC.value = DataPIC.fromJson(response);
     }
 
@@ -602,38 +593,6 @@ class JoDetailController extends BaseController {
     final File file = await File('${tempDir}/${filename}').writeAsBytes(buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
     debugPrint('image file path: ${file}');
     return file;
-  }
-
-  Future<void> getJoDailyActivity() async {
-    var response = await repository.getJoListDailyActivity(id) ?? JoListDailyActivity();
-    debugPrint('JO Daily Activity: ${jsonEncode(response)}');
-    dataListActivity.value = response.data?.data! ?? [];
-    if (dataListActivity.value.isNotEmpty) {
-      debugPrint('stage now: ${dataListActivity.value.last.mStatusinspectionstagesId.toString()}');
-      activityStage = int.parse(dataListActivity.value.last.mStatusinspectionstagesId.toString()) + 1;
-    }
-    activityListStages.value.clear();
-    dataListActivity.value.forEach((data) {
-      activityListStages.value.add(Activity(
-        id: data.inspectionActivityId,
-        code: data.code,
-        tHJoId: data.tHJoId,
-        stageId: data.inspectionStagesId,
-        mStatusinspectionstagesId: data.mStatusinspectionstagesId,
-        transDate: data.transDate,
-        startActivityTime: data.startActivityTime,
-        endActivityTime: data.endActivityTime,
-        activity: data.activity,
-        createdBy: data.createdBy,
-        remarks: data.remarks,
-        createdAt: data.createdAt,
-        updatedBy: data.updatedBy,
-        updatedAt: data.updatedAt,
-        isActive: data.isActive,
-        isUpload: data.isUpload,
-      ));
-    });
-    debugPrint("activitystage ${activityListStages.value}");
   }
 
   Future<void> getJoDailyActivityLocal() async {
@@ -1052,6 +1011,7 @@ class JoDetailController extends BaseController {
                               dailyActivityPhotosDescTemp.value.clear();
                               adddailyActivityPhotosCount.value = 0;
                               await getJoDailyActivityLocalV2();
+                              await scrollToBottom();
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white, shape: RoundedRectangleBorder(side: const BorderSide(color: primaryColor), borderRadius: BorderRadius.circular(12))),
@@ -1634,6 +1594,16 @@ class JoDetailController extends BaseController {
       context: context,
       initialEntryMode: TimePickerEntryMode.dialOnly,
       initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: Localizations.override(
+            context: context,
+            locale: const Locale('en', 'GB'),
+            child: child,
+          ),
+        );
+      },
     );
     if (picked != null) {
       List timeSplit = picked.format(context).split(' ');
@@ -2390,6 +2360,9 @@ class JoDetailController extends BaseController {
                                 TextFormField(
                                   controller: vesselController,
                                   cursorColor: onFocusColor,
+                                    inputFormatters: [
+                                    LengthLimitingTextInputFormatter(150),
+                                  ],
                                   style: const TextStyle(color: onFocusColor),
                                   decoration: InputDecoration(
                                       border: OutlineInputBorder(
@@ -2418,6 +2391,9 @@ class JoDetailController extends BaseController {
                                                 children: [
                                                   TextFormField(
                                                     controller: bargesController.value[i],
+                                                    inputFormatters: [
+                                                      LengthLimitingTextInputFormatter(150),
+                                                    ],
                                                     cursorColor: onFocusColor,
                                                     onChanged: (value) {
                                                       editBargeForm(i);
@@ -2709,6 +2685,7 @@ class JoDetailController extends BaseController {
                                     checkActivity5List();
                                     Get.back();
                                     await getJoDailyActivityLocalV2();
+                                    await scrollToBottom();
                                   },
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.white, shape: RoundedRectangleBorder(side: const BorderSide(color: primaryColor), borderRadius: BorderRadius.circular(12))),
@@ -3379,6 +3356,7 @@ class JoDetailController extends BaseController {
                                   checkActivity6List();
                                   Get.back();
                                   await getJoDailyActivityLocalV2();
+                                  await scrollToBottom();
                                 },
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white, shape: RoundedRectangleBorder(side: const BorderSide(color: primaryColor), borderRadius: BorderRadius.circular(12))),
@@ -3593,49 +3571,6 @@ class JoDetailController extends BaseController {
       debugPrint("print error save activity 6 ${e}");
       return false;
     }
-    // if (activity6List.value
-    //     .where((data) => data.mStatusinspectionstagesId == activityStage)
-    //     .toList()
-    //     .isNotEmpty) {
-    //   //activityStage++;
-    //   var post = activity6List.value
-    //       .map((value) => Activity(
-    //     tHJoId: value.tHJoId,
-    //     mStatusinspectionstagesId: value.mStatusinspectionstagesId,
-    //     transDate: value.transDate,
-    //     startActivityTime: value.startActivityTime,
-    //     endActivityTime: value.endActivityTime,
-    //     activity: value.activity,
-    //     createdBy: value.createdBy,
-    //     remarks: value.remarks,
-    //   ).toJson())
-    //       .toList();
-    //   //postInsertActivity(post);
-    //   for (var item in activity6List.value) {
-    //     activity6ListStages.value.add(item);
-    //   }
-    //   activity6AttachmentsStage.value = activity6AttachmentsStage.value;
-    //   activity6AttachmentsStage.value = [];
-    //   activityList.value = [];
-    //   activityListTextController.value = [];
-    //   editActivityMode.value = false;
-    //   activityDate.text = '';
-    //   activityStartTime.text = '';
-    //   activityEndTime.text = '';
-    //   activityText.text = '';
-    //
-    //   activitySubmitted.value = true;
-    //
-    //   // await getJoDailyActivity6();
-    //   // activityStage--;
-    //   update();
-    //   return 'success';
-    // } else if (activity6List.value
-    //     .where((data) => data.mStatusinspectionstagesId == activityStage)
-    //     .toList()
-    //     .isEmpty) {
-    //   return 'failed';
-    // }
   }
 
   void drawerDailyActivityContek() {
@@ -4535,6 +4470,7 @@ class JoDetailController extends BaseController {
                 Get.back();
                 Get.back();
                 await getJoDailyActivityLocalV2();
+                await scrollToBottom();
                 if (activityStage == 1) {
                   await changeStatusJoLocal();
                 }
@@ -5016,6 +4952,7 @@ class JoDetailController extends BaseController {
               if (result) {
                 Get.back();
                 await getJoDailyActivityLocalV2();
+                await scrollToBottom();
               } else {
                 Get.back();
               }
@@ -5346,6 +5283,9 @@ class JoDetailController extends BaseController {
                                                 children: [
                                                   TextFormField(
                                                     controller: bargesController.value[i],
+                                                    inputFormatters: [
+                                                      LengthLimitingTextInputFormatter(150),
+                                                    ],
                                                     cursorColor: onFocusColor,
                                                     onChanged: (value) {
                                                       editBargeForm(i);
@@ -5720,6 +5660,7 @@ class JoDetailController extends BaseController {
                 cleanActivity5();
                 Get.back();
                 await getJoDailyActivityLocalV2();
+                await scrollToBottom();
               } else {
                 Get.back();
               }
@@ -5804,6 +5745,7 @@ class JoDetailController extends BaseController {
                 cleanActivity5();
                 Get.back();
                 await getJoDailyActivityLocalV2();
+                await scrollToBottom();
               } else {
                 Get.back();
               }
@@ -5829,6 +5771,16 @@ class JoDetailController extends BaseController {
       context: context,
       initialEntryMode: TimePickerEntryMode.dialOnly,
       initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: Localizations.override(
+            context: context,
+            locale: const Locale('en', 'GB'),
+            child: child,
+          ),
+        );
+      },
     );
     if (picked != null) {
       List timeSplit = picked.format(context).split(' ');
@@ -5946,22 +5898,26 @@ class JoDetailController extends BaseController {
     });
 
     try {
-      final FilePickerResult? attach =
-          await FilePicker.platform.pickFiles(allowCompression: true, compressionQuality: 10, allowMultiple: true, type: FileType.custom, allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf']);
+      final FilePickerResult? attach = await FilePicker.platform.pickFiles(allowCompression: true, compressionQuality: 10, allowMultiple: true, type: FileType.custom, allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf']);
       if (attach != null) {
         final List<XFile> xFiles = attach.xFiles;
-        xFiles.forEach((data) async {
-          final fileTemp = File(data!.path);
-          final File file = fileTemp;
-          final checkFileBytes = await File(file.path).readAsBytes();
-          if (total + checkFileBytes.lengthInBytes > 10000000) {
-            openDialog("Attention", 'Total File lebih dari 10 MB!');
-            return;
-          } else {
-            addActivity6Files(file.path);
-          }
+        if((xFiles.length + activity6Attachments.value.length) > 5){
+          openDialog("Attention", 'maksimal 5 file');
+        }else{
+          xFiles.forEach((data) async {
+            final fileTemp = File(data!.path);
+            final File file = fileTemp;
+            final checkFileBytes = await File(file.path).readAsBytes();
+            if (total + checkFileBytes.lengthInBytes > 10000000) {
+              openDialog("Attention", 'Total File lebih dari 10 MB!');
+              return;
+            } else {
+              addActivity6Files(file.path);
+            }
+          });
           update();
-        });
+        }
+
         //openDialog('Success', 'Berhasil menambahkan file.');
       }
     } on PlatformException catch (e) {
@@ -6021,18 +5977,22 @@ class JoDetailController extends BaseController {
           await FilePicker.platform.pickFiles(allowCompression: true, compressionQuality: 10, allowMultiple: true, type: FileType.custom, allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf']);
       if (attach != null) {
         final List<XFile> xFiles = attach.xFiles;
-        xFiles.forEach((data) async {
-          final fileTemp = File(data!.path);
-          final File file = fileTemp;
-          final checkFileBytes = await File(file.path).readAsBytes();
-          if (total + checkFileBytes.lengthInBytes > 10000000) {
-            openDialog("Attention", 'Total File lebih dari 10 MB!');
-            return;
-          } else {
-            editActivity6Files(file.path, index);
-          }
+        if((xFiles.length + activity6Attachments.value.length) > 5){
+          openDialog("Attention", 'maksimal 5 file');
+        }else{
+          xFiles.forEach((data) async {
+            final fileTemp = File(data!.path);
+            final File file = fileTemp;
+            final checkFileBytes = await File(file.path).readAsBytes();
+            if (total + checkFileBytes.lengthInBytes > 10000000) {
+              openDialog("Attention", 'Total File lebih dari 10 MB!');
+              return;
+            } else {
+              editActivity6Files(file.path, index);
+            }
+          });
           update();
-        });
+        }
         //openDialog('Success', 'Berhasil menambahkan file.');
       }
     } on PlatformException catch (e) {
@@ -6695,11 +6655,6 @@ class JoDetailController extends BaseController {
                                 child: activity6Attachments.value.length < 5
                                     ? ElevatedButton(
                                         onPressed: () async {
-                                          // var total = 0;
-                                          // activity6Attachments.value.forEach((item) async {
-                                          //   final fileBytes = await File(item.pathName!).readAsBytes();
-                                          //   total = total + fileBytes.lengthInBytes;
-                                          // });
                                           mediaPickerConfirm();
                                         },
                                         style: ElevatedButton.styleFrom(
@@ -6982,6 +6937,7 @@ class JoDetailController extends BaseController {
                 activityListTextController.value = [];
                 await getJoDailyActivityLocalV2();
                 await getJoDailyActivity6AttachmentLocal();
+                await scrollToBottom();
               } else {
                 openDialog('Failed','Gagal menyimpan Activity Stage');
                 Get.back();
@@ -7018,6 +6974,7 @@ class JoDetailController extends BaseController {
                 Get.back();
                 await getJoDailyActivityLocalV2();
                 await getJoDailyActivity6AttachmentLocal();
+                await scrollToBottom();
               } else {
                 openDialog('Failed','Gagal menyimpan Activity Stage');
                 Get.back();
@@ -7076,7 +7033,53 @@ class JoDetailController extends BaseController {
   // Activity Lab Functions
 
   void detailLabActivity(int? lab, String name, int joLabId) {
-    Get.to(const LabActivityDetailScreen(), arguments: {'id': id, 'labId': lab, 'name': name, 'joLabId': joLabId});
+    Get.to<void>(const LabActivityDetailScreen(), arguments: {'id': id, 'labId': lab, 'name': name, 'joLabId': joLabId})?.then((_) async{
+      await getData();
+    });
+  }
+
+  void finishStageLabConfirm() {
+    Get.dialog(
+      AlertDialog(
+        title: const Text(
+          'Attention',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
+        ),
+        content: const Text('Apakah benar anda ingin Finish JO Lab ini? pastikan data yg anda input benar, karena anda tidak bisa mengubah data setelah Finish JO'),
+        actions: [
+          TextButton(
+            child: const Text("Cancel"),
+            onPressed: () => Get.back(),
+          ),
+          TextButton(
+            child: const Text(
+              "OK",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            onPressed: () async {
+              await finishJoLab();
+              await getData();
+              update();
+              Get.back();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> finishJoLab() async {
+    try {
+      final db = await SqlHelper.db();
+      final timeFinish = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()).toString();
+      db.execute('''
+          UPDATE t_h_jo SET laboratory_finished_date = '${timeFinish}' WHERE id = ${dataJoDetail.value.detail!.id};
+        ''');
+    } catch (e) {
+      debugPrint(e.toString());
+    } finally {
+      update();
+    }
   }
 
   void openDialog(String type, String text) {

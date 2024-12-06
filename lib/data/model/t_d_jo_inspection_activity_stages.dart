@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
+import 'package:ops_mobile/data/Datatabase2.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_barge.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages_transhipment.dart';
@@ -277,8 +280,66 @@ class TDJoInspectionActivityStages {
   }
 
   static Future<int> updateUploaded(String code) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return await db.update("t_d_jo_inspection_activity_stages", {"is_upload": 1},where: "code=?",whereArgs: [code]);
+  }
+
+  static Future<Map<String,dynamic>> getEndData(int id)async{
+    final db = await SqlHelperV2().database;
+    final sql = '''select * from t_d_jo_inspection_activity_stages where m_statusinspectionstages_id= '6' and t_h_jo_id='?' ''';
+
+    var finish = await db.rawQuery(sql,[id]);
+    if(finish.length > 0){
+      return finish[0];
+    }else{
+      return Map();
+    }
+  }
+
+  static Future<Map<String, dynamic>> getStartDate(int id) async{
+    final db = await SqlHelperV2().database;
+    final sql = "select trans_date as  created_at from t_d_jo_inspection_activity_stages where m_statusinspectionstages_id= '1' and t_h_jo_id=? ";
+    var start = await db.rawQuery(sql,[id]);
+    final sqlPict = "SELECT * from t_d_jo_inspection_pict where t_h_jo_id=?";
+    var pict = await db.rawQuery(sqlPict,[id]);
+
+    if(start.length == 0 && pict.length == 0){
+      return {};
+    }
+    // Jika salah satu atau kedua hasil ada isinya, bandingkan tanggal created
+    DateTime? oldestDate;
+    Map<String, dynamic>? oldestEntry;
+
+    // Cek data start
+    if (start.isNotEmpty) {
+      for (var entry in start) {
+        if(entry['created_at'] != ""){
+          debugPrint('print data start ${jsonEncode(entry)}');
+          DateTime createdDate = DateTime.parse(entry['created_at'] as String);
+          if (oldestDate == null || createdDate.isBefore(oldestDate)) {
+            oldestDate = createdDate;
+            oldestEntry = entry;
+          }
+        }
+
+      }
+    }
+
+    // Cek data pict
+    if (pict.isNotEmpty) {
+      for (var entry in pict) {
+        if(entry['created_at'] != ""){
+          DateTime createdDate = DateTime.parse(entry['created_at'] as String);
+          if (oldestDate == null || createdDate.isBefore(oldestDate)) {
+            oldestDate = createdDate;
+            oldestEntry = entry;
+          }
+        }
+      }
+    }
+
+    // Kembalikan entry dengan tanggal created yang paling tua
+    return oldestEntry ?? {};
   }
 
 

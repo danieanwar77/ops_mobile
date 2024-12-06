@@ -928,18 +928,6 @@ class DetailJo {
 }
 
 class Laboratory {
-  // int laboratoriumId;
-  // String name;
-  //
-  // factory Laboratory.fromJson(Map<String, dynamic> json) => Laboratory(
-  //   laboratoriumId: json["laboratorium_id"],
-  //   name: json["name"],
-  // );
-  //
-  // Map<String, dynamic> toJson() => {
-  //   "laboratorium_id": laboratoriumId,
-  //   "name": name,
-  // };
   Laboratory({
     num? id,
     num? laboratoriumId,

@@ -16,6 +16,7 @@ import 'package:ops_mobile/base/component/custom_image.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/core/core/constant/app_constant.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
+import 'package:ops_mobile/data/model/etta_vessel.dart';
 import 'package:ops_mobile/data/model/jo_daily_photo.dart';
 import 'package:ops_mobile/data/model/jo_detail_model.dart';
 import 'package:ops_mobile/data/model/jo_list_daily_activity.dart';
@@ -218,6 +219,18 @@ class JoWaitingController extends BaseController {
 
   // Get Data
 
+  Rx<EttaVessel> dataEttaVessel = EttaVessel().obs;
+  Future<void> getDataEttaVessel() async {
+    //var response = await repository.getJoPIC(id) ?? JoPicModel();
+    var response = await SqlHelper.getDetailJoPicHistory(id);
+    dataEttaVessel.value = await EttaVessel.getDataByIdJo(id);
+    if(response.length > 0){
+      dataJoPIC.value = DataPIC.fromJson(response);
+    }
+
+  }
+
+
   Rx<bool> loadingSpk = false.obs;
   Future<void> downloadSpk()async{
     try{
@@ -326,6 +339,7 @@ class JoWaitingController extends BaseController {
 
   Future<void> getData() async {
     await getJoDetailLocal();
+    await getDataEttaVessel();
     debugPrint('data employee pic: ${dataJoDetail.value.detail?.idPicInspector}, ${dataJoDetail.value.detail?.idPicLaboratory}');
     picInspector = int.parse(dataJoDetail.value.detail?.idPicInspector != null
         ? dataJoDetail.value.detail!.idPicInspector.toString() ==

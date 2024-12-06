@@ -361,8 +361,8 @@ THJo copyWith({  num? id,
     map['pic_laboratory'] = _picLaboratory;
     map['inspection_completed_date'] = _inspectionCompletedDate;
     map['laboratory_completed_date'] = _laboratoryCompletedDate;
-    map['inspection_finished_date'] = _inspectionFinishedDate;
-    map['laboratory_finished_date'] = _laboratoryFinishedDate;
+    //map['inspection_finished_date'] = _inspectionFinishedDate;
+    //map['laboratory_finished_date'] = _laboratoryFinishedDate;
     map['canceled_date'] = _canceledDate;
     map['reason_cancel'] = _reasonCancel;
     //map['flag_doc_inspection'] = _flagDocInspection;
@@ -592,17 +592,21 @@ THJo copyWith({  num? id,
   static Future<THJo>getJoLaboratorySendById(int id) async{
     final db = await SqlHelper.db();
     final sqlLabActStage = 'SELECT * from t_d_jo_laboratory_activity_stages where is_upload = 0 and id=?';
-    var dataActStage = await db.rawQuery(sqlLabActStage);
+    var dataActStage = await db.rawQuery(sqlLabActStage,[id]);
+    debugPrint("print data ActStage ${dataActStage}");
     if(dataActStage.isNotEmpty){
       var firstStage = Map<String, dynamic>.from(dataActStage[0]);
       var joResult = await db.rawQuery("SELECT * FROM t_h_jo WHERE id = ?", [firstStage['t_h_jo_id']]);
+      debugPrint("print data jo ${joResult}");
       var joLabResult = await db.rawQuery("SELECT * from t_d_jo_laboratory where id = ?",[firstStage['d_jo_laboratory_id']]);
       var joLabAct = await db.rawQuery('SELECT * from t_d_jo_laboratory_activity where t_d_jo_laboratory_activity_stages_id = ? and is_upload  = 0',[firstStage['id']]);
       var copyDataAct = joLabAct.map((item) => Map<String, dynamic>.from(item)).toList();
       var copyJoLabResult = joLabResult.isNotEmpty ? Map<String, dynamic>.from(joLabResult.first) : null;
       var copyResult = joResult.map((item) => Map<String, dynamic>.from(item)).toList();
+      debugPrint("print data jo ${joResult}");
       firstStage['list_lab_activity'] = copyDataAct;
       var thJo = copyResult.isNotEmpty ? Map<String, dynamic>.from(copyResult.first) : null;
+      debugPrint("print data jo $thJo");
       if(firstStage['m_statuslaboratoryprogress_id'] == 6){
         var dataLabAttachment =  await db.rawQuery('select * from t_d_jo_laboratory_attachment where t_d_jo_laboratory = ? and is_upload = 0',[firstStage['d_jo_laboratory_id']]);
         var copyLabAttach = dataLabAttachment.map((item) => Map<String,dynamic>.from(item)).toList();

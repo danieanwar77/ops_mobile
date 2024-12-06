@@ -1,3 +1,4 @@
+import 'package:ops_mobile/data/Datatabase2.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory_attachment.dart';
 import 'package:ops_mobile/data/sqlite.dart';
@@ -28,7 +29,7 @@ class TDJoLaboratoryActivityStages {
     String? transDate,
     String? remarks,
     num? createdBy,
-    num? updatedBy,
+    String? updatedBy,
     String? createdAt,
     String? updatedAt,
     int? totalSampleReceived,
@@ -102,7 +103,7 @@ class TDJoLaboratoryActivityStages {
   String? _transDate;
   String? _remarks;
   num? _createdBy;
-  num? _updatedBy;
+  String? _updatedBy;
   String? _createdAt;
   String? _updatedAt;
   int? _totalSampleReceived;
@@ -122,7 +123,7 @@ class TDJoLaboratoryActivityStages {
     String? transDate,
     String? remarks,
     num? createdBy,
-    num? updatedBy,
+    String? updatedBy,
     String? createdAt,
     String? updatedAt,
     int? totalSampleReceived,
@@ -162,7 +163,7 @@ class TDJoLaboratoryActivityStages {
   String? get transDate => _transDate;
   String? get remarks => _remarks;
   num? get createdBy => _createdBy;
-  num? get updatedBy => _updatedBy;
+  String? get updatedBy => _updatedBy;
   String? get createdAt => _createdAt;
   String? get updatedAt => _updatedAt;
   int? get totalSampleReceived => _totalSampleReceived;
@@ -240,7 +241,17 @@ class TDJoLaboratoryActivityStages {
   }
 
   static Future<int> updateUploaded(String code) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return await db.update("t_d_jo_laboratory_activity_stages", {"is_upload": 1},where: "code=?",whereArgs: [code]);
+  }
+
+  static Future<List<TDJoLaboratoryActivityStages>> getLabAct6(int joId) async{
+    final db = await SqlHelperV2().database;
+    final sql = '''
+    SELECT a.* from t_d_jo_laboratory_activity_stages as a 
+    left join t_d_jo_laboratory as b on a.d_jo_laboratory_id = b.id
+    where a.m_statuslaboratoryprogres_id = 6 and a.is_active = 1 and a.t_h_jo_id  = ?''';
+    var data = await db.rawQuery(sql,[joId]);
+    return data.map((e) => TDJoLaboratoryActivityStages.fromJson(e)).toList();
   }
 }

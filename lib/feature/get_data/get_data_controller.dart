@@ -90,8 +90,6 @@ class GetDataController extends BaseController{
         update();
       }else{
         var response = await repository.getGenData(settingsData['e_number'], token, apkVersion,platform);
-        isLoading.value = false;
-        update();
         if(response.file != null){
           await createFileFromBase64Str(response.file!);
           await readZip();
@@ -103,10 +101,12 @@ class GetDataController extends BaseController{
         } else {
           openDialog('Failed', 'Data gagal diambil',(){});
         }
+        isLoading.value = false;
+        update();
       }
 
     } catch(e) {
-      openDialog('Failed', '$e', (){});
+      openDialog('Failed', 'Gagal ambil data', (){});
       isLoading.value = true;
       update();
     }

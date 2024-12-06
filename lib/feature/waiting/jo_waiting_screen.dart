@@ -1258,7 +1258,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                          controller.dataJoPIC.value.detail?.ettaVessel ?? '-',
+                                                          '${controller.dataEttaVessel.value.ettaVessel ?? '-'}',
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),
@@ -1279,7 +1279,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                          '${controller.dataJoPIC.value.detail?.startDateOfAttendance ?? '-'} - ${controller.dataJoPIC.value.detail?.endDateOfAttendance ?? '-'}',
+                                                          '${controller.dataEttaVessel.value.dateAttendance ?? '-'}',
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),
@@ -1300,7 +1300,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                          controller.dataJoPIC.value.detail?.lokasiKerja ?? '-',
+                                                          '${controller.dataEttaVessel.value.lokasiKerja ?? '-'}',
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),
@@ -1328,7 +1328,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                          controller.dataJoPIC.value.detail?.picInspector ?? '-',
+                                                          '${controller.dataEttaVessel.value.picInspector ?? '-'}',
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),
@@ -1356,7 +1356,7 @@ class JoWaitingScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                          controller.dataJoPIC.value.detail?.picLaboratory ?? '-',
+                                                          '${controller.dataEttaVessel.value.picLaboratory ?? '-'}',
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),

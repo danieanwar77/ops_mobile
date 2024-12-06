@@ -99,7 +99,6 @@ class SendManualScreen extends StatelessWidget{
                                                 }else{
                                                   Future.delayed(const Duration(seconds: 1),() async {
                                                     Get.back<void>();
-                                                    Get.back<void>();
                                                     controller.openDialog('Attention', 'Data gagal dikirim');
                                                     await controller.getData();
                                                   });

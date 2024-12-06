@@ -1,14 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:ops_mobile/base/component/custom_image.dart';
 import 'package:ops_mobile/base/component/custom_text.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
-import 'package:ops_mobile/data/model/jo_send_model.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_attachment.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_pict.dart';
 import 'package:ops_mobile/feature/detail/jo_detail_controller.dart';
@@ -33,6 +31,13 @@ class JoDetailScreen extends StatelessWidget {
                                 controller.finishStageActivityConfirm();
                               },
                               icon: CircleAvatar(backgroundColor: green, child: Image.asset('assets/icons/finishjo.png', width: 26, height: 26)))
+                          : const SizedBox(),
+                      controller.canFinishLabJo.value ?
+                      IconButton(
+                          onPressed: (){
+                            controller.finishStageLabConfirm();
+                          },
+                          icon: CircleAvatar(backgroundColor: green, child: Image.asset('assets/icons/finishjo.png', width: 26, height: 26)))
                           : const SizedBox(),
                       Padding(
                         padding: const EdgeInsets.only(right: 8.0),
@@ -1009,14 +1014,17 @@ class JoDetailScreen extends StatelessWidget {
                                                                 Expanded(
                                                                   child: Text(
                                                                     'Barge ${i + 1}',
-                                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700),
+                                                                    style: TextStyle(
+                                                                        fontSize: 12.sp,
+                                                                        fontWeight: FontWeight.w700
+                                                                    ),
                                                                   ),
                                                                 ),
                                                                 const VerticalDivider(width: 1),
                                                                 const SizedBox(width: 16),
                                                                 Expanded(
                                                                   child: Text(
-                                                                    controller.barges.value[i] ?? '-',
+                                                                    controller.barges.value[i],
                                                                     style: TextStyle(
                                                                       fontSize: 12.sp,
                                                                     ),
@@ -1265,7 +1273,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                          '${controller.dataEttaVessel.value['etta_vessel']?? '-'}',
+                                                          '${controller.dataEttaVessel.value.ettaVessel ?? '-'}',
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),
@@ -1286,7 +1294,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                          '${controller.dataEttaVessel.value['date_attendance']?? '-'}',
+                                                          '${controller.dataEttaVessel.value.dateAttendance ?? '-'}',
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),
@@ -1307,7 +1315,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                            '${controller.dataEttaVessel.value['lokasi_kerja']?? '-'}',
+                                                            '${controller.dataEttaVessel.value.lokasiKerja ?? '-'}',
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),
@@ -1335,7 +1343,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                          '${controller.dataEttaVessel.value['pic_inspector']?? '-'}',
+                                                          '${controller.dataEttaVessel.value.picInspector ?? '-'}',
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),
@@ -1363,7 +1371,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                          '${controller.dataEttaVessel.value['pic_laboratory']?? '-'}',
+                                                          '${controller.dataEttaVessel.value.picLaboratory ?? '-'}',
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),
@@ -1603,6 +1611,7 @@ class JoDetailScreen extends StatelessWidget {
                             ),
                           ),
                           'Progress & Daily Activity' => SingleChildScrollView(
+                              controller: controller.scrollController,
                             child: Padding(
                                 padding: EdgeInsets.all(16.r),
                                 child: Obx(
@@ -1633,9 +1642,7 @@ class JoDetailScreen extends StatelessWidget {
                                                     const SizedBox(width: 16),
                                                     Expanded(
                                                       child: Text(
-                                                        controller.stageList.isNotEmpty
-                                                            ? ('${controller.stageList.first.transDate ?? '-'} -  ${controller.stageList.last.transDate ?? '-'}')
-                                                            : '-',
+                                                        '${controller.startJo.value['created_at'] ?? ''} - ${controller.endJo.value['transdate'] ?? ''}',
                                                         style: TextStyle(
                                                           fontSize: 11.sp,
                                                         ),
@@ -1661,8 +1668,6 @@ class JoDetailScreen extends StatelessWidget {
                                                       TDJoInspectionPict pict = controller.dailyActivityPhotosV2.value[index];
                                                       return InkWell(
                                                         onTap: () {
-                                                          debugPrint(" print data inspection date ${controller.joRx.value.inspectionFinishedDate.toString()}");
-                                                          debugPrint(" print data inspection date ${controller.joRx.value.inspectionFinishedDate.toString().length > 0}");
                                                           if( controller.joRx.value.inspectionFinishedDate == null || controller.joRx.value.inspectionFinishedDate == ""){
                                                             controller.previewImage(index, pict!.pathPhoto!, pict!.keterangan!, pict);
                                                           }else{
@@ -2148,8 +2153,7 @@ class JoDetailScreen extends StatelessWidget {
                                                           style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                         ),
                                                         const SizedBox(width: 8),
-                                                        controller.activityStage == 4
-                                                            ? InkWell(
+                                                        controller.activityStage == 4 ? InkWell(
                                                             onTap: () {
                                                               controller.drawerDailyActivityEdit(4);
                                                             },
@@ -2268,11 +2272,10 @@ class JoDetailScreen extends StatelessWidget {
                                                         Row(
                                                           children: [
                                                             Text(
-                                                              'Stage 5: Work Complete',
+                                                              'Stage 5: Work Complete ${controller.activityStage}',
                                                               style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                             ),
-                                                            controller.activityStage == 5
-                                                                ? InkWell(
+                                                            controller.activityStage == 5 ? InkWell(
                                                                 onTap: () {
                                                                   controller.drawerDailyActivity5EditV2();
                                                                 },
@@ -2420,8 +2423,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                         child: Text(
                                                                           '${activityBarge!.barge!}',
                                                                           style: TextStyle(
-                                                                            fontSize: 11.sp,
-                                                                            fontWeight: FontWeight.w700,
+                                                                            fontSize: 11.sp
                                                                           ),
                                                                         ))
                                                                   ],

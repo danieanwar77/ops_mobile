@@ -103,8 +103,24 @@ class LabActivityDetailController extends BaseController{
 
   Rx<THJo> joRx = THJo().obs;
 
+  final ScrollController scrollController = ScrollController();
+
+  Future<void> scrollToBottom() async {
+    await Future.delayed(Duration(milliseconds: 100));
+    if (scrollController.hasClients) {
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeOut,
+      );
+      debugPrint('print data scroll bottom');
+    }
+    debugPrint('print data scroll bottom no has clients');
+  }
+
   @override
   void onInit() async {
+    debugPrint('print data previous page ${Get.previousRoute}');
     var dataUser = jsonDecode(await StorageCore().storage.read('user'));
     userData.value = Data(
         id: dataUser.first['id'],
@@ -115,13 +131,12 @@ class LabActivityDetailController extends BaseController{
         divisionId: dataUser.first['division_id'],
         division: dataUser.first['division'].toString(),
         superior: dataUser.first['superior_id'].toString());
-    debugPrint('data user: ${jsonEncode(userData.value)}');
     var argument = await Get.arguments;
     id = argument['id'];
     labId = argument['labId'];
     labName = argument['name'];
     joLabId = argument['joLabId'];
-    debugPrint('arguments lab: id = $id, labId = $labId, joLabId = $joLabId, statusJo = ${statusId}');
+    debugPrint('arguments lab: 12 id = $id, labId = $labId, joLabId = $joLabId, statusJo = ${statusId}');
     isLoading = true;
     update();
     await getData();
@@ -226,7 +241,6 @@ class LabActivityDetailController extends BaseController{
                       List<TDJoLaboratoryAttachment> attachments = [];
 
                       stage.forEach((stageItem){
-                        debugPrint('si stage nya nih: ${jsonEncode(stageItem)}');
                         activityLabStage = stageItem['progress_id'];
                         if(stageHead['id'] != stageItem['stage_id']){
                           stageHead = {
@@ -316,9 +330,6 @@ class LabActivityDetailController extends BaseController{
                             update();
                           }
                         } else {
-                          debugPrint('print activity items  ${jsonEncode(stageItem)}');
-                          debugPrint('print result activity code ${stageItem['activity_code'] != null}');
-                          debugPrint('print result activity code ${stageItem['activity_code']}');
                           if ((stageItem['activity_code'] != null && stageItem['activity_code'] != '') && activityItems.where((item) => item.code == stageItem['activity_code']).isEmpty){
                             activityItems.add(TDJoLaboratoryActivity.fromJson({
                               "id": stageItem['activity_id'],
@@ -385,7 +396,7 @@ class LabActivityDetailController extends BaseController{
                             listLabAttachment: attachments
                         )
                         );
-                        debugPrint('isian laboratory activity 5: ${jsonEncode(activity5LabListStages.value.last)}');
+//                        debugPrint('isian laboratory activity 5: ${jsonEncode(activity5LabListStages.value.last)}');
                       } else if(stageHead['m_statuslaboratoryprogres_id'] == 6) {
                         activity6ListStages.value.add(TDJoLaboratoryActivityStages(
                             id : stageHead['id'],
@@ -439,7 +450,6 @@ class LabActivityDetailController extends BaseController{
 
     final finish = activity5LabList.value.first.listLabActivity!.first!.createdAt;
     final initial = activityLabListStages.value.where((item) => item.mStatuslaboratoryprogresId == 1).first.createdAt;
-    debugPrint('first date : ${initial}, last date : ${finish}');
     // DateTime first = DateTime.parse(initial!);
     // DateTime last = DateTime.parse(finish!);
     // prelim.value = initial.split(' ').first;
@@ -526,8 +536,19 @@ class LabActivityDetailController extends BaseController{
       context: context,
       initialEntryMode: TimePickerEntryMode.dialOnly,
       initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: Localizations.override(
+            context: context,
+            locale: const Locale('en', 'GB'),
+            child: child,
+          ),
+        );
+      },
     );
     if (picked != null) {
+      debugPrint('print data picked time ${picked.format(context)}');
       List timeSplit = picked.format(context).split(' ');
       String formattedTime = timeSplit[0];
       String time = '$formattedTime';
@@ -1185,6 +1206,7 @@ class LabActivityDetailController extends BaseController{
                               clearActivityLabForm();
                               Get.back();
                               await getData();
+                              await scrollToBottom();
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
@@ -1284,6 +1306,7 @@ class LabActivityDetailController extends BaseController{
                 Get.back();
                 Get.back();
                 await getData();
+                await scrollToBottom();
               } else {
                 Get.back();
                 openDialog("Failed", "Activity Stage $activityLabStage masih kosong atau belum diinput");
@@ -1381,14 +1404,14 @@ class LabActivityDetailController extends BaseController{
                 tDJoLaboratoryId: dataStage.dJoLaboratoryId,
                 createdBy: createdBy,
                 isUpload: 0,
-                code: "JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+                code: "JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${j}"
             );
             int rsltAct = await db.insert("t_d_jo_laboratory_activity", dataAct.toInsert());
           }
         }else{
           TDJoLaboratoryActivityStages dataStage = dataActStage[i].copyWith(
             dJoLaboratoryId: joLabId,
-            updatedBy: createdBy,
+            updatedBy: createdBy.toString(),
             updatedAt: DateTime.now().toString(),
             isUpload: 0,
             isActive: 1, //check lagi perlu gak
@@ -1959,6 +1982,7 @@ class LabActivityDetailController extends BaseController{
                 Get.back();
                 Get.back();
                 await getData();
+                await scrollToBottom();
                 //openDialog("Success", "Activity Stage ${activityLabStage-1} berhasil ditambahkan");
               } else {
                 Get.back();
@@ -2321,6 +2345,7 @@ class LabActivityDetailController extends BaseController{
                 Get.back();
                 Get.back();
                 await getData();
+                await scrollToBottom();
               } else {
                 Get.back();
                 openDialog("Failed", "Activity Stage $activityLabStage masih kosong atau belum diinput");
@@ -2647,6 +2672,7 @@ class LabActivityDetailController extends BaseController{
                 Get.back();
                 Get.back();
                await getData();
+                await scrollToBottom();
               } else {
                 Get.back();
                 openDialog("Failed", "Activity Stage $activityLabStage masih kosong atau belum diinput");
@@ -2709,6 +2735,13 @@ class LabActivityDetailController extends BaseController{
       context: context,
       initialEntryMode: TimePickerEntryMode.dialOnly,
       initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Localizations.override(
+          context: context,
+          locale: const Locale('en', 'GB'),
+          child: child,
+        );
+      },
     );
     if (picked != null) {
       List timeSplit = picked.format(context).split(' ');
@@ -3023,7 +3056,7 @@ class LabActivityDetailController extends BaseController{
               createdBy: createdBy,
               isActive: 1,
               isUpload: 0,
-              code: "JOLA-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+              code: "JOLA-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${j}"
           );
           int rsltAct = await db.insert("t_d_jo_laboratory_activity", dataAct.toInsert());
         }
@@ -3814,6 +3847,7 @@ class LabActivityDetailController extends BaseController{
                                   clearActivity6LabForm();
                                   Get.back();
                                   await getData();
+                                  await scrollToBottom();
                                 },
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
@@ -4615,6 +4649,7 @@ class LabActivityDetailController extends BaseController{
                                   clearActivity6LabForm();
                                   Get.back();
                                   await getData();
+                                  await scrollToBottom();
                                 },
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
@@ -4706,7 +4741,7 @@ class LabActivityDetailController extends BaseController{
                 createdBy: createdBy,
                 isActive: 1,
                 isUpload: 0,
-                code: "JOLA-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+                code: "JOLA-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${j}"
             );
             int rsltAct = await db.insert("t_d_jo_laboratory_activity", dataAct.toInsert());
           }
@@ -4734,7 +4769,7 @@ class LabActivityDetailController extends BaseController{
                 createdBy: createdBy,
                 isActive: 1,
                 isUpload: 0,
-                code: "JOLA-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+                code: "JOLA-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${j}"
             );
             debugPrint('print data TDJoLaboratoryActivity  ${jsonEncode(dataAct.toJson())}');
             if(dataAct.id == null){
@@ -4863,6 +4898,7 @@ class LabActivityDetailController extends BaseController{
                 Get.back();
                 Get.back();
                 await getData();
+                await scrollToBottom();
               } else {
                 Get.back();
               }
@@ -4899,6 +4935,7 @@ class LabActivityDetailController extends BaseController{
                 Get.back();
                 Get.back();
                 await getData();
+                await scrollToBottom();
               } else {
                 Get.back();
                 openDialog("Failed", "Activity Stage $activityLabStage gagal diinput");

@@ -892,7 +892,9 @@ class SendManualController extends BaseController{
   Future<bool> sendLaboratoryActivity(SendManualV2 sendData) async{
     try{
         int id = sendData.idTrans ==  null ? 0 : sendData.idTrans!.toInt();
-        THJo dataActivity = await THJo.getJoLaboratorySend();
+        debugPrint("print data laboratory stage ${jsonEncode(sendData)}");
+        THJo dataActivity = await THJo.getJoLaboratorySendById(id);
+        debugPrint("print data laboratory stage ${jsonEncode(dataActivity)}");
         List<TDJoLaboratory> laboratories = dataActivity.laboratory ?? [];
         for(int i = 0; i < laboratories.length; i++){
           List<TDJoLaboratoryActivityStages> stages = laboratories[i].laboratoryActivityStages ?? [];
@@ -912,6 +914,7 @@ class SendManualController extends BaseController{
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode(dataActivity.toSend()),
           );
+          debugPrint("print data activity lab ${dataActivity.toSend()}");
           if(response.statusCode == 200) {
             final Map<String, dynamic> responseData = jsonDecode(response.body);
             print('print response from api ${jsonEncode(responseData)}');
@@ -948,6 +951,7 @@ class SendManualController extends BaseController{
         }
         return true;
     }catch(e){
+      debugPrint("print data laboratory stage ${e}");
       return false;
     }
   }
