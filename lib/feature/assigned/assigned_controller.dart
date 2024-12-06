@@ -1,12 +1,15 @@
 import 'dart:convert';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/data/model/jo_assigned_model.dart';
 import 'package:ops_mobile/data/model/jo_list_model.dart';
+import 'package:ops_mobile/data/model/t_h_jo.dart';
 import 'package:ops_mobile/data/sqlite.dart';
-import 'package:ops_mobile/data/storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:ops_mobile/utils/helper.dart';
 
 class AssignedController extends BaseController{
 
@@ -60,6 +63,41 @@ class AssignedController extends BaseController{
       update();
     }
     update();
+  }
+
+  RxBool isLoadingSync = false.obs;
+  Future<void>reload() async {
+    try{
+      isLoadingSync.value = true;
+      await Future.delayed(Duration(seconds: 2));
+      var connectivityResult = await Connectivity().checkConnectivity();
+      debugPrint('print connectionresult ${connectivityResult}');
+      if (connectivityResult[0] == ConnectivityResult.none) {
+        throw Exception('No Internet Connection');
+      }
+      final response = await http.post(
+        Uri.parse('${Helper.baseUrl()}/api/v1/sync/master'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if(response.statusCode == 200){
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        var data = responseData['data'];
+        var mapJo = data['listjo'];
+        List<THJo> thJoies = (mapJo as List)
+            .map((jo) => THJo.fromJson(jo as Map<String, dynamic>))
+            .toList();
+        for(int t=0; t < thJoies.length; t++){
+          THJo item =thJoies[t];
+          if(item.id != null){
+            await THJo.syncData(item);
+          }
+        }
+      }
+      isLoadingSync.value = false;
+    }catch(e){
+      debugPrint('error ${e}');
+      isLoadingSync.value = false;
+    }
   }
 
 }

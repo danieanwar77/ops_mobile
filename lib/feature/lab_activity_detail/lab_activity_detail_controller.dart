@@ -1223,7 +1223,7 @@ class LabActivityDetailController extends BaseController{
                                 width: double.infinity,
                                 child: Center(
                                     child: Text(
-                                      'Save',
+                                      'Submit',
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 16,
@@ -2268,7 +2268,7 @@ class LabActivityDetailController extends BaseController{
                                   width: double.infinity,
                                   child: Center(
                                       child: Text(
-                                        'Save',
+                                        'Submit',
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 16,
@@ -3856,7 +3856,7 @@ class LabActivityDetailController extends BaseController{
                                     width: double.infinity,
                                     child: const Center(
                                         child: Text(
-                                          'Save',
+                                          'Submit',
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16,

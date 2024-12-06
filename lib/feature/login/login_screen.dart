@@ -164,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           ElevatedButton(
                               onPressed: () {
-                                Get.off<void>(GetDataScreen());
+                               controller.isUpdated.value ? null :  Get.off<void>(GetDataScreen());
                               },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
@@ -179,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       child: Text(
                                         'Ambil Data',
                                         style: TextStyle(
-                                            color: primaryColor,
+                                            color: controller.isUpdated.value ? Colors.grey: primaryColor,
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold),
                                       )

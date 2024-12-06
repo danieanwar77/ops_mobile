@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:external_path/external_path.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
-import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity_stages.dart';
+import 'package:ops_mobile/data/Datatabase2.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_ios/path_provider_ios.dart';
 import 'package:sqflite/sqflite.dart' as sql;
@@ -146,12 +146,12 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getUser(String id) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.query('user', where: "username = ?", whereArgs: [id], limit: 1);
   }
 
   static Future<List<Map<String, dynamic>>> getEmployeePassword(String id) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
       select u.id, u.password_aes  from employee e 
       join user_profile up on up.employee_id = e.id 
@@ -161,13 +161,13 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getLogin(String id) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''select id, password_aes  from user
         where username = ? ''',[id]);
   }
 
   // static Future<List<Map<String, dynamic>>> decryptPassword(String id) async {
-  //   final db = await SqlHelper.db();
+  //   final db = await SqlHelperV2().database;
   //   return db.rawQuery('''
   //   SELECT id, username, CONVERT(AES_DECRYPT(password_aes, '\$NtIsH@k42@@4')) AS password_aes
   //   FROM user
@@ -175,7 +175,7 @@ class SqlHelper extends BaseController {
   // }
 
   static Future<List<Map<String, dynamic>>> getUserDetail(String id) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
       select e.id, e.fullname, e.e_number, e.jabatan_id, j.jabatan, e.division_id,  e.superior_id from employee e
       join jabatan j on j.id = e.jabatan_id
@@ -184,7 +184,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getListJo(int id, int status) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     final sql = '''SELECT 
       a.id as jo_id, 
       a.code, 
@@ -213,7 +213,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getDetailJo(int idJo) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery(''' 
       SELECT
       a.id, b.so_code, a.code,
@@ -293,19 +293,19 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getDetailJoSow(int idJo) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery(''' 
       select b3.name, b3.id
       from t_h_jo
-      join t_d_so_kos as b1 on t_h_jo.t_so_id = b1.so_id and t_h_jo.m_kindofservice_id = b1.kos_id
-      join t_d_so_kos_sow as b2 on b1.id = b2.so_kos_id
-      join m_sow as b3 on b3.id = b2.sow_id
+      left join t_d_so_kos as b1 on t_h_jo.t_so_id = b1.so_id and t_h_jo.m_kindofservice_id = b1.kos_id
+      left join t_d_so_kos_sow as b2 on b1.id = b2.so_kos_id
+      left join m_sow as b3 on b3.id = b2.sow_id
       where t_h_jo.id = $idJo
     ''');
   }
 
   static Future<List<Map<String, dynamic>>> getDetailJoOos(int idJo) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery(''' 
       select d.name, d.id
       from t_h_jo as a
@@ -317,31 +317,32 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getDetailJoLap(int idJo) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery(''' 
       select d.name, d.id
-      FROM t_h_jo as a
-      join t_d_so_kos as b on b.kos_id = a.m_kindofservice_id and b.so_id = a.t_so_id
-      join t_d_so_kos_oos as c on c.so_kos_id = b.id
-      join m_lap as d on d.id = c.oos_id
-      where a.id = $idJo
+        from t_h_jo as a
+          join t_d_so_kos as b on b.kos_id = a.m_kindofservice_id and b.so_id = a.t_so_id
+          join t_d_so_kos_lap as c on c.so_kos_id = b.id
+          join m_lap as d on d.id = c.lap_id
+        where a.id = $idJo
+      order by c.id asc;
     ''');
   }
 
   static Future<List<Map<String, dynamic>>> getDetailJoStdMethod(int idJo) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery(''' 
       select d.name, d.id
       from t_h_jo as a
-      join t_d_so_kos as b on b.kos_id = a.m_kindofservice_id and b.so_id = a.t_so_id
-      join t_d_so_kos_std_method as c on c.so_kos_id = b.id
-      join m_std_method as d on d.id = c.std_method_id
+      left join t_d_so_kos as b on b.kos_id = a.m_kindofservice_id and b.so_id = a.t_so_id
+      left join t_d_so_kos_std_method as c on c.so_kos_id = b.id
+      left join m_std_method as d on d.id = c.std_method_id
       where a.id = $idJo
     ''');
   }
 
   static Future<List<Map<String, dynamic>>> getDetailJoPicHistory(int idJo) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery(''' 
        SELECT a.created_at as assigned_date, b.fullname as assign_by,a.remarks,a.etta_vessel,a.start_date_of_attendance,
         a.end_date_of_attendance, k.site_office as lokasi_kerja,
@@ -357,7 +358,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getDetailJoLaboratoryList(int idJo) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery(''' 
     select a.id, b.id as t_d_jo_laboratory_id, b.laboratorium_id , c.name, ifnull(max(d.m_statuslaboratoryprogres_id),0) as max_stage
     from t_h_jo a
@@ -370,7 +371,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getDetailJoImageList(int idJo) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery(''' 
     select a.id,b.laboratorium_id , c.name, max(d.m_statuslaboratoryprogres_id) as max_stage
     from t_h_jo a
@@ -383,14 +384,14 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getDailyPhoto(String idJo) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
       Select * from t_d_jo_inspection_pict where t_h_jo_id = ‘$idJo’
     ''');
   }
 
   static Future<List<Map<String, dynamic>>> insertDailyPhoto(int idJo,photo) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
       INSERT INTO 
       t_d_jo_inspection_pict(t_h_jo_id,path_photo,keterangan,code,created_at) 
@@ -402,7 +403,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getListActivity(int idJo) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     String sql = '''
       SELECT
       a.id AS inspection_stages_id,
@@ -420,7 +421,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> insertActivityStage(int idJo,int status,String transDate, String remarks, String code, int createdBy, String createdAt) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
       INSERT INTO t_d_jo_inspection_activity_stages(
       t_h_jo_id, 
@@ -444,7 +445,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getActivityStage(String date, int employee) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
       SELECT 
       id, code 
@@ -454,7 +455,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getActivityStageId(String date, int employee, int id) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
       SELECT 
       id, code 
@@ -464,7 +465,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getActivityListStage(int id) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
       SELECT 
       id, code 
@@ -475,7 +476,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> insertActivity(int idJo, int idActStage, String startTime, String endTime, String activity, String code, int idEmployee, String createdAt) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
       INSERT INTO 
       t_d_jo_inspection_activity(
@@ -502,7 +503,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getActivityId(int employee, int id, String code) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
       SELECT 
       id, code 
@@ -512,7 +513,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> updateActivityStage(int id, String remarks, int idEmployee, String updatedAt) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
       UPDATE t_d_jo_inspection_activity_stages SET
       remarks = '$remarks',
@@ -524,7 +525,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> updateActivity(int id, int idActStage, String startTime, String endTime, String activity, String code, int idEmployee, String updatedAt) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
       UPDATE t_d_jo_inspection_activity SET
       start_activity_time = '$startTime',
@@ -539,7 +540,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> deleteActivityStage(int idJo, String code) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
       UPDATE t_d_jo_inspection_activity SET 
       is_active = 0
@@ -550,7 +551,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> deleteActivity(int id, String code) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
       UPDATE t_d_jo_inspection_activity  SET 
       is_active = 0
@@ -561,7 +562,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getInspectionDocument(int idJo) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
       SELECT 
       id,
@@ -585,7 +586,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getLaboratoryDocument(int idJo) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
       SELECT 
       id,
@@ -609,7 +610,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getInspectionDocumentFiles(List<dynamic> id) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
       SELECT 
       id,
@@ -630,7 +631,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getLaboratoryDocumentFiles(List<dynamic> id) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
       SELECT 
       id,
@@ -651,7 +652,7 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getInspectionActivityData() async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
     SELECT a.id, a.code, a.t_h_jo_id AS , a.t_d_jo_inspection_activity_stages_id, b.code AS stage_code, b.m_statusinspectionstages_id, b.trans_date, a.start_activity_time, a.end_activity_time, a.activity, b.remarks, a.is_active, a.is_upload, a.created_by, a.created_at, a.updated_by, a.updated_at FROM t_d_jo_inspection_activity a 
     INNER JOIN t_d_jo_inspection_activity_stages b ON a.t_h_jo_id = b.t_h_jo_id AND a.t_d_jo_inspection_activity_stages_id = b.id ;
@@ -659,14 +660,14 @@ class SqlHelper extends BaseController {
   }
 
   static Future<List<Map<String, dynamic>>> getInspectionActivity5Data() async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
     
     ''');
   }
 
   static Future<List<Map<String, dynamic>>> getDataInspectionForSendManual(int idEmployee) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
     SELECT * FROM 
 (
@@ -1027,7 +1028,7 @@ WHERE a.is_active = 1 AND b.pic_laboratory = $idEmployee
   }
 
   static Future<List<Map<String, dynamic>>> getDetailActivityLaboratory(int id, int employeeId, int labId) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     return db.rawQuery('''
     SELECT
 a.id, 
@@ -1090,7 +1091,7 @@ WHERE a.id = $id AND b.laboratorium_id = $labId AND a.pic_laboratory = $employee
   }
 
   static Future<void> insertInspectionActivity6(String stage, String activity, String? attachment) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     db.execute('''
       INSERT INTO t_d_jo_inspection_activity_stages (t_h_jo_id, m_statusinspectionstages_id, trans_date, remarks, created_by, created_at, code, is_active, is_upload)
      VALUES $stage
@@ -1108,7 +1109,7 @@ WHERE a.id = $id AND b.laboratorium_id = $labId AND a.pic_laboratory = $employee
   }
 
   static Future<void> updateInspectionActivity6(String stage, String activity, List<Map<String,dynamic>> attachment, int idJo) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     db.execute('''
       INSERT OR REPLACE INTO t_d_jo_inspection_activity_stages (id, t_h_jo_id, m_statusinspectionstages_id, trans_date, remarks, created_by, updated_by, created_at, updated_at, code, is_active, is_upload)
      VALUES $stage
@@ -1131,7 +1132,7 @@ WHERE a.id = $id AND b.laboratorium_id = $labId AND a.pic_laboratory = $employee
   }
 
   static Future<void> updateActivity5(String stage, String activity, String vessel, String barge, String transhipment) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     db.execute('''
       INSERT OR REPLACE INTO t_d_jo_inspection_activity_stages (t_h_jo_id, m_statusinspectionstages_id, trans_date, actual_qty, uom_id, remarks, code,  is_active, is_upload, created_by, created_at)
      VALUES $stage
@@ -1159,7 +1160,7 @@ WHERE a.id = $id AND b.laboratorium_id = $labId AND a.pic_laboratory = $employee
   }
 
   static Future<void> insertLaboratoryActivity(String stage, String activity) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     db.execute('''
       INSERT INTO t_d_jo_laboratory_activity_stages (d_jo_laboratory_id, t_h_jo_id, m_statuslaboratoryprogres_id, trans_date, remarks, created_by, created_at, code, is_active, is_upload)
      VALUES $stage
@@ -1171,7 +1172,7 @@ WHERE a.id = $id AND b.laboratorium_id = $labId AND a.pic_laboratory = $employee
   }
 
   static Future<void> updateLaboratoryActivity(List<Map<String,dynamic>> labStageActivity, String activity, int idJo, int idLab, int stageProgres) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     debugPrint('isi lab stage activity: ${jsonEncode(labStageActivity)}');
 
     Batch batch = db.batch();
@@ -1258,7 +1259,7 @@ WHERE a.id = $id AND b.laboratorium_id = $labId AND a.pic_laboratory = $employee
   }
 
   static Future<void> insertLaboratoryActivity5(String stage, String activity) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     db.execute('''
       INSERT INTO t_d_jo_laboratory_activity_stages (d_jo_laboratory_id, t_h_jo_id, m_statuslaboratoryprogres_id, trans_date, remarks, created_by, created_at, code, is_active, is_upload)
      VALUES $stage
@@ -1270,7 +1271,7 @@ WHERE a.id = $id AND b.laboratorium_id = $labId AND a.pic_laboratory = $employee
   }
 
   static Future<void> updateLaboratoryActivity5(String stage, String activity) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     db.execute('''
       INSERT OR REPLACE INTO t_d_jo_laboratory_activity_stages (id, d_jo_laboratory_id, t_h_jo_id, m_statuslaboratoryprogres_id, trans_date, remarks, total_sample_received, total_sample_analyzed, total_sample_preparation, created_by, created_at, code, is_active, is_upload)
      VALUES $stage
@@ -1282,7 +1283,7 @@ WHERE a.id = $id AND b.laboratorium_id = $labId AND a.pic_laboratory = $employee
   }
 
   static Future<void> insertLaboratoryActivity6(String stage, String activity, String? attachment) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     db.execute('''
       INSERT INTO t_d_jo_laboratory_activity_stages (d_jo_laboratory_id, t_h_jo_id, m_statuslaboratoryprogres_id, trans_date, remarks, total_sample_received, total_sample_analyzed, total_sample_preparation, created_by, created_at, code, is_active, is_upload)
      VALUES $stage
@@ -1300,7 +1301,7 @@ WHERE a.id = $id AND b.laboratorium_id = $labId AND a.pic_laboratory = $employee
   }
 
   static Future<void> updateLaboratoryActivity6(String stage, String activity, List<Map<String,dynamic>> attachment) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     db.execute('''
       INSERT OR REPLACE INTO t_d_jo_laboratory_activity_stages (id, d_jo_laboratory_id, t_h_jo_id, m_statuslaboratoryprogres_id, trans_date, remarks, created_by, updated_by, created_at, updated_at, code, is_active, is_upload)
      VALUES $stage
@@ -1330,7 +1331,7 @@ WHERE a.id = $id AND b.laboratorium_id = $labId AND a.pic_laboratory = $employee
   }
 
   static Future<void> finishProgressJo(String query) async {
-    final db = await SqlHelper.db();
+    final db = await SqlHelperV2().database;
     db.execute('''
       
     ''');

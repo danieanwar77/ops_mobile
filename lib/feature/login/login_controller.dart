@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/core/core/constant/app_constant.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
@@ -32,6 +33,7 @@ class LoginController extends BaseController{
   RxString loginToken = RxString('');
   bool isLoading = false;
   RxBool obsecure = true.obs;
+  RxBool isUpdated = false.obs;
 
   @override
   void onInit() async {
@@ -49,8 +51,11 @@ class LoginController extends BaseController{
     debugPrint('data password : $encryptedText');
     decryptedPassword = aesEncrypt(encryptedText) ?? '';
     update();
-    // String decryptedPassword = aesDecrypt(encryptedText);
-    // print('Decrypted Password: $decryptedPassword');
+    String now = DateFormat('dd-MM-yyyy').format(DateTime.now());
+    String lastSync = await StorageCore().storage.read("last_sync") ?? '-';
+    if(now == lastSync){
+      isUpdated.value = true;
+    }
 
     update();
     super.onInit();

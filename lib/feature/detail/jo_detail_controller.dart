@@ -12,9 +12,11 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
+import 'package:ops_mobile/base/component/custom_image.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/core/core/constant/app_constant.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
+import 'package:ops_mobile/data/Datatabase2.dart';
 import 'package:ops_mobile/data/model/jo_daily_photo.dart';
 import 'package:ops_mobile/data/model/jo_detail_model.dart';
 import 'package:ops_mobile/data/model/jo_list_daily_activity.dart';
@@ -324,7 +326,7 @@ class JoDetailController extends BaseController {
       update();
     }
     //await getJoPIC();
-    //await getJoPICLocal();
+    await getJoPICLocal();
     await getJoDailyPhotoV2();
     // await getJoDailyActivity();
     // await getJoDailyActivityLocal();
@@ -347,7 +349,7 @@ class JoDetailController extends BaseController {
     barges.value.forEach((_) {
       bargesController.value.add(TextEditingController());
     });
-    if (labo!.isNotEmpty) {
+    if (labo.isNotEmpty) {
       labs.value = labo!;
       labsTemp.value = labo!;
     }
@@ -370,7 +372,7 @@ class JoDetailController extends BaseController {
     debugPrint('data detail OOS : ${jsonEncode(oos)}');
     final lap = await SqlHelper.getDetailJoLap(id);
     debugPrint('data detail LAP : ${jsonEncode(lap)}');
-    // final std = await SqlHelper.getDetailJoStdMethod(id);
+    final std = await SqlHelper.getDetailJoStdMethod(id);
     // debugPrint('data detail Std Method : ${jsonEncode(std)}');
     final pic = await SqlHelper.getDetailJoPicHistory(id);
     debugPrint('data detail PIC History : ${jsonEncode(pic)}');
@@ -389,14 +391,9 @@ class JoDetailController extends BaseController {
         lap: lap.map((item) {
           return Lap(id: item['id'], name: item['name']);
         }).toList(),
-        stdMethod:
-            // std.map((item){
-            //   return StdMethod(
-            //       id: item['id'],
-            //       name: item['name']
-            //   );
-            // }).toList()
-            [],
+        stdMethod: std.map((item){
+              return StdMethod(id: item['id'], name: item['name']);
+        }).toList(),
         picHist: pic.map((item) {
           return PicHist.fromJson(item);
         }).toList(),
@@ -529,17 +526,44 @@ class JoDetailController extends BaseController {
     }
   }
 
-  Future<void> getJoPIC() async {
-    var response = await repository.getJoPIC(id) ?? JoPicModel();
-    debugPrint('JO PIC: ${jsonEncode(response)}');
-    dataJoPIC.value = response?.data ?? DataPIC();
-  }
-
+  Rx<Map<String, dynamic>> dataEttaVessel = Rx<Map<String, dynamic>>({});
   Future<void> getJoPICLocal() async {
     //var response = await repository.getJoPIC(id) ?? JoPicModel();
     var response = await SqlHelper.getDetailJoPicHistory(id);
-    debugPrint('JO PIC: ${jsonEncode(response)}');
-    dataJoPIC.value = DataPIC.fromJson(response);
+    final db = await SqlHelperV2().database;
+    /**
+     *_ettaVessel = json['etta_vessel'];
+        _startDateOfAttendance = json['start_date_of_attendance'];
+        _endDateOfAttendance = json['end_date_of_attendance'];
+        _lokasiKerja = json['lokasi_kerja'];
+        _picLaboratory = json['pic_laboratory'];
+        _picInspector = json['pic_inspector'];
+     */
+    var detail = await db.rawQuery('''
+          SELECT 
+          etta_vessel,
+          start_date_of_attendance || ' - ' || end_date_of_attendance as date_attendance,
+          s.site_office as lokasi_kerja,
+          i.e_number || ' - ' ||  i.fullname || ' - ' || ji.jabatan as pic_inspector,
+          p.e_number || ' - ' ||  p.fullname || ' - '|| jp.jabatan as  pic_laboratory 
+        from 
+          t_h_jo as a
+          left join employee as i on a.pic_inspector  = i.id 
+          left join employee as p on a.pic_laboratory = p.id 
+          left join site_office as s on a.lokasi_kerja = s.id 
+          left join jabatan as ji on ji.id = i.jabatan_id
+          left join jabatan as jp on jp.id = p.jabatan_id 
+        where a.id= ?
+            ''',[id]);
+    debugPrint('print data ${jsonEncode(detail)}');
+    if(detail.length > 0){
+      dataEttaVessel.value = detail[0];
+    }
+    if(response.length > 0){
+      debugPrint('JO PIC: ${jsonEncode(response)}');
+      dataJoPIC.value = DataPIC.fromJson(response);
+    }
+
   }
 
   Future<void> getJoDailyPhoto() async {
@@ -1060,7 +1084,10 @@ class JoDetailController extends BaseController {
                                     child: Text(
                                   'Submit',
                                   style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                                )))),
+                                )
+                                )
+                            )
+                        ),
                       ),
                     ],
                   ),
@@ -1176,10 +1203,7 @@ class JoDetailController extends BaseController {
                                 child: SizedBox(
                                   height: MediaQuery.of(Get.context!).viewInsets.bottom != 0 ? 66.h : 180.h,
                                   width: MediaQuery.sizeOf(Get.context!).width.w,
-                                  child: Image.file(
-                                    photoPreview,
-                                    fit: BoxFit.cover,
-                                  ),
+                                  child: CustomImage(path:photoPreview.path),
                                 ),
                               ),
                             ),
@@ -1292,10 +1316,7 @@ class JoDetailController extends BaseController {
                                 child: SizedBox(
                                   height: MediaQuery.of(Get.context!).viewInsets.bottom != 0 ? 66.h : 180.h,
                                   width: MediaQuery.sizeOf(Get.context!).width.w,
-                                  child: Image.file(
-                                    photoPreview,
-                                    fit: BoxFit.cover,
-                                  ),
+                                  child: CustomImage(path:photoPreview.path),
                                 ),
                               ),
                             ),
@@ -1974,7 +1995,7 @@ class JoDetailController extends BaseController {
             tHJoId: id,
             pathPhoto: photo.path,
             keterangan: desc.text.toString(),
-            code: "JOIP-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now()).toString()}",
+            code: "JOIP-$createdBy-${DateFormat('yyyyMMddHms').format(DateTime.now()).toString()}-${i}",
             createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
             isActive: 1,
             isUpload: 0);
@@ -2133,6 +2154,7 @@ class JoDetailController extends BaseController {
             tHJoId: item.tHJoId,
             tDJoInspectionActivityStagesId: rawStage,
             code: 'JOIA-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+            startActivityTime: DateFormat('HH:mm').format(DateTime.now()),
             isActive: 1,
             isUpload: 0,
             activity: '-',
@@ -3383,7 +3405,7 @@ class JoDetailController extends BaseController {
                                     width: double.infinity,
                                     child: const Center(
                                         child: Text(
-                                      'Save',
+                                      'Submit',
                                       style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                                     )))),
                           ),
@@ -4473,7 +4495,7 @@ class JoDetailController extends BaseController {
                                   width: double.infinity,
                                   child: const Center(
                                       child: Text(
-                                    'Save',
+                                    'Submit',
                                     style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                                   )))),
                         ),
@@ -5655,7 +5677,7 @@ class JoDetailController extends BaseController {
                                       width: double.infinity,
                                       child: const Center(
                                           child: Text(
-                                        'Save',
+                                        'Submit',
                                         style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                                       )))),
                             ),

@@ -15,6 +15,26 @@ class AssignedScreen extends StatelessWidget{
         builder: (controller) => Obx(() => Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
+              actions: [
+                controller.isLoadingSync.value ? const Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: SizedBox(
+                    width: 24.0,
+                    height: 24.0,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.0, // Ketebalan garis
+                      color: Colors.white, // Warna indikator
+                    ),
+                  ),
+                ):
+                IconButton(
+                  icon: Icon(Icons.refresh),
+                  color: Colors.white,
+                  onPressed: ()async{
+                    await controller.reload();
+                  },
+                )
+              ],
               backgroundColor: primaryColor,
               foregroundColor: Colors.white,
               title: Text('JO ${controller.statusJo.value != 0 ? controller.listStatus[controller.statusJo.value - 1] : ''}',

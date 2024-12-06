@@ -228,50 +228,8 @@ class HomeController extends BaseController{
   }
   
   void versionSyncDialog()async{
-    // await showDialog<Widget>(
-    //     context: Get.context!,
-    //     builder: (context) {
-    //       return SafeArea(
-    //         child: Builder(builder: (context) {
-    //           return Material(
-    //               color: Colors.transparent,
-    //               child: Align(
-    //                   alignment: Alignment.center,
-    //                   child: Container(
-    //                       padding: EdgeInsets.all(16),
-    //                       height: 72.h,
-    //                       width: MediaQuery.sizeOf(Get.context!).width.w * 0.6,
-    //                       decoration: BoxDecoration(
-    //                         color: Color(0xff727272).withOpacity(0.8),
-    //                         borderRadius: BorderRadius.circular(10)
-    //                       ),
-    //                       child: Column(
-    //                         crossAxisAlignment: CrossAxisAlignment.start,
-    //                         mainAxisSize: MainAxisSize.min,
-    //                         children: [
-    //                           Text("Version ${version}",
-    //                             style: TextStyle(
-    //                                 color: Colors.white,
-    //                                 fontWeight: FontWeight.w700
-    //                             ),
-    //                           ),
-    //                           SizedBox(height: 16,),
-    //                           Text("Last Sync",
-    //                             style: TextStyle(
-    //                                 color: Colors.white,
-    //                                 fontWeight: FontWeight.w700
-    //                             ),
-    //                           )
-    //                         ],
-    //                       )
-    //                   )
-    //               ));
-    //         }),
-    //       );
-    //     },
-    //     barrierDismissible: true,
-    //     barrierColor: Colors.transparent
-    // );
+    String lastSync =  await StorageCore().storage.read('last_sync') ?? "-";
+    debugPrint('print data last sync $lastSync');
     Get.dialog(
         AlertDialog(
           backgroundColor: Color(0xff727272).withOpacity(0.8),
@@ -286,7 +244,7 @@ class HomeController extends BaseController{
                ),
               ),
               SizedBox(height: 16,),
-              Text("Last Sync",
+              Text("Last Sync ${lastSync}",
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w700
@@ -305,7 +263,7 @@ class HomeController extends BaseController{
 
   @pragma('vm:entry-point')
   static Future<void> onStartBG(ServiceInstance service) async {
-    Timer.periodic(const Duration(seconds: 10 ), (timer) async {
+    Timer.periodic(const Duration(seconds: 90 ), (timer) async {
       sendDataInpectionPhoto();
       sendDataInspection();
       sendDataLaboratory();
@@ -333,6 +291,7 @@ class HomeController extends BaseController{
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(dataActivity.toSend())
       );
+      debugPrint('print payload kirim jo ${dataActivity.toSend()}');
       debugPrint('print response kirim data jo  ${response.body}');
       if(response.statusCode == 200){
         final Map<String, dynamic> responseData = jsonDecode(response.body);
@@ -560,12 +519,12 @@ class HomeController extends BaseController{
         List<TMNotifV2> tMotifs = (listNotifikasi as List)
             .map((notif) => TMNotifV2.fromJson(notif as Map<String,dynamic>))
             .toList();
-        for(int t=0; t < thJoies.length; t++){
-          THJo item =thJoies[t];
-          if(item.id != null){
-            await THJo.syncData(item);
-          }
-        }
+        // for(int t=0; t < thJoies.length; t++){
+        //   THJo item =thJoies[t];
+        //   if(item.id != null){
+        //     await THJo.syncData(item);
+        //   }
+        // }
         await TMNotifV2.syncNotif(tMotifs);
         countNotif();
       }

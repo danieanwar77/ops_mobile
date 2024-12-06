@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
+import 'package:ops_mobile/data/storage.dart';
+import 'package:ops_mobile/utils/helper.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_ios/path_provider_ios.dart';
 
@@ -200,10 +203,15 @@ class SettingsController extends BaseController{
             ),
             onPressed: () async {
               Get.back();
-              var response = await repository.deleteRegisterDevice(settingsData['e_number'].toString());
-              if(response.code == 200 && response.message == 'Delete Succesfuly'){
-                openDialog('Success', 'Berhasil hapus data register perangkat');
-              }
+              //var response = await repository.deleteRegisterDevice(settingsData['e_number'].toString());
+              await StorageCore().storage.write("last_sync", '');
+              String? path = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
+              String pathDb = '$path/ops/IGSgForce.db';
+              await Helper.deleteDatabaseFile(pathDb);
+              openDialog('Success', 'Berhasil hapus data');
+              // if(response.code == 200 && response.message == 'Delete Succesfuly'){
+              //   openDialog('Success', 'Berhasil hapus data register perangkat');
+              // }
             },
           ),
         ],

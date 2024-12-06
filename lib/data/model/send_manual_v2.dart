@@ -75,7 +75,7 @@ class SendManualV2 {
     for(var dataAct in inspAct){
       result.add(SendManualV2(
         idTrans: int.tryParse(dataAct['id'].toString()),
-        module: 'Activity Inspection',
+        module: 'JO - ${dataAct['t_h_jo_id']} Activity Inspection',
         table: 't_d_jo_inspection_activity_stages',
         transDate: dataAct['created_at'],
         isUpload: 0,
@@ -87,7 +87,7 @@ class SendManualV2 {
     for(var item in inspPict){
       result.add(SendManualV2(
           idTrans: int.tryParse(item['id'].toString()),
-          module: 'Picture Inspection',
+          module: 'JO - ${item['t_h_jo_id']} Picture Inspection',
           table: 't_d_jo_inspection_pict',
           transDate: item['created_at'],
           isUpload: 0,
@@ -99,7 +99,7 @@ class SendManualV2 {
     for(var dataInspFinal in inspFinalize){
       result.add(SendManualV2(
           idTrans: int.tryParse(dataInspFinal['id'].toString()),
-          module: 'Finalize Inspection',
+          module: 'JO - ${dataInspFinal['t_h_jo_id']} Finalize Inspection',
           table: 't_d_jo_finalize_inspection',
           transDate: dataInspFinal['created_at'],
           isUpload: 0,
@@ -118,6 +118,7 @@ class SendManualV2 {
           type: 4
       ));
     }
+    //data finalize lab belum
     return result;
   }
 

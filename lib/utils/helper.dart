@@ -110,4 +110,18 @@ class Helper {
       return false;
     }
   }
+
+  static Future<void> deleteDatabaseFile(String pathDb) async {
+    try {
+      final file = File(pathDb);
+
+      if (await file.exists()) {
+        await file.delete(); // Menghapus file
+      } else {
+        print('File not found at: $pathDb');
+      }
+    } catch (e) {
+      print('Error deleting file: $e');
+    }
+  }
 }

@@ -18,6 +18,7 @@ import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/login/login_screen.dart';
 import 'package:ops_mobile/feature/splash/splash_screen.dart';
+import 'package:ops_mobile/utils/helper.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_ios/path_provider_ios.dart';
@@ -82,22 +83,32 @@ class GetDataController extends BaseController{
   Future<void> getGenData(String token,String apkVersion,String platform)async{
     try{
       isLoading.value = true;
-      var response = await repository.getGenData(settingsData['e_number'], token, apkVersion,platform);
-      isLoading.value = true;
+      bool connection = await Helper.checkConnection();
+      if(!connection){
+        openDialog('Attenction', 'Periksa koneksi internet ada ', (){});
+        isLoading.value = false;
+        update();
+      }else{
+        var response = await repository.getGenData(settingsData['e_number'], token, apkVersion,platform);
+        isLoading.value = false;
+        update();
         if(response.file != null){
           await createFileFromBase64Str(response.file!);
           await readZip();
           final data = await SqlHelper.getLogin(settingsData['e_number']);
           debugPrint('user data: $data');
-          Get.back();
+          String now = DateFormat('dd-MM-yyyy').format(DateTime.now());
+          await StorageCore().storage.write("last_sync", now);
           openDialog('Success', 'Berhasil ambil data', (){Get.to<void>(SplashScreen());});
         } else {
           openDialog('Failed', 'Data gagal diambil',(){});
         }
-        isLoading.value = false;
+      }
+
     } catch(e) {
-      isLoading.value = true;
       openDialog('Failed', '$e', (){});
+      isLoading.value = true;
+      update();
     }
   }
 
@@ -188,7 +199,7 @@ class GetDataController extends BaseController{
             child: const Text("Close"),
             onPressed: () {
               Get.back();
-              Future.delayed(Duration(milliseconds: 100), () {
+              Future.delayed(Duration(milliseconds: 1), () {
                 func(); // Eksekusi setelah dialog ditutup
               });
             },

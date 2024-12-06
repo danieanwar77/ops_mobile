@@ -5,6 +5,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:ops_mobile/base/component/custom_image.dart';
 import 'package:ops_mobile/base/component/custom_text.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/data/model/jo_send_model.dart';
@@ -102,7 +103,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                          controller.dataJoDetail.value.detail?.code ?? '-',
+                                                          controller.dataJoDetail.value.detail?.soCode ?? '-',
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),
@@ -123,7 +124,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                          controller.dataJoDetail.value.detail?.soCode ?? '-',
+                                                          controller.dataJoDetail.value.detail?.code ?? '-',
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),
@@ -1264,7 +1265,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                          controller.dataJoPIC.value.detail?.ettaVessel ?? '-',
+                                                          '${controller.dataEttaVessel.value['etta_vessel']?? '-'}',
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),
@@ -1285,7 +1286,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                          '${controller.dataJoPIC.value.detail?.startDateOfAttendance ?? '-'} - ${controller.dataJoPIC.value.detail?.endDateOfAttendance ?? '-'}',
+                                                          '${controller.dataEttaVessel.value['date_attendance']?? '-'}',
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),
@@ -1306,7 +1307,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                          controller.dataJoPIC.value.detail?.lokasiKerja ?? '-',
+                                                            '${controller.dataEttaVessel.value['lokasi_kerja']?? '-'}',
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),
@@ -1334,7 +1335,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                          controller.dataJoPIC.value.detail?.picInspector ?? '-',
+                                                          '${controller.dataEttaVessel.value['pic_inspector']?? '-'}',
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),
@@ -1362,7 +1363,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                          controller.dataJoPIC.value.detail?.picLaboratory ?? '-',
+                                                          '${controller.dataEttaVessel.value['pic_laboratory']?? '-'}',
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),
@@ -1671,9 +1672,8 @@ class JoDetailScreen extends StatelessWidget {
                                                         child: SizedBox(
                                                           width: 54,
                                                           height: 54,
-                                                          child: Image.file(
-                                                            File(pict!.pathPhoto!),
-                                                            fit: BoxFit.cover,
+                                                          child: CustomImage(
+                                                            path: pict!.pathPhoto!,
                                                           ),
                                                         ),
                                                       );

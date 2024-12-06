@@ -261,7 +261,7 @@ class JoWaitingController extends BaseController {
     debugPrint('data detail OOS : ${jsonEncode(oos)}');
     final lap = await SqlHelper.getDetailJoLap(id);
     debugPrint('data detail LAP : ${jsonEncode(lap)}');
-    // final std = await SqlHelper.getDetailJoStdMethod(id);
+    final std = await SqlHelper.getDetailJoStdMethod(id);
     // debugPrint('data detail Std Method : ${jsonEncode(std)}');
     final pic = await SqlHelper.getDetailJoPicHistory(id);
     debugPrint('data detail PIC History : ${jsonEncode(pic)}');
@@ -290,13 +290,12 @@ class JoWaitingController extends BaseController {
           );
         }).toList(),
         stdMethod:
-        // std.map((item){
-        //   return StdMethod(
-        //       id: item['id'],
-        //       name: item['name']
-        //   );
-        // }).toList()
-        []
+        std.map((item){
+          return StdMethod(
+              id: item['id'],
+              name: item['name']
+          );
+        }).toList()
         ,
         picHist: pic.map((item){
           return PicHist.fromJson(item);
