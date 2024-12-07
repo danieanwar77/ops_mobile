@@ -286,7 +286,7 @@ class TDJoInspectionActivityStages {
 
   static Future<Map<String,dynamic>> getEndData(int id)async{
     final db = await SqlHelperV2().database;
-    final sql = '''select * from t_d_jo_inspection_activity_stages where m_statusinspectionstages_id= '6' and t_h_jo_id='?' ''';
+    final sql = '''select * from t_d_jo_inspection_activity_stages where m_statusinspectionstages_id= '6' and t_h_jo_id=? order by trans_date desc  ''';
 
     var finish = await db.rawQuery(sql,[id]);
     if(finish.length > 0){
@@ -298,9 +298,9 @@ class TDJoInspectionActivityStages {
 
   static Future<Map<String, dynamic>> getStartDate(int id) async{
     final db = await SqlHelperV2().database;
-    final sql = "select trans_date as  created_at from t_d_jo_inspection_activity_stages where m_statusinspectionstages_id= '1' and t_h_jo_id=? ";
+    final sql = "select trans_date as  created_at from t_d_jo_inspection_activity_stages where m_statusinspectionstages_id= '1' and t_h_jo_id=? and is_active = 1 ";
     var start = await db.rawQuery(sql,[id]);
-    final sqlPict = "SELECT * from t_d_jo_inspection_pict where t_h_jo_id=?";
+    final sqlPict = "SELECT * from t_d_jo_inspection_pict where t_h_jo_id=? and is_active = 1";
     var pict = await db.rawQuery(sqlPict,[id]);
 
     if(start.length == 0 && pict.length == 0){

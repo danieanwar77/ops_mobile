@@ -3444,240 +3444,246 @@ class JoWaitingScreen extends StatelessWidget {
                                     ? Card(
                                         color: Colors.white,
                                         child: SizedBox(
-                                          width: MediaQuery.sizeOf(context).width - 40,
-                                          child: ExpansionTile(
-                                              shape: Border.all(color: Colors.transparent),
-                                              title: Text(
-                                                'Inspection Certificate',
-                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700, color: primaryColor),
-                                              ),
-                                              childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
-                                              expandedCrossAxisAlignment: CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                controller.inspectionDocuments.value.isNotEmpty
-                                                    ? ListView.builder(
-                                                        shrinkWrap: true,
-                                                        physics: NeverScrollableScrollPhysics(),
-                                                        itemCount: controller.inspectionDocuments.value.length,
-                                                        itemBuilder: (context, index) {
-                                                          var inspect = controller.inspectionDocuments.value[index];
-                                                          return Column(
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            children: [
-                                                              Text(
-                                                                'Certificate ${index + 1}',
-                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: green),
-                                                              ),
-                                                              const SizedBox(height: 16),
-                                                              Row(
-                                                                children: [
-                                                                  const Expanded(
-                                                                    child: Text(
-                                                                      'No Certificate/Report',
-                                                                      style: TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
+                                            width: MediaQuery.sizeOf(context).width - 40,
+                                            child: Column(children: [
+                                              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                Padding(
+                                                    padding: const EdgeInsets.only(right: 16, left: 16,top:16),
+                                                    child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                      Text(
+                                                        'Inspection Certificate',
+                                                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700, color: primaryColor),
+                                                      ),
+                                                      controller.inspectionDocuments.value.isNotEmpty
+                                                          ? ListView.builder(
+                                                              shrinkWrap: true,
+                                                              physics: NeverScrollableScrollPhysics(),
+                                                              itemCount: controller.inspectionDocuments.value.length,
+                                                              itemBuilder: (context, index) {
+                                                                var inspect = controller.inspectionDocuments.value[index];
+                                                                return Column(
+                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  children: [
+                                                                    const SizedBox(height: 8),
+                                                                    Text(
+                                                                      'Certificate ${index + 1}',
+                                                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: green),
                                                                     ),
-                                                                  ),
-                                                                  const VerticalDivider(width: 1),
-                                                                  const SizedBox(width: 16),
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      inspect.noReport ?? '-',
-                                                                      style: const TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              const Divider(thickness: 0.4),
-                                                              Row(
-                                                                children: [
-                                                                  const Expanded(
-                                                                    child: Text(
-                                                                      'Date Certificate/Report',
-                                                                      style: TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  const VerticalDivider(width: 1),
-                                                                  const SizedBox(width: 16),
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      inspect.dateReport ?? '-',
-                                                                      style: const TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              const Divider(thickness: 0.4),
-                                                              Row(
-                                                                children: [
-                                                                  const Expanded(
-                                                                    child: Text(
-                                                                      'No Blanko Certificate',
-                                                                      style: TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  const VerticalDivider(width: 1),
-                                                                  const SizedBox(width: 16),
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      inspect.noBlankoCertificate ?? '-',
-                                                                      style: const TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              const Divider(thickness: 0.4),
-                                                              Row(
-                                                                children: [
-                                                                  const Expanded(
-                                                                    child: Text(
-                                                                      'LHV Number',
-                                                                      style: TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  const VerticalDivider(width: 1),
-                                                                  const SizedBox(width: 16),
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      inspect.lhvNumber ?? '-',
-                                                                      style: const TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              const Divider(thickness: 0.4),
-                                                              Row(
-                                                                children: [
-                                                                  const Expanded(
-                                                                    child: Text(
-                                                                      'LS Number',
-                                                                      style: TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  const VerticalDivider(width: 1),
-                                                                  const SizedBox(width: 16),
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      inspect.lsNumber ?? '-',
-                                                                      style: const TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              const Divider(thickness: 0.4),
-                                                              Row(
-                                                                children: [
-                                                                  const Expanded(
-                                                                    child: Text(
-                                                                      'Upload Attachment Certificate',
-                                                                      style: TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  const VerticalDivider(width: 1),
-                                                                  const SizedBox(width: 16),
-                                                                  controller.inspectionDocumentsFiles.value.isNotEmpty
-                                                                      ? Expanded(
-                                                                          flex: 1,
-                                                                          child: GridView.builder(
-                                                                              shrinkWrap: true,
-                                                                              physics: NeverScrollableScrollPhysics(),
-                                                                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                                                                crossAxisCount: 3,
-                                                                                mainAxisSpacing: 8,
-                                                                                crossAxisSpacing: 8,
-                                                                              ),
-                                                                              itemCount: controller.inspectionDocumentsFiles.value.where((item) => item.tDJoFinalizeInspectionId == inspect.id).length,
-                                                                              itemBuilder: (content, indexItem) {
-                                                                                var fileList =
-                                                                                    controller.inspectionDocumentsFiles.value.where((item) => item.tDJoFinalizeInspectionId == inspect.id).toList();
-                                                                                final String attach = fileList[indexItem].pathFile!;
-                                                                                final String fileType = controller.checkFileType(attach);
-                                                                                var filenameArr = attach.split("/");
-                                                                                var filename = filenameArr.last;
-                                                                                return fileType == 'image'
-                                                                                    ? SizedBox(
-                                                                                        width: 54,
-                                                                                        height: 66,
-                                                                                        child: Stack(
-                                                                                          children: [
-                                                                                            SizedBox(
-                                                                                              width: 54,
-                                                                                              height: 54,
-                                                                                              child: InkWell(
-                                                                                                onTap: () {
-                                                                                                  controller.previewImageList(index, attach);
-                                                                                                },
-                                                                                                child: Image.file(
-                                                                                                  File(attach),
-                                                                                                  fit: BoxFit.cover,
-                                                                                                ),
-                                                                                              ),
-                                                                                            ),
-                                                                                          ],
-                                                                                        ),
-                                                                                      )
-                                                                                    : fileType == 'doc'
-                                                                                        ? SizedBox(
-                                                                                            width: 54,
-                                                                                            height: 66,
-                                                                                            child: Stack(
-                                                                                              children: [
-                                                                                                InkWell(
-                                                                                                  onTap: () {
-                                                                                                    OpenFilex.open(attach);
-                                                                                                  },
-                                                                                                  child: SizedBox(
-                                                                                                    width: 54,
-                                                                                                    height: 58,
-                                                                                                    child: Center(
-                                                                                                        child: Column(
-                                                                                                      children: [
-                                                                                                        Image.asset(
-                                                                                                          'assets/icons/pdfIcon.png',
-                                                                                                          height: 30,
-                                                                                                        ),
-                                                                                                        Text(filename, style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
-                                                                                                      ],
-                                                                                                    )),
-                                                                                                  ),
-                                                                                                ),
-                                                                                              ],
-                                                                                            ),
-                                                                                          )
-                                                                                        : SizedBox();
-                                                                              }),
+                                                                    const SizedBox(height: 16),
+                                                                    Row(
+                                                                      children: [
+                                                                        const Expanded(
+                                                                          child: Text(
+                                                                            'No Certificate/Report',
+                                                                            style: TextStyle(
+                                                                              fontSize: 14,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        const VerticalDivider(width: 1),
+                                                                        const SizedBox(width: 16),
+                                                                        Expanded(
+                                                                          child: Text(
+                                                                            inspect.noReport ?? '-',
+                                                                            style: const TextStyle(
+                                                                              fontSize: 14,
+                                                                            ),
+                                                                          ),
                                                                         )
-                                                                      : const SizedBox()
-                                                                ],
-                                                              ),
-                                                              const Divider(thickness: 0.4),
-                                                            ],
-                                                          );
-                                                        })
-                                                    : const SizedBox(),
-                                              ]),
-                                        ),
+                                                                      ],
+                                                                    ),
+                                                                    const Divider(thickness: 0.4),
+                                                                    Row(
+                                                                      children: [
+                                                                        const Expanded(
+                                                                          child: Text(
+                                                                            'Date Certificate/Report',
+                                                                            style: TextStyle(
+                                                                              fontSize: 14,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        const VerticalDivider(width: 1),
+                                                                        const SizedBox(width: 16),
+                                                                        Expanded(
+                                                                          child: Text(
+                                                                            inspect.dateReport ?? '-',
+                                                                            style: const TextStyle(
+                                                                              fontSize: 14,
+                                                                            ),
+                                                                          ),
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                    const Divider(thickness: 0.4),
+                                                                    Row(
+                                                                      children: [
+                                                                        const Expanded(
+                                                                          child: Text(
+                                                                            'No Blanko Certificate',
+                                                                            style: TextStyle(
+                                                                              fontSize: 14,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        const VerticalDivider(width: 1),
+                                                                        const SizedBox(width: 16),
+                                                                        Expanded(
+                                                                          child: Text(
+                                                                            inspect.noBlankoCertificate ?? '-',
+                                                                            style: const TextStyle(
+                                                                              fontSize: 14,
+                                                                            ),
+                                                                          ),
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                    const Divider(thickness: 0.4),
+                                                                    Row(
+                                                                      children: [
+                                                                        const Expanded(
+                                                                          child: Text(
+                                                                            'LHV Number',
+                                                                            style: TextStyle(
+                                                                              fontSize: 14,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        const VerticalDivider(width: 1),
+                                                                        const SizedBox(width: 16),
+                                                                        Expanded(
+                                                                          child: Text(
+                                                                            inspect.lhvNumber ?? '-',
+                                                                            style: const TextStyle(
+                                                                              fontSize: 14,
+                                                                            ),
+                                                                          ),
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                    const Divider(thickness: 0.4),
+                                                                    Row(
+                                                                      children: [
+                                                                        const Expanded(
+                                                                          child: Text(
+                                                                            'LS Number',
+                                                                            style: TextStyle(
+                                                                              fontSize: 14,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        const VerticalDivider(width: 1),
+                                                                        const SizedBox(width: 16),
+                                                                        Expanded(
+                                                                          child: Text(
+                                                                            inspect.lsNumber ?? '-',
+                                                                            style: const TextStyle(
+                                                                              fontSize: 14,
+                                                                            ),
+                                                                          ),
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                    const Divider(thickness: 0.4),
+                                                                    Row(
+                                                                      children: [
+                                                                        const Expanded(
+                                                                          child: Text(
+                                                                            'Upload Attachment Certificate',
+                                                                            style: TextStyle(
+                                                                              fontSize: 14,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        const VerticalDivider(width: 1),
+                                                                        const SizedBox(width: 16),
+                                                                        controller.inspectionDocumentsFiles.value.isNotEmpty
+                                                                            ? Expanded(
+                                                                                flex: 1,
+                                                                                child: GridView.builder(
+                                                                                    shrinkWrap: true,
+                                                                                    physics: NeverScrollableScrollPhysics(),
+                                                                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                                                                      crossAxisCount: 3,
+                                                                                      mainAxisSpacing: 8,
+                                                                                      crossAxisSpacing: 8,
+                                                                                    ),
+                                                                                    itemCount:
+                                                                                        controller.inspectionDocumentsFiles.value.where((item) => item.tDJoFinalizeInspectionId == inspect.id).length,
+                                                                                    itemBuilder: (content, indexItem) {
+                                                                                      var fileList = controller.inspectionDocumentsFiles.value
+                                                                                          .where((item) => item.tDJoFinalizeInspectionId == inspect.id)
+                                                                                          .toList();
+                                                                                      final String attach = fileList[indexItem].pathFile!;
+                                                                                      final String fileType = controller.checkFileType(attach);
+                                                                                      var filenameArr = attach.split("/");
+                                                                                      var filename = filenameArr.last;
+                                                                                      return fileType == 'image'
+                                                                                          ? SizedBox(
+                                                                                              width: 54,
+                                                                                              height: 66,
+                                                                                              child: Stack(
+                                                                                                children: [
+                                                                                                  SizedBox(
+                                                                                                    width: 54,
+                                                                                                    height: 54,
+                                                                                                    child: InkWell(
+                                                                                                      onTap: () {
+                                                                                                        controller.previewImageList(index, attach);
+                                                                                                      },
+                                                                                                      child: Image.file(
+                                                                                                        File(attach),
+                                                                                                        fit: BoxFit.cover,
+                                                                                                      ),
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                ],
+                                                                                              ),
+                                                                                            )
+                                                                                          : fileType == 'doc'
+                                                                                              ? SizedBox(
+                                                                                                  width: 54,
+                                                                                                  height: 66,
+                                                                                                  child: Stack(
+                                                                                                    children: [
+                                                                                                      InkWell(
+                                                                                                        onTap: () {
+                                                                                                          OpenFilex.open(attach);
+                                                                                                        },
+                                                                                                        child: SizedBox(
+                                                                                                          width: 54,
+                                                                                                          height: 58,
+                                                                                                          child: Center(
+                                                                                                              child: Column(
+                                                                                                            children: [
+                                                                                                              Image.asset(
+                                                                                                                'assets/icons/pdfIcon.png',
+                                                                                                                height: 30,
+                                                                                                              ),
+                                                                                                              Text(filename, style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
+                                                                                                            ],
+                                                                                                          )),
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                    ],
+                                                                                                  ),
+                                                                                                )
+                                                                                              : SizedBox();
+                                                                                    }),
+                                                                              )
+                                                                            : const SizedBox()
+                                                                      ],
+                                                                    ),
+                                                                    const Divider(thickness: 0.4),
+                                                                  ],
+                                                                );
+                                                              })
+                                                          : const SizedBox(),
+                                                    ]))
+                                              ])
+                                            ])),
                                       )
                                     : Card(
                                         color: Colors.white,
@@ -3716,243 +3722,251 @@ class JoWaitingScreen extends StatelessWidget {
                                 const SizedBox(height: 16),
                                 controller.laboratoryDocuments.value.isNotEmpty
                                     ? Card(
-                                        color: Colors.white,
-                                        child: SizedBox(
-                                          width: MediaQuery.sizeOf(context).width - 40,
-                                          child: ExpansionTile(
-                                              shape: Border.all(color: Colors.transparent),
-                                              title: Text(
-                                                'Laboratory Certificate',
-                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700, color: primaryColor),
-                                              ),
-                                              childrenPadding: const EdgeInsets.symmetric(horizontal: 16),
-                                              expandedCrossAxisAlignment: CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                controller.laboratoryDocuments.value.isNotEmpty
-                                                    ? ListView.builder(
-                                                        shrinkWrap: true,
-                                                        physics: NeverScrollableScrollPhysics(),
-                                                        itemCount: controller.laboratoryDocuments.value.length,
-                                                        itemBuilder: (context, index) {
-                                                          var lab = controller.laboratoryDocuments.value[index];
-                                                          return Column(
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            children: [
-                                                              Text(
-                                                                'Certificate ${index + 1}',
-                                                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: green),
-                                                              ),
-                                                              const SizedBox(height: 16),
-                                                              Row(
-                                                                children: [
-                                                                  const Expanded(
-                                                                    child: Text(
-                                                                      'No Certificate/Report',
-                                                                      style: TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
+                                  color: Colors.white,
+                                  child: SizedBox(
+                                      width: MediaQuery.sizeOf(context).width - 40,
+                                      child: Column(children: [
+                                        Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                  padding: const EdgeInsets.only(right: 16, left: 16,top:16),
+                                                child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                  Text(
+                                                    'Laboratory Certificate',
+                                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700, color: primaryColor),
+                                                  ),
+                                                  controller.laboratoryDocuments.value.isNotEmpty
+                                                      ? ListView.builder(
+                                                      shrinkWrap: true,
+                                                      physics: NeverScrollableScrollPhysics(),
+                                                      itemCount: controller.laboratoryDocuments.value.length,
+                                                      itemBuilder: (context, index) {
+                                                        var lab = controller.laboratoryDocuments.value[index];
+                                                        return Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            const SizedBox(height: 8),
+                                                            Text(
+                                                              'Certificate ${index + 1}',
+                                                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: green),
+                                                            ),
+                                                            const SizedBox(height: 16),
+                                                            Row(
+                                                              children: [
+                                                                const Expanded(
+                                                                  child: Text(
+                                                                    'No Certificate/Report',
+                                                                    style: TextStyle(
+                                                                      fontSize: 14,
                                                                     ),
                                                                   ),
-                                                                  const VerticalDivider(width: 1),
-                                                                  const SizedBox(width: 16),
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      lab.noReport ?? '-',
-                                                                      style: const TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              const Divider(thickness: 0.4),
-                                                              Row(
-                                                                children: [
-                                                                  const Expanded(
-                                                                    child: Text(
-                                                                      'Date Certificate/Report',
-                                                                      style: TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
+                                                                ),
+                                                                const VerticalDivider(width: 1),
+                                                                const SizedBox(width: 16),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    lab.noReport ?? '-',
+                                                                    style: const TextStyle(
+                                                                      fontSize: 14,
                                                                     ),
                                                                   ),
-                                                                  const VerticalDivider(width: 1),
-                                                                  const SizedBox(width: 16),
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      lab.dateReport ?? '-',
-                                                                      style: const TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              const Divider(thickness: 0.4),
-                                                              Row(
-                                                                children: [
-                                                                  const Expanded(
-                                                                    child: Text(
-                                                                      'No Blanko Certificate',
-                                                                      style: TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
+                                                                )
+                                                              ],
+                                                            ),
+                                                            const Divider(thickness: 0.4),
+                                                            Row(
+                                                              children: [
+                                                                const Expanded(
+                                                                  child: Text(
+                                                                    'Date Certificate/Report',
+                                                                    style: TextStyle(
+                                                                      fontSize: 14,
                                                                     ),
                                                                   ),
-                                                                  const VerticalDivider(width: 1),
-                                                                  const SizedBox(width: 16),
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      lab.noBlankoCertificate ?? '-',
-                                                                      style: const TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              const Divider(thickness: 0.4),
-                                                              Row(
-                                                                children: [
-                                                                  const Expanded(
-                                                                    child: Text(
-                                                                      'LHV Number',
-                                                                      style: TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
+                                                                ),
+                                                                const VerticalDivider(width: 1),
+                                                                const SizedBox(width: 16),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    lab.dateReport ?? '-',
+                                                                    style: const TextStyle(
+                                                                      fontSize: 14,
                                                                     ),
                                                                   ),
-                                                                  const VerticalDivider(width: 1),
-                                                                  const SizedBox(width: 16),
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      lab.lhvNumber ?? '-',
-                                                                      style: const TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              const Divider(thickness: 0.4),
-                                                              Row(
-                                                                children: [
-                                                                  const Expanded(
-                                                                    child: Text(
-                                                                      'LS Number',
-                                                                      style: TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
+                                                                )
+                                                              ],
+                                                            ),
+                                                            const Divider(thickness: 0.4),
+                                                            Row(
+                                                              children: [
+                                                                const Expanded(
+                                                                  child: Text(
+                                                                    'No Blanko Certificate',
+                                                                    style: TextStyle(
+                                                                      fontSize: 14,
                                                                     ),
                                                                   ),
-                                                                  const VerticalDivider(width: 1),
-                                                                  const SizedBox(width: 16),
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      lab.lsNumber ?? '-',
-                                                                      style: const TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              const Divider(thickness: 0.4),
-                                                              Row(
-                                                                children: [
-                                                                  const Expanded(
-                                                                    child: Text(
-                                                                      'Upload Attachment Certificate',
-                                                                      style: TextStyle(
-                                                                        fontSize: 14,
-                                                                      ),
+                                                                ),
+                                                                const VerticalDivider(width: 1),
+                                                                const SizedBox(width: 16),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    lab.noBlankoCertificate ?? '-',
+                                                                    style: const TextStyle(
+                                                                      fontSize: 14,
                                                                     ),
                                                                   ),
-                                                                  const VerticalDivider(width: 1),
-                                                                  const SizedBox(width: 16),
-                                                                  controller.laboratoryDocumentsFiles.value.isNotEmpty
-                                                                      ? Expanded(
-                                                                          flex: 1,
-                                                                          child: GridView.builder(
-                                                                              shrinkWrap: true,
-                                                                              physics: NeverScrollableScrollPhysics(),
-                                                                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                                                                crossAxisCount: 3,
-                                                                                mainAxisSpacing: 8,
-                                                                                crossAxisSpacing: 8,
+                                                                )
+                                                              ],
+                                                            ),
+                                                            const Divider(thickness: 0.4),
+                                                            Row(
+                                                              children: [
+                                                                const Expanded(
+                                                                  child: Text(
+                                                                    'LHV Number',
+                                                                    style: TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                const VerticalDivider(width: 1),
+                                                                const SizedBox(width: 16),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    lab.lhvNumber ?? '-',
+                                                                    style: const TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              ],
+                                                            ),
+                                                            const Divider(thickness: 0.4),
+                                                            Row(
+                                                              children: [
+                                                                const Expanded(
+                                                                  child: Text(
+                                                                    'LS Number',
+                                                                    style: TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                const VerticalDivider(width: 1),
+                                                                const SizedBox(width: 16),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    lab.lsNumber ?? '-',
+                                                                    style: const TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              ],
+                                                            ),
+                                                            const Divider(thickness: 0.4),
+                                                            Row(
+                                                              children: [
+                                                                const Expanded(
+                                                                  child: Text(
+                                                                    'Upload Attachment Certificate',
+                                                                    style: TextStyle(
+                                                                      fontSize: 14,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                const VerticalDivider(width: 1),
+                                                                const SizedBox(width: 16),
+                                                                controller.laboratoryDocumentsFiles.value.isNotEmpty
+                                                                    ? Expanded(
+                                                                  flex: 1,
+                                                                  child: GridView.builder(
+                                                                      shrinkWrap: true,
+                                                                      physics: NeverScrollableScrollPhysics(),
+                                                                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                                                        crossAxisCount: 3,
+                                                                        mainAxisSpacing: 8,
+                                                                        crossAxisSpacing: 8,
+                                                                      ),
+                                                                      itemCount: controller.laboratoryDocumentsFiles.value.where((item) => item.tDJoFinalizeLaboratoryId == lab.id).length,
+                                                                      itemBuilder: (content, indexItem) {
+                                                                        var fileList =
+                                                                        controller.laboratoryDocumentsFiles.value.where((item) => item.tDJoFinalizeLaboratoryId == lab.id).toList();
+                                                                        final String attach = fileList[indexItem].pathFile!;
+                                                                        final String fileType = controller.checkFileType(attach);
+                                                                        var filenameArr = attach.split("/");
+                                                                        var filename = filenameArr.last;
+                                                                        return fileType == 'image'
+                                                                            ? SizedBox(
+                                                                          width: 54,
+                                                                          height: 66,
+                                                                          child: Stack(
+                                                                            children: [
+                                                                              SizedBox(
+                                                                                width: 54,
+                                                                                height: 54,
+                                                                                child: InkWell(
+                                                                                  onTap: () {
+                                                                                    controller.previewImageList(index, attach);
+                                                                                  },
+                                                                                  child: Image.file(
+                                                                                    File(attach),
+                                                                                    fit: BoxFit.cover,
+                                                                                  ),
+                                                                                ),
                                                                               ),
-                                                                              itemCount: controller.laboratoryDocumentsFiles.value.where((item) => item.tDJoFinalizeLaboratoryId == lab.id).length,
-                                                                              itemBuilder: (content, indexItem) {
-                                                                                var fileList =
-                                                                                    controller.laboratoryDocumentsFiles.value.where((item) => item.tDJoFinalizeLaboratoryId == lab.id).toList();
-                                                                                final String attach = fileList[indexItem].pathFile!;
-                                                                                final String fileType = controller.checkFileType(attach);
-                                                                                var filenameArr = attach.split("/");
-                                                                                var filename = filenameArr.last;
-                                                                                return fileType == 'image'
-                                                                                    ? SizedBox(
-                                                                                        width: 54,
-                                                                                        height: 66,
-                                                                                        child: Stack(
-                                                                                          children: [
-                                                                                            SizedBox(
-                                                                                              width: 54,
-                                                                                              height: 54,
-                                                                                              child: InkWell(
-                                                                                                onTap: () {
-                                                                                                  controller.previewImageList(index, attach);
-                                                                                                },
-                                                                                                child: Image.file(
-                                                                                                  File(attach),
-                                                                                                  fit: BoxFit.cover,
-                                                                                                ),
-                                                                                              ),
-                                                                                            ),
-                                                                                          ],
-                                                                                        ),
-                                                                                      )
-                                                                                    : fileType == 'doc'
-                                                                                        ? SizedBox(
-                                                                                            width: 54,
-                                                                                            height: 66,
-                                                                                            child: Stack(
-                                                                                              children: [
-                                                                                                InkWell(
-                                                                                                  onTap: () {
-                                                                                                    OpenFilex.open(attach);
-                                                                                                  },
-                                                                                                  child: SizedBox(
-                                                                                                    width: 54,
-                                                                                                    height: 54,
-                                                                                                    child: Center(
-                                                                                                        child: Column(
-                                                                                                      children: [
-                                                                                                        Image.asset(
-                                                                                                          'assets/icons/pdfIcon.png',
-                                                                                                          height: 34,
-                                                                                                        ),
-                                                                                                        Text(filename, style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
-                                                                                                      ],
-                                                                                                    )),
-                                                                                                  ),
-                                                                                                ),
-                                                                                              ],
-                                                                                            ),
-                                                                                          )
-                                                                                        : SizedBox();
-                                                                              }),
+                                                                            ],
+                                                                          ),
                                                                         )
-                                                                      : const SizedBox()
-                                                                ],
-                                                              ),
-                                                              const Divider(thickness: 0.4),
-                                                            ],
-                                                          );
-                                                        })
-                                                    : const SizedBox(),
-                                              ]),
-                                        ),
-                                      )
+                                                                            : fileType == 'doc'
+                                                                            ? SizedBox(
+                                                                          width: 54,
+                                                                          height: 66,
+                                                                          child: Stack(
+                                                                            children: [
+                                                                              InkWell(
+                                                                                onTap: () {
+                                                                                  OpenFilex.open(attach);
+                                                                                },
+                                                                                child: SizedBox(
+                                                                                  width: 54,
+                                                                                  height: 54,
+                                                                                  child: Center(
+                                                                                      child: Column(
+                                                                                        children: [
+                                                                                          Image.asset(
+                                                                                            'assets/icons/pdfIcon.png',
+                                                                                            height: 34,
+                                                                                          ),
+                                                                                          Text(filename, style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
+                                                                                        ],
+                                                                                      )),
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        )
+                                                                            : SizedBox();
+                                                                      }),
+                                                                )
+                                                                    : const SizedBox()
+                                                              ],
+                                                            ),
+                                                            const Divider(thickness: 0.4),
+                                                          ],
+                                                        );
+                                                      })
+                                                      : const SizedBox(),
+                                                ])
+                                              )
+                                        ])
+                                      ]
+                                      )),
+                                )
                                     : Card(
                                         color: Colors.white,
                                         child: SizedBox(
@@ -3981,7 +3995,6 @@ class JoWaitingScreen extends StatelessWidget {
                 children: [
                   Expanded(child: Center(child: CircularProgressIndicator())),
                 ],
-              )
-    );
+              ));
   }
 }

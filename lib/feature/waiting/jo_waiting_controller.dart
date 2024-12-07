@@ -521,36 +521,6 @@ class JoWaitingController extends BaseController {
     List<TDJoInspectionPict> pict =
     result.map((json) => TDJoInspectionPict.fromJson(json)).toList();
     dailyActivityPhotosV2.value = pict;
-    // TextEditingController tempPhotoDesc = TextEditingController();
-    // result.forEach((item) async{
-    //   //final File photo = await getImagesFromUrl(item['path_photo']);
-    //  // dailyActivityPhotos.value.add(item['path_photo']);
-    //   tempPhotoDesc.text = item['keterangan'] ?? '';
-    //   dailyActivityPhotosDesc.value.add(tempPhotoDesc);
-    //   dailyActivityPhotosDescText.value.add(item['keterangan'] ?? '');
-    // });
-
-    // var response = await repository.getJoDailyPhoto(id) ?? JoDailyPhoto();
-    // debugPrint('JO Daily Photo: ${jsonEncode(response)}');
-    // if (response.data!.isNotEmpty) {
-    //   dataJoDailyPhotos.value = response?.data ?? [];
-    //   if (dataJoDailyPhotos.value.isNotEmpty) {
-    //     isLoadingJOImage = true;
-    //     update();
-    //     dailyActivityPhotos.value = [];
-    //     TextEditingController tempPhotoDesc = TextEditingController();
-    //     dataJoDailyPhotos.value.forEach((data) async {
-    //       final File photo = await getImagesFromUrl(data.pathPhoto!);
-    //       dailyActivityPhotos.value.add(photo);
-    //       tempPhotoDesc.text = data.keterangan ?? '';
-    //       dailyActivityPhotosDesc.value.add(tempPhotoDesc);
-    //       dailyActivityPhotosDescText.value.add(data.keterangan ?? '');
-    //       update();
-    //     });
-    //     isLoadingJOImage = false;
-    //     update();
-    //   }
-    // }
   }
 
   Future<File> getImagesFromUrl(String strURL) async {

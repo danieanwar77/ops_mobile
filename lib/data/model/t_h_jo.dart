@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:get/get_common/get_reset.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory.dart';
 import 'package:ops_mobile/data/model/t_so.dart';
@@ -54,14 +55,15 @@ class THJo {
       num? picLaboratory, 
       dynamic inspectionCompletedDate, 
       dynamic laboratoryCompletedDate, 
-      dynamic inspectionFinishedDate, 
-      dynamic laboratoryFinishedDate, 
+      String? inspectionFinishedDate,
+      String? laboratoryFinishedDate,
       dynamic canceledDate, 
       dynamic reasonCancel, 
       dynamic flagDocInspection, 
       dynamic flagDocLab, 
       num? mKindofserviceId, 
-      num? mStatusjoId, 
+      num? mStatusjoId,
+      num? uomId,
       num? createdBy, 
       dynamic updatedBy, 
       String? createdAt,
@@ -94,6 +96,7 @@ class THJo {
     _flagDocLab = flagDocLab;
     _mKindofserviceId = mKindofserviceId;
     _mStatusjoId = mStatusjoId;
+    _uomId = uomId;
     _createdBy = createdBy;
     _updatedBy = updatedBy;
     _createdAt = createdAt;
@@ -120,14 +123,15 @@ class THJo {
   num? _picLaboratory;
   dynamic _inspectionCompletedDate;
   dynamic _laboratoryCompletedDate;
-  dynamic _inspectionFinishedDate;
-  dynamic _laboratoryFinishedDate;
+  String? _inspectionFinishedDate;
+  String? _laboratoryFinishedDate;
   dynamic _canceledDate;
   dynamic _reasonCancel;
   dynamic _flagDocInspection;
   dynamic _flagDocLab;
   num? _mKindofserviceId;
   num? _mStatusjoId;
+  num? _uomId;
   num? _createdBy;
   dynamic _updatedBy;
   String? _createdAt;
@@ -161,6 +165,7 @@ class THJo {
     _flagDocLab = json['flag_doc_lab'];
     _mKindofserviceId = json['m_kindofservice_id'];
     _mStatusjoId = json['m_statusjo_id'];
+    _uomId = json['uom_id'] is int ?  json['uom_id'] : null;
     _createdBy = json['created_by'];
     _updatedBy = json['updated_by'];
     _createdAt = json['created_at'];
@@ -261,14 +266,15 @@ THJo copyWith({  num? id,
   num? get picLaboratory => _picLaboratory;
   dynamic get inspectionCompletedDate => _inspectionCompletedDate;
   dynamic get laboratoryCompletedDate => _laboratoryCompletedDate;
-  dynamic get inspectionFinishedDate => _inspectionFinishedDate;
-  dynamic get laboratoryFinishedDate => _laboratoryFinishedDate;
+  String? get inspectionFinishedDate => _inspectionFinishedDate;
+  String? get laboratoryFinishedDate => _laboratoryFinishedDate;
   dynamic get canceledDate => _canceledDate;
   dynamic get reasonCancel => _reasonCancel;
   dynamic get flagDocInspection => _flagDocInspection;
   dynamic get flagDocLab => _flagDocLab;
   num? get mKindofserviceId => _mKindofserviceId;
   num? get mStatusjoId => _mStatusjoId;
+  num? get uomId => _uomId;
   num? get createdBy => _createdBy;
   dynamic get updatedBy => _updatedBy;
   String? get createdAt => _createdAt;
@@ -303,6 +309,7 @@ THJo copyWith({  num? id,
     map['flag_doc_lab'] = _flagDocLab;
     map['m_kindofservice_id'] = _mKindofserviceId;
     map['m_statusjo_id'] = _mStatusjoId;
+    map['uom_id'] = _uomId;
     map['created_by'] = _createdBy;
     map['updated_by'] = _updatedBy;
     map['created_at'] = _createdAt;
@@ -336,6 +343,7 @@ THJo copyWith({  num? id,
     map['flag_doc_lab'] = _flagDocLab;
     map['m_kindofservice_id'] = _mKindofserviceId;
     map['m_statusjo_id'] = _mStatusjoId;
+    map['uom_id'] = _uomId;
     map['created_by'] = _createdBy;
     map['updated_by'] = _updatedBy;
     map['created_at'] = _createdAt;
@@ -369,6 +377,7 @@ THJo copyWith({  num? id,
     //map['flag_doc_lab'] = _flagDocLab;
     //map['m_kindofservice_id'] = _mKindofserviceId;
     map['m_statusjo_id'] = _mStatusjoId;
+    map['uom_id'] = _uomId;
     //map['created_by'] = _createdBy;
     map['updated_by'] = _updatedBy;
     //map['created_at'] = _createdAt;
@@ -655,6 +664,8 @@ THJo copyWith({  num? id,
 
       }
     }else {
+      debugPrint("print data insert ${thjo.toInsert()}");
+      debugPrint("print data update ${thjo.toInsert()}");
       await db.update('t_h_jo', thjo.toUpdate(), whereArgs: [thjo.id], where: 'id=?');
       List<TDJoLaboratory> laboratory = thjo.laboratory ?? [];
       for(int l = 0; l < laboratory.length; l++){

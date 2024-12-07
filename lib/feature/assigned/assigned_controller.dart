@@ -43,6 +43,8 @@ class AssignedController extends BaseController{
     final data = await SqlHelper.getListJo(employeeId.value,statusJo.value);
     debugPrint('status selected: ${statusJo.value}');
     debugPrint('data list : ${jsonEncode(data)}');
+    dataJoList.value = [];
+    dataJoListTemp.value = [];
     data.forEach((value){
       dataJoList.value.add(DataJo.fromJson(jsonDecode(jsonEncode(value))));
       dataJoListTemp.value.add(DataJo.fromJson(jsonDecode(jsonEncode(value))));
@@ -94,6 +96,7 @@ class AssignedController extends BaseController{
         }
       }
       isLoadingSync.value = false;
+      await getJoListLocal();
     }catch(e){
       debugPrint('error ${e}');
       isLoadingSync.value = false;

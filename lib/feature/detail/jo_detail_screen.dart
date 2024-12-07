@@ -2762,9 +2762,6 @@ class JoDetailScreen extends StatelessWidget {
                                         controller: controller.searchLabText,
                                         cursorColor: onFocusColor,
                                         style: const TextStyle(color: onFocusColor),
-                                        // onChanged: (value){
-                                        //   controller.searchJo(value);
-                                        // },
                                         decoration: InputDecoration(
                                             suffixIcon: const Icon(Icons.search_sharp,
                                               color: Colors.black26,
@@ -2818,7 +2815,7 @@ class JoDetailScreen extends StatelessWidget {
                                                                 child: Text(
                                                                   lab.name ?? '-',
                                                                   style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w700,
-                                                                  color: lab.maxStage!.toInt() > 0 && lab.maxStage!.toInt() < 6 ? stepperColor : lab.maxStage!.toInt() == 6 ? green : Colors.black ),
+                                                                  color: lab.maxStage!.toInt() > 4 && lab.maxStage!.toInt() < 6 ? stepperColor : lab.maxStage!.toInt() == 6 ? green : Colors.black ),
                                                                 ),
                                                               ),
                                                               Icon(Icons.chevron_right)

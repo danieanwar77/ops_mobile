@@ -222,8 +222,6 @@ class JoDetailController extends BaseController {
 
   Future<void> getData() async {
     //await getJoDetail();
-    await getStartJo();
-    await endJo();
     await getJoDetailLocal();
     picInspector = int.parse(dataJoDetail.value.detail?.idPicInspector != null
         ? dataJoDetail.value.detail!.idPicInspector.toString() == userData.value!.id.toString()
@@ -439,6 +437,8 @@ class JoDetailController extends BaseController {
   Future<void> getJoDailyActivityLocalV2() async {
     stageList.value = [];
     List<Map<String, dynamic>> result = [];
+    await getStartJo();
+    await getEndJo();
     final db = await SqlHelper.db();
 
     THJo joRslt = await THJo.getJoById(id);
@@ -2360,7 +2360,7 @@ class JoDetailController extends BaseController {
                                 TextFormField(
                                   controller: vesselController,
                                   cursorColor: onFocusColor,
-                                    inputFormatters: [
+                                  inputFormatters: [
                                     LengthLimitingTextInputFormatter(150),
                                   ],
                                   style: const TextStyle(color: onFocusColor),

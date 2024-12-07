@@ -161,7 +161,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                 child: Text(controller.activityLabListStages.value.length == 0 ? "None" : controller.labStagesName[controller.activityLabStage - 1], style: TextStyle(fontSize: 12.sp, color: Colors.white))
                                             ) : const SizedBox(),
                                             Spacer(),
-                                            (controller.activity6ListStages.value.isEmpty) && (controller.joRx.value.laboratoryFinishedDate == "") ? IconButton(
+                                            (controller.activity6ListStages.value.isEmpty || controller.joRx.value.laboratoryFinishedDate == null || controller.joRx.value.laboratoryFinishedDate == "") && (controller.joRx.value.mStatusjoId == 2 || controller.joRx.value.mStatusjoId == 3) ? IconButton(
                                                 onPressed: (){
                                                   if(controller.activitySubmitted.value == true){
                                                     controller.activityLabStage == 1 ? controller.nextStageActivityConfirm() :
@@ -190,7 +190,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                     children: [
                                                       const CustomTextH2Green(content: 'Stage 1: Sample on Delivery'),
                                                       const SizedBox(width: 8),
-                                                      (controller.activityLabStage == 1  && controller.joRx.value.laboratoryFinishedDate == "") ?
+                                                      (controller.activityLabStage == 1  && (controller.joRx.value.laboratoryFinishedDate == null || controller.joRx.value.laboratoryFinishedDate == "")) ?
                                                       InkWell(
                                                           onTap:() => {controller.drawerDailyActivityLabEdit()},
                                                           child: const Icon(
@@ -323,7 +323,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                     children: [
                                                       const CustomTextH2Green(content: 'Stage 2: Sample Received'),
                                                       const SizedBox(width: 8),
-                                                      (controller.activityLabStage == 2  && controller.joRx.value.laboratoryFinishedDate == "") ?
+                                                      (controller.activityLabStage == 2  && (controller.joRx.value.laboratoryFinishedDate == null || controller.joRx.value.laboratoryFinishedDate == "")) ?
                                                       InkWell(
                                                           onTap: () {controller.drawerDailyActivityLabEdit();},
                                                           child: const Icon(
@@ -462,7 +462,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                         ),
                                                       ),
                                                       const SizedBox(width: 8),
-                                                      (controller.activityLabStage == 3  && controller.joRx.value.laboratoryFinishedDate == "") ? InkWell(
+                                                      (controller.activityLabStage == 3  && (controller.joRx.value.laboratoryFinishedDate == null || controller.joRx.value.laboratoryFinishedDate == "" )) ? InkWell(
                                                           onTap: () {
                                                             controller.drawerDailyActivityLabEdit();
                                                           },
@@ -601,7 +601,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                         ),
                                                       ),
                                                       const SizedBox(width: 8),
-                                                      (controller.activityLabStage == 5  && controller.joRx.value.laboratoryFinishedDate == "") ? InkWell(
+                                                      (controller.activityLabStage == 4  && (controller.joRx.value.laboratoryFinishedDate == null || controller.joRx.value.laboratoryFinishedDate == "")) ? InkWell(
                                                           onTap: () {
                                                             controller.drawerDailyActivityLabEdit();
                                                           },
@@ -745,7 +745,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                   ),
                                                 ),
                                                 const SizedBox(width: 8),
-                                                (controller.activityLabStage == 5  && controller.joRx.value.laboratoryFinishedDate == "") ? InkWell(
+                                                (controller.activityLabStage == 5  && (controller.joRx.value.laboratoryFinishedDate == null || controller.joRx.value.laboratoryFinishedDate == "")) ? InkWell(
                                                     onTap: () {
                                                       controller.drawerDailyActivity5LabEdit();
                                                     },
@@ -915,7 +915,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                   ),
                                                 ),
                                                 const SizedBox(width: 8),
-                                                    (controller.activityLabStage == 6  && controller.joRx.value.laboratoryFinishedDate == "") ? InkWell(
+                                                    (controller.activityLabStage == 6  && (controller.joRx.value.laboratoryFinishedDate == null || controller.joRx.value.laboratoryFinishedDate == "")) ? InkWell(
                                                     onTap: () {
                                                       controller.drawerDailyActivity6Edit();
                                                     },
