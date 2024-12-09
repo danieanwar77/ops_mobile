@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Helper {
@@ -61,12 +62,49 @@ class Helper {
     }
   }
 
+  static Future<String> convertAttachmentToBase64(String path,String filename) async {
+    if (path.isEmpty) {
+      return '';
+    }
+
+    if(!pathLocalOrServer(path)){
+      return path;
+    }
+
+    try {
+      final file = File(path);
+      // Periksa apakah file ada
+      if (await file.exists()) {
+        // Baca file menjadi byte array
+        final fileBytes = await file.readAsBytes();
+        debugPrint("print file ${filename}");
+        if(filename.split(".").last == "pdf"){
+          return base64Encode(fileBytes);
+        }
+        return 'data:image/png;base64,'+base64Encode(fileBytes);
+
+      } else {
+        // Jika file tidak ditemukan, kembalikan string kosong
+        return '';
+      }
+    } catch (e) {
+      // Tangani error dengan mengembalikan string kosong
+      return '';
+    }
+  }
+
   static String baseUrl(){
     try{
       return 'https://tbi-ops-dev.intishaka.com';
     }catch(e){
       return '';
     }
+  }
+
+  static String generateUniqueCode() {
+    final now = DateTime.now();
+    final timestamp = "${now.year}${now.month}${now.day}${now.hour}${now.minute}${now.second}${now.millisecond}${now.microsecond}";
+    return timestamp;
   }
 
   static String pathFile(String? path){

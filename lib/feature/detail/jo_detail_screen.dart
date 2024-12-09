@@ -2712,10 +2712,7 @@ class JoDetailScreen extends StatelessWidget {
                                                               onTap: () {
                                                                 controller.previewImageAct6(index, attach.pathName!);
                                                               },
-                                                              child: Image.file(
-                                                                File(attach.pathName!),
-                                                                fit: BoxFit.cover,
-                                                              ),
+                                                              child: CustomImage(path: attach.pathName!),
                                                             ),
                                                           ),
                                                         )

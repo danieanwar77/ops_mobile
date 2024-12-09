@@ -544,7 +544,7 @@ THJo copyWith({  num? id,
         var copyAttachment = dataAttachment.map((item) => Map<String, dynamic>.from(item)).toList();
         for(int a = 0; a < copyAttachment.length; a++){
           var data = copyAttachment[a];
-          data['path_name'] = await Helper.convertPhotosToBase64(data['path_name'].toString());
+          data['path_name'] = await Helper.convertAttachmentToBase64(data['path_name'].toString(),data['file_name'].toString());
           //masukan data ke result
         }
         firstStage['listattachment'] = copyAttachment;
@@ -584,8 +584,9 @@ THJo copyWith({  num? id,
       var copyResult = joResult.map((item) => Map<String, dynamic>.from(item)).toList();
       firstStage['list_lab_activity'] = copyDataAct;
       var thJo = copyResult.isNotEmpty ? Map<String, dynamic>.from(copyResult.first) : null;
-      if(firstStage['m_statuslaboratoryprogress_id'] == 6){
-        var dataLabAttachment =  await db.rawQuery('select * from t_d_jo_laboratory_attachment where t_d_jo_laboratory = ? and is_upload = 0',[firstStage['d_jo_laboratory_id']]);
+      if(firstStage['m_statuslaboratoryprogres_id'] == 6){
+        var dataLabAttachment =  await db.rawQuery('select * from t_d_jo_laboratory_attachment where t_d_jo_laboratory_id = ? and is_upload = 0',[firstStage['d_jo_laboratory_id']]);
+        debugPrint("print data attachment ${dataLabAttachment}");
         var copyLabAttach = dataLabAttachment.map((item) => Map<String,dynamic>.from(item)).toList();
         firstStage['list_lab_attachment'] = copyLabAttach;
       }
@@ -616,8 +617,10 @@ THJo copyWith({  num? id,
       firstStage['list_lab_activity'] = copyDataAct;
       var thJo = copyResult.isNotEmpty ? Map<String, dynamic>.from(copyResult.first) : null;
       debugPrint("print data jo $thJo");
-      if(firstStage['m_statuslaboratoryprogress_id'] == 6){
-        var dataLabAttachment =  await db.rawQuery('select * from t_d_jo_laboratory_attachment where t_d_jo_laboratory = ? and is_upload = 0',[firstStage['d_jo_laboratory_id']]);
+      debugPrint("print data firstStage ${jsonEncode(firstStage)}");
+      if(firstStage['m_statuslaboratoryprogres_id'] == 6){
+        var dataLabAttachment =  await db.rawQuery('select * from t_d_jo_laboratory_attachment where t_d_jo_laboratory_id = ? and is_upload = 0',[firstStage['d_jo_laboratory_id']]);
+        debugPrint("print data attachment ${dataLabAttachment}");
         var copyLabAttach = dataLabAttachment.map((item) => Map<String,dynamic>.from(item)).toList();
         firstStage['list_lab_attachment'] = copyLabAttach;
       }

@@ -107,7 +107,7 @@ class GetDataController extends BaseController{
 
     } catch(e) {
       openDialog('Failed', 'Gagal ambil data', (){});
-      isLoading.value = true;
+      isLoading.value = false;
       update();
     }
   }

@@ -263,25 +263,24 @@ class HomeController extends BaseController{
 
   @pragma('vm:entry-point')
   static Future<void> onStartBG(ServiceInstance service) async {
-    Timer.periodic(const Duration(seconds: 90 ), (timer) async {
-      sendDataInpectionPhoto();
-      sendDataInspection();
-      sendDataLaboratory();
-      sendDataFinalizeLaboratory();
-      sendDataFinalizeInspection();
+    Timer.periodic(const Duration(seconds: 40 ), (timer) async {
+      // sendDataInpectionPhoto();
+      // sendDataInspection();
+      // sendDataLaboratory();
+      // sendDataFinalizeLaboratory();
+      // sendDataFinalizeInspection();
     });
   }
 
   static void sendDataInspection() async{
     THJo dataActivity = await THJo.getJoActivitySend();
     List<TDJoInspectionActivityStages> stages = dataActivity.inspectionActivityStages ?? [];
-    // for(int i = 0; i < stages.length; i++){
-    //   debugPrint("json encode stage ${jsonEncode(stages[i])}");
-    //   debugPrint("json encode activity ${jsonEncode(stages[i].listActivity)}");
-    //   debugPrint("json encode barge ${jsonEncode(stages[i].listActivityBarge)}");
-    //   debugPrint("json encode transhipment ${jsonEncode(stages[i].listActivityStageTranshipment)}");
-    //   debugPrint("json encode vessel ${jsonEncode(stages[i].listActivityVssessel)}");
-    // }
+    for(int i = 0; i < stages.length; i++){
+      debugPrint("json encode stage ${jsonEncode(stages[i])}");
+      debugPrint("json encode activity ${jsonEncode(stages[i].listActivity)}");
+      debugPrint("json encode barge ${jsonEncode(stages[i].listActivityBarge)}");
+      debugPrint("json encode transhipment ${jsonEncode(stages[i].listActivityStageTranshipment)}");
+    }
     //debugPrint('print data jo ${dataActivity.id.isNull}');
     bool connection = await Helper.checkConnection();
     if(!dataActivity.id.isNull && dataActivity.id != null && Helper.baseUrl().isNotEmpty && connection){
@@ -343,7 +342,7 @@ class HomeController extends BaseController{
         if(stages[s].mStatuslaboratoryprogresId == 6){
           List<TDJoLaboratoryAttachment> attachments = stages[s].listLabAttachment ?? [];
           for(int a = 0; a < attachments.length; a++){
-            attachments[a].pathName = await Helper.convertPhotosToBase64(attachments[a].pathName ?? '');
+            attachments[a].pathName = await Helper.convertAttachmentToBase64(attachments[a].pathName.toString(),attachments[a].fileName.toString());
           }
         }
       }

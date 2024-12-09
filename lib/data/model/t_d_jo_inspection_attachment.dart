@@ -56,7 +56,7 @@ class TDJoInspectionAttachment {
     _isActive = json['is_active'];
     _isUpload = json['is_upload'];
     _createdBy = json['created_by'];
-    _updatedBy = json['updated_by'];
+    _updatedBy = json['updated_by'] is String ? 0 : json['updated_by'];
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
   }
@@ -170,7 +170,7 @@ TDJoInspectionAttachment copyWith({
 
   static Future<int> updateUploaded(String code) async {
     final db = await SqlHelper.db();
-    return await db.update("t_d_jo_laboratory_attachment", {"is_upload": 1},where: "code=?",whereArgs: [code]);
+    return await db.update("t_d_jo_inspection_attachment", {"is_upload": 1},where: "code=?",whereArgs: [code]);
   }
 
 }

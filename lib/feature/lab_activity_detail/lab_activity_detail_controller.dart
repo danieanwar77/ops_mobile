@@ -360,7 +360,7 @@ class LabActivityDetailController extends BaseController{
                             transDate : stageHead['trans_date'],
                             remarks : stageHead['remarks'],
                             createdBy : stageHead['created_by'],
-                            updatedBy : stageHead['updated_by'],
+                            updatedBy : stageHead['updated_by'] is String ? stageHead['updated_by'] : stageHead['updated_by'].toString(),
                             createdAt : stageHead['created_at'],
                             updatedAt : stageHead['updated_at'],
                             //totalSampleReceived : stageHead['total_sample_received'],
@@ -734,7 +734,7 @@ class LabActivityDetailController extends BaseController{
         TDJoLaboratoryActivityStages dataStage = dataActStage[i].copyWith(
             createdBy: createdBy,
             isUpload: 0,
-            code: "JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${i}"
+            code: "JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${Helper.generateUniqueCode()}-${i}"
         );
         int result = await db.insert("t_d_jo_laboratory_activity_stages",dataStage.toInsert());
         List<TDJoLaboratoryActivity> actStage = dataStage.listLabActivity ?? [];
@@ -744,7 +744,7 @@ class LabActivityDetailController extends BaseController{
               tDJoLaboratoryId: dataStage.dJoLaboratoryId,
               createdBy: createdBy,
               isUpload: 0,
-              code: "JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${j}"
+              code: "JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${Helper.generateUniqueCode()}-${j}"
           );
           int rsltAct = await db.insert("t_d_jo_laboratory_activity",dataAct.toInsert());
         }
@@ -1392,7 +1392,7 @@ class LabActivityDetailController extends BaseController{
           TDJoLaboratoryActivityStages dataStage = dataActStage[i].copyWith(
               createdBy: createdBy,
               isUpload: 0,
-              code: "JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${i}"
+              code: "JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${Helper.generateUniqueCode()}-${i}"
           );
 
           int result = await db.insert("t_d_jo_laboratory_activity_stages",dataStage.toInsert());
@@ -1404,7 +1404,7 @@ class LabActivityDetailController extends BaseController{
                 tDJoLaboratoryId: dataStage.dJoLaboratoryId,
                 createdBy: createdBy,
                 isUpload: 0,
-                code: "JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${j}"
+                code: "JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${Helper.generateUniqueCode()}-${j}"
             );
             int rsltAct = await db.insert("t_d_jo_laboratory_activity", dataAct.toInsert());
           }
@@ -1430,7 +1430,7 @@ class LabActivityDetailController extends BaseController{
                   tDJoLaboratoryId: dataStage.dJoLaboratoryId,
                   createdBy: createdBy,
                   isUpload: 0,
-                  code: "JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${j}"
+                  code: "JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${Helper.generateUniqueCode()}-${j}"
               );
               int rsltAct = await db.insert("t_d_jo_laboratory_activity", dataAct.toInsert());
             }else{
@@ -2048,7 +2048,7 @@ class LabActivityDetailController extends BaseController{
       isUpload: 0,
       createdBy: userData.value?.id ?? 0,
       createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()).toString(),
-      code: 'JOLAS-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+      code: 'JOLAS-5-${createdBy}-${Helper.generateUniqueCode()}',
     );
     int result = await db.insert("t_d_jo_laboratory_activity_stages", data.toInsert());
     TDJoLaboratoryActivity detail =  TDJoLaboratoryActivity(
@@ -2059,7 +2059,7 @@ class LabActivityDetailController extends BaseController{
               activity: '-',
               isActive: 1,
               isUpload: 0,
-              code: 'JOLAS-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+              code: 'JOLAS-5-${createdBy}-${Helper.generateUniqueCode()}',
               createdBy: userData.value?.id ?? 0,
               createdAt: DateFormat('yyyy-MM-dd HH:mm:ss')
                   .format(DateTime.now())
@@ -2081,13 +2081,13 @@ class LabActivityDetailController extends BaseController{
       List<String> activityValues = [];
 
       activity5LabList.value.asMap().forEach((index,stage){
-        stageValues.add('''(${joLabId},${id},${activityLabStage == 0 ? 1 : activityLabStage},'${stage.transDate}','',${stage.totalSampleReceived},${stage.totalSampleAnalyzed},${stage.totalSamplePreparation},$createdBy,'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',1,0)''');
+        stageValues.add('''(${joLabId},${id},${activityLabStage == 0 ? 1 : activityLabStage},'${stage.transDate}','',${stage.totalSampleReceived},${stage.totalSampleAnalyzed},${stage.totalSamplePreparation},$createdBy,'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${Helper.generateUniqueCode()}',1,0)''');
         update();
         if(stage.listLabActivity!.isNotEmpty){
           var count = 0;
           stage.listLabActivity!.forEach((activity){
             count++;
-            activityValues.add('''((SELECT id FROM t_d_jo_laboratory_activity_stages WHERE trans_date = '${stage.transDate}' AND m_statuslaboratoryprogres_id = ${activityLabStage == 0 ? 1 : activityLabStage} LIMIT 1),${joLabId},'${activity.startActivityTime}','${activity.endActivityTime}','${activity.activity}','JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}$count',1,0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
+            activityValues.add('''((SELECT id FROM t_d_jo_laboratory_activity_stages WHERE trans_date = '${stage.transDate}' AND m_statuslaboratoryprogres_id = ${activityLabStage == 0 ? 1 : activityLabStage} LIMIT 1),${joLabId},'${activity.startActivityTime}','${activity.endActivityTime}','${activity.activity}','JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${Helper.generateUniqueCode()}$count',1,0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
             update();
           });
         }
@@ -2407,13 +2407,13 @@ class LabActivityDetailController extends BaseController{
       List<String> activityValues = [];
 
       activity5LabList.value.asMap().forEach((index,stage){
-        stageValues.add('''(${stage.id ?? null},${joLabId},${id},${activityLabStage == 0 ? 1 : activityLabStage},'${stage.transDate}','',${stage.totalSampleReceived},${stage.totalSampleAnalyzed},${stage.totalSamplePreparation},$createdBy,'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','${stage.code ?? 'JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}'}',${stage.isActive},0)''');
+        stageValues.add('''(${stage.id ?? null},${joLabId},${id},${activityLabStage == 0 ? 1 : activityLabStage},'${stage.transDate}','',${stage.totalSampleReceived},${stage.totalSampleAnalyzed},${stage.totalSamplePreparation},$createdBy,'${Helper.generateUniqueCode()}','${stage.code ?? 'JOLAS-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${Helper.generateUniqueCode()}'}',${stage.isActive},0)''');
         update();
         if(stage.listLabActivity!.isNotEmpty){
           var count = 0;
           stage.listLabActivity!.forEach((activity){
             count++;
-            activityValues.add('''(${activity.id ?? null},${activity.tDJoLaboratoryActivityStagesId ?? '''(SELECT id FROM t_d_jo_laboratory_activity_stages WHERE trans_date = '${stage.transDate}' AND m_statuslaboratoryprogres_id = ${activityLabStage == 0 ? 1 : activityLabStage} LIMIT 1)'''},${joLabId},'${activity.startActivityTime}','${activity.endActivityTime}','${activity.activity}','${activity.code ?? 'JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}$count'}',${activity.isActive == 1 ? 1 : 0},0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
+            activityValues.add('''(${activity.id ?? null},${activity.tDJoLaboratoryActivityStagesId ?? '''(SELECT id FROM t_d_jo_laboratory_activity_stages WHERE trans_date = '${stage.transDate}' AND m_statuslaboratoryprogres_id = ${activityLabStage == 0 ? 1 : activityLabStage} LIMIT 1)'''},${joLabId},'${activity.startActivityTime}','${activity.endActivityTime}','${activity.activity}','${activity.code ?? 'JOLA-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${Helper.generateUniqueCode()}$count'}',${activity.isActive == 1 ? 1 : 0},0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
             update();
           });
         }
@@ -3033,7 +3033,7 @@ class LabActivityDetailController extends BaseController{
       for(int i = 0; i < activity6List.length; i++) {
         debugPrint('print data activity ${jsonEncode(activity6List[i].toJson())}');
         TDJoLaboratoryActivityStages dataStage = TDJoLaboratoryActivityStages(
-          code: 'JOLAS-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+          code: 'JOLAS-5-${createdBy}-${Helper.generateUniqueCode()}${i}',
           dJoLaboratoryId: activity6List[i].dJoLaboratoryId,
           tHJoId: activity6List[i].tHJoId,
           mStatuslaboratoryprogresId: activity6List[i].mStatuslaboratoryprogresId,
@@ -3056,7 +3056,7 @@ class LabActivityDetailController extends BaseController{
               createdBy: createdBy,
               isActive: 1,
               isUpload: 0,
-              code: "JOLA-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${j}"
+              code: "JOLA-5-${createdBy}-${Helper.generateUniqueCode()}-${j}"
           );
           int rsltAct = await db.insert("t_d_jo_laboratory_activity", dataAct.toInsert());
         }
@@ -3064,7 +3064,7 @@ class LabActivityDetailController extends BaseController{
 
       for(int a=0; a < attachment.length; a++){
         TDJoLaboratoryAttachment attachmentData = attachment[a].copyWith(
-          code: "JOLA-A-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}"
+          code: "JOLA-A-${createdBy}-${Helper.generateUniqueCode()}"
         );
         int resultAttachment = await db.insert("t_d_jo_laboratory_attachment", attachmentData.toInsert());
         debugPrint('print data attachment ${attachmentData.toInsert()} id ${resultAttachment}');
@@ -3105,17 +3105,6 @@ class LabActivityDetailController extends BaseController{
       debugPrint('print data activity 6 ${jsonEncode(activity6List)}');
       var attachment =  activity6Attachments.value;
       debugPrint("print lab attahment ${attachment}");
-
-
-
-
-      // if(activity6Attachments.value.isNotEmpty){
-      //   var count = 0;
-      //   activity6Attachments.value.forEach((attachment){
-      //     count++;
-      //     attachmentValues.add('''(${joLabId},'${activityLabStage}','${attachment.pathName}','${attachment.fileName}','JOLAT-${activityLabStage == 0 ? 1 : activityLabStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}$count',1,0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
-      //   });
-      // }
 
       debugPrint("stage join: ${stageValues.join(',')}");
       debugPrint("activity join: ${activityValues.join(',')}");
@@ -4718,7 +4707,7 @@ class LabActivityDetailController extends BaseController{
         TDJoLaboratoryActivityStages labActStage = activity6List[i];
         if(labActStage.id == null){
           TDJoLaboratoryActivityStages dataStage = TDJoLaboratoryActivityStages(
-              code: 'JOLAS-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+              code: 'JOLAS-6-${createdBy}-${Helper.generateUniqueCode()}${i}',
               dJoLaboratoryId: activity6List[i].dJoLaboratoryId,
               tHJoId: activity6List[i].tHJoId,
               mStatuslaboratoryprogresId: activity6List[i].mStatuslaboratoryprogresId,
@@ -4741,7 +4730,7 @@ class LabActivityDetailController extends BaseController{
                 createdBy: createdBy,
                 isActive: 1,
                 isUpload: 0,
-                code: "JOLA-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${j}"
+                code: "JOLA-6-${createdBy}-${Helper.generateUniqueCode()}-${j}"
             );
             int rsltAct = await db.insert("t_d_jo_laboratory_activity", dataAct.toInsert());
           }
@@ -4769,7 +4758,7 @@ class LabActivityDetailController extends BaseController{
                 createdBy: createdBy,
                 isActive: 1,
                 isUpload: 0,
-                code: "JOLA-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${j}"
+                code: "JOLA-6-${createdBy}-${Helper.generateUniqueCode()}-${j}"
             );
             debugPrint('print data TDJoLaboratoryActivity  ${jsonEncode(dataAct.toJson())}');
             if(dataAct.id == null){
@@ -4787,7 +4776,7 @@ class LabActivityDetailController extends BaseController{
       await db.update("t_d_jo_laboratory_attachment",{"is_active": 0},whereArgs: [joLabId],where: "t_d_jo_laboratory_id=?");
       for(int a=0; a < attachment.length; a++){
         TDJoLaboratoryAttachment attachmentData = attachment[a].copyWith(
-            code: "JOLA-A-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+            code: "JOLA-A-${createdBy}-${Helper.generateUniqueCode()}",
           tDJoLaboratoryId: joLabId,
           isActive: 1,
           isUpload: 0,
@@ -4832,13 +4821,13 @@ class LabActivityDetailController extends BaseController{
       List<Map<String,dynamic>> attachmentValues = [];
 
       activity6List.value.asMap().forEach((index,stage){
-        stageValues.add('''(${stage.id ?? null},${joLabId},${id},${6},'${stage.transDate}','${activityLabListTextController.value[index].text}',${stage.id != null ? stage.createdBy : updatedBy}, ${stage.id != null ? updatedBy : 0}, ''${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}'', '${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','${stage.code ?? 'JOLAS-6-${updatedBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}'}',${stage.isActive},0)''');
+        stageValues.add('''(${stage.id ?? null},${joLabId},${id},${6},'${stage.transDate}','${activityLabListTextController.value[index].text}',${stage.id != null ? stage.createdBy : updatedBy}, ${stage.id != null ? updatedBy : 0}, ''${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}'', '${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','${stage.code ?? 'JOLAS-6-${updatedBy}-${Helper.generateUniqueCode()}'}',${stage.isActive},0)''');
         update();
         if(stage.listLabActivity!.isNotEmpty){
           var count = 0;
           stage.listLabActivity!.forEach((activity){
             count++;
-            activityValues.add('''(${activity.id ?? null},${activity.tDJoLaboratoryActivityStagesId ?? '''(SELECT id FROM t_d_jo_laboratory_activity_stages WHERE trans_date = '${stage.transDate}' AND m_statuslaboratoryprogres_id = 6 LIMIT 1)'''},${joLabId},'${activity.startActivityTime}','${activity.endActivityTime}','${activity.activity}','${activity.code ?? 'JOLA-6-${updatedBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}$count'}',${activity.isActive == 1 ? 1 : 0},${activity.id != null ? updatedBy : 0},${activity.id != null ? activity.createdBy : updatedBy}, ${activity.id != null ? updatedBy : 0},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','${activity.id != null ? DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()) : null}')''');
+            activityValues.add('''(${activity.id ?? null},${activity.tDJoLaboratoryActivityStagesId ?? '''(SELECT id FROM t_d_jo_laboratory_activity_stages WHERE trans_date = '${stage.transDate}' AND m_statuslaboratoryprogres_id = 6 LIMIT 1)'''},${joLabId},'${activity.startActivityTime}','${activity.endActivityTime}','${activity.activity}','${activity.code ?? 'JOLA-6-${updatedBy}-${Helper.generateUniqueCode()}$count'}',${activity.isActive == 1 ? 1 : 0},${activity.id != null ? updatedBy : 0},${activity.id != null ? activity.createdBy : updatedBy}, ${activity.id != null ? updatedBy : 0},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}','${activity.id != null ? DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()) : null}')''');
             update();
           });
         }
@@ -4848,7 +4837,6 @@ class LabActivityDetailController extends BaseController{
         var count = 0;
         activity6Attachments.value.forEach((attachment){
           count++;
-          //attachmentValues.add('''(${joLabId},'${activityLabStage}','${attachment.pathName}','${attachment.fileName}','JOLAT-${activityLabStage == 0 ? 1 : activityLabStage}-${updatedBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}$count',1,0,${updatedBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
         });
       }
 

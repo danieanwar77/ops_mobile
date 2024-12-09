@@ -658,7 +658,8 @@ class SendManualController extends BaseController{
 
   Future<bool> sendSingleData(SendManualV2 sendData) async{
     int type = sendData.type == null ? 0 : sendData!.type!.toInt();
-    bool connection = await Helper.checkConnection();
+    //bool connection = await Helper.checkConnection();
+    bool connection = true;
     if(!connection){
       //openDialog("Attenction", "Periksa koneksi ada");
       return false;
@@ -783,13 +784,15 @@ class SendManualController extends BaseController{
 
   Future<bool> sendInspectionActivity(SendManualV2 sendData) async{
     try{
-      debugPrint('print function sendDataInspection manual ');
       int id = sendData.idTrans ==  null ? 0 : sendData.idTrans!.toInt();
       THJo dataActivity = await THJo.getJoActivitySendById(id);
+      debugPrint("print data to ${jsonEncode(dataActivity.toJson())}");
       List<TDJoInspectionActivityStages> stages = dataActivity.inspectionActivityStages ?? [];
       for(int s = 0; s < stages.length; s++){
         TDJoInspectionActivityStages stage = stages[s];
-        debugPrint("debug print stage ${jsonEncode(stage)}");
+        debugPrint("print stage ${jsonEncode(stage.toJson())}");
+        debugPrint("print stage activitu ${jsonEncode(stage.listActivity)}");
+        debugPrint("print stage attachment  ${jsonEncode(stage.listAttachment)}");
       }
       bool connection = await Helper.checkConnection();
       debugPrint("print data activity yang dikirim ${jsonEncode(dataActivity.toSend())}");
@@ -810,6 +813,9 @@ class SendManualController extends BaseController{
             for(int s = 0; s < stageSend.length; s++){
               TDJoInspectionActivityStages dataStage = stageSend[s];
               await TDJoInspectionActivityStages.updateUploaded(dataStage.code ?? '');
+              // debugPrint("print data actiivty ${jsonEncode(dataStage.listAttachment)}");
+              // debugPrint("print data actiivty attachment ${jsonEncode(dataStage.listAttachment)}");
+
               if(dataStage.listActivity != null){
                 List<TDJoInspectionActivity> dataActs = dataStage.listActivity ?? [];
                 for(int a= 0; a < dataActs.length; a++){
@@ -895,15 +901,18 @@ class SendManualController extends BaseController{
         int id = sendData.idTrans ==  null ? 0 : sendData.idTrans!.toInt();
         debugPrint("print data laboratory stage ${jsonEncode(sendData)}");
         THJo dataActivity = await THJo.getJoLaboratorySendById(id);
-        debugPrint("print data laboratory stage ${jsonEncode(dataActivity)}");
+        debugPrint("print data laboratory stage ${jsonEncode(dataActivity.toJson())}");
         List<TDJoLaboratory> laboratories = dataActivity.laboratory ?? [];
         for(int i = 0; i < laboratories.length; i++){
+          debugPrint("print data laboratory item ${jsonEncode(laboratories[i])}");
           List<TDJoLaboratoryActivityStages> stages = laboratories[i].laboratoryActivityStages ?? [];
           for(int s = 0; s < stages.length; s++){
+            debugPrint("print data laboratory stages ${jsonEncode(stages[s])}");
             if(stages[s].mStatuslaboratoryprogresId == 6){
               List<TDJoLaboratoryAttachment> attachments = stages[s].listLabAttachment ?? [];
               for(int a = 0; a < attachments.length; a++){
-                attachments[a].pathName = await Helper.convertPhotosToBase64(attachments[a].pathName ?? '');
+                attachments[a].pathName = await Helper.convertAttachmentToBase64(attachments[a].pathName.toString(),attachments[a].fileName.toString());
+                debugPrint("print data attachment ${jsonEncode(attachments[a])}");
               }
             }
           }

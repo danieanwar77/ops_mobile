@@ -16,7 +16,6 @@ import 'package:ops_mobile/base/component/custom_image.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/core/core/constant/app_constant.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
-import 'package:ops_mobile/data/Datatabase2.dart';
 import 'package:ops_mobile/data/model/etta_vessel.dart';
 import 'package:ops_mobile/data/model/jo_daily_photo.dart';
 import 'package:ops_mobile/data/model/jo_detail_model.dart';
@@ -666,10 +665,6 @@ class JoDetailController extends BaseController {
 
     debugPrint('activity stage 6 attachmentnya: ${jsonEncode(result)}');
 
-    // dailyActivityPhotos.value = [];
-    // dailyActivityPhotosDesc.value = [];
-    // dailyActivityPhotosDescText.value = [];
-    // dailyActivityPhotosV2.value = [];
     var attachments = result.map((json) {
       return TDJoInspectionAttachment.fromJson(json);
     }).toList();
@@ -1804,7 +1799,7 @@ class JoDetailController extends BaseController {
         tHJoId: id,
         mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
         transDate: stage.transDate,
-        code: "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+        code: "JOIAST-${stage.mStatusinspectionstagesId}-${Helper.generateUniqueCode()}${index}",
         isUpload: "0",
         isActive: "1",
         createdBy: userData.value!.id,
@@ -1814,14 +1809,16 @@ class JoDetailController extends BaseController {
       int result = await db.insert("t_d_jo_inspection_activity_stages", data.toInsert());
       //dapatkan id yang baru insert
       List<TDJoInspectionActivity> details = stage.listActivity ?? [];
+      var indexAct = 0;
       details.forEach((activity) async {
+        indexAct = indexAct+1;
         TDJoInspectionActivity detail = TDJoInspectionActivity(
             tHJoId: id,
             tDJoInspectionActivityStagesId: result,
             startActivityTime: activity.startActivityTime,
             endActivityTime: activity.endActivityTime,
             activity: activity.activity,
-            code: 'JOIAS-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+            code: 'JOIAS-${stage.mStatusinspectionstagesId}-$createdBy-${DateFormat('yyyyMMddHms').format(DateTime.now())}${indexAct}',
             isActive: 1,
             isUpload: 0,
             createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
@@ -1876,7 +1873,9 @@ class JoDetailController extends BaseController {
             whereArgs: [stage.id],
           );
           List<TDJoInspectionActivity> listActivity = stage.listActivity ?? [];
+          var indexAct = 0;
           listActivity.forEach((activity) async {
+            indexAct = indexAct + 1;
             if (activity.code != null) {
               //Update
               TDJoInspectionActivity detail = TDJoInspectionActivity(
@@ -1905,7 +1904,7 @@ class JoDetailController extends BaseController {
                   startActivityTime: activity.startActivityTime,
                   endActivityTime: activity.endActivityTime,
                   activity: activity.activity,
-                  code: 'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+                  code: 'JOIA-${stage.mStatusinspectionstagesId}-$createdBy-${DateFormat('yyyyMMddHms').format(DateTime.now())}${indexAct}',
                   isActive: 1,
                   isUpload: 0,
                   createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
@@ -1919,7 +1918,7 @@ class JoDetailController extends BaseController {
             tHJoId: id,
             mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
             transDate: stage.transDate,
-            code: "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+            code: "JOIAST-${stage.mStatusinspectionstagesId}-${Helper.generateUniqueCode()}${index}",
             isUpload: "0",
             isActive: "1",
             createdBy: userData.value!.id,
@@ -1928,14 +1927,16 @@ class JoDetailController extends BaseController {
           );
           int result = await db.insert("t_d_jo_inspection_activity_stages", data.toInsert());
           List<TDJoInspectionActivity> details = stage.listActivity ?? [];
+          var indexAct = 0;
           details.forEach((activity) async {
+            indexAct = indexAct+1;
             TDJoInspectionActivity detail = TDJoInspectionActivity(
                 tHJoId: id,
                 tDJoInspectionActivityStagesId: result,
                 startActivityTime: activity.startActivityTime,
                 endActivityTime: activity.endActivityTime,
                 activity: activity.activity,
-                code: 'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+                code: 'JOIA-${stage.mStatusinspectionstagesId}-$createdBy-${DateFormat('yyyyMMddHms').format(DateTime.now())}${indexAct}',
                 isActive: 1,
                 isUpload: 0,
                 createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
@@ -2079,13 +2080,15 @@ class JoDetailController extends BaseController {
     try {
       final db = await SqlHelper.db();
       final createdBy = userData.value!.id;
+      var index = 0;
       for (var item in activity5List.value) {
+        index = index+1;
         debugPrint("form item ${item.toJson()}");
         TDJoInspectionActivityStages data = TDJoInspectionActivityStages(
             tHJoId: item.tHJoId,
             mStatusinspectionstagesId: item.mStatusinspectionstagesId,
             transDate: item.transDate,
-            code: "JOIAST-${item.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+            code: "JOIAST-${item.mStatusinspectionstagesId}-${Helper.generateUniqueCode()}${index}",
             isUpload: "0",
             isActive: "1",
             createdBy: userData.value!.id,
@@ -2096,7 +2099,7 @@ class JoDetailController extends BaseController {
         TDJoInspectionActivity detail = TDJoInspectionActivity(
             tHJoId: item.tHJoId,
             tDJoInspectionActivityStagesId: rawStage,
-            code: 'JOIA-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+            code: 'JOIA-5-${Helper.generateUniqueCode()}${index}',
             startActivityTime: DateFormat('HH:mm').format(DateTime.now()),
             isActive: 1,
             isUpload: 0,
@@ -2109,7 +2112,7 @@ class JoDetailController extends BaseController {
           tHJoId: item.tHJoId,
           tDJoInspectionActivityStagesId: rawStage,
           vessel: item.vessel,
-          code: "JOIAV-${item.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+          code: "JOIAV-${item.mStatusinspectionstagesId}-${Helper.generateUniqueCode()}${index}",
           isUpload: 0,
           isActive: 1,
           createdBy: createdBy,
@@ -2127,7 +2130,7 @@ class JoDetailController extends BaseController {
               tHJoId: item.tHJoId,
               tDJoInspectionActivityStagesId: rawStage,
               barge: barge.barge,
-              code: "JOIAB-${item.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${bargeCount}",
+              code: "JOIAB-${item.mStatusinspectionstagesId}-${Helper.generateUniqueCode()}-${bargeCount}",
               isUpload: 0,
               isActive: 1,
               createdBy: createdBy,
@@ -2150,7 +2153,7 @@ class JoDetailController extends BaseController {
               finalDate: finalDateActivity5ListTextController.value[transhipmentCount].text,
               jetty: transhipment.jetty,
               deliveryQty: double.parse(transhipment!.deliveryQty!.toString()),
-              code: "JOIAT-${item.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${transhipmentCount}",
+              code: "JOIAT-${item.mStatusinspectionstagesId}-${Helper.generateUniqueCode()}-${transhipmentCount}",
               isUpload: 0,
               isActive: 1,
               createdBy: createdBy,
@@ -2730,7 +2733,6 @@ class JoDetailController extends BaseController {
           tHJoId: item.tHJoId,
           mStatusinspectionstagesId: item.mStatusinspectionstagesId,
           transDate: item.transDate,
-          // code: "JOIAST-${item.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
           isUpload: "0",
           isActive: "1",
           updatedBy: createdBy.toString(),
@@ -2748,7 +2750,6 @@ class JoDetailController extends BaseController {
       TDJoInspectionActivity detail = TDJoInspectionActivity(
         tHJoId: item.tHJoId,
         //tDJoInspectionActivityStagesId: updated,
-        // code: 'JOIA-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
         isActive: 1,
         isUpload: 0,
         activity: '-',
@@ -2762,7 +2763,7 @@ class JoDetailController extends BaseController {
         tHJoId: item.tHJoId,
         tDJoInspectionActivityStagesId: updated,
         vessel: item.vessel,
-        code: "JOIAV-${item.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+        code: "JOIAV-${item.mStatusinspectionstagesId}-${Helper.generateUniqueCode()}",
         isUpload: 0,
         isActive: 1,
         createdBy: createdBy,
@@ -2778,7 +2779,7 @@ class JoDetailController extends BaseController {
           tHJoId: item.tHJoId,
           tDJoInspectionActivityStagesId: idJoActStage,
           barge: barge.barge,
-          code: "JOIAB-${item.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+          code: "JOIAB-${item.mStatusinspectionstagesId}-${Helper.generateUniqueCode()}",
           isUpload: 0,
           isActive: 1,
           createdBy: createdBy,
@@ -2800,7 +2801,7 @@ class JoDetailController extends BaseController {
             finalDate: finalDateActivity5ListTextController.value[transhipmentCount].text,
             jetty: transhipment.jetty,
             deliveryQty: double.parse(transhipment!.deliveryQty!.toString()),
-            code: "JOIAT-5-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${transhipmentCount}",
+            code: "JOIAT-5-${Helper.generateUniqueCode()}-${transhipmentCount}",
             isUpload: 0,
             isActive: 1,
             createdBy: createdBy,
@@ -3235,16 +3236,9 @@ class JoDetailController extends BaseController {
                                                       height: 63,
                                                       child: InkWell(
                                                         onTap: () {
-                                                          // controller
-                                                          //     .previewImageAct6(
-                                                          //         index,
-                                                          //         photo.pathName!);
                                                           mediaPickerEditConfirm(index);
                                                         },
-                                                        child: Image.file(
-                                                          File(photo.pathName!),
-                                                          fit: BoxFit.cover,
-                                                        ),
+                                                        child: CustomImage(path: photo.pathName!),
                                                       ),
                                                     ),
                                                     SizedBox(
@@ -3503,7 +3497,7 @@ class JoDetailController extends BaseController {
           tHJoId: id,
           mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
           transDate: stage.transDate,
-          code: "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+          code: "JOIAST-${stage.mStatusinspectionstagesId}-${Helper.generateUniqueCode()}${index}",
           isUpload: "0",
           isActive: "1",
           createdBy: userData.value!.id,
@@ -3514,14 +3508,16 @@ class JoDetailController extends BaseController {
         stageId = result;
         //dapatkan id yang baru insert
         List<TDJoInspectionActivity> details = stage.listActivity ?? [];
+        var indexAct = 0;
         details.forEach((activity) async {
+          indexAct = indexAct+1;
           TDJoInspectionActivity detail = TDJoInspectionActivity(
               tHJoId: id,
               tDJoInspectionActivityStagesId: result,
               startActivityTime: activity.startActivityTime,
               endActivityTime: activity.endActivityTime,
               activity: activity.activity,
-              code: 'JOIAS-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+              code: 'JOIAS-${stage.mStatusinspectionstagesId}-${Helper.generateUniqueCode()}${indexAct}',
               isActive: 1,
               isUpload: 0,
               createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
@@ -3542,7 +3538,7 @@ class JoDetailController extends BaseController {
             tDJoInspectionActivityStagesId: stageId,
             fileName: filename,
             pathName: file.pathName,
-            code: 'JOIAF-${activityStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${attachmentCount}',
+            code: 'JOIAF-${activityStage}-${Helper.generateUniqueCode()}-${attachmentCount}',
             isActive: 1,
             isUpload: 0,
             createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
@@ -5814,26 +5810,6 @@ class JoDetailController extends BaseController {
   void removeActivity6Files(int index) {
     activity6Attachments.value.removeAt(index);
     update();
-
-    // var file = activity6Attachments.value[index];
-    // if(file.id != null){
-    //   activity6Attachments.value[index] = TDJoInspectionAttachment(
-    //     id: file.id ?? null,
-    //     tHJoId: file.tHJoId,
-    //     pathName: file.pathName,
-    //     fileName: file.fileName,
-    //     isActive: 0,
-    //     isUpload: 0,
-    //     createdBy: file.createdBy,
-    //     updatedBy: userData.value?.id ?? 0,
-    //     createdAt: file.createdAt,
-    //     updatedAt: DateFormat('yyyy-MM-dd hh:mm:ss').format(
-    //         DateTime.now()).toString(),
-    //   );
-    //   update();
-    // } else {
-    //   activity6Attachments.value.removeAt(index);
-    // }
   }
 
   void removeActivity6FilesConfirm(int index) {
@@ -5953,7 +5929,7 @@ class JoDetailController extends BaseController {
     //openDialog('Success', 'Berhasil menambahkan file.');
   }
 
-  void fileActivity6Update(int index) async {
+  Future<void> fileActivity6Update(int index) async {
     var total = 0;
     activity6Attachments.value.forEach((item) async {
       final fileBytes = await File(item.pathName!).readAsBytes();
@@ -6009,15 +5985,6 @@ class JoDetailController extends BaseController {
               'Attachment ${index + 1}',
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
             ),
-            // InkWell(
-            //   onTap: () {
-            //     removeActivity6Files(index);
-            //   },
-            //   child: Icon(
-            //     Icons.delete_forever,
-            //     color: Colors.red,
-            //   ),
-            // ),
             const Spacer(),
             IconButton(
               onPressed: () {
@@ -6031,10 +5998,7 @@ class JoDetailController extends BaseController {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.file(
-                File(photo),
-                fit: BoxFit.cover,
-              ),
+              CustomImage(path: photo),
             ],
           ),
         ),
@@ -6138,9 +6102,9 @@ class JoDetailController extends BaseController {
                     width: 68,
                     height: 68,
                     child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           Get.back();
-                          fileActivity6Update(index);
+                          await fileActivity6Update(index);
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white, shape: RoundedRectangleBorder(side: const BorderSide(color: primaryColor), borderRadius: BorderRadius.circular(12))),
@@ -6562,16 +6526,9 @@ class JoDetailController extends BaseController {
                                                       height: 63,
                                                       child: InkWell(
                                                         onTap: () {
-                                                          // controller
-                                                          //     .previewImageAct6(
-                                                          //         index,
-                                                          //         photo.pathName!);
                                                           mediaPickerEditConfirm(index);
                                                         },
-                                                        child: Image.file(
-                                                          File(photo.pathName!),
-                                                          fit: BoxFit.none,
-                                                        ),
+                                                        child: CustomImage(path: photo.pathName!),
                                                       ),
                                                     ),
                                                     SizedBox(
@@ -6597,8 +6554,6 @@ class JoDetailController extends BaseController {
                                                       children: [
                                                         InkWell(
                                                           onTap: () {
-                                                            // OpenFilex.open(
-                                                            //     photo.pathName!);
                                                             mediaPickerEditConfirm(index);
                                                           },
                                                           child: Container(
@@ -6722,17 +6677,13 @@ class JoDetailController extends BaseController {
       // update table t_d_jo_inspection_activity_stages set is_active =0 berdasarkan thjoid dan transdate dan mStatusinspectionstagesId
       int result = await db.update(
         't_d_jo_inspection_activity_stages',
-        {'is_active': 0}, // The new value for the is_active field
+        {'is_active': 0,'is_upload': 0}, // The new value for the is_active field
         where: 't_h_jo_id = ?  AND m_statusinspectionstages_id = ?',
         whereArgs: [id, activityStage],
       );
 
       //debugPrint("data input edit deactive ${result} ${id} ${statusId}");
       debugPrint("data input edit remarks ${activityListTextController.value}");
-
-      stages.asMap().forEach((index, stage) async {
-
-      });
       for(int index = 0; index < stages.length; index++){
         TDJoInspectionActivityStages stage = stages[index];
         debugPrint("data input edit ${jsonEncode(stage.toJson())}");
@@ -6744,8 +6695,7 @@ class JoDetailController extends BaseController {
               updatedAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
               remarks: activityListTextController.value[index].text);
 
-          int updated = await db.update(
-            't_d_jo_inspection_activity_stages',
+          int updated = await db.update('t_d_jo_inspection_activity_stages',
             data.toEdit(),
             where: 'id = ? ',
             whereArgs: [stage.id],
@@ -6759,7 +6709,9 @@ class JoDetailController extends BaseController {
             whereArgs: [stage.id],
           );
           List<TDJoInspectionActivity> listActivity = stage.listActivity ?? [];
+          var indexAct = 0;
           listActivity.forEach((activity) async {
+            indexAct = indexAct + 1;
             if (activity.code != null) {
               //Update
               TDJoInspectionActivity detail = TDJoInspectionActivity(
@@ -6788,7 +6740,7 @@ class JoDetailController extends BaseController {
                   startActivityTime: activity.startActivityTime,
                   endActivityTime: activity.endActivityTime,
                   activity: activity.activity,
-                  code: 'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+                  code: 'JOIA-${stage.mStatusinspectionstagesId}-$createdBy-${DateFormat('yyyyMMddHms').format(DateTime.now())}${indexAct}',
                   isActive: 1,
                   isUpload: 0,
                   createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
@@ -6802,7 +6754,7 @@ class JoDetailController extends BaseController {
             tHJoId: id,
             mStatusinspectionstagesId: stage.mStatusinspectionstagesId,
             transDate: stage.transDate,
-            code: "JOIAST-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}",
+            code: "JOIAST-${stage.mStatusinspectionstagesId}-${Helper.generateUniqueCode()}${index}",
             isUpload: "0",
             isActive: "1",
             createdBy: userData.value!.id,
@@ -6811,14 +6763,16 @@ class JoDetailController extends BaseController {
           );
           int result = await db.insert("t_d_jo_inspection_activity_stages", data.toInsert());
           List<TDJoInspectionActivity> details = stage.listActivity ?? [];
+          var indexAct = 0;
           details.forEach((activity) async {
+            indexAct = indexAct + 1;
             TDJoInspectionActivity detail = TDJoInspectionActivity(
                 tHJoId: id,
                 tDJoInspectionActivityStagesId: result,
                 startActivityTime: activity.startActivityTime,
                 endActivityTime: activity.endActivityTime,
                 activity: activity.activity,
-                code: 'JOIA-${stage.mStatusinspectionstagesId}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}',
+                code: 'JOIA-${stage.mStatusinspectionstagesId}-${Helper.generateUniqueCode()}${indexAct}',
                 isActive: 1,
                 isUpload: 0,
                 createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
@@ -6856,7 +6810,7 @@ class JoDetailController extends BaseController {
               tDJoInspectionActivityStagesId: stages.first.id,
               fileName: filename,
               pathName: file.pathName,
-              code: 'JOIAF-${activityStage}-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-${attachmentCount}',
+              code: 'JOIAF-${activityStage}-${Helper.generateUniqueCode()}-${attachmentCount}',
               isActive: 1,
               isUpload: 0,
               createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
@@ -6864,30 +6818,6 @@ class JoDetailController extends BaseController {
           await db.insert('t_d_jo_inspection_attachment', attach.toJson());
         }
       }
-
-      //  if(activity6Attachments.value.isNotEmpty){
-      //       var count = 0;
-      //       activity6Attachments.value.forEach((attachment){
-      //         count++;
-      //         attachmentValues.add({
-      //         'id': attachment.id ?? null,
-      //         't_h_jo_id' : id,
-      //         't_d_jo_inspection_activity_stages_id' : null,
-      //         'path_name' : attachment.pathName,
-      //         'file_name' : attachment.fileName,
-      //         'code' : attachment.code ?? 'JOIAF-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$count',
-      //         'is_active' : attachment.isActive,
-      //         'is_upload' : attachment.isUpload,
-      //         'created_by' : attachment.createdBy,
-      //         'updated_by' : attachment.id == null ? null : createdBy,
-      //         'created_at' : attachment.createdAt,
-      //         'updated_at' : attachment.id == null ? null : DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now()).toString(),
-      //         });
-      //         // attachmentValues.add('''($id,'${attachment.pathName}','${attachment.fileName}','JOIAF-6-${createdBy}-${DateFormat('yyyyMMddHms').format(DateTime.now())}-$count',1,0,${createdBy},'${DateFormat('yyyy-MM-dd H:m:s').format(DateTime.now())}')''');
-      //         // update();
-      //       });
-      //     }
-
       stageListModal.value = [];
       activityListTextController.value = [];
       return true;

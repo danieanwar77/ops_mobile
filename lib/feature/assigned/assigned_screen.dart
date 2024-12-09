@@ -90,6 +90,8 @@ class AssignedScreen extends StatelessWidget{
                                   'id': controller.dataJoList.value[index].joId,
                                   'status': controller.dataJoList.value[index]
                                       .mStatusjoId
+                                })?.then((_) async{
+                                  await controller.getJoListLocal();
                                 });
                               } else {
                                 Get.to<void>(JoWaitingScreen.new, arguments: {

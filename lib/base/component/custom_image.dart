@@ -28,7 +28,7 @@ class CustomImage extends StatelessWidget {
     }else{
       debugPrint('print path server ${path}');
       return Image.network(
-        "${Helper.baseUrl()}/$path",
+        "${Helper.pathFile(path)}",
         fit: BoxFit.cover,
         errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace){
           return const Icon(
