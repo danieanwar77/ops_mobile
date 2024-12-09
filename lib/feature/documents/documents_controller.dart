@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:external_path/external_path.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -122,7 +123,14 @@ class DocumentsController extends BaseController {
       if (pic != null) {
         final imageTemp = File(pic!.path);
         image = imageTemp;
-        documentAttachments.add(image.path);
+        final fileName = imageTemp.path.split('/').last;
+        final dir = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
+        bool exists = await Directory('$dir/ops/files/').exists();
+        if(exists == false){
+          Directory('$dir/ops/files/').create();
+        }
+        imageTemp.rename('$dir/ops/files/$fileName');
+        documentAttachments.add(imageTemp.path);
         update();
       }
     } on PlatformException catch (e) {
@@ -143,11 +151,19 @@ class DocumentsController extends BaseController {
         xFiles.forEach((data) async {
           final fileTemp = File(data!.path);
           final File file = fileTemp;
+          final fileName = file.path.split('/').last;
           final fileBytes = await File(data!.path).readAsBytes();
           debugPrint('size filenya: ${fileBytes.lengthInBytes}');
           if(fileBytes.lengthInBytes > 2000000){
             openDialog("Attention", 'File lebih dari 2 MB!');
           } else {
+            final dir = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
+            bool exists = await Directory('$dir/ops/files/').exists();
+            if(exists == false){
+              Directory('$dir/ops/files/').create();
+            }
+            file.rename('$dir/ops/files/$fileName');
+            debugPrint("print data file attachment ${file.path}");
             documentAttachments.add(file.path);
             update();
           }
@@ -172,15 +188,22 @@ class DocumentsController extends BaseController {
         xFiles.forEach((data) async {
           final fileTemp = File(data!.path);
           final File file = fileTemp;
+          final fileName = file.path.split('/').last;
           final fileBytes = await File(data!.path).readAsBytes();
           debugPrint('size filenya: ${fileBytes.lengthInBytes}');
           if(fileBytes.lengthInBytes > 2000000){
             openDialog("Attention", 'File lebih dari 2 MB!');
           } else {
-            documentAttachments.value[0] = file.path;
+            final dir = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
+            bool exists = await Directory('$dir/ops/files/').exists();
+            if(exists == false){
+              Directory('$dir/ops/files/').create(recursive: true);
+            }
+            final File fileOps = await File(file!.path).copy('$dir/ops/files/$fileName');
+            debugPrint("print data attachment ${fileOps.path}");
+            documentAttachments.value[0] = fileOps.path;
             update();
           }
-
         });
         //openDialog('Success', 'Berhasil menambahkan file.');
       }
@@ -199,71 +222,6 @@ class DocumentsController extends BaseController {
     }
     return 'unsupported';
   }
-
-  // void mediaPickerConfirm() {
-  //   Get.dialog(
-  //     AlertDialog(
-  //       title: Text(
-  //         'File Attachment',
-  //         style: TextStyle(
-  //             fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
-  //       ),
-  //       content: Text('Pilih sumber file yang ingin dilampirkan.'),
-  //       actions: [
-  //         Row(
-  //           children: [
-  //             Expanded(
-  //               child: Center(
-  //                 child: SizedBox(
-  //                   width: 68,
-  //                   height: 67,
-  //                   child: ElevatedButton(
-  //                       onPressed: () {
-  //                         Get.back();
-  //                         cameraImageDocument();
-  //                       },
-  //                       style: ElevatedButton.styleFrom(
-  //                           backgroundColor: Colors.white,
-  //                           shape: RoundedRectangleBorder(
-  //                               side: BorderSide(color: primaryColor),
-  //                               borderRadius: BorderRadius.circular(12))),
-  //                       child: Center(
-  //                           child: Icon(
-  //                         Icons.camera_alt,
-  //                         color: primaryColor,
-  //                       ))),
-  //                 ),
-  //               ),
-  //             ),
-  //             Expanded(
-  //               child: Center(
-  //                 child: SizedBox(
-  //                   width: 68,
-  //                   height: 68,
-  //                   child: ElevatedButton(
-  //                       onPressed: () {
-  //                         Get.back();
-  //                         fileDocument();
-  //                       },
-  //                       style: ElevatedButton.styleFrom(
-  //                           backgroundColor: Colors.white,
-  //                           shape: RoundedRectangleBorder(
-  //                               side: BorderSide(color: primaryColor),
-  //                               borderRadius: BorderRadius.circular(12))),
-  //                       child: Center(
-  //                           child: Icon(
-  //                         Icons.folder_rounded,
-  //                         color: primaryColor,
-  //                       ))),
-  //                 ),
-  //               ),
-  //             ),
-  //           ],
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
 
   void drawerAddDocument(String type) {
     documentAttachments.value = [];
@@ -1406,7 +1364,7 @@ class DocumentsController extends BaseController {
           noBlankoCertificate: document['certBlanko'],
           lhvNumber: document['certLhv'],
           lsNumber: document['certLs'],
-          code: "JDOI-${employeeId}-${DateTime.now().millisecondsSinceEpoch.toString()}",
+          code: "JDOI-${employeeId}-${DateTime.now().millisecondsSinceEpoch.toString()}-${index}",
           isActive: 1,
           isUpload: 0,
           createdBy: employeeId,
@@ -1429,20 +1387,14 @@ class DocumentsController extends BaseController {
             't_d_jo_finalize_inspection_id' : result,
             'path_file': documentsAttachments.value[index],
             'file_name': fileName,
-            'code': "JDOIA-${employeeId}-${DateTime
-                .now()
-                .millisecondsSinceEpoch
-                .toString()}",
+            'code': "JDOIA-${employeeId}-${DateTime.now().millisecondsSinceEpoch.toString()}-${index}",
             'is_active': 1,
             'is_upload': 0,
             'created_by': employeeId,
             'created_at': DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString(),
           };
 
-          await db.insert(
-              't_d_jo_document_inspection',  // Nama tabel
-              attachment
-          );
+          await db.insert('t_d_jo_document_inspection',attachment);
         }
       } else {
         tdJoDocumentLab = TDJoFinalizeLaboratory(
@@ -1453,10 +1405,7 @@ class DocumentsController extends BaseController {
             lhvNumber: document['certLhv'],
             lsNumber: document['certLs'],
             pathPdf: '-',
-            code: "JDOL-${employeeId}-${DateTime
-                .now()
-                .millisecondsSinceEpoch
-                .toString()}",
+            code: "JDOL-${employeeId}-${DateTime.now().millisecondsSinceEpoch.toString()}-${index}",
             isActive: 1,
             isUpload: 0,
             createdBy: employeeId,
@@ -1479,20 +1428,14 @@ class DocumentsController extends BaseController {
             't_d_jo_finalize_laboratory_id' : result,
             'path_file': documentsAttachments.value[index],
             'file_name': fileName,
-            'code': "JDOLA-${employeeId}-${DateTime
-                .now()
-                .millisecondsSinceEpoch
-                .toString()}",
+            'code': "JDOLA-${employeeId}-${DateTime.now().millisecondsSinceEpoch.toString()}-${index}",
             'is_active': 1,
             'is_upload': 0,
             'created_by': employeeId,
             'created_at': DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString(),
           };
 
-          await db.insert(
-              't_d_jo_document_laboratory',  // Nama tabel
-              attachment
-          );
+          await db.insert('t_d_jo_document_laboratory',attachment);
         }
       }
 

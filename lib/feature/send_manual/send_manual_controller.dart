@@ -660,7 +660,7 @@ class SendManualController extends BaseController{
     int type = sendData.type == null ? 0 : sendData!.type!.toInt();
     bool connection = await Helper.checkConnection();
     if(!connection){
-      openDialog("Attenction", "Periksa koneksi ada");
+      //openDialog("Attenction", "Periksa koneksi ada");
       return false;
     }else{
       switch(type){
@@ -792,6 +792,7 @@ class SendManualController extends BaseController{
         debugPrint("debug print stage ${jsonEncode(stage)}");
       }
       bool connection = await Helper.checkConnection();
+      debugPrint("print data activity yang dikirim ${jsonEncode(dataActivity.toSend())}");
       if(!dataActivity.id.isNull && dataActivity.id != null && Helper.baseUrl().isNotEmpty){
         final response = await http.post(
             Uri.parse('${Helper.baseUrl()}/api/v1/inspection/activity'),

@@ -1385,7 +1385,7 @@ class LabActivityDetailController extends BaseController{
 
       List<TDJoLaboratoryActivityStages> copiedList = List.from(activityLabList.value);
       List<TDJoLaboratoryActivityStages> dataActStage = copiedList.where((data) => data.mStatuslaboratoryprogresId == activityLabStage).toList();
-      await db.update("t_d_jo_laboratory_activity_stages",{"is_active" : 0},where: "d_jo_laboratory_id = ? and m_statuslaboratoryprogres_id=?", whereArgs: [joLabId,activityLabStage]);
+      await db.update("t_d_jo_laboratory_activity_stages",{"is_active" : 0,'is_upload': 0},where: "d_jo_laboratory_id = ? and m_statuslaboratoryprogres_id=?", whereArgs: [joLabId,activityLabStage]);
       for(int i = 0; i < dataActStage.length; i++){
         TDJoLaboratoryActivityStages dataStage = dataActStage[i];
         if(dataStage.id == null){
@@ -1420,7 +1420,7 @@ class LabActivityDetailController extends BaseController{
           //update t_d_jo_laboratory_activity_stages menjadi is_active  = 0 berdasarkan tDJoLaboratoryActivityStagesId
 
           await db.update("t_d_jo_laboratory_activity_stages",dataStage.toEdit(),where: "id=?",whereArgs: [dataStage.id]);
-          await db.update("t_d_jo_laboratory_activity",{"is_active" : 0},where: "t_d_jo_laboratory_activity_stages_id = ?", whereArgs: [dataStage.id]);
+          await db.update("t_d_jo_laboratory_activity",{"is_active" : 0,'is_upload': 0},where: "t_d_jo_laboratory_activity_stages_id = ?", whereArgs: [dataStage.id]);
           List<TDJoLaboratoryActivity> actStage = dataStage.listLabActivity ?? [];
           for(int j = 0; j < actStage.length; j++) {
             debugPrint("data print actiivty stage ${jsonEncode(actStage[j])}");

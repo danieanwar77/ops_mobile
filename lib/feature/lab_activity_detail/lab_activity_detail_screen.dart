@@ -161,7 +161,7 @@ class LabActivityDetailScreen extends StatelessWidget{
                                                 child: Text(controller.activityLabListStages.value.length == 0 ? "None" : controller.labStagesName[controller.activityLabStage - 1], style: TextStyle(fontSize: 12.sp, color: Colors.white))
                                             ) : const SizedBox(),
                                             Spacer(),
-                                            (controller.activity6ListStages.value.isEmpty || controller.joRx.value.laboratoryFinishedDate == null || controller.joRx.value.laboratoryFinishedDate == "") && (controller.joRx.value.mStatusjoId == 2 || controller.joRx.value.mStatusjoId == 3) ? IconButton(
+                                            (controller.activity6ListStages.value.isEmpty && (controller.joRx.value.laboratoryFinishedDate == null || controller.joRx.value.laboratoryFinishedDate == "")) && (controller.joRx.value.mStatusjoId == 2 || controller.joRx.value.mStatusjoId == 3) ? IconButton(
                                                 onPressed: (){
                                                   if(controller.activitySubmitted.value == true){
                                                     controller.activityLabStage == 1 ? controller.nextStageActivityConfirm() :

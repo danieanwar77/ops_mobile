@@ -77,7 +77,7 @@ class Helper {
       if(path.contains("ops")){
         return path;
       }else{
-        return '${baseUrl()}/$path';
+        return '${baseUrl()}/storage/$path';
       }
     }catch(e){
       return '';

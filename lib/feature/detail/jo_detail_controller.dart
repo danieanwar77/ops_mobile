@@ -1090,6 +1090,7 @@ class JoDetailController extends BaseController {
               ),
               onPressed: () async {
                 sendActivityDailyPhotoV2();
+                await getJoDailyActivityLocalV2();
                 Get.back();
                 Get.back();
               },
@@ -1346,7 +1347,8 @@ class JoDetailController extends BaseController {
                 if (result == 'success') {
                   Get.back();
                   openDialog("Success", "Berhasil ubah foto.");
-                  getJoDailyPhotoV2();
+                  await getJoDailyPhotoV2();
+                  await getJoDailyActivityLocalV2();
                 } else {
                   Get.back();
                   openDialog("Failed", "Gagal ubah foto.");
@@ -1382,6 +1384,7 @@ class JoDetailController extends BaseController {
               var delete = await deletePhotoV2(id);
               if (delete == 'success') {
                 await getJoDailyPhotoV2();
+                await getJoDailyActivityLocalV2();
                 update();
                 Get.back();
               } else {
@@ -1868,7 +1871,7 @@ class JoDetailController extends BaseController {
           //inactive detail
           int detail = await db.update(
             't_d_jo_inspection_activity',
-            {'is_active': 0}, // The new value for the is_active field
+            {'is_active': 0,'is_upload': 0}, // The new value for the is_active field
             where: 't_d_jo_inspection_activity_stages_id = ?',
             whereArgs: [stage.id],
           );
@@ -2013,36 +2016,6 @@ class JoDetailController extends BaseController {
 
     List<TDJoInspectionPict> pict = result.map((json) => TDJoInspectionPict.fromJson(json)).toList();
     dailyActivityPhotosV2.value = pict;
-    // TextEditingController tempPhotoDesc = TextEditingController();
-    // result.forEach((item) async{
-    //   //final File photo = await getImagesFromUrl(item['path_photo']);
-    //  // dailyActivityPhotos.value.add(item['path_photo']);
-    //   tempPhotoDesc.text = item['keterangan'] ?? '';
-    //   dailyActivityPhotosDesc.value.add(tempPhotoDesc);
-    //   dailyActivityPhotosDescText.value.add(item['keterangan'] ?? '');
-    // });
-
-    // var response = await repository.getJoDailyPhoto(id) ?? JoDailyPhoto();
-    // debugPrint('JO Daily Photo: ${jsonEncode(response)}');
-    // if (response.data!.isNotEmpty) {
-    //   dataJoDailyPhotos.value = response?.data ?? [];
-    //   if (dataJoDailyPhotos.value.isNotEmpty) {
-    //     isLoadingJOImage = true;
-    //     update();
-    //     dailyActivityPhotos.value = [];
-    //     TextEditingController tempPhotoDesc = TextEditingController();
-    //     dataJoDailyPhotos.value.forEach((data) async {
-    //       final File photo = await getImagesFromUrl(data.pathPhoto!);
-    //       dailyActivityPhotos.value.add(photo);
-    //       tempPhotoDesc.text = data.keterangan ?? '';
-    //       dailyActivityPhotosDesc.value.add(tempPhotoDesc);
-    //       dailyActivityPhotosDescText.value.add(data.keterangan ?? '');
-    //       update();
-    //     });
-    //     isLoadingJOImage = false;
-    //     update();
-    //   }
-    // }
   }
 
   Future<String> deletePhotoV2(int id) async {
@@ -2582,7 +2555,14 @@ class JoDetailController extends BaseController {
                                                 ),
                                                 labelText: 'Initial Date',
                                                 floatingLabelStyle: const TextStyle(color: onFocusColor),
-                                                fillColor: onFocusColor),
+                                                fillColor: onFocusColor,
+                                                suffixIcon: IconButton(
+                                                    onPressed: () {
+                                                      selectInitialDate5(context, index);
+                                                    },
+                                                    icon: const Icon(Icons.calendar_today_rounded)
+                                                ),
+                                            ),
                                           ),
                                           const SizedBox(
                                             height: 16,
@@ -2611,7 +2591,14 @@ class JoDetailController extends BaseController {
                                                 ),
                                                 labelText: 'Final Date',
                                                 floatingLabelStyle: const TextStyle(color: onFocusColor),
-                                                fillColor: onFocusColor),
+                                                fillColor: onFocusColor,
+                                                suffixIcon: IconButton(
+                                                  onPressed: () {
+                                                    selectFinalDate5(context, index);
+                                                  },
+                                                  icon: const Icon(Icons.calendar_today_rounded)
+                                              ),
+                                            ),
                                           ),
                                           const SizedBox(
                                             height: 16,
@@ -5482,7 +5469,8 @@ class JoDetailController extends BaseController {
                                                   onPressed: () {
                                                     selectInitialDate5(context, index);
                                                   },
-                                                  icon: const Icon(Icons.calendar_today_rounded)),
+                                                  icon: const Icon(Icons.calendar_today_rounded)
+                                              ),
                                             ),
                                           ),
                                           const SizedBox(
@@ -5515,9 +5503,10 @@ class JoDetailController extends BaseController {
                                               fillColor: onFocusColor,
                                               suffixIcon: IconButton(
                                                   onPressed: () {
-                                                    selectInitialDate5(context, index);
+                                                    selectFinalDate5(context, index);
                                                   },
-                                                  icon: const Icon(Icons.calendar_today_rounded)),
+                                                  icon: const Icon(Icons.calendar_today_rounded)
+                                              ),
                                             ),
                                           ),
                                           const SizedBox(
@@ -6765,7 +6754,7 @@ class JoDetailController extends BaseController {
           //inactive detail
           int detail = await db.update(
             't_d_jo_inspection_activity',
-            {'is_active': 0}, // The new value for the is_active field
+            {'is_active': 0,'is_upload': 0}, // The new value for the is_active field
             where: 't_d_jo_inspection_activity_stages_id = ?',
             whereArgs: [stage.id],
           );

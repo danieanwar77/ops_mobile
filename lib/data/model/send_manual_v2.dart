@@ -67,10 +67,6 @@ class SendManualV2 {
   static Future<List<SendManualV2>> dataPending() async{
     final db = await SqlHelper.db();
     List<SendManualV2> result = [];
-    /*
-        SELECT * from t_d_jo_finalize_laboratory where is_upload  = 0;
-     */
-    //data activity
     var inspAct = await db.rawQuery('''SELECT * from t_d_jo_inspection_activity_stages where is_upload  = 0 ''');
     for(var dataAct in inspAct){
       result.add(SendManualV2(
@@ -116,6 +112,17 @@ class SendManualV2 {
           transDate: item['created_at'],
           isUpload: 0,
           type: 4
+      ));
+    }
+    var labFinalize = await db.rawQuery('''SELECT * from t_d_jo_finalize_laboratory where is_upload = 0''');
+    for(var dataLabFinal in labFinalize){
+      result.add(SendManualV2(
+          idTrans: int.tryParse(dataLabFinal['id'].toString()),
+          module: 'JO Lab - ${dataLabFinal['t_d_jo_laboratory_id']} Finalize Laboratory',
+          table: 't_d_jo_finalize_laboratory',
+          transDate: dataLabFinal['created_at'],
+          isUpload: 0,
+          type: 5
       ));
     }
     //data finalize lab belum

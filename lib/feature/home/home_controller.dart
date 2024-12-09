@@ -264,11 +264,11 @@ class HomeController extends BaseController{
   @pragma('vm:entry-point')
   static Future<void> onStartBG(ServiceInstance service) async {
     Timer.periodic(const Duration(seconds: 90 ), (timer) async {
-      // sendDataInpectionPhoto();
-      // sendDataInspection();
-      // sendDataLaboratory();
-      // sendDataFinalizeLaboratory();
-      // sendDataFinalizeInspection();
+      sendDataInpectionPhoto();
+      sendDataInspection();
+      sendDataLaboratory();
+      sendDataFinalizeLaboratory();
+      sendDataFinalizeInspection();
     });
   }
 
@@ -280,7 +280,7 @@ class HomeController extends BaseController{
     //   debugPrint("json encode activity ${jsonEncode(stages[i].listActivity)}");
     //   debugPrint("json encode barge ${jsonEncode(stages[i].listActivityBarge)}");
     //   debugPrint("json encode transhipment ${jsonEncode(stages[i].listActivityStageTranshipment)}");
-    //   debugPrint("json encode vessel ${jsonEncode(stages[i].listActivityVessel)}");
+    //   debugPrint("json encode vessel ${jsonEncode(stages[i].listActivityVssessel)}");
     // }
     //debugPrint('print data jo ${dataActivity.id.isNull}');
     bool connection = await Helper.checkConnection();
