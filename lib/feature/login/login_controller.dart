@@ -35,6 +35,7 @@ class LoginController extends BaseController{
   RxBool obsecure = true.obs;
   RxBool isUpdated = false.obs;
 
+
   @override
   void onInit() async {
     username = TextEditingController();
@@ -42,7 +43,8 @@ class LoginController extends BaseController{
     connectivityResult = await (Connectivity().checkConnectivity());
     await readSettings();
     username.text = loginData['e_number'];
-    //password.text = "oktober";
+    final testDir = await providerAndroid.getExternalStoragePath();
+    debugPrint("print path directory ${testDir}");
     final directory = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
     debugPrint('path directory: $directory');
     final data = await SqlHelper.getEmployeePassword(loginData['e_number']);

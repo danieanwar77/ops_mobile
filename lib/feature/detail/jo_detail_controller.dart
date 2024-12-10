@@ -5238,6 +5238,9 @@ class JoDetailController extends BaseController {
                                 TextFormField(
                                   controller: vesselController,
                                   cursorColor: onFocusColor,
+                                  inputFormatters: [
+                                    LengthLimitingTextInputFormatter(150),
+                                  ],
                                   style: const TextStyle(color: onFocusColor),
                                   decoration: InputDecoration(
                                       border: OutlineInputBorder(

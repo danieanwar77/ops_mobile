@@ -28,6 +28,21 @@ class Helper {
     }
   }
 
+  static String formatToYMD(String time) {
+    try {
+      if(time == ""){
+        return "";
+      }
+      DateTime dateTime = DateFormat("yyyy-MM-dd hh:mm:ss").parse(time);
+      return DateFormat("yyyy-MM-dd hh:mm:ss").format(dateTime);
+    } catch (e) {
+      // Handle any parsing errors
+      return time; // Return the original time if parsing fails
+    }
+  }
+
+
+
   static String formatNumber(String? number){
     try{
       if(number == null ) return '';
@@ -41,6 +56,10 @@ class Helper {
   static Future<String> convertPhotosToBase64(String path) async {
     if (path.isEmpty) {
       return '';
+    }
+
+    if(!pathLocalOrServer(path)){
+      return path;
     }
 
     try {

@@ -150,7 +150,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                          controller.dataJoDetail.value.detail?.soCreatedAt ?? '-',
+                                                          Helper.formatToYMD(controller.dataJoDetail.value.detail?.soCreatedAt ?? '-'),
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),
@@ -171,7 +171,7 @@ class JoDetailScreen extends StatelessWidget {
                                                       const SizedBox(width: 16),
                                                       Expanded(
                                                         child: Text(
-                                                          controller.dataJoDetail.value.detail?.joCreatedDate ?? '-',
+                                                          Helper.formatToYMD(controller.dataJoDetail.value.detail?.joCreatedDate ?? '-'),
                                                           style: TextStyle(
                                                             fontSize: 12.sp,
                                                           ),
@@ -2272,7 +2272,7 @@ class JoDetailScreen extends StatelessWidget {
                                                         Row(
                                                           children: [
                                                             Text(
-                                                              'Stage 5: Work Complete ${controller.activityStage}',
+                                                              'Stage 5: Work Complete',
                                                               style: TextStyle(color: green, fontSize: 12.sp, fontWeight: FontWeight.w700),
                                                             ),
                                                             controller.activityStage == 5 ? InkWell(

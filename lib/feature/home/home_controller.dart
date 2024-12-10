@@ -81,9 +81,7 @@ class HomeController extends BaseController{
   @override
   void onInit()async{
     initializeService();
-
     packageInfo = await PackageInfo.fromPlatform();
-
     appName =  packageInfo.appName;
     packageName =  packageInfo.packageName;
     version =  packageInfo.version;
@@ -264,11 +262,11 @@ class HomeController extends BaseController{
   @pragma('vm:entry-point')
   static Future<void> onStartBG(ServiceInstance service) async {
     Timer.periodic(const Duration(seconds: 40 ), (timer) async {
-      // sendDataInpectionPhoto();
-      // sendDataInspection();
-      // sendDataLaboratory();
-      // sendDataFinalizeLaboratory();
-      // sendDataFinalizeInspection();
+      sendDataInpectionPhoto();
+      sendDataInspection();
+      sendDataLaboratory();
+      sendDataFinalizeLaboratory();
+      sendDataFinalizeInspection();
     });
   }
 
@@ -532,7 +530,7 @@ class HomeController extends BaseController{
     }
   }
 
-  void countNotif() async {
+  Future<void> countNotif() async {
     if(userData.value != null){
       message.value = await TMNotifV2.countNotif(userData.value!.id!.toInt());
       debugPrint('print total pesan yang belum dibaca ${message.value}');

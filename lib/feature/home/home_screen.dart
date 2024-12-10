@@ -77,7 +77,9 @@ class HomeScreen extends StatelessWidget{
                                 ),
                                 IconButton(
                                   onPressed: () {
-                                    Get.to<void>(() => const NotificationsScreen());
+                                    Get.to<void>(() => const NotificationsScreen())?.then((_) async{
+                                      await controller.countNotif();
+                                    });
                                   },
                                   icon: Stack(
                                     alignment: Alignment.center, // Menempatkan angka di tengah ikon

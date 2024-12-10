@@ -153,7 +153,9 @@ TMNotifV2 copyWith({
   }
   static Future<int> countNotif(int employeeId) async {
     final db = await SqlHelper.db();
-    var sql = '''select * from t_mnotif where employee_id=? and flag_active=1 and flag_read=0''';
+    var sql = '''SELECT a.id , a.jo_id, b.m_statusjo_id, a.id_trans, a.message, a.employee_id, a.link,a.flag_active, a.flag_read, a.created_by, a.created_at, a.updated_by, a.updated_at 
+      FROM t_mnotif a
+      INNER JOIN t_h_jo b ON b.id = a.jo_id where  a.employee_id=? and a.flag_active=1 and a.flag_read=0''';
     var result = await db.rawQuery(sql,[employeeId]);
     return result.length;
   }

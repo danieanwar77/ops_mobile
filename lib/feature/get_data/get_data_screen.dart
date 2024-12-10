@@ -17,7 +17,7 @@ class GetDataScreen extends StatefulWidget{
 }
 
 class _GetDataScreenState extends State<GetDataScreen> {
-  late String tokenFirebase;
+  late String tokenFirebase = "";
   late String apkVersion;
   late String platform;
 

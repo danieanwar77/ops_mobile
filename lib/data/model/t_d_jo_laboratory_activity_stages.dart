@@ -1,7 +1,7 @@
 import 'package:ops_mobile/data/Datatabase2.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory_activity.dart';
 import 'package:ops_mobile/data/model/t_d_jo_laboratory_attachment.dart';
-import 'package:ops_mobile/data/sqlite.dart';
+
 
 /// id : 21
 /// d_jo_laboratory_id : 6
@@ -72,16 +72,16 @@ class TDJoLaboratoryActivityStages {
     _updatedBy = json['updated_by'] is int ? json['updated_by'] : null;
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
-    _totalSampleReceived = int.tryParse(json['total_sample_received'].toString()) ?? 0;
-    _totalSampleAnalyzed = int.tryParse(json['total_sample_analyzed'].toString()) ?? 0;
-    _totalSamplePreparation = int.tryParse(json['total_sample_preparation'].toString()) ?? 0;
+    _totalSampleReceived = ( json['total_sample_analyzed'] == null ||  json['total_sample_analyzed'] is String )?   null : (json["total_sample_analyzed"] as num).toInt();
+    _totalSampleAnalyzed = (json['total_sample_analyzed'] == null || json['total_sample_analyzed'] is String )?   null : (json['total_sample_analyzed'] as num).toInt();
+    _totalSamplePreparation = (json['total_sample_preparation'] == null || json['total_sample_preparation'] is String) ?   null : (json['total_sample_preparation'] as num).toInt().toInt();
     _code = json['code'];
     _isActive = json['is_active'];
     _isUpload = json['is_upload'];
 
     if (json['list_lab_activity'] != null) {
       _listLabActivity = (json['list_lab_activity'] as List)
-          .map((e) => TDJoLaboratoryActivity.fromJson(e))
+          .map(TDJoLaboratoryActivity.fromJson)
           .toList();
     } else {
       _listLabActivity = [];

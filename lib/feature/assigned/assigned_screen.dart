@@ -130,7 +130,7 @@ class AssignedScreen extends StatelessWidget{
                                                 child: Column(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                    Text(controller.dataJoList.value[index].joId.toString() ?? '-', style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12),),
+                                                    Text(controller.dataJoList.value[index].code.toString() ?? '-', style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12),),
                                                   ],
                                                 ),
                                               ),
