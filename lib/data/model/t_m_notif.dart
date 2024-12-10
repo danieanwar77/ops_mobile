@@ -27,6 +27,7 @@ class TMNotif {
   String? updatedBy; // Nullable
   String createdAt;
   String? updatedAt; // Nullable
+  String? code;
 
   // Constructor with required and optional fields
   TMNotif({
@@ -43,6 +44,7 @@ class TMNotif {
     this.updatedBy, // Nullable
     required this.createdAt,
     this.updatedAt, // Nullable
+    this.code,
   });
 
   // Create a TDJoFinalizeInspection from a JSON map
@@ -61,6 +63,7 @@ class TMNotif {
       updatedBy: json['updated_by'], // Nullable
       createdAt: json['created_at'],
       updatedAt: json['updated_at'], // Nullable
+      code: json['code'],
     );
   }
 
@@ -80,6 +83,7 @@ class TMNotif {
       'updated_by': updatedBy, // Nullable
       'created_at': createdAt,
       'updated_at': updatedAt, // Nullable
+      'code': code,
     };
   }
 

@@ -37,7 +37,7 @@ class NotificationsController extends BaseController{
     final db = await SqlHelper.db();
     debugPrint('print data employee id ${employeeId}');
     var data = await db.rawQuery('''
-      SELECT a.id , a.jo_id, b.m_statusjo_id, a.id_trans, a.message, a.employee_id, a.link,a.flag_active, a.flag_read, a.created_by, a.created_at, a.updated_by, a.updated_at 
+      SELECT a.id ,b.code, a.jo_id, b.m_statusjo_id, a.id_trans, a.message, a.employee_id, a.link,a.flag_active, a.flag_read, a.created_by, a.created_at, a.updated_by, a.updated_at 
       FROM t_mnotif a
       INNER JOIN t_h_jo b ON b.id = a.jo_id where a.employee_id = ? 
     ''',[employeeId]);

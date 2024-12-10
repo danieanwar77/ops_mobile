@@ -72,7 +72,7 @@ class NotificationsScreen extends StatelessWidget{
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'JO${notif.joId}',
+                                      'JO ${notif.code}',
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 14),
@@ -100,7 +100,6 @@ class NotificationsScreen extends StatelessWidget{
               ),
             ),
           )
-
         )
     );
   }

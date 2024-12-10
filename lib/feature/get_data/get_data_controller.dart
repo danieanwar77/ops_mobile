@@ -12,6 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/core/core/constant/app_constant.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
+import 'package:ops_mobile/data/Datatabase2.dart';
 import 'package:ops_mobile/data/model/response_gendata_file.dart';
 import 'package:ops_mobile/data/model/response_register_device.dart';
 import 'package:ops_mobile/data/sqlite.dart';
@@ -93,6 +94,7 @@ class GetDataController extends BaseController{
         if(response.file != null){
           await createFileFromBase64Str(response.file!);
           await readZip();
+          await SqlHelperV2().closeDatabase();
           final data = await SqlHelper.getLogin(settingsData['e_number']);
           debugPrint('user data: $data');
           String now = DateFormat('dd-MM-yyyy').format(DateTime.now());

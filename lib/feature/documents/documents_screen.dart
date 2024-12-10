@@ -315,8 +315,8 @@ class DocumentsScreen extends StatelessWidget{
                             controller.openDialogV2(
                                 'Attention',
                                 'Apakah benar anda akan submit finalisasi JO Inspection ini? pastikan data yg anda  input benar karena jika anda submit, JO  akan dicomplete-kan.',
-                                    () => {
-                                  controller.submitDocumentInspec(),
+                                    () async =>  {
+                                      await controller.submitDocumentInspec(),
                                       Get.back(),
                                       Get.back()
                                     });

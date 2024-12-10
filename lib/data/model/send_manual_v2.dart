@@ -118,7 +118,7 @@ class SendManualV2 {
     for(var dataLabFinal in labFinalize){
       result.add(SendManualV2(
           idTrans: int.tryParse(dataLabFinal['id'].toString()),
-          module: 'JO Lab - ${dataLabFinal['t_d_jo_laboratory_id']} Finalize Laboratory',
+          module: 'JO Lab - ${dataLabFinal['t_h_jo_id']} Finalize Laboratory',
           table: 't_d_jo_finalize_laboratory',
           transDate: dataLabFinal['created_at'],
           isUpload: 0,

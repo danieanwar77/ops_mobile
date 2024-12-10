@@ -15,7 +15,7 @@
 
 class TDJoFinalizeLaboratory {
   int? id;
-  int? tDJoLabId;
+  int? tHJoId;
   String noReport;
   String dateReport;
   String noBlankoCertificate;
@@ -33,7 +33,7 @@ class TDJoFinalizeLaboratory {
   // Constructor with required and optional fields
   TDJoFinalizeLaboratory({
     this.id, // Nullable
-    required this.tDJoLabId,
+    required this.tHJoId,
     required this.noReport,
     required this.dateReport,
     required this.noBlankoCertificate,
@@ -53,7 +53,7 @@ class TDJoFinalizeLaboratory {
   factory TDJoFinalizeLaboratory.fromJson(Map<String, dynamic> json) {
     return TDJoFinalizeLaboratory(
       id: json['id'], // Nullable
-      tDJoLabId: json['t_d_jo_laboratory_id'],
+      tHJoId: json['t_h_jo_id'],
       noReport: json['no_report'],
       dateReport: json['date_report'],
       noBlankoCertificate: json['no_blanko_certificate'],
@@ -74,7 +74,7 @@ class TDJoFinalizeLaboratory {
   Map<String, dynamic> toJson() {
     return {
       'id': id, // Nullable
-      't_d_jo_laboratory_id': tDJoLabId,
+      't_h_jo_id': tHJoId,
       'no_report': noReport,
       'date_report': dateReport,
       'no_blanko_certificate': noBlankoCertificate,
@@ -94,7 +94,6 @@ class TDJoFinalizeLaboratory {
   // Copy method for creating a new instance with updated values
   TDJoFinalizeLaboratory copyWith({
     int? id,
-    int? tDJoLabId,
     String? noReport,
     String? dateReport,
     String? noBlankoCertificate,
@@ -111,7 +110,7 @@ class TDJoFinalizeLaboratory {
   }) {
     return TDJoFinalizeLaboratory(
       id: id ?? this.id, // Nullable
-      tDJoLabId: tDJoLabId ?? this.tDJoLabId,
+      tHJoId: tHJoId ?? this.tHJoId,
       noReport: noReport ?? this.noReport,
       dateReport: dateReport ?? this.dateReport,
       noBlankoCertificate: noBlankoCertificate ?? this.noBlankoCertificate,

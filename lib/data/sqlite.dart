@@ -608,7 +608,7 @@ class SqlHelper extends BaseController {
       created_at,
       updated_at
       FROM t_d_jo_finalize_laboratory
-      WHERE t_d_jo_laboratory_id = $idJo
+      WHERE t_h_jo_id = $idJo
       and is_active = 1
     ''');
   }

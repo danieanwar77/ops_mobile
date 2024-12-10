@@ -494,7 +494,7 @@ class HomeController extends BaseController{
     }
   }
 
-  void syncMaster() async{
+  Future<void> syncMaster() async{
     try{
       var connectivityResult = await Connectivity().checkConnectivity();
       debugPrint('print connectionresult ${connectivityResult}');

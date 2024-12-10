@@ -709,7 +709,7 @@ class SendManualController extends BaseController{
         );
         if(response.statusCode == 200){
           final Map<String, dynamic> responseData = jsonDecode(response.body);
-          print('print response from api ${jsonEncode(responseData)}');
+          print('print response from api finalize 712 ${jsonEncode(responseData)}');
           if(responseData['status'] != 500){
             dynamic dataList = responseData['data'];
             TDJoFinalizeLaboratoryV2 item = TDJoFinalizeLaboratoryV2.fromJson(dataList as Map<String, dynamic>);
@@ -757,7 +757,7 @@ class SendManualController extends BaseController{
         );
         if(response.statusCode == 200){
           final Map<String, dynamic> responseData = jsonDecode(response.body);
-          print('print response from api ${jsonEncode(responseData)}');
+          print('print response from api inspection finalize 760 ${jsonEncode(responseData)}');
           if(responseData['status'] != 500){
             dynamic dataList = responseData['data'];
             TDJoFinalizeInspectionV2 data = TDJoFinalizeInspectionV2.fromJson(dataList as Map<String, dynamic>);
@@ -875,7 +875,7 @@ class SendManualController extends BaseController{
         debugPrint('Data berhasil dikirim: ${response.body}');
         if(response.statusCode == 200){
           final Map<String, dynamic> responseData = jsonDecode(response.body);
-          print('print response from api ${jsonEncode(responseData)}');
+          print('print response from api inpsection photo 878 ${jsonEncode(responseData)}');
           if(responseData['status'] != 500){
             List<dynamic> dataList = responseData['data'];
             List<TDJoInspectionPict> data = dataList
@@ -926,7 +926,7 @@ class SendManualController extends BaseController{
           debugPrint("print data activity lab ${jsonEncode(dataActivity.toSend())}");
           if(response.statusCode == 200) {
             final Map<String, dynamic> responseData = jsonDecode(response.body);
-            print('print response from api ${jsonEncode(responseData)}');
+            print('print response from api lab Act 929 ${jsonEncode(responseData)}');
             if (responseData['status'] != 500) {
               final data = responseData['data'];
               TDJoLaboratory joLaboratory = TDJoLaboratory.fromJson(data);

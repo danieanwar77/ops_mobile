@@ -1326,30 +1326,9 @@ class DocumentsController extends BaseController {
 
   Future<void> submitDocumentInspec() async {
     var dataUser = await StorageCore().storage.read('user');
-    debugPrint("submit login ${jsonDecode(dataUser)}");
     var employee = jsonDecode(dataUser);
     var employeeId = employee.first['id'];
-    //submit login [{id: 624, password_aes: 1nSpPO+ndJ8m4n8f3fOscA==}]
-    debugPrint('Submit Document Inspection ${employeeId}');
-    //RxList<Map<String, dynamic>> documents = RxList();
-    //berdasarkan list document dimana isi id,name,
-    /**
-     * 'id': documents.value[index]['id'], // mempertahankan id yang ada
-        'certNumber': documentCertificateNumber.value.text,
-        'certDate': documentCertificateDate.value.text,
-        'certBlanko': documentCertificateBlanko.value.text,
-        'certLhv': documentCertificateLhv.value.text,
-        'certLs': documentCertificateLs.value.text
-     */
     final db = await SqlHelper.db();
-    // DocumentModel doc = DocumentModel(
-    //   id: document['id'],
-    //   certNumber: document['certNumber'],
-    //   certDate: document['certDate'],
-    //   certBlanko: document['certBlanko'],
-    //   certLhv: document['certLhv'],
-    //   certLs: document['certLs'],
-    // );
 
     // Loop melalui dokumen dan simpan ke SQLite
     late TDJoFinalizeInspection tdJoDocumentInspect;
@@ -1398,7 +1377,7 @@ class DocumentsController extends BaseController {
         }
       } else {
         tdJoDocumentLab = TDJoFinalizeLaboratory(
-            tDJoLabId: int.parse(idJo.value),
+            tHJoId: int.parse(idJo.value),
             noReport: document['certNumber'],
             dateReport: document['certDate'],
             noBlankoCertificate: document['certBlanko'],
@@ -1414,12 +1393,14 @@ class DocumentsController extends BaseController {
             updatedAt: ''
         );
         update();
-        debugPrint('document details: ${jsonEncode(tdJoDocumentLab)}');
+        debugPrint('document details: 1399 ${jsonEncode(tdJoDocumentLab)}');
 
         var result = await db.insert(
             't_d_jo_finalize_laboratory',  // Nama tabel
             tdJoDocumentLab.toJson()
         );
+
+        debugPrint("print result  t_d_jo_finalize_laboratory ${result}");
 
         if(documentsAttachments.value[index] != null && documentsAttachments.value[index] != ""){
           var fileName = documentsAttachments.value[index].split('/').last;
@@ -1438,80 +1419,6 @@ class DocumentsController extends BaseController {
           await db.insert('t_d_jo_document_laboratory',attachment);
         }
       }
-
     }
-
-    var checkFinalize = await db.rawQuery('''
-      SELECT pic_inspector, pic_laboratory, inspection_finished_date, laboratory_finished_date, inspection_completed_date, laboratory_completed_date  FROM t_h_jo where id = ${idJo.value}
-    ''');
-    Future.delayed(Duration(milliseconds: 200));
-
-    debugPrint('check finalize: ${jsonEncode(checkFinalize)}');
-
-    if((checkFinalize.first['pic_inspector'] != '' && checkFinalize.first['pic_laboratory'] == '') && (checkFinalize.first['inspection_finished_date'] != '' && checkFinalize.first['laboratory_finished_date'] == '') && (checkFinalize.first['inspection_completed_date'] == '' && checkFinalize.first['laboratory_completed_date'] == '') ){
-      try{
-        await db.execute('''
-            UPDATE t_h_jo
-            SET inspection_completed_date = '${DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString()}', m_statusjo_id = 5
-            WHERE id = ${idJo.value};
-          ''');
-      } catch(e){
-        debugPrint(e.toString());
-      } finally {
-        update();
-      }
-    } else if((checkFinalize.first['pic_inspector'] == '' && checkFinalize.first['pic_laboratory'] != '') && (checkFinalize.first['inspection_finished_date'] == '' && checkFinalize.first['laboratory_finished_date'] != '') && (checkFinalize.first['inspection_completed_date'] == '' && checkFinalize.first['laboratory_completed_date'] == '')){
-      try{
-        await db.execute('''
-            UPDATE t_h_jo
-            SET laboratory_completed_date = '${DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString()}', m_statusjo_id = 5
-            WHERE id = ${idJo.value};
-          ''');
-      } catch(e){
-        debugPrint(e.toString());
-      } finally {
-        update();
-      }
-    } else if((checkFinalize.first['pic_inspector'] != '' && checkFinalize.first['pic_laboratory'] != '') && (checkFinalize.first['inspection_finished_date'] != '' && checkFinalize.first['laboratory_finished_date'] != '')){
-      try{
-        if(checkFinalize.first['inspection_completed_date'] == '' && checkFinalize.first['laboratory_completed_date'] == ''){
-          if(documentType.value == 'inspect'){
-            await db.execute('''
-            UPDATE t_h_jo
-            SET inspection_completed_date = '${DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString()}'
-            WHERE id = ${idJo.value};
-          ''');
-          } else {
-            await db.execute('''
-            UPDATE t_h_jo
-            SET laboratory_completed_date = '${DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString()}'
-            WHERE id = ${idJo.value};
-          ''');
-          }
-        } else if (checkFinalize.first['inspection_completed_date'] != '' && checkFinalize.first['laboratory_completed_date'] == '') {
-          await db.execute('''
-            UPDATE t_h_jo
-            SET laboratory_completed_date = '${DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString()}', m_statusjo_id = 5
-            WHERE id = ${idJo.value};
-          ''');
-        } else if (checkFinalize.first['inspection_completed_date'] == '' && checkFinalize.first['laboratory_completed_date'] != '') {
-          await db.execute('''
-            UPDATE t_h_jo
-            SET inspection_completed_date = '${DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()).toString()}', m_statusjo_id = 5
-            WHERE id = ${idJo.value};
-          ''');
-        }
-      } catch(e){
-        debugPrint(e.toString());
-      } finally {
-        update();
-      }
-    }
-    // Get.back();
-    // Get.back();
-  }
-
-  Future<void> sendDocuments() async {
-
   }
 }

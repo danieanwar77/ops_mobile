@@ -157,7 +157,9 @@ class HomeScreen extends StatelessWidget{
                                       width: (MediaQuery.sizeOf(context).width / 3) - 36,
                                       child: InkWell(
                                         onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 2, 'employeeId' : controller.userData.value?.id ?? 0});
+                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 2, 'employeeId' : controller.userData.value?.id ?? 0})?.then((_) async{
+                                            controller.syncMaster();
+                                          });
                                         },
                                         child: Column(
                                           children: [
@@ -184,7 +186,9 @@ class HomeScreen extends StatelessWidget{
                                       width: (MediaQuery.sizeOf(context).width / 3) - 32,
                                       child: InkWell(
                                         onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 3, 'employeeId': controller.userData.value?.id ?? 0});
+                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 3, 'employeeId': controller.userData.value?.id ?? 0})?.then((_) async{
+                                            controller.syncMaster();
+                                          });
                                         },
                                         child: Column(
                                           children: [
@@ -211,7 +215,9 @@ class HomeScreen extends StatelessWidget{
                                       width: (MediaQuery.sizeOf(context).width / 3) - 36,
                                       child: InkWell(
                                         onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 4, 'employeeId' : controller.userData.value?.id ?? 0});
+                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 4, 'employeeId' : controller.userData.value?.id ?? 0})?.then((_) async{
+                                            controller.syncMaster();
+                                          });
                                         },
                                         child: Column(
                                           children: [
@@ -246,7 +252,9 @@ class HomeScreen extends StatelessWidget{
                                       width: (MediaQuery.sizeOf(context).width / 3) - 36,
                                       child: InkWell(
                                         onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 6, 'employeeId' : controller.userData.value?.id ?? 0});
+                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 6, 'employeeId' : controller.userData.value?.id ?? 0})?.then((_) async{
+                                            controller.syncMaster();
+                                          });
                                         },
                                         child: Column(
                                           children: [
@@ -273,7 +281,9 @@ class HomeScreen extends StatelessWidget{
                                       width: (MediaQuery.sizeOf(context).width / 3) - 32,
                                       child: InkWell(
                                         onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 5, 'employeeId' : controller.userData.value?.id ?? 0});
+                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 5, 'employeeId' : controller.userData.value?.id ?? 0})?.then((_) async{
+                                            controller.syncMaster();
+                                          });
                                         },
                                         child: Column(
                                           children: [
@@ -300,7 +310,9 @@ class HomeScreen extends StatelessWidget{
                                       width: (MediaQuery.sizeOf(context).width / 3) - 36,
                                       child: InkWell(
                                         onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 7, 'employeeId' : controller.userData.value?.id ?? 0});
+                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 7, 'employeeId' : controller.userData.value?.id ?? 0})?.then((_) async{
+                                            controller.syncMaster();
+                                          });
                                         },
                                         child: Column(
                                           children: [

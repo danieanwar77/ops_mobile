@@ -19,7 +19,7 @@ import 'package:ops_mobile/data/sqlite.dart';
 class TDJoFinalizeLaboratoryV2 {
   TDJoFinalizeLaboratoryV2({
       num? id,
-      num? tDJoFinalizeLaboratory,
+      num? tHJoId,
       String? noReport,
       String? dateReport,
       String? noBlankoCertificate,
@@ -52,7 +52,8 @@ class TDJoFinalizeLaboratoryV2 {
 
   TDJoFinalizeLaboratoryV2.fromJson(dynamic json) {
     _id = json['id'];
-    _tDJoFinalizeLaboratory = json['t_d_jo_finalize_laboratory_id'];
+    //_tDJoFinalizeLaboratory = json['t_d_jo_laboratory_id'];
+    _tHJoId = json['t_h_jo_id'];
     _noReport = json['no_report'];
     _dateReport = json['date_report'];
     _noBlankoCertificate = json['no_blanko_certificate'];
@@ -74,6 +75,7 @@ class TDJoFinalizeLaboratoryV2 {
     }
   }
   num? _id;
+  num? _tHJoId;
   num? _tDJoFinalizeLaboratory;
   String? _noReport;
   String? _dateReport;
@@ -90,7 +92,7 @@ class TDJoFinalizeLaboratoryV2 {
   List<TDJoDocumentLaboratoryV2>? _listDocument;
 TDJoFinalizeLaboratoryV2 copyWith({
   num? id,
-  num? tDJoFinalizeLaboratory,
+  num? tHJoId,
   String? noReport,
   String? dateReport,
   String? noBlankoCertificate,
@@ -104,7 +106,7 @@ TDJoFinalizeLaboratoryV2 copyWith({
   dynamic? createdAt,
   dynamic? updatedAt,
 }) => TDJoFinalizeLaboratoryV2(  id: id ?? _id,
-  tDJoFinalizeLaboratory: tDJoFinalizeLaboratory ?? _tDJoFinalizeLaboratory,
+  tHJoId: tHJoId ?? _tHJoId,
   noReport: noReport ?? _noReport,
   dateReport: dateReport ?? _dateReport,
   noBlankoCertificate: noBlankoCertificate ?? _noBlankoCertificate,
@@ -137,7 +139,8 @@ TDJoFinalizeLaboratoryV2 copyWith({
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = _id;
-    map['t_d_jo_finalize_laboratory_id'] = _tDJoFinalizeLaboratory;
+    //map['t_d_jo_laboratory_id'] = _tDJoFinalizeLaboratory;
+    map['t_h_jo_id'] = _tHJoId;
     map['no_report'] = _noReport;
     map['date_report'] = _dateReport;
     map['no_blanko_certificate'] = _noBlankoCertificate;
