@@ -12,6 +12,7 @@ import 'package:ops_mobile/data/model/response_register_device.dart';
 import 'package:ops_mobile/data/network.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/settings/settings_screen.dart';
+import 'package:ops_mobile/utils/helper.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_ios/path_provider_ios.dart';
 
@@ -91,7 +92,7 @@ class RegisterDeviceController extends BaseController{
           'e_number' : employeeIdText.text
         };
         await StorageCore().storage.write('settings', setting);
-        await writeSettings(jsonEncode(setting));
+        await writeSettingsV2(jsonEncode(setting));
         Get.back();
         openDialog('Success', 'Berhasil register perangkat',(){Get.to<void>(SettingsScreen());});
       }else{
@@ -136,6 +137,13 @@ class RegisterDeviceController extends BaseController{
     final File file = File('$directory/settings.txt');
     await file.writeAsString(text);
   }
+
+  Future<void> writeSettingsV2(String text) async {
+    final directory = await Helper.baseFolder();
+    final File file = File('$directory/files/settings.txt');
+    await file.writeAsString(text);
+  }
+
 
   Future<String> readSettings() async {
     String text;

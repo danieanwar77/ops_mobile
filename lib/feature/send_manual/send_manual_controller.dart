@@ -900,7 +900,7 @@ class SendManualController extends BaseController{
     try{
         int id = sendData.idTrans ==  null ? 0 : sendData.idTrans!.toInt();
         THJo dataActivity = await THJo.getJoLaboratorySendById(id);
-        debugPrint("print data laboratory stage ${jsonEncode(dataActivity.toJson())}");
+        debugPrint("print data laboratory stage ${jsonEncode(dataActivity.toSend())}");
         List<TDJoLaboratory> laboratories = dataActivity.laboratory ?? [];
         for(int i = 0; i < laboratories.length; i++){
           debugPrint("print data laboratory item ${jsonEncode(laboratories[i])}");
@@ -960,9 +960,9 @@ class SendManualController extends BaseController{
         }
         return true;
     }catch(e){
-      debugPrint("print data laboratory stage error  ${e}");
+      debugPrint("print data laboratory stage error ${e}");
       return false;
-    }
+   }
   }
 
   Future<void> getJoDailyActivity6AttachmentLocal(int id) async {

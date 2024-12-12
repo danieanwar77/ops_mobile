@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class Helper {
   /// Formats a time string from 'HH:mm:ss' to 'HH:mm'.
@@ -179,6 +180,40 @@ class Helper {
       }
     } catch (e) {
       print('Error deleting file: $e');
+    }
+  }
+
+  static Future<String>baseFolder() async{
+    final packageInfo = await PackageInfo.fromPlatform();
+    final packageName = packageInfo.packageName;
+    final appName = packageInfo.appName.replaceAll(" ", "-");
+    late final Directory appDirectory;
+    if(Platform.isAndroid){
+      final androidVersion = int.tryParse(Platform.version.split(' ')[0]) ?? 0;
+      if(androidVersion >= 29){
+        appDirectory = Directory('/storage/emulated/0/Android/media/$packageName');
+      }else{
+        appDirectory = Directory('/storage/emulated/0/$appName');
+      }
+      return appDirectory.path;
+    }else{
+      return "";
+    }
+  }
+
+  static Future<void> initFolder() async{
+    List<String> dirs = ["photo","files","config","db"];
+    final baseDir = await baseFolder();
+    late final Directory appDir;
+    for(int i = 0; i < dirs.length; i++){
+      appDir = Directory('${baseDir}/${dirs[i]}');
+      if(!appDir.existsSync()){
+        try{
+          await appDir.create(recursive: true);
+        }catch(e){
+          debugPrint('print debug failed create folder');
+        }
+      }
     }
   }
 }

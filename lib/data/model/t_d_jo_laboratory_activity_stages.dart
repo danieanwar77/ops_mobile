@@ -69,10 +69,10 @@ class TDJoLaboratoryActivityStages {
     _transDate = json['trans_date'];
     _remarks = json['remarks'];
     _createdBy = json['created_by'];
-    _updatedBy = json['updated_by'] is int ? json['updated_by'] : null;
+    _updatedBy = json['updated_by'] is int ? json['updated_by'].toString() : null;
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
-    _totalSampleReceived = ( json['total_sample_analyzed'] == null ||  json['total_sample_analyzed'] is String )?   null : (json["total_sample_analyzed"] as num).toInt();
+    _totalSampleReceived = ( json['total_sample_received'] == null ||  json['total_sample_received'] is String )?   null : (json['total_sample_received'] as num).toInt();
     _totalSampleAnalyzed = (json['total_sample_analyzed'] == null || json['total_sample_analyzed'] is String )?   null : (json['total_sample_analyzed'] as num).toInt();
     _totalSamplePreparation = (json['total_sample_preparation'] == null || json['total_sample_preparation'] is String) ?   null : (json['total_sample_preparation'] as num).toInt().toInt();
     _code = json['code'];
