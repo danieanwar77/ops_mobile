@@ -1,4 +1,14 @@
+import 'dart:convert';
+import 'dart:ui';
+
+import 'package:flutter/cupertino.dart';
+import 'package:ops_mobile/data/Datatabase2.dart';
 import 'package:ops_mobile/data/model/t_d_jo_inspection_activity.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_barge.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages_transhipment.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_vessel.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_attachment.dart';
+import 'package:ops_mobile/data/sqlite.dart';
 
 /// id : 1
 /// t_h_jo_id : 1
@@ -23,6 +33,7 @@ class TDJoInspectionActivityStages {
     String? transDate,
     String? actualQty,
     String? uomId,
+    String? uomName,
     String? remarks,
     String? code,
     String? isActive,
@@ -32,6 +43,9 @@ class TDJoInspectionActivityStages {
     String? createdAt,
     String? updatedAt,
     List<TDJoInspectionActivity>? listActivity,
+    List<TDJoInspectionActivityBarge>? listActivityBarge,
+    List<TDJoInspectionActivityStagesTranshipment>? listactivityStageTranshipment,
+    List<TDJoInspectionAttachment>? listAttachment,
   }) {
     _id = id;
     _tHJoId = tHJoId;
@@ -39,6 +53,7 @@ class TDJoInspectionActivityStages {
     _transDate = transDate;
     _actualQty = actualQty;
     _uomId = uomId;
+    _uomName = uomName;
     _remarks = remarks;
     _code = code;
     _isActive = isActive;
@@ -48,6 +63,9 @@ class TDJoInspectionActivityStages {
     _createdAt = createdAt;
     _updatedAt = updatedAt;
     _listActivity = listActivity ?? [];
+    _listActivityBarge = listActivityBarge ?? [];
+    _listActivityStageTranshipment = listactivityStageTranshipment ??[];
+    _listAttachment = listAttachment ?? [];
   }
 
   TDJoInspectionActivityStages.fromJson(dynamic json) {
@@ -55,8 +73,9 @@ class TDJoInspectionActivityStages {
     _tHJoId = json['t_h_jo_id'];
     _mStatusinspectionstagesId = json['m_statusinspectionstages_id'];
     _transDate = json['trans_date'];
-    _actualQty = json['actual_qty'];
-    _uomId = json['uom_id'];
+    _actualQty = json['actual_qty'].toString();
+    _uomId = json['uom_id'].toString();
+    _uomName = json['uom_name'];
     _remarks = json['remarks'];
     _code = json['code'];
     _isActive = json['is_active'].toString();
@@ -72,6 +91,42 @@ class TDJoInspectionActivityStages {
     } else {
       _listActivity = [];
     }
+    if (json['listactivitybarge'] != null) {
+      _listActivityBarge = (json['listactivitybarge'] as List)
+          .map((e) => TDJoInspectionActivityBarge.fromJson(e))
+          .toList();
+    } else {
+      _listActivityBarge = [];
+    }
+    if (json['listactivitytranshipment'] != null) {
+      _listActivityStageTranshipment = (json['listactivitytranshipment'] as List)
+          .map((e) => TDJoInspectionActivityStagesTranshipment.fromJson(e))
+          .toList();
+    } else {
+      _listActivityStageTranshipment = [];
+    }
+
+    if (json['activityvesel'] != null) {
+      _activityVessel = TDJoInspectionActivityVessel.fromJson(json['activityvesel']);
+    } else {
+      _activityVessel = null; // atau nilai default sesuai kebutuhan
+    }
+
+    if(json['listactivityvessel'] != null){
+      _listActivityVessel = (json['listactivityvessel'] as List)
+          .map((e) => TDJoInspectionActivityVessel.fromJson(e))
+          .toList();
+    }else{
+      _listActivityVessel = [];
+    }
+
+    if(json['listattachment'] != null){
+      _listAttachment = (json['listattachment'] as List)
+          .map((e) => TDJoInspectionAttachment.fromJson(e))
+          .toList();
+    }else{
+      _listAttachment = [];
+    }
   }
 
   num? _id;
@@ -80,6 +135,7 @@ class TDJoInspectionActivityStages {
   String? _transDate;
   String? _actualQty;
   String? _uomId;
+  String? _uomName;
   String? _remarks;
   String? _code;
   String? _isActive;
@@ -89,6 +145,11 @@ class TDJoInspectionActivityStages {
   String? _createdAt;
   String? _updatedAt;
   List<TDJoInspectionActivity>? _listActivity;
+  List<TDJoInspectionActivityBarge>? _listActivityBarge;
+  List<TDJoInspectionActivityStagesTranshipment>? _listActivityStageTranshipment;
+  TDJoInspectionActivityVessel? _activityVessel;
+  List<TDJoInspectionActivityVessel>? _listActivityVessel;
+  List<TDJoInspectionAttachment>? _listAttachment;
 
   TDJoInspectionActivityStages copyWith({
     num? id,
@@ -97,6 +158,7 @@ class TDJoInspectionActivityStages {
     String? transDate,
     String? actualQty,
     String? uomId,
+    String? uomName,
     String? remarks,
     String? code,
     String? isActive,
@@ -114,6 +176,7 @@ class TDJoInspectionActivityStages {
         transDate: transDate ?? _transDate,
         actualQty: actualQty ?? _actualQty,
         uomId: uomId ?? _uomId,
+        uomName: uomName ?? _uomName,
         remarks: remarks ?? _remarks,
         code: code ?? _code,
         isActive: isActive ?? _isActive,
@@ -131,6 +194,7 @@ class TDJoInspectionActivityStages {
   String? get transDate => _transDate;
   String? get actualQty => _actualQty;
   String? get uomId => _uomId;
+  String? get uomName => _uomName;
   String? get remarks => _remarks;
   String? get code => _code;
   String? get isActive => _isActive;
@@ -140,6 +204,11 @@ class TDJoInspectionActivityStages {
   String? get createdAt => _createdAt;
   String? get updatedAt => _updatedAt;
   List<TDJoInspectionActivity>? get listActivity => _listActivity;
+  List<TDJoInspectionActivityBarge>? get listActivityBarge => _listActivityBarge;
+  List<TDJoInspectionActivityStagesTranshipment>? get listActivityStageTranshipment => _listActivityStageTranshipment;
+  TDJoInspectionActivityVessel? get activityVesel => _activityVessel;
+  List<TDJoInspectionActivityVessel>? get listActivityVessel => _listActivityVessel;
+  List<TDJoInspectionAttachment>? get listAttachment => _listAttachment;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -157,9 +226,24 @@ class TDJoInspectionActivityStages {
     map['updated_by'] = _updatedBy;
     map['created_at'] = _createdAt;
     map['updated_at'] = _updatedAt;
+
     if (_listActivity != null) {
       map['listactivity'] = _listActivity?.map((v) => v.toJson()).toList();
     }
+    if (_listActivityBarge != null) {
+      map['listactivitybarge'] = _listActivityBarge?.map((v) => v.toJson()).toList();
+    }
+    if (_listActivityStageTranshipment != null) {
+      map['listactivitytranshipment'] = _listActivityStageTranshipment?.map((v) => v.toJson()).toList();
+    }
+
+    if(_listActivityVessel != null){
+      map['listactivityvessel'] = _listActivityVessel?.map((v) => v.toJson()).toList();
+    }
+    if(_listAttachment != null){
+      map['listattachment'] = _listAttachment?.map((v) => v.toJson()).toList();
+    }
+
     return map;
   }
 
@@ -187,10 +271,76 @@ class TDJoInspectionActivityStages {
     map['is_active'] = _isActive;
     map['is_upload'] = _isUpload;
     map['remarks'] = _remarks;
+    map['actual_qty'] = _actualQty;
    // map['created_by'] = _createdBy;
     map['updated_by'] = _updatedBy;
     //map['created_at'] = _createdAt;
     map['updated_at'] = _updatedAt;
     return map;
   }
+
+  static Future<int> updateUploaded(String code) async {
+    final db = await SqlHelperV2().database;
+    return await db.update("t_d_jo_inspection_activity_stages", {"is_upload": 1},where: "code=?",whereArgs: [code]);
+  }
+
+  static Future<Map<String,dynamic>> getEndData(int id)async{
+    final db = await SqlHelperV2().database;
+    final sql = '''select * from t_d_jo_inspection_activity_stages where m_statusinspectionstages_id= '6' and t_h_jo_id=? order by trans_date desc  ''';
+
+    var finish = await db.rawQuery(sql,[id]);
+    if(finish.length > 0){
+      return finish[0];
+    }else{
+      return Map();
+    }
+  }
+
+  static Future<Map<String, dynamic>> getStartDate(int id) async{
+    final db = await SqlHelperV2().database;
+    final sql = "select trans_date as  created_at from t_d_jo_inspection_activity_stages where m_statusinspectionstages_id= '1' and t_h_jo_id=? and is_active = 1 ";
+    var start = await db.rawQuery(sql,[id]);
+    final sqlPict = "SELECT * from t_d_jo_inspection_pict where t_h_jo_id=? and is_active = 1";
+    var pict = await db.rawQuery(sqlPict,[id]);
+
+    if(start.length == 0 && pict.length == 0){
+      return {};
+    }
+    // Jika salah satu atau kedua hasil ada isinya, bandingkan tanggal created
+    DateTime? oldestDate;
+    Map<String, dynamic>? oldestEntry;
+
+    // Cek data start
+    if (start.isNotEmpty) {
+      for (var entry in start) {
+        if(entry['created_at'] != ""){
+          debugPrint('print data start ${jsonEncode(entry)}');
+          DateTime createdDate = DateTime.parse(entry['created_at'] as String);
+          if (oldestDate == null || createdDate.isBefore(oldestDate)) {
+            oldestDate = createdDate;
+            oldestEntry = entry;
+          }
+        }
+
+      }
+    }
+
+    // Cek data pict
+    if (pict.isNotEmpty) {
+      for (var entry in pict) {
+        if(entry['created_at'] != ""){
+          DateTime createdDate = DateTime.parse(entry['created_at'] as String);
+          if (oldestDate == null || createdDate.isBefore(oldestDate)) {
+            oldestDate = createdDate;
+            oldestEntry = entry;
+          }
+        }
+      }
+    }
+
+    // Kembalikan entry dengan tanggal created yang paling tua
+    return oldestEntry ?? {};
+  }
+
+
 }

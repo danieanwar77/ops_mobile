@@ -57,7 +57,7 @@ class TDJoFinalizeInspectionModel {
     _isActive = json['is_active'];
     _isUpload = json['is_upload'];
     _createdBy = json['created_by'];
-    _updatedBy = json['updated_by'];
+   // _updatedBy = json['updated_by'];
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
   }

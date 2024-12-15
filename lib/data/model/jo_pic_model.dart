@@ -58,7 +58,11 @@ class DataPIC {
 }
 
   DataPIC.fromJson(dynamic json) {
-    _detail = json['detail'] != null ? Detail.fromJson(json['detail']) : null;
+    if(json['detail'] != null){
+      _detail = Detail.fromJson(json['detail']);
+    }else{
+      _detail = null;
+    }
     if (json['lab'] != null) {
       _lab = [];
       json['lab'].forEach((v) {

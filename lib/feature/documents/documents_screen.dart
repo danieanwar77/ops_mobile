@@ -209,74 +209,34 @@ class DocumentsScreen extends StatelessWidget{
                                           ),
                                           const VerticalDivider(width: 1),
                                           const SizedBox(width:16),
-                                          controller.documentsAttachments.value[index].isNotEmpty ? Expanded(
-                                            flex: 1,
-                                            child: GridView.builder(
-                                                shrinkWrap: true,
-                                                physics: NeverScrollableScrollPhysics(),
-                                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                                  crossAxisCount: 3,
-                                                  mainAxisSpacing: 8,
-                                                  crossAxisSpacing: 8,
-                                                ),
-                                                itemCount: controller.documentsAttachments.value[index].length,
-                                                itemBuilder: (content, indexItem){
-                                                  final String attach = controller.documentsAttachments.value[index][indexItem];
-                                                  final String fileType = controller.checkFileType(attach);
-                                                  var filenameArr = attach.split("/");
-                                                  var filename = filenameArr.last;
-                                                  return fileType == 'image' ? SizedBox(
-                                                    width: 54,
-                                                    height: 66,
-                                                    child: Stack(
-                                                      children: [
-                                                        SizedBox(
-                                                          width: 54,
-                                                          height: 54,
-                                                          child: InkWell(
-                                                            onTap: (){
-                                                              controller.previewImageList(index, attach);
-                                                            },
-                                                            child: Image.file(
-                                                              File(attach),
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          ),
-                                                        ),
-
-                                                      ],
-                                                    ),
-                                                  ) : fileType == 'doc' ? SizedBox(
-                                                    width: 54,
-                                                    height: 66,
-                                                    child: Stack(
-                                                      children: [
-                                                        InkWell(
-                                                          onTap: (){
-                                                            OpenFilex.open(attach);
-                                                          },
-                                                          child: SizedBox(
-                                                            width: 54,
-                                                            height: 54,
-                                                            child: Center(
-                                                                child: Column(
-                                                                  children: [
-                                                                    Image.asset('assets/icons/pdfIcon.png', height: 34,),
-                                                                    Text(filename, style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
-                                                                  ],
-                                                                )
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ) : SizedBox();
-                                                }
-                                            ),
-                                          ) : const SizedBox()
                                         ],
                                       ),
                                     ),
+                                    controller.documentsAttachments.value[index].isNotEmpty ? SizedBox(
+                                      width: 54,
+                                      height: 66,
+                                      child: Stack(
+                                        children: [
+                                          InkWell(
+                                            onTap: (){
+                                              OpenFilex.open(controller.documentsAttachments.value[index]);
+                                            },
+                                            child: SizedBox(
+                                              width: 54,
+                                              height: 54,
+                                              child: Center(
+                                                  child: Column(
+                                                    children: [
+                                                      Image.asset('assets/icons/pdfIcon.png', height: 34,),
+                                                      Text(controller.documentsAttachments.value[index].split('/').last, style: TextStyle(fontSize: 8), overflow: TextOverflow.ellipsis)
+                                                    ],
+                                                  )
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ) :const SizedBox(),
                                     const Divider(
                                         thickness: 0.4
                                     ),
@@ -355,10 +315,11 @@ class DocumentsScreen extends StatelessWidget{
                             controller.openDialogV2(
                                 'Attention',
                                 'Apakah benar anda akan submit finalisasi JO Inspection ini? pastikan data yg anda  input benar karena jika anda submit, JO  akan dicomplete-kan.',
-                                    () => {
-                                  controller.submitDocumentInspec(),
-                                  Get.back()
-                                });
+                                    () async =>  {
+                                      await controller.submitDocumentInspec(),
+                                      Get.back(),
+                                      Get.back()
+                                    });
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: primaryColor,

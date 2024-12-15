@@ -10,19 +10,19 @@ import 'package:ops_mobile/core/core/bindings/global_bindings.dart';
 import 'package:ops_mobile/core/core/services/background_service.dart';
 import 'package:ops_mobile/utils/firebase_options.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   /// FCM START
   // await Firebase.initializeApp();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,name: 'ops');
   //await setupFlutterNotifications();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await requestPerminssion();
   /// FCM END
-
-
+  ///
   GlobalBindings().dependencies();
 
   ErrorWidget.builder = (FlutterErrorDetails details) {
@@ -123,7 +123,7 @@ Future<void> setupFlutterNotifications() async {
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("obBackGround Handle ");
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,name: 'ops');
   await setupFlutterNotifications();
   showFlutterNotification(message);
   // If you're going to use other Firebase services in the background, such as Firestore,
@@ -134,6 +134,13 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> requestPerminssion() async{
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
+  Map<Permission, PermissionStatus> statuses = await [
+    Permission.manageExternalStorage,
+    Permission.storage,
+    Permission.videos,
+    Permission.photos,
+  ].request();
+
   NotificationSettings settings = await messaging.requestPermission(
     alert: true,
     announcement: false,
@@ -143,6 +150,14 @@ Future<void> requestPerminssion() async{
     provisional: false,
     sound: true,
   );
+
+  // if (statuses.containsValue(PermissionStatus.denied)) {
+  //   Fluttertoast.showToast(
+  //       msg: "App may malfunction without granted permissions",
+  //       toastLength: Toast.LENGTH_SHORT,
+  //       gravity: ToastGravity.BOTTOM,
+  //       timeInSecForIosWeb: 1);
+  // }
 
   print('zein_User granted permission: ${settings.authorizationStatus}');
 }

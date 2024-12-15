@@ -1,3 +1,6 @@
+import 'package:ops_mobile/data/sqlite.dart';
+import 'package:ops_mobile/utils/helper.dart';
+
 /// id : 1
 /// t_h_jo_id : 1
 /// path_photo : "asdasd"
@@ -79,6 +82,8 @@ TDJoInspectionPict copyWith({  num? id,
   String? get createdAt => _createdAt;
   dynamic get updatedAt => _updatedAt;
 
+  set pathPhoto(String? value) => _pathPhoto = value;
+
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = _id;
@@ -102,6 +107,25 @@ TDJoInspectionPict copyWith({  num? id,
     map['is_upload'] = _isUpload;
     map['updated_at'] = _updatedAt;
     return map;
+  }
+  
+  static Future<List<TDJoInspectionPict>> getSendDataPict() async{
+    final db = await SqlHelper.db();
+    var result = await db.rawQuery('select * from t_d_jo_inspection_pict where is_upload=0');
+    List<TDJoInspectionPict> joPicts = result.map((item) => TDJoInspectionPict.fromJson(item)).toList();
+    return  joPicts;
+  }
+
+  static Future<List<TDJoInspectionPict>> getSendDataPictById(int id) async{
+    final db = await SqlHelper.db();
+    var result = await db.rawQuery('select * from t_d_jo_inspection_pict where is_upload=0 and id = ?',[id]);
+    List<TDJoInspectionPict> joPicts = result.map((item) => TDJoInspectionPict.fromJson(item)).toList();
+    return  joPicts;
+  }
+
+  static Future<int> updateUploaded(String code) async {
+    final db = await SqlHelper.db();
+    return await db.update("t_d_jo_inspection_pict", {"is_upload": 1},where: "code=?",whereArgs: [code]);
   }
   
   

@@ -11,6 +11,8 @@ import 'package:ops_mobile/core/core/constant/colors.dart';
 import 'package:ops_mobile/data/model/response_register_device.dart';
 import 'package:ops_mobile/data/network.dart';
 import 'package:ops_mobile/data/storage.dart';
+import 'package:ops_mobile/feature/settings/settings_screen.dart';
+import 'package:ops_mobile/utils/helper.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_ios/path_provider_ios.dart';
 
@@ -26,6 +28,7 @@ class RegisterDeviceController extends BaseController{
   TextEditingController employeeIdText = TextEditingController();
   TextEditingController internetUrlText = TextEditingController();
   TextEditingController localUrlText = TextEditingController();
+
 
   @override
   void onInit()async{
@@ -76,8 +79,11 @@ class RegisterDeviceController extends BaseController{
     update();
     network.setBaseUrl(AppConstant.BASE_URL);
     debugPrint('base url:${AppConstant.BASE_URL}');
+    isLoading.value = true;
     try{
       var response = await repository.registerDevice(employeeIdText.text, uuid) ?? ResponseRegisterDevice();
+      isLoading.value = false;
+      update();
       if(response.code == 200 && response.message == 'Registrasi Device Berhasil'){
         var setting = {
           'internet_url' : internetUrlText.text,
@@ -86,13 +92,44 @@ class RegisterDeviceController extends BaseController{
           'e_number' : employeeIdText.text
         };
         await StorageCore().storage.write('settings', setting);
-        await writeSettings(jsonEncode(setting));
-        update();
-        openDialog('Success', 'Berhasil register perangkat');
+        await writeSettingsV2(jsonEncode(setting));
+        Get.back();
+        openDialog('Success', 'Berhasil register perangkat',(){Get.to<void>(SettingsScreen());});
+      }else{
+        openDialog('Success', response.message ?? 'Register perangkat gagal',(){});
       }
     } catch(e){
-      openDialog('Failed', 'Register perangkat gagal: $e');
+      openDialog('Failed', 'Register perangkat gagal: $e',(){});
+      isLoading.value = false;
+      update();
     }
+  }
+
+  void loadingProgressDialog() {
+    // Get.dialog(
+    //   AlertDialog(
+    //     title: Text(
+    //       'Loading Register',
+    //       style: TextStyle(
+    //           fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
+    //     ),
+    //     content: SizedBox(
+    //       width: double.infinity,
+    //       height: 84,
+    //       child: Column(
+    //         children: [
+    //           SizedBox(
+    //               width: 84,
+    //               height: 84,
+    //               child: CircularProgressIndicator()
+    //           ),
+    //         ],
+    //       ),
+    //     ),
+    //     actions: [],
+    //   ),
+    //   barrierDismissible: false
+    // );
   }
 
   Future<void> writeSettings(String text) async {
@@ -101,6 +138,13 @@ class RegisterDeviceController extends BaseController{
     await file.writeAsString(text);
   }
 
+  Future<void> writeSettingsV2(String text) async {
+    final directory = await Helper.baseFolder();
+    final File file = File('$directory/files/settings.txt');
+    await file.writeAsString(text);
+  }
+
+
   Future<String> readSettings() async {
     String text;
     try {
@@ -108,6 +152,11 @@ class RegisterDeviceController extends BaseController{
       final File file = File('${directory}/settings.txt');
       text = await file.readAsString();
       debugPrint('setting txt: ${jsonDecode(text)}');
+      var data = jsonDecode(text);
+      employeeIdText.text = data['e_number'];
+      internetUrlText.text = data['internet_url'];
+      localUrlText.text = data['local_url'];
+      update();
     } catch (e) {
       print("Couldn't read file");
       text = '';
@@ -115,7 +164,7 @@ class RegisterDeviceController extends BaseController{
     return text;
   }
 
-  void openDialog(String type, String text) {
+  void openDialog(String type, String text,VoidCallback func) {
     Get.dialog(
       AlertDialog(
         title: Text(
@@ -127,7 +176,12 @@ class RegisterDeviceController extends BaseController{
         actions: [
           TextButton(
             child: const Text("Close"),
-            onPressed: () => Get.back(),
+            onPressed: () {
+              Get.back();
+              Future.delayed(Duration(milliseconds: 100), () {
+              func(); // Eksekusi setelah dialog ditutup
+              });
+            }
           ),
         ],
       ),

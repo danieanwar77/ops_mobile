@@ -5,15 +5,18 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:ops_mobile/base/component/custom_image.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/core/core/constant/app_constant.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
+import 'package:ops_mobile/data/model/etta_vessel.dart';
 import 'package:ops_mobile/data/model/jo_daily_photo.dart';
 import 'package:ops_mobile/data/model/jo_detail_model.dart';
 import 'package:ops_mobile/data/model/jo_list_daily_activity.dart';
@@ -31,12 +34,16 @@ import 'package:ops_mobile/data/model/t_d_jo_document_laboratory.dart';
 import 'package:ops_mobile/data/model/t_d_jo_finalize_inspection_model.dart';
 import 'package:ops_mobile/data/model/t_d_jo_finalize_laboratory.dart';
 import 'package:ops_mobile/data/model/t_d_jo_finalize_laboratory_model.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_activity_stages.dart';
+import 'package:ops_mobile/data/model/t_d_jo_inspection_pict.dart';
 import 'package:ops_mobile/data/respository/repository.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/documents/documents_screen.dart';
 import 'package:ops_mobile/feature/lab_activity_detail/lab_activity_detail_screen.dart';
+import 'package:ops_mobile/utils/helper.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class JoWaitingController extends BaseController {
   // Data User
@@ -49,6 +56,7 @@ class JoWaitingController extends BaseController {
   RxBool activitySubmitted = RxBool(false);
   final _formKey = GlobalKey<FormState>();
 
+  TextEditingController searchLabText = TextEditingController();
 
   // Detail Data
   late int id;
@@ -81,10 +89,13 @@ class JoWaitingController extends BaseController {
   Rx<Activity6Attachments> dataListActivity6Attachments =
   Rx(Activity6Attachments());
 
+  RxList<TDJoInspectionActivityStages> stageList = RxList();
+
   // Activity Lab Data
   Rx<DataListActivityLab> dataListActivityLab = Rx(DataListActivityLab());
   Rx<DataListActivityLab5> dataListActivityLab5 = Rx(DataListActivityLab5());
   RxList<Laboratory> labs = RxList();
+  RxList<Laboratory> labsTemp = RxList();
 
   // Activity Inspection Photo Variables & Temporary
   RxList<File> dailyActivityPhotos = RxList();
@@ -97,6 +108,8 @@ class JoWaitingController extends BaseController {
   Rx<TextEditingController> dailyActivityPhotosDescEdit =
       TextEditingController().obs;
   Rx<File> activityPreviewFoto = Rx(File(''));
+
+  RxList<TDJoInspectionPict> dailyActivityPhotosV2 = RxList();
 
   // Activity Inspection Variables & Temporary
   RxList<Activity> activityList = RxList();
@@ -176,8 +189,9 @@ class JoWaitingController extends BaseController {
 
   @override
   void onInit() async {
-    settingsData = jsonDecode(await readSettings());
-    var dataUser = await SqlHelper.getUserDetail(settingsData['e_number']);
+    // var user = jsonDecode(await StorageCore().storage.read('user'));
+    // debugPrint('data user: ${user}');
+    var dataUser = jsonDecode(await StorageCore().storage.read('user'));
     userData.value = Data(
         id : dataUser.first['id'],
         fullname: dataUser.first['fullname'],
@@ -194,6 +208,7 @@ class JoWaitingController extends BaseController {
     id = argument['id'];
     statusId = argument['status'];
     isLoadingJO == true;
+    searchLabText.addListener(searchLab);
     update();
     await getData();
     //await getJoDetailLocal();
@@ -202,32 +217,64 @@ class JoWaitingController extends BaseController {
     super.onInit();
   }
 
-  Future<String> readSettings() async {
-    String text;
-    try {
-      final directory = await providerAndroid.getApplicationDocumentsPath();
-      final File file = File('${directory}/settings.txt');
-      text = await file.readAsString();
-      debugPrint('setting txt: ${jsonDecode(text)}');
-    } catch (e) {
-      print("Couldn't read file");
-      text = '';
+  // Get Data
+
+  Rx<EttaVessel> dataEttaVessel = EttaVessel().obs;
+  Future<void> getDataEttaVessel() async {
+    //var response = await repository.getJoPIC(id) ?? JoPicModel();
+    var response = await SqlHelper.getDetailJoPicHistory(id);
+    dataEttaVessel.value = await EttaVessel.getDataByIdJo(id);
+    if(response.length > 0){
+      dataJoPIC.value = DataPIC.fromJson(response);
     }
-    return text;
+
   }
 
-  // Get Data
+
+  Rx<bool> loadingSpk = false.obs;
+  Future<void> downloadSpk()async{
+    try{
+      loadingSpk.value = true;
+      bool coneection = await Helper.checkConnection();
+      if(coneection){
+        final  idJo = id;
+        final response = await http.get(
+            Uri.parse('${Helper.baseUrl()}/api/v1/pdf/assignment/$idJo'),
+            headers: {'Content-Type': 'application/json'}
+        );
+        if(response.statusCode ==200){
+          final Map<String, dynamic> responseData = jsonDecode(response.body);
+          final urlDoc = responseData['data'];
+          await launchUrl(Uri.parse(urlDoc), mode: LaunchMode.externalApplication);
+          // if (await canLaunchUrl(Uri.parse(urlDoc))) {
+          //
+          // } else {
+          //   openDialog('Attenction', 'Gagal  menampilkan document');
+          // }
+        }else{
+          openDialog('Attenction', 'Gagal  mendownload document');
+        }
+      }else{
+        openDialog('Attenction', 'Periksa koneksi Internet Anda');
+      }
+      loadingSpk.value = false;
+    }catch(e){
+      loadingSpk.value = false;
+      openDialog('Attenction', 'Periksa koneksi Internet Anda');
+    }
+  }
 
   Future<void> getJoDetailLocal() async {
     final data = await SqlHelper.getDetailJo(id);
-    debugPrint('data detail : ${jsonEncode(data.first)}');
+    debugPrint('print data id jo $id');
+    debugPrint('print data detail : ${jsonEncode(data.first)}');
     final sow = await SqlHelper.getDetailJoSow(id);
     debugPrint('data detail SOW : ${jsonEncode(sow)}');
     final oos = await SqlHelper.getDetailJoOos(id);
     debugPrint('data detail OOS : ${jsonEncode(oos)}');
     final lap = await SqlHelper.getDetailJoLap(id);
     debugPrint('data detail LAP : ${jsonEncode(lap)}');
-    // final std = await SqlHelper.getDetailJoStdMethod(id);
+    final std = await SqlHelper.getDetailJoStdMethod(id);
     // debugPrint('data detail Std Method : ${jsonEncode(std)}');
     final pic = await SqlHelper.getDetailJoPicHistory(id);
     debugPrint('data detail PIC History : ${jsonEncode(pic)}');
@@ -256,13 +303,12 @@ class JoWaitingController extends BaseController {
           );
         }).toList(),
         stdMethod:
-        // std.map((item){
-        //   return StdMethod(
-        //       id: item['id'],
-        //       name: item['name']
-        //   );
-        // }).toList()
-        []
+        std.map((item){
+          return StdMethod(
+              id: item['id'],
+              name: item['name']
+          );
+        }).toList()
         ,
         picHist: pic.map((item){
           return PicHist.fromJson(item);
@@ -292,8 +338,8 @@ class JoWaitingController extends BaseController {
   }
 
   Future<void> getData() async {
-    //await getJoDetail();
     await getJoDetailLocal();
+    await getDataEttaVessel();
     debugPrint('data employee pic: ${dataJoDetail.value.detail?.idPicInspector}, ${dataJoDetail.value.detail?.idPicLaboratory}');
     picInspector = int.parse(dataJoDetail.value.detail?.idPicInspector != null
         ? dataJoDetail.value.detail!.idPicInspector.toString() ==
@@ -377,8 +423,10 @@ class JoWaitingController extends BaseController {
     }
    // await getJoPIC();
     await getJoPICLocal();
+   await getJoDailyPhotoV2();
    //  await getJoDailyPhoto();
    //  await getJoDailyActivity();
+   await getJoDailyActivityLocalV2();
    //  await getJoDailyActivity5();
    //  await getJoDailyActivity6();
     // await getJoDailyActivityLab();
@@ -458,6 +506,23 @@ class JoWaitingController extends BaseController {
     }
   }
 
+  Future<void> getJoDailyPhotoV2() async {
+    final db = await SqlHelper.db();
+    List<Map<String, dynamic>> result = await db.query(
+      't_d_jo_inspection_pict',
+      where: 't_h_jo_id = ? and is_active = 1',
+      whereArgs: [id],
+    );
+    dailyActivityPhotos.value = [];
+    dailyActivityPhotosDesc.value = [];
+    dailyActivityPhotosDescText.value = [];
+    dailyActivityPhotosV2.value = [];
+
+    List<TDJoInspectionPict> pict =
+    result.map((json) => TDJoInspectionPict.fromJson(json)).toList();
+    dailyActivityPhotosV2.value = pict;
+  }
+
   Future<File> getImagesFromUrl(String strURL) async {
     debugPrint('image path: ${AppConstant.CORE_URL}$strURL');
     final http.Response responseData =
@@ -502,36 +567,152 @@ class JoWaitingController extends BaseController {
     });
   }
 
-  Future<void> getJoDailyActivity5() async {
-    var response =
-        await repository.getJoListDailyActivity5(id) ?? JoListDailyActivity5();
-    debugPrint('JO Daily Activity 5: ${jsonEncode(response)}');
-    if (response.data!.detail!.isNotEmpty) {
-      dataListActivity5.value = response?.data ?? DataListActivity5();
-      var data = dataListActivity5.value;
-      var dataBarge = data.barge!.map((item) {
-        return Barge(barge: item.barge);
-      }).toList();
-      var dataTranshipment = data.transhipment!.map((item) {
-        return Transhipment(
-          jetty: item.jetty,
-          initialDate: item.initialDate,
-          finalDate: item.finalDate,
-          deliveryQty: item.deliveryQty.toString(),
+  void searchLab(){
+    final String search = searchLabText.text;
+    debugPrint('hasil search text nya: $search');
+    var dataSearch = labsTemp.value.where((value) => ( value.name?.toLowerCase() == search.toLowerCase() || (value.name?.toLowerCase() ?? '').contains(search.toLowerCase()) ) ).toList();
+    debugPrint('hasil search: ${jsonEncode(dataSearch)}');
+    labs.value = dataSearch;
+    if(search == ''){
+      labs.value = labsTemp.value;
+      update();
+    }
+    update();
+  }
+
+  Future<void> getJoDailyActivityLocalV2() async {
+    stageList.value = [];
+    List<Map<String, dynamic>> result = [];
+    final db = await SqlHelper.db();
+
+    // Retrieve data from the database
+    try {
+      result = await db.rawQuery('''
+         SELECT
+         s.*, u.name as uom_name
+         FROM t_d_jo_inspection_activity_stages AS s
+          LEFT JOIN m_uom AS u ON s.uom_id = u.id
+          WHERE s.t_h_jo_id = $id AND s.is_active = 1
+        ''');
+
+      /// Buffer the query
+      debugPrint('data modifiable nya nih: ${jsonEncode(result)}');
+      await Future<dynamic>.delayed(const Duration(milliseconds: 500));
+
+      // Create a modifiable list of stages
+      List<Map<String, dynamic>> modifiableResult =
+      result.map((stage) => Map<String, dynamic>.from(stage)).toList();
+
+      for (var stage in modifiableResult) {
+        debugPrint('data modifiable update: ${jsonEncode(stage)}');
+        int tHJoId = stage['t_h_jo_id'];
+        int stageId = stage[
+        'id']; // use this or 't_d_jo_inspection_activity_stages_id' if it exists
+        int stageStatusId = stage['m_statusinspectionstages_id'];
+        debugPrint('params nya ini: $tHJoId, $stageId, $stageStatusId');
+
+        activityStage = stageStatusId;
+        activitySubmitted.value = true;
+        update();
+
+        // Query related data from t_d_jo_inspection_activity
+        List<Map<String, dynamic>> activityResult = await db.query(
+          't_d_jo_inspection_activity',
+          where:
+          't_h_jo_id = ? and t_d_jo_inspection_activity_stages_id = ? and is_active = ?',
+          // add additional criteria if necessary
+          whereArgs: [tHJoId, stageId, 1],
         );
-      }).toList();
-      activity5ListStages.value.add(FormDataArray(
-          tHJoId: id,
-          mStatusinspectionstagesId: 5,
-          uomId: 3,
-          transDate: data.detail!.first.transDate,
-          actualQty: data.detail!.first.actualQty.toString(),
-          createdBy: 0,
-          vessel: data.detail!.first.vessel,
-          barge: dataBarge,
-          transhipment: dataTranshipment));
+        debugPrint("print activity result 1517  ${activityResult}");
+
+        List<Map<String, dynamic>> activityBarge = await db.query(
+          't_d_jo_inspection_activity_barge',
+          where:
+          't_h_jo_id = ? and t_d_jo_inspection_activity_stages_id = ? and is_active = ?',
+          // add additional criteria if necessary
+          whereArgs: [tHJoId, stageId, 1],
+        );
+
+        List<Map<String, dynamic>> activityVessel = await db.query(
+            't_d_jo_inspection_activity_vessel',
+            where:
+            't_h_jo_id = ? and t_d_jo_inspection_activity_stages_id = ? and is_active = ?',
+            // add additional criteria if necessary
+            whereArgs: [tHJoId, stageId, 1],
+            limit: 1);
+
+        List<Map<String, dynamic>> activityStageTranshipment =
+        await db.rawQuery('''
+          SELECT t.*, u.name as uom_name
+          FROM t_d_jo_inspection_activity_stages_transhipment AS t
+          LEFT JOIN m_uom AS u ON t.uom_id = u.id
+          WHERE t.t_d_inspection_stages_id = ? AND t.is_active = ?
+        ''', [stageId, 1]);
+
+        debugPrint(
+            "print stage Transhipment 1541 ${activityStageTranshipment}");
+        // Add activityResult to the current stage
+        stage['listactivity'] = activityResult;
+        stage['listactivitybarge'] = activityBarge;
+        stage['listactivitytranshipment'] = activityStageTranshipment;
+        if (activityVessel.length > 0) {
+          stage['activityvesel'] = activityVessel[0]; //first index
+        } else {
+          stage['activityvesel'] = null;
+        }
+      }
+
+      // Convert the modifiableResult list to List<TDJoInspectionActivityStages>
+      List<TDJoInspectionActivityStages> stagesList = modifiableResult
+          .map((json) => TDJoInspectionActivityStages.fromJson(json))
+          .toList();
+
+      stageList.value = stagesList;
+
+      if (stageList.value
+          .where((item) => item.mStatusinspectionstagesId == 6)
+          .isNotEmpty) {
+        await getJoDailyActivity6AttachmentLocal();
+      }
+
+      debugPrint("print stage list 1559  ${jsonEncode(stagesList)}");
+    } catch (e) {
+      debugPrint(e.toString());
+    } finally {
+      update();
     }
   }
+
+  // Future<void> getJoDailyActivity5() async {
+  //   var response =
+  //       await repository.getJoListDailyActivity5(id) ?? JoListDailyActivity5();
+  //   debugPrint('JO Daily Activity 5: ${jsonEncode(response)}');
+  //   if (response.data!.detail!.isNotEmpty) {
+  //     dataListActivity5.value = response?.data ?? DataListActivity5();
+  //     var data = dataListActivity5.value;
+  //     var dataBarge = data.barge!.map((item) {
+  //       return Barge(barge: item.barge);
+  //     }).toList();
+  //     var dataTranshipment = data.transhipment!.map((item) {
+  //       return Transhipment(
+  //         jetty: item.jetty,
+  //         initialDate: item.initialDate,
+  //         finalDate: item.finalDate,
+  //         deliveryQty: item.deliveryQty.toString(),
+  //       );
+  //     }).toList();
+  //     activity5ListStages.value.add(FormDataArray(
+  //         tHJoId: id,
+  //         mStatusinspectionstagesId: 5,
+  //         uomId: 3,
+  //         transDate: data.detail!.first.transDate,
+  //         actualQty: data.detail!.first.actualQty.toString(),
+  //         createdBy: 0,
+  //         vessel: data.detail!.first.vessel,
+  //         barge: dataBarge,
+  //         transhipment: dataTranshipment));
+  //   }
+  // }
 
   Future<void> getJoDailyActivity6() async {
     var response =
@@ -562,6 +743,30 @@ class JoWaitingController extends BaseController {
     });
   }
 
+  Future<void> getJoDailyActivity6AttachmentLocal() async {
+    final db = await SqlHelper.db();
+    List<Map<String, dynamic>> result = await db.query(
+      't_d_jo_inspection_attachment',
+      where: 't_h_jo_id = ? and is_active = 1',
+      whereArgs: [id],
+    );
+
+    debugPrint('activity stage 6 attachmentnya: ${jsonEncode(result)}');
+
+    // dailyActivityPhotos.value = [];
+    // dailyActivityPhotosDesc.value = [];
+    // dailyActivityPhotosDescText.value = [];
+    // dailyActivityPhotosV2.value = [];
+    var attachments = result.map((json) {
+      return File(json['path_name']);
+    }).toList();
+    update();
+
+    activity6AttachmentsStage.value = attachments;
+    activity6Attachments.value = attachments;
+    update();
+  }
+
   Future<void> getJoInspectionDocuments() async {
     final data = await SqlHelper.getInspectionDocument(id);
     inspectionDocuments.value = data.map((item){
@@ -590,13 +795,91 @@ class JoWaitingController extends BaseController {
     debugPrint('data document files : ${jsonEncode(laboratoryDocumentsFiles.value)}');
   }
 
-  void detailLabActivity(int? lab) {
-    Get.to(LabActivityDetailScreen(), arguments: {'id': id, 'labId': lab, 'statusJo': statusId});
+  void detailLabActivity(int? lab, String name, int joLabId) {
+    Get.to(LabActivityDetailScreen(), arguments: {'id': id, 'labId': lab, 'name': name, 'joLabId' : joLabId});
   }
 
   // Activity Detail Functions
 
-  void previewImage(int index, String photo, String desc) async {
+  void previewImage(int index, String photo, String desc, TDJoInspectionPict pict) async {
+    dailyActivityPhotosDescEdit.value.text = desc;
+    activityPreviewFoto.value = await File(photo);
+    Get.dialog(
+      StatefulBuilder(
+          builder: (context, state) {
+            return AlertDialog(
+              title: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Photo and Description ${index + 1}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.sp,
+                        color: primaryColor,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    icon: Icon(Icons.close),
+                  )
+                ],
+              ),
+              content: Obx(
+                    () => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Center(
+                      child: SizedBox(
+                        height: MediaQuery.of(context).viewInsets.bottom != 0 ? 66.h : 180.h,
+                        width: MediaQuery.sizeOf(context).width.w,
+                        child: CustomImage(path: activityPreviewFoto.value.path),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 16.h,
+                    ),
+                    SizedBox(
+                      height: 16.h,
+                    ),
+                    dataJoDetail.value.detail?.statusJo == 'Assigned' ||
+                        dataJoDetail.value.detail?.statusJo == 'On Progres'
+                        ? SizedBox(
+                      child: TextFormField(
+                        controller: dailyActivityPhotosDescEdit.value,
+                        cursorColor: onFocusColor,
+                        style: const TextStyle(color: onFocusColor),
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide:
+                              const BorderSide(color: onFocusColor),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            labelText: 'Description',
+                            floatingLabelStyle:
+                            const TextStyle(color: onFocusColor),
+                            fillColor: onFocusColor),
+                      ),
+                    )
+                        : Text(desc),
+                  ],
+                ),
+              ),
+              actions: [],
+            );
+          }
+      ),
+    );
+  }
+
+  void previewImage6(int index, String photo, String desc) async {
     dailyActivityPhotosDescEdit.value.text = desc;
     activityPreviewFoto.value = await File(photo);
     Get.dialog(
@@ -646,17 +929,6 @@ class JoWaitingController extends BaseController {
         ),
       ),
     );
-  }
-
-  void changeStatusJo() async {
-    var response = await repository.changeStatusJo(id.toString(), 3.toString());
-    if (response?.httpCode != 200) {
-      debugPrint('Berhasil ubah status JO.');
-      //openDialog('Success', 'Berhasil ubah status JO.');
-    } else {
-      debugPrint('Gagal ubah status JO');
-      //openDialog('Failed', 'Gagal ubah status JO');
-    }
   }
 
   void cameraImageDocument() async {
@@ -787,6 +1059,50 @@ class JoWaitingController extends BaseController {
             onPressed: () => Get.back(),
           ),
         ],
+      ),
+    );
+  }
+
+  void previewImageAct6(int index, String photo) {
+    Get.dialog(
+      AlertDialog(
+        title: Row(
+          children: [
+            Text(
+              'Attachment ${index + 1}',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: primaryColor),
+            ),
+            InkWell(
+              onTap: () {},
+              child: Icon(
+                Icons.delete_forever,
+                color: Colors.red,
+              ),
+            ),
+            Spacer(),
+            IconButton(
+              onPressed: () {
+                Get.back();
+              },
+              icon: Icon(Icons.close),
+            )
+          ],
+        ),
+        content: SizedBox(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.file(
+                File(photo),
+                fit: BoxFit.cover,
+              ),
+            ],
+          ),
+        ),
+        actions: [],
       ),
     );
   }
@@ -1008,7 +1324,7 @@ class JoWaitingController extends BaseController {
                                   height: 54,
                                   child: InkWell(
                                     onTap: () {
-                                      previewImage(
+                                      previewImage6(
                                           index, photo.path, '');
                                     },
                                     child: Image.file(

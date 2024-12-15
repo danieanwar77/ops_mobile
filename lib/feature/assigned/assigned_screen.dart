@@ -15,9 +15,29 @@ class AssignedScreen extends StatelessWidget{
         builder: (controller) => Obx(() => Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
+              actions: [
+                controller.isLoadingSync.value ? const Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: SizedBox(
+                    width: 24.0,
+                    height: 24.0,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.0, // Ketebalan garis
+                      color: Colors.white, // Warna indikator
+                    ),
+                  ),
+                ):
+                IconButton(
+                  icon: Icon(Icons.refresh),
+                  color: Colors.white,
+                  onPressed: ()async{
+                    await controller.reload();
+                  },
+                )
+              ],
               backgroundColor: primaryColor,
               foregroundColor: Colors.white,
-              title: Text('JO ${controller.listStatus[(controller.statusJo?.value ?? 1) - 1] ?? ''}',
+              title: Text('JO ${controller.statusJo.value != 0 ? controller.listStatus[controller.statusJo.value - 1] : ''}',
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold
@@ -70,6 +90,8 @@ class AssignedScreen extends StatelessWidget{
                                   'id': controller.dataJoList.value[index].joId,
                                   'status': controller.dataJoList.value[index]
                                       .mStatusjoId
+                                })?.then((_) async{
+                                  await controller.getJoListLocal();
                                 });
                               } else {
                                 Get.to<void>(JoWaitingScreen.new, arguments: {
@@ -108,7 +130,7 @@ class AssignedScreen extends StatelessWidget{
                                                 child: Column(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                    Text(controller.dataJoList.value[index].joId.toString() ?? '-', style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12),),
+                                                    Text(controller.dataJoList.value[index].code.toString() ?? '-', style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12),),
                                                   ],
                                                 ),
                                               ),

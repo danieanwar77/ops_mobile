@@ -8,6 +8,7 @@ import 'package:ops_mobile/core/core/constant/app_constant.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/home/home_screen.dart';
 import 'package:ops_mobile/feature/login/login_screen.dart';
+import 'package:ops_mobile/utils/helper.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_ios/path_provider_ios.dart';
@@ -28,18 +29,14 @@ class SplashController extends BaseController {
   void onInit() async {
     packageInfo = await PackageInfo.fromPlatform();
     final userData = StorageCore().storage.read('login') ?? '';
-    //debugPrint(jsonDecode(await StorageCore().storage.read('login')));
 
     appName =  packageInfo.appName;
     packageName =  packageInfo.packageName;
     version =  packageInfo.version;
     buildNumber =  packageInfo.buildNumber;
 
-    // settingsData = jsonDecode(await readSettings());
-    //
-    // AppConstant.BASE_URL = settingsData['internet_url'];
-    // network.setBaseUrl(AppConstant.BASE_URL);
-    // debugPrint('base url:${AppConstant.BASE_URL}');
+    await Helper.initFolder();
+
     update();
 
     Future.delayed(const Duration(seconds: 5), (){

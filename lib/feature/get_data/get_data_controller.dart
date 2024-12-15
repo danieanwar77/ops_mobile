@@ -12,11 +12,14 @@ import 'package:intl/intl.dart';
 import 'package:ops_mobile/core/core/base/base_controller.dart';
 import 'package:ops_mobile/core/core/constant/app_constant.dart';
 import 'package:ops_mobile/core/core/constant/colors.dart';
+import 'package:ops_mobile/data/Datatabase2.dart';
 import 'package:ops_mobile/data/model/response_gendata_file.dart';
 import 'package:ops_mobile/data/model/response_register_device.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/login/login_screen.dart';
+import 'package:ops_mobile/feature/splash/splash_screen.dart';
+import 'package:ops_mobile/utils/helper.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_ios/path_provider_ios.dart';
@@ -37,6 +40,7 @@ class GetDataController extends BaseController{
   TextEditingController dateTugas = TextEditingController();
   late PermissionStatus storagePermission;
   // String token = '';
+
 
   @override
   void onInit()async{
@@ -79,20 +83,62 @@ class GetDataController extends BaseController{
 
   Future<void> getGenData(String token,String apkVersion,String platform)async{
     try{
-      var response = await repository.getGenData(settingsData['e_number'], token, apkVersion,platform);
+      isLoading.value = true;
+      bool connection = await Helper.checkConnection();
+      if(!connection){
+        openDialog('Attenction', 'Periksa koneksi internet ada ', (){});
+        isLoading.value = false;
+        update();
+      }else{
+        var response = await repository.getGenData(settingsData['e_number'], token, apkVersion,platform);
         if(response.file != null){
           await createFileFromBase64Str(response.file!);
           await readZip();
+          await SqlHelperV2().closeDatabase();
           final data = await SqlHelper.getLogin(settingsData['e_number']);
           debugPrint('user data: $data');
-
-          openDialog('Success', 'Berhasil ambil data', (){Get.to<void>(LoginScreen());});
+          String now = DateFormat('dd-MM-yyyy').format(DateTime.now());
+          await StorageCore().storage.write("last_sync", now);
+          openDialog('Success', 'Berhasil ambil data', (){Get.to<void>(SplashScreen());});
         } else {
           openDialog('Failed', 'Data gagal diambil',(){});
         }
+        isLoading.value = false;
+        update();
+      }
+
     } catch(e) {
-      openDialog('Failed', '$e', (){});
+      openDialog('Failed', 'Gagal ambil data', (){});
+      isLoading.value = false;
+      update();
     }
+  }
+
+  void loadingProgressDialog() {
+    Get.dialog(
+        AlertDialog(
+          title: Text(
+            'Loading Get Data',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: 16, color: primaryColor),
+          ),
+          content: SizedBox(
+            width: double.infinity,
+            height: 84,
+            child: Column(
+              children: [
+                SizedBox(
+                    width: 84,
+                    height: 84,
+                    child: CircularProgressIndicator()
+                ),
+              ],
+            ),
+          ),
+          actions: [],
+        ),
+        barrierDismissible: false
+    );
   }
 
   Future<void> generateFirebase()async{
@@ -137,7 +183,7 @@ class GetDataController extends BaseController{
     }
 
     File file = File("$dir/ops/application.zip");
-    await file.writeAsBytes(bytes);
+    await file.writeAsBytes(bytes, mode: FileMode.writeOnly);
     return file.path;
   }
 
@@ -154,8 +200,10 @@ class GetDataController extends BaseController{
           TextButton(
             child: const Text("Close"),
             onPressed: () {
-              func;
               Get.back();
+              Future.delayed(Duration(milliseconds: 1), () {
+                func(); // Eksekusi setelah dialog ditutup
+              });
             },
 
           ),

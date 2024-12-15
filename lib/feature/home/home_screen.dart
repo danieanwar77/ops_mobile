@@ -43,9 +43,14 @@ class HomeScreen extends StatelessWidget{
                           children: [
                             Row(
                               children: [
-                                CircleAvatar(
-                                  radius: 32,
-                                  child: Image.asset('assets/icons/user.png'),
+                                InkWell(
+                                  onTap:(){
+                                    controller.versionSyncDialog();
+                                  },
+                                  child: CircleAvatar(
+                                    radius: 32,
+                                    child: Image.asset('assets/icons/user.png'),
+                                  ),
                                 ),
                                 const SizedBox(width: 18,),
                                 Obx(()=> Expanded(
@@ -71,10 +76,34 @@ class HomeScreen extends StatelessWidget{
                                   ),
                                 ),
                                 IconButton(
-                                    onPressed: (){
-                                      Get.to<void>(() => const NotificationsScreen());
-                                    },
-                                    icon: const Icon(Icons.notifications, color: Colors.white)
+                                  onPressed: () {
+                                    Get.to<void>(() => const NotificationsScreen())?.then((_) async{
+                                      await controller.countNotif();
+                                    });
+                                  },
+                                  icon: Stack(
+                                    alignment: Alignment.center, // Menempatkan angka di tengah ikon
+                                    children: [
+                                      const Icon(Icons.notifications, color: Colors.white), // Ikon dasar
+                                      controller.message == 0 ? const SizedBox() : Positioned(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.red, // Warna latar belakang angka
+                                            shape: BoxShape.circle, // Membuat angka dalam lingkaran
+                                          ),
+                                          padding: const EdgeInsets.all(3), // Padding untuk angka
+                                          child: Text(
+                                            controller.message.string, // Jumlah notifikasi
+                                            style: TextStyle(
+                                              color: Colors.white, // Warna teks
+                                              fontSize:8, // Ukuran font angka
+                                              fontWeight: FontWeight.bold, // Tebal teks
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 IconButton(
                                     onPressed: (){
@@ -128,7 +157,9 @@ class HomeScreen extends StatelessWidget{
                                       width: (MediaQuery.sizeOf(context).width / 3) - 36,
                                       child: InkWell(
                                         onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 2, 'employeeId' : controller.userData.value?.id ?? 0});
+                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 2, 'employeeId' : controller.userData.value?.id ?? 0})?.then((_) async{
+                                            controller.syncMaster();
+                                          });
                                         },
                                         child: Column(
                                           children: [
@@ -155,7 +186,9 @@ class HomeScreen extends StatelessWidget{
                                       width: (MediaQuery.sizeOf(context).width / 3) - 32,
                                       child: InkWell(
                                         onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 3, 'employeeId': controller.userData.value?.id ?? 0});
+                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 3, 'employeeId': controller.userData.value?.id ?? 0})?.then((_) async{
+                                            controller.syncMaster();
+                                          });
                                         },
                                         child: Column(
                                           children: [
@@ -182,7 +215,9 @@ class HomeScreen extends StatelessWidget{
                                       width: (MediaQuery.sizeOf(context).width / 3) - 36,
                                       child: InkWell(
                                         onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 4, 'employeeId' : controller.userData.value?.id ?? 0});
+                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 4, 'employeeId' : controller.userData.value?.id ?? 0})?.then((_) async{
+                                            controller.syncMaster();
+                                          });
                                         },
                                         child: Column(
                                           children: [
@@ -217,7 +252,9 @@ class HomeScreen extends StatelessWidget{
                                       width: (MediaQuery.sizeOf(context).width / 3) - 36,
                                       child: InkWell(
                                         onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 6, 'employeeId' : controller.userData.value?.id ?? 0});
+                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 6, 'employeeId' : controller.userData.value?.id ?? 0})?.then((_) async{
+                                            controller.syncMaster();
+                                          });
                                         },
                                         child: Column(
                                           children: [
@@ -244,7 +281,9 @@ class HomeScreen extends StatelessWidget{
                                       width: (MediaQuery.sizeOf(context).width / 3) - 32,
                                       child: InkWell(
                                         onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 5, 'employeeId' : controller.userData.value?.id ?? 0});
+                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 5, 'employeeId' : controller.userData.value?.id ?? 0})?.then((_) async{
+                                            controller.syncMaster();
+                                          });
                                         },
                                         child: Column(
                                           children: [
@@ -271,7 +310,9 @@ class HomeScreen extends StatelessWidget{
                                       width: (MediaQuery.sizeOf(context).width / 3) - 36,
                                       child: InkWell(
                                         onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 7, 'employeeId' : controller.userData.value?.id ?? 0});
+                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 7, 'employeeId' : controller.userData.value?.id ?? 0})?.then((_) async{
+                                            controller.syncMaster();
+                                          });
                                         },
                                         child: Column(
                                           children: [
