@@ -84,7 +84,7 @@ class HomeScreen extends StatelessWidget{
                                   icon: Stack(
                                     alignment: Alignment.center, // Menempatkan angka di tengah ikon
                                     children: [
-                                      const Icon(Icons.notifications, color: Colors.white), // Ikon dasar
+                                      const Icon(Icons.notifications, color: Colors.white,size: 32,), // Ikon dasar
                                       controller.message == 0 ? const SizedBox() : Positioned(
                                         child: Container(
                                           decoration: BoxDecoration(
@@ -249,35 +249,6 @@ class HomeScreen extends StatelessWidget{
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(
-                                      width: (MediaQuery.sizeOf(context).width / 3) - 36,
-                                      child: InkWell(
-                                        onTap: (){
-                                          Get.to<void>(() => const AssignedScreen(), arguments: {'status': 6, 'employeeId' : controller.userData.value?.id ?? 0})?.then((_) async{
-                                            controller.syncMaster();
-                                          });
-                                        },
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              margin: const EdgeInsets.only(bottom: 8),
-                                              padding: const EdgeInsets.all(8),
-                                              width: 64,
-                                              height: 64,
-                                              decoration: BoxDecoration(
-                                                  color: menuButtonColor,
-                                                  borderRadius: BorderRadius.circular(10)
-                                              ),
-                                              child: Image.asset('assets/icons/waiting.png'),
-                                            ),
-                                            const Text('JO Waiting for\nCancellation',
-                                              textAlign: TextAlign.center,
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    SizedBox(
                                       width: (MediaQuery.sizeOf(context).width / 3) - 32,
                                       child: InkWell(
                                         onTap: (){
@@ -327,22 +298,14 @@ class HomeScreen extends StatelessWidget{
                                               ),
                                               child: Image.asset('assets/icons/canceled.png'),
                                             ),
-                                            const Text('JO Canceled',
+                                            const Text('JO \n Canceled',
                                               textAlign: TextAlign.center,
                                             )
                                           ],
                                         ),
                                       ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 24,),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
+                                    ),
+                                    const Spacer(),
                                     SizedBox(
                                       width: (MediaQuery.sizeOf(context).width / 3) - 36,
                                       child: InkWell(
@@ -369,11 +332,21 @@ class HomeScreen extends StatelessWidget{
                                         ),
                                       ),
                                     ),
-                                    const Spacer(),
                                   ],
                                 ),
                               ),
                               const SizedBox(height: 24,),
+                              // Disabled
+                              // Padding(
+                              //   padding: const EdgeInsets.symmetric(horizontal: 16),
+                              //   child: Row(
+                              //     crossAxisAlignment: CrossAxisAlignment.start,
+                              //     children: [
+                              //
+                              //     ],
+                              //   ),
+                              // ),
+                              //const SizedBox(height: 24,),
                             ],
                           ),
                         ),
