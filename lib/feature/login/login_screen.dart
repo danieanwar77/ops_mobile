@@ -147,9 +147,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       const EdgeInsets.symmetric(vertical: 12),
                                   width: double.infinity,
                                   child: Center(
-                                      child: controller.isLoading == true ? CircularProgressIndicator(
+                                      child: controller.isLoading == true ? const CircularProgressIndicator(
                                         backgroundColor: Colors.white,
-                                      ) : Text(
+                                      ) : const Text(
                                     'Log In',
                                     style: TextStyle(
                                         color: Colors.white,
@@ -187,6 +187,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               )
                           ),
                           const Spacer(),
+                          Text('Version ${controller.version}'),
+                          const SizedBox(
+                            height: 16,
+                          ),
                         ],
                       ),
                     ),

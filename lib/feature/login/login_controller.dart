@@ -17,6 +17,7 @@ import 'package:ops_mobile/data/model/login_model.dart';
 import 'package:ops_mobile/data/sqlite.dart';
 import 'package:ops_mobile/data/storage.dart';
 import 'package:ops_mobile/feature/home/home_screen.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_ios/path_provider_ios.dart';
 
@@ -34,6 +35,9 @@ class LoginController extends BaseController{
   bool isLoading = false;
   RxBool obsecure = true.obs;
   RxBool isUpdated = false.obs;
+  String version = '';
+  late PackageInfo packageInfo;
+
 
 
   @override
@@ -58,10 +62,13 @@ class LoginController extends BaseController{
     if(now == lastSync){
       isUpdated.value = true;
     }
-
+    packageInfo = await PackageInfo.fromPlatform();
+    version =  packageInfo.version;
     update();
     super.onInit();
   }
+
+
 
   Future<String> readSettings() async {
     String text;

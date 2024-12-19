@@ -92,7 +92,7 @@ class RegisterDeviceController extends BaseController{
           'e_number' : employeeIdText.text
         };
         await StorageCore().storage.write('settings', setting);
-        await writeSettingsV2(jsonEncode(setting));
+        await writeSettings(jsonEncode(setting));
         Get.back();
         openDialog('Success', 'Berhasil register perangkat',(){Get.to<void>(SettingsScreen());});
       }else{

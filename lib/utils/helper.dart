@@ -201,10 +201,17 @@ class Helper {
     }
   }
 
+  Future<String> getVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String version = packageInfo.version;
+    String code = packageInfo.buildNumber;
+    return "V.$version";
+  }
+
   static Future<void> initFolder() async{
     List<String> dirs = ["photo","files","config","db"];
     final baseDir = await baseFolder();
-    late final Directory appDir;
+    Directory appDir;
     for(int i = 0; i < dirs.length; i++){
       appDir = Directory('${baseDir}/${dirs[i]}');
       if(!appDir.existsSync()){
